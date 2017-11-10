@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/asio/buffers_iterator.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/asio</a> - buffers_iterator.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">84</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //
+<span class="lineNum">       2 </span>                :            : // buffers_iterator.hpp
+<span class="lineNum">       3 </span>                :            : // ~~~~~~~~~~~~~~~~~~~~
+<span class="lineNum">       4 </span>                :            : //
+<span class="lineNum">       5 </span>                :            : // Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+<span class="lineNum">       6 </span>                :            : //
+<span class="lineNum">       7 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       8 </span>                :            : // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>                :            : //
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : #ifndef BOOST_ASIO_BUFFERS_ITERATOR_HPP
+<span class="lineNum">      12 </span>                :            : #define BOOST_ASIO_BUFFERS_ITERATOR_HPP
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #if defined(_MSC_VER) &amp;&amp; (_MSC_VER &gt;= 1200)
+<span class="lineNum">      15 </span>                :            : # pragma once
+<span class="lineNum">      16 </span>                :            : #endif // defined(_MSC_VER) &amp;&amp; (_MSC_VER &gt;= 1200)
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &lt;boost/asio/detail/push_options.hpp&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;boost/asio/detail/push_options.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;cstddef&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/detail/workaround.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/iterator/iterator_facade.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;boost/type_traits/is_convertible.hpp&gt;
+<span class="lineNum">      27 </span>                :            : #include &lt;boost/type_traits/add_const.hpp&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;boost/asio/detail/pop_options.hpp&gt;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &lt;boost/asio/buffer.hpp&gt;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : namespace boost {
+<span class="lineNum">      33 </span>                :            : namespace asio {
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : namespace detail
+<span class="lineNum">      36 </span>                :            : {
+<span class="lineNum">      37 </span>                :            :   template &lt;bool IsMutable&gt;
+<span class="lineNum">      38 </span>                :            :   struct buffers_iterator_types_helper;
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            :   template &lt;&gt;
+<span class="lineNum">      41 </span>                :            :   struct buffers_iterator_types_helper&lt;false&gt;
+<span class="lineNum">      42 </span>                :            :   {
+<span class="lineNum">      43 </span>                :            :     typedef const_buffer buffer_type;
+<span class="lineNum">      44 </span>                :            :     template &lt;typename ByteType&gt;
+<span class="lineNum">      45 </span>                :            :     struct byte_type
+<span class="lineNum">      46 </span>                :            :     {
+<span class="lineNum">      47 </span>                :            :       typedef typename boost::add_const&lt;ByteType&gt;::type type;
+<span class="lineNum">      48 </span>                :            :     };
+<span class="lineNum">      49 </span>                :            :   };
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :   template &lt;&gt;
+<span class="lineNum">      52 </span>                :            :   struct buffers_iterator_types_helper&lt;true&gt;
+<span class="lineNum">      53 </span>                :            :   {
+<span class="lineNum">      54 </span>                :            :     typedef mutable_buffer buffer_type;
+<span class="lineNum">      55 </span>                :            :     template &lt;typename ByteType&gt;
+<span class="lineNum">      56 </span>                :            :     struct byte_type
+<span class="lineNum">      57 </span>                :            :     {
+<span class="lineNum">      58 </span>                :            :       typedef ByteType type;
+<span class="lineNum">      59 </span>                :            :     };
+<span class="lineNum">      60 </span>                :            :   };
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :            :   template &lt;typename BufferSequence, typename ByteType&gt;
+<span class="lineNum">      63 </span>                :            :   struct buffers_iterator_types
+<span class="lineNum">      64 </span>                :            :   {
+<span class="lineNum">      65 </span>                :            :     enum
+<span class="lineNum">      66 </span>                :            :     {
+<span class="lineNum">      67 </span>                :            :       is_mutable = boost::is_convertible&lt;
+<span class="lineNum">      68 </span>                :            :         typename BufferSequence::value_type, mutable_buffer&gt;::value
+<span class="lineNum">      69 </span>                :            :     };
+<span class="lineNum">      70 </span>                :            :     typedef buffers_iterator_types_helper&lt;is_mutable&gt; helper;
+<span class="lineNum">      71 </span>                :            :     typedef typename helper::buffer_type buffer_type;
+<span class="lineNum">      72 </span>                :            :     typedef typename helper::template byte_type&lt;ByteType&gt;::type byte_type;
+<span class="lineNum">      73 </span>                :            :   };
+<span class="lineNum">      74 </span>                :            : }
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            : /// A random access iterator over the bytes in a buffer sequence.
+<span class="lineNum">      77 </span>                :            : template &lt;typename BufferSequence, typename ByteType = char&gt;
+<span class="lineNum">      78 </span>                :            : class buffers_iterator
+<span class="lineNum">      79 </span>                :            :   : public boost::iterator_facade&lt;
+<span class="lineNum">      80 </span>                :            :         buffers_iterator&lt;BufferSequence, ByteType&gt;,
+<span class="lineNum">      81 </span>                :            :         typename detail::buffers_iterator_types&lt;
+<span class="lineNum">      82 </span>                :            :           BufferSequence, ByteType&gt;::byte_type,
+<span class="lineNum">      83 </span>                :            :         boost::random_access_traversal_tag&gt;
+<span class="lineNum">      84 </span>                :            : {
+<span class="lineNum">      85 </span>                :            : private:
+<span class="lineNum">      86 </span>                :            :   typedef typename detail::buffers_iterator_types&lt;
+<span class="lineNum">      87 </span>                :            :       BufferSequence, ByteType&gt;::buffer_type buffer_type;
+<span class="lineNum">      88 </span>                :            :   typedef typename detail::buffers_iterator_types&lt;
+<span class="lineNum">      89 </span>                :            :       BufferSequence, ByteType&gt;::byte_type byte_type;
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            : public:
+<span class="lineNum">      92 </span>                :            :   /// Default constructor. Creates an iterator in an undefined state.
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :   buffers_iterator()</span>
+<span class="lineNum">      94 </span>                :            :     : current_buffer_(),
+<span class="lineNum">      95 </span>                :            :       current_buffer_position_(0),
+<span class="lineNum">      96 </span>                :            :       begin_(),
+<span class="lineNum">      97 </span>                :            :       current_(),
+<span class="lineNum">      98 </span>                :            :       end_(),
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :       position_(0)</span>
+<span class="lineNum">     100 </span>                :            :   {
+<span class="lineNum">     101 </span>                :            :   }
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            :   /// Construct an iterator representing the beginning of the buffers' data.
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :   static buffers_iterator begin(const BufferSequence&amp; buffers)</span>
+<span class="lineNum">     105 </span>                :            : #if BOOST_WORKAROUND(__GNUC__, == 4) &amp;&amp; BOOST_WORKAROUND(__GNUC_MINOR__, == 3)
+<span class="lineNum">     106 </span>                :            :     __attribute__ ((noinline))
+<span class="lineNum">     107 </span>                :            : #endif
+<span class="lineNum">     108 </span>                :            :   {
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :     buffers_iterator new_iter;</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :     new_iter.begin_ = buffers.begin();</span>
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :     new_iter.current_ = buffers.begin();</span>
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :     new_iter.end_ = buffers.end();</span>
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :     while (new_iter.current_ != new_iter.end_)</span>
+<span class="lineNum">     114 </span>                :            :     {
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :       new_iter.current_buffer_ = *new_iter.current_;</span>
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :       if (boost::asio::buffer_size(new_iter.current_buffer_) &gt; 0)</span>
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :       ++new_iter.current_;</span>
+<span class="lineNum">     119 </span>                :            :     }
+<span class="lineNum">     120 </span>                :            :     return new_iter;
+<span class="lineNum">     121 </span>                :            :   }
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :   /// Construct an iterator representing the end of the buffers' data.
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :   static buffers_iterator end(const BufferSequence&amp; buffers)</span>
+<span class="lineNum">     125 </span>                :            : #if BOOST_WORKAROUND(__GNUC__, == 4) &amp;&amp; BOOST_WORKAROUND(__GNUC_MINOR__, == 3)
+<span class="lineNum">     126 </span>                :            :     __attribute__ ((noinline))
+<span class="lineNum">     127 </span>                :            : #endif
+<span class="lineNum">     128 </span>                :            :   {
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :     buffers_iterator new_iter;</span>
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :     new_iter.begin_ = buffers.begin();</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :     new_iter.current_ = buffers.begin();</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :     new_iter.end_ = buffers.end();</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :     while (new_iter.current_ != new_iter.end_)</span>
+<span class="lineNum">     134 </span>                :            :     {
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :       buffer_type buffer = *new_iter.current_;</span>
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :       new_iter.position_ += boost::asio::buffer_size(buffer);</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :       ++new_iter.current_;</span>
+<span class="lineNum">     138 </span>                :            :     }
+<span class="lineNum">     139 </span>                :            :     return new_iter;
+<span class="lineNum">     140 </span>                :            :   }
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            : private:
+<span class="lineNum">     143 </span>                :            :   friend class boost::iterator_core_access;
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :            :   // Dereference the iterator.
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :   byte_type&amp; dereference() const</span>
+<span class="lineNum">     147 </span>                :            :   {
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :     return buffer_cast&lt;byte_type*&gt;(current_buffer_)[current_buffer_position_];</span>
+<span class="lineNum">     149 </span>                :            :   }
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :            :   // Compare two iterators for equality.
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :   bool equal(const buffers_iterator&amp; other) const</span>
+<span class="lineNum">     153 </span>                :            :   {
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     return position_ == other.position_;</span>
+<span class="lineNum">     155 </span>                :            :   }
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :            :   // Increment the iterator.
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :   void increment()</span>
+<span class="lineNum">     159 </span>                :            :   {
+<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :     BOOST_ASSERT(current_ != end_ &amp;&amp; &quot;iterator out of bounds&quot;);</span>
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :     ++position_;</span>
+<span class="lineNum">     162 </span>                :            : 
+<span class="lineNum">     163 </span>                :            :     // Check if the increment can be satisfied by the current buffer.
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :     ++current_buffer_position_;</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :     if (current_buffer_position_ != boost::asio::buffer_size(current_buffer_))</span>
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :       return;</span>
+<span class="lineNum">     167 </span>                :            : 
+<span class="lineNum">     168 </span>                :            :     // Find the next non-empty buffer.
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :     ++current_;</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :     current_buffer_position_ = 0;</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :     while (current_ != end_)</span>
+<span class="lineNum">     172 </span>                :            :     {
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :       current_buffer_ = *current_;</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :       if (boost::asio::buffer_size(current_buffer_) &gt; 0)</span>
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :       ++current_;</span>
+<span class="lineNum">     177 </span>                :            :     }
+<span class="lineNum">     178 </span>                :            :   }
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :            :   // Decrement the iterator.
+<span class="lineNum">     181 </span>                :            :   void decrement()
+<span class="lineNum">     182 </span>                :            :   {
+<span class="lineNum">     183 </span>                :            :     BOOST_ASSERT(position_ &gt; 0 &amp;&amp; &quot;iterator out of bounds&quot;);
+<span class="lineNum">     184 </span>                :            :     --position_;
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            :     // Check if the decrement can be satisfied by the current buffer.
+<span class="lineNum">     187 </span>                :            :     if (current_buffer_position_ != 0)
+<span class="lineNum">     188 </span>                :            :     {
+<span class="lineNum">     189 </span>                :            :       --current_buffer_position_;
+<span class="lineNum">     190 </span>                :            :       return;
+<span class="lineNum">     191 </span>                :            :     }
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            :     // Find the previous non-empty buffer.
+<span class="lineNum">     194 </span>                :            :     typename BufferSequence::const_iterator iter = current_;
+<span class="lineNum">     195 </span>                :            :     while (iter != begin_)
+<span class="lineNum">     196 </span>                :            :     {
+<span class="lineNum">     197 </span>                :            :       --iter;
+<span class="lineNum">     198 </span>                :            :       buffer_type buffer = *iter;
+<span class="lineNum">     199 </span>                :            :       std::size_t buffer_size = boost::asio::buffer_size(buffer);
+<span class="lineNum">     200 </span>                :            :       if (buffer_size &gt; 0)
+<span class="lineNum">     201 </span>                :            :       {
+<span class="lineNum">     202 </span>                :            :         current_ = iter;
+<span class="lineNum">     203 </span>                :            :         current_buffer_ = buffer;
+<span class="lineNum">     204 </span>                :            :         current_buffer_position_ = buffer_size - 1;
+<span class="lineNum">     205 </span>                :            :         return;
+<span class="lineNum">     206 </span>                :            :       }
+<span class="lineNum">     207 </span>                :            :     }
+<span class="lineNum">     208 </span>                :            :   }
+<span class="lineNum">     209 </span>                :            : 
+<span class="lineNum">     210 </span>                :            :   // Advance the iterator by the specified distance.
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :   void advance(std::ptrdiff_t n)</span>
+<span class="lineNum">     212 </span>                :            :   {
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :     if (n &gt; 0)</span>
+<span class="lineNum">     214 </span>                :            :     {
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :       BOOST_ASSERT(current_ != end_ &amp;&amp; &quot;iterator out of bounds&quot;);</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :       for (;;)</span>
+<span class="lineNum">     217 </span>                :            :       {
+<span class="lineNum">     218 </span>                :            :         std::ptrdiff_t current_buffer_balance
+<span class="lineNum">     219 </span>                :            :           = boost::asio::buffer_size(current_buffer_)
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 :           - current_buffer_position_;</span>
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :            :         // Check if the advance can be satisfied by the current buffer.
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :         if (current_buffer_balance &gt; n)</span>
+<span class="lineNum">     224 </span>                :            :         {
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :           position_ += n;</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :           current_buffer_position_ += n;</span>
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :           return;</span>
+<span class="lineNum">     228 </span>                :            :         }
+<span class="lineNum">     229 </span>                :            : 
+<span class="lineNum">     230 </span>                :            :         // Update position.
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :         n -= current_buffer_balance;</span>
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :         position_ += current_buffer_balance;</span>
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            :         // Move to next buffer. If it is empty then it will be skipped on the
+<span class="lineNum">     235 </span>                :            :         // next iteration of this loop.
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :         if (++current_ == end_)</span>
+<span class="lineNum">     237 </span>                :            :         {
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :           BOOST_ASSERT(n == 0 &amp;&amp; &quot;iterator out of bounds&quot;);</span>
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :           current_buffer_ = buffer_type();</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :           current_buffer_position_ = 0;</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :           return;</span>
+<span class="lineNum">     242 </span>                :            :         }
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :         current_buffer_ = *current_;</span>
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :         current_buffer_position_ = 0;</span>
+<span class="lineNum">     245 </span>                :            :       }
+<span class="lineNum">     246 </span>                :            :     }
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :     else if (n &lt; 0)</span>
+<span class="lineNum">     248 </span>                :            :     {
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       std::size_t abs_n = -n;</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :       BOOST_ASSERT(position_ &gt;= abs_n &amp;&amp; &quot;iterator out of bounds&quot;);</span>
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :       for (;;)</span>
+<span class="lineNum">     252 </span>                :            :       {
+<span class="lineNum">     253 </span>                :            :         // Check if the advance can be satisfied by the current buffer.
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :         if (current_buffer_position_ &gt;= abs_n)</span>
+<span class="lineNum">     255 </span>                :            :         {
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :           position_ -= abs_n;</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :           current_buffer_position_ -= abs_n;</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :           return;</span>
+<span class="lineNum">     259 </span>                :            :         }
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            :         // Update position.
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         abs_n -= current_buffer_position_;</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         position_ -= current_buffer_position_;</span>
+<span class="lineNum">     264 </span>                :            : 
+<span class="lineNum">     265 </span>                :            :         // Check if we've reached the beginning of the buffers.
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :         if (current_ == begin_)</span>
+<span class="lineNum">     267 </span>                :            :         {
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :           BOOST_ASSERT(abs_n == 0 &amp;&amp; &quot;iterator out of bounds&quot;);</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :           current_buffer_position_ = 0;</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :           return;</span>
+<span class="lineNum">     271 </span>                :            :         }
+<span class="lineNum">     272 </span>                :            : 
+<span class="lineNum">     273 </span>                :            :         // Find the previous non-empty buffer.
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :         typename BufferSequence::const_iterator iter = current_;</span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :         while (iter != begin_)</span>
+<span class="lineNum">     276 </span>                :            :         {
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :           --iter;</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :           buffer_type buffer = *iter;</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :           std::size_t buffer_size = boost::asio::buffer_size(buffer);</span>
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :           if (buffer_size &gt; 0)</span>
+<span class="lineNum">     281 </span>                :            :           {
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :             current_ = iter;</span>
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :             current_buffer_ = buffer;</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :             current_buffer_position_ = buffer_size;</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     286 </span>                :            :           }
+<span class="lineNum">     287 </span>                :            :         }
+<span class="lineNum">     288 </span>                :            :       }
+<span class="lineNum">     289 </span>                :            :     }
+<span class="lineNum">     290 </span>                :            :   }
+<span class="lineNum">     291 </span>                :            : 
+<span class="lineNum">     292 </span>                :            :   // Determine the distance between two iterators.
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :   std::ptrdiff_t distance_to(const buffers_iterator&amp; other) const</span>
+<span class="lineNum">     294 </span>                :            :   {
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :     return other.position_ - position_;</span>
+<span class="lineNum">     296 </span>                :            :   }
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :            :   buffer_type current_buffer_;
+<span class="lineNum">     299 </span>                :            :   std::size_t current_buffer_position_;
+<span class="lineNum">     300 </span>                :            :   typename BufferSequence::const_iterator begin_;
+<span class="lineNum">     301 </span>                :            :   typename BufferSequence::const_iterator current_;
+<span class="lineNum">     302 </span>                :            :   typename BufferSequence::const_iterator end_;
+<span class="lineNum">     303 </span>                :            :   std::size_t position_;
+<span class="lineNum">     304 </span>                :            : };
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            : /// Construct an iterator representing the beginning of the buffers' data.
+<span class="lineNum">     307 </span>                :            : template &lt;typename BufferSequence&gt;
+<span class="lineNum">     308 </span>                :            : inline buffers_iterator&lt;BufferSequence&gt; buffers_begin(
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :     const BufferSequence&amp; buffers)</span>
+<span class="lineNum">     310 </span>                :            : {
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :   return buffers_iterator&lt;BufferSequence&gt;::begin(buffers);</span>
+<span class="lineNum">     312 </span>                :            : }
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            : /// Construct an iterator representing the end of the buffers' data.
+<span class="lineNum">     315 </span>                :            : template &lt;typename BufferSequence&gt;
+<span class="lineNum">     316 </span>                :            : inline buffers_iterator&lt;BufferSequence&gt; buffers_end(
+<span class="lineNum">     317 </span>                :            :     const BufferSequence&amp; buffers)
+<span class="lineNum">     318 </span>                :            : {
+<span class="lineNum">     319 </span>                :            :   return buffers_iterator&lt;BufferSequence&gt;::end(buffers);
+<span class="lineNum">     320 </span>                :            : }
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            : } // namespace asio
+<span class="lineNum">     323 </span>                :            : } // namespace boost
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :            : #include &lt;boost/asio/detail/pop_options.hpp&gt;
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :            : #endif // BOOST_ASIO_BUFFERS_ITERATOR_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

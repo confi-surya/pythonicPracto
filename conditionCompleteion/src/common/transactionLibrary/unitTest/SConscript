@@ -1,0 +1,36 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "transaction_library_unit_test",
+        srcs = context.split("""
+        main.cpp
+		../../libraryUtils/helper.cpp
+		../../libraryUtils/record_structure.cpp
+		../../libraryUtils/file_handler.cpp
+		../../libraryUtils/journal.cpp
+		../../libraryUtils/serialize.cpp
+		../../libraryUtils/object_storage_log_setup.cpp
+		../../libraryUtils/osd_logger_initialize.cpp
+		../transaction_memory.cpp
+ 		../transaction_library.cpp
+		../transaction_write_handler.cpp
+		../transaction_read_handler.cpp
+		../../libraryUtils/file_handler.cpp
+  	        helper_unit_test.cpp
+                snapshot_test.cpp
+	"""),
+        targetType = context.TYPE_EXE,
+        libs = context.split("""
+                #any external libs  that you may need.
+        """),
+        wholeLibs = context.split("""
+               gmock
+        """),
+        requiredLibs = context.split("""
+                cool
+                #boost_python
+                #boost_thread
+        """)
+)

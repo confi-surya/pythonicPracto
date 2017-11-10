@@ -1,0 +1,1303 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/lexical_cast.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost</a> - lexical_cast.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">105</td>
+            <td class="headerCovTableEntryLo">21.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntryLo">17.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef BOOST_LEXICAL_CAST_INCLUDED
+<span class="lineNum">       2 </span>                :            : #define BOOST_LEXICAL_CAST_INCLUDED
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : // Boost lexical_cast.hpp header  -------------------------------------------//
+<span class="lineNum">       5 </span>                :            : //
+<span class="lineNum">       6 </span>                :            : // See http://www.boost.org/libs/conversion for documentation.
+<span class="lineNum">       7 </span>                :            : // See end of this header for rights and permissions.
+<span class="lineNum">       8 </span>                :            : //
+<span class="lineNum">       9 </span>                :            : // what:  lexical_cast custom keyword cast
+<span class="lineNum">      10 </span>                :            : // who:   contributed by Kevlin Henney,
+<span class="lineNum">      11 </span>                :            : //        enhanced with contributions from Terje Slettebo,
+<span class="lineNum">      12 </span>                :            : //        with additional fixes and suggestions from Gennaro Prota,
+<span class="lineNum">      13 </span>                :            : //        Beman Dawes, Dave Abrahams, Daryle Walker, Peter Dimov,
+<span class="lineNum">      14 </span>                :            : //        Alexander Nasonov and other Boosters
+<span class="lineNum">      15 </span>                :            : // when:  November 2000, March 2003, June 2005, June 2006
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #include &lt;climits&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;cstddef&gt;
+<span class="lineNum">      19 </span>                :            : #include &lt;istream&gt;
+<span class="lineNum">      20 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;typeinfo&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;exception&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/limits.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/mpl/if.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;boost/throw_exception.hpp&gt;
+<span class="lineNum">      27 </span>                :            : #include &lt;boost/type_traits/is_pointer.hpp&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;boost/type_traits/make_unsigned.hpp&gt;
+<span class="lineNum">      29 </span>                :            : #include &lt;boost/call_traits.hpp&gt;
+<span class="lineNum">      30 </span>                :            : #include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      31 </span>                :            : #include &lt;boost/detail/lcast_precision.hpp&gt;
+<span class="lineNum">      32 </span>                :            : #include &lt;boost/detail/workaround.hpp&gt;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : #ifndef BOOST_NO_STD_LOCALE
+<span class="lineNum">      35 </span>                :            : #include &lt;locale&gt;
+<span class="lineNum">      36 </span>                :            : #endif
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : #ifdef BOOST_NO_STRINGSTREAM
+<span class="lineNum">      39 </span>                :            : #include &lt;strstream&gt;
+<span class="lineNum">      40 </span>                :            : #else
+<span class="lineNum">      41 </span>                :            : #include &lt;sstream&gt;
+<span class="lineNum">      42 </span>                :            : #endif
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : #if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
+<span class="lineNum">      45 </span>                :            : #define BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">      46 </span>                :            : #endif
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            : #ifdef BOOST_NO_TYPEID
+<span class="lineNum">      49 </span>                :            : #define BOOST_LCAST_THROW_BAD_CAST(S, T) throw_exception(bad_lexical_cast())
+<span class="lineNum">      50 </span>                :            : #else
+<span class="lineNum">      51 </span>                :            : #define BOOST_LCAST_THROW_BAD_CAST(Source, Target) \
+<span class="lineNum">      52 </span>                :            :     throw_exception(bad_lexical_cast(typeid(Source), typeid(Target)))
+<span class="lineNum">      53 </span>                :            : #endif
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :            : namespace boost
+<span class="lineNum">      56 </span>                :            : {
+<span class="lineNum">      57 </span>                :            :     // exception used to indicate runtime lexical_cast failure
+<span class="lineNum">      58 </span>                :            :     class bad_lexical_cast : public std::bad_cast
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :            : #if defined(__BORLANDC__) &amp;&amp; BOOST_WORKAROUND( __BORLANDC__, &lt; 0x560 )
+<span class="lineNum">      61 </span>                :            :         // under bcc32 5.5.1 bad_cast doesn't derive from exception
+<span class="lineNum">      62 </span>                :            :         , public std::exception
+<span class="lineNum">      63 </span>                :            : #endif
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            :     {
+<span class="lineNum">      66 </span>                :            :     public:
+<span class="lineNum">      67 </span>                :            :         bad_lexical_cast() :
+<span class="lineNum">      68 </span>                :            : #ifndef BOOST_NO_TYPEID
+<span class="lineNum">      69 </span>                :            :           source(&amp;typeid(void)), target(&amp;typeid(void))
+<span class="lineNum">      70 </span>                :            : #else
+<span class="lineNum">      71 </span>                :            :           source(0), target(0) // this breaks getters
+<span class="lineNum">      72 </span>                :            : #endif
+<span class="lineNum">      73 </span>                :            :         {
+<span class="lineNum">      74 </span>                :            :         }
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            :         bad_lexical_cast(
+<span class="lineNum">      77 </span>                :            :             const std::type_info &amp;source_type_arg,
+<span class="lineNum">      78 </span>                :<span class="lineNoCov">          0 :             const std::type_info &amp;target_type_arg) :</span>
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :             source(&amp;source_type_arg), target(&amp;target_type_arg)</span>
+<span class="lineNum">      80 </span>                :            :         {
+<span class="lineNum">      81 </span>                :            :         }
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :            :         const std::type_info &amp;source_type() const
+<span class="lineNum">      84 </span>                :            :         {
+<span class="lineNum">      85 </span>                :            :             return *source;
+<span class="lineNum">      86 </span>                :            :         }
+<span class="lineNum">      87 </span>                :            :         const std::type_info &amp;target_type() const
+<span class="lineNum">      88 </span>                :            :         {
+<span class="lineNum">      89 </span>                :            :             return *target;
+<span class="lineNum">      90 </span>                :            :         }
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :         virtual const char *what() const throw()</span>
+<span class="lineNum">      93 </span>                :            :         {
+<span class="lineNum">      94 </span>                :            :             return &quot;bad lexical cast: &quot;
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :                    &quot;source type value could not be interpreted as target&quot;;</span>
+<span class="lineNum">      96 </span>                :            :         }
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :         virtual ~bad_lexical_cast() throw()</span>
+<span class="lineNum">      98 </span>                :            :         {
+<span class="lineNum">      99 </span>                :            :         }
+<span class="lineNum">     100 </span>                :            :     private:
+<span class="lineNum">     101 </span>                :            :         const std::type_info *source;
+<span class="lineNum">     102 </span>                :            :         const std::type_info *target;
+<span class="lineNum">     103 </span>                :            :     };
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :            :     namespace detail // selectors for choosing stream character type
+<span class="lineNum">     106 </span>                :            :     {
+<span class="lineNum">     107 </span>                :            :         template&lt;typename Type&gt;
+<span class="lineNum">     108 </span>                :            :         struct stream_char
+<span class="lineNum">     109 </span>                :            :         {
+<span class="lineNum">     110 </span>                :            :             typedef char type;
+<span class="lineNum">     111 </span>                :            :         };
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :            : #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     114 </span>                :            :         template&lt;class CharT, class Traits, class Alloc&gt;
+<span class="lineNum">     115 </span>                :            :         struct stream_char&lt; std::basic_string&lt;CharT,Traits,Alloc&gt; &gt;
+<span class="lineNum">     116 </span>                :            :         {
+<span class="lineNum">     117 </span>                :            :             typedef CharT type;
+<span class="lineNum">     118 </span>                :            :         };
+<span class="lineNum">     119 </span>                :            : #endif
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     122 </span>                :            : #ifndef BOOST_NO_INTRINSIC_WCHAR_T
+<span class="lineNum">     123 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     124 </span>                :            :         struct stream_char&lt;wchar_t&gt;
+<span class="lineNum">     125 </span>                :            :         {
+<span class="lineNum">     126 </span>                :            :             typedef wchar_t type;
+<span class="lineNum">     127 </span>                :            :         };
+<span class="lineNum">     128 </span>                :            : #endif
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     131 </span>                :            :         struct stream_char&lt;wchar_t *&gt;
+<span class="lineNum">     132 </span>                :            :         {
+<span class="lineNum">     133 </span>                :            :             typedef wchar_t type;
+<span class="lineNum">     134 </span>                :            :         };
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     137 </span>                :            :         struct stream_char&lt;const wchar_t *&gt;
+<span class="lineNum">     138 </span>                :            :         {
+<span class="lineNum">     139 </span>                :            :             typedef wchar_t type;
+<span class="lineNum">     140 </span>                :            :         };
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            : #ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     143 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     144 </span>                :            :         struct stream_char&lt;std::wstring&gt;
+<span class="lineNum">     145 </span>                :            :         {
+<span class="lineNum">     146 </span>                :            :             typedef wchar_t type;
+<span class="lineNum">     147 </span>                :            :         };
+<span class="lineNum">     148 </span>                :            : #endif
+<span class="lineNum">     149 </span>                :            : #endif
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :            :         template&lt;typename TargetChar, typename SourceChar&gt;
+<span class="lineNum">     152 </span>                :            :         struct widest_char
+<span class="lineNum">     153 </span>                :            :         {
+<span class="lineNum">     154 </span>                :            :             typedef TargetChar type;
+<span class="lineNum">     155 </span>                :            :         };
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     158 </span>                :            :         struct widest_char&lt;char, wchar_t&gt;
+<span class="lineNum">     159 </span>                :            :         {
+<span class="lineNum">     160 </span>                :            :             typedef wchar_t type;
+<span class="lineNum">     161 </span>                :            :         };
+<span class="lineNum">     162 </span>                :            :     }
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :     namespace detail // deduce_char_traits template
+<span class="lineNum">     165 </span>                :            :     {
+<span class="lineNum">     166 </span>                :            : #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     167 </span>                :            :         template&lt;class CharT, class Target, class Source&gt;
+<span class="lineNum">     168 </span>                :            :         struct deduce_char_traits
+<span class="lineNum">     169 </span>                :            :         {
+<span class="lineNum">     170 </span>                :            :             typedef std::char_traits&lt;CharT&gt; type;
+<span class="lineNum">     171 </span>                :            :         };
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :         template&lt;class CharT, class Traits, class Alloc, class Source&gt;
+<span class="lineNum">     174 </span>                :            :         struct deduce_char_traits&lt; CharT
+<span class="lineNum">     175 </span>                :            :                                  , std::basic_string&lt;CharT,Traits,Alloc&gt;
+<span class="lineNum">     176 </span>                :            :                                  , Source
+<span class="lineNum">     177 </span>                :            :                                  &gt;
+<span class="lineNum">     178 </span>                :            :         {
+<span class="lineNum">     179 </span>                :            :             typedef Traits type;
+<span class="lineNum">     180 </span>                :            :         };
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            :         template&lt;class CharT, class Target, class Traits, class Alloc&gt;
+<span class="lineNum">     183 </span>                :            :         struct deduce_char_traits&lt; CharT
+<span class="lineNum">     184 </span>                :            :                                  , Target
+<span class="lineNum">     185 </span>                :            :                                  , std::basic_string&lt;CharT,Traits,Alloc&gt;
+<span class="lineNum">     186 </span>                :            :                                  &gt;
+<span class="lineNum">     187 </span>                :            :         {
+<span class="lineNum">     188 </span>                :            :             typedef Traits type;
+<span class="lineNum">     189 </span>                :            :         };
+<span class="lineNum">     190 </span>                :            : 
+<span class="lineNum">     191 </span>                :            :         template&lt;class CharT, class Traits, class Alloc1, class Alloc2&gt;
+<span class="lineNum">     192 </span>                :            :         struct deduce_char_traits&lt; CharT
+<span class="lineNum">     193 </span>                :            :                                  , std::basic_string&lt;CharT,Traits,Alloc1&gt;
+<span class="lineNum">     194 </span>                :            :                                  , std::basic_string&lt;CharT,Traits,Alloc2&gt;
+<span class="lineNum">     195 </span>                :            :                                  &gt;
+<span class="lineNum">     196 </span>                :            :         {
+<span class="lineNum">     197 </span>                :            :             typedef Traits type;
+<span class="lineNum">     198 </span>                :            :         };
+<span class="lineNum">     199 </span>                :            : #endif
+<span class="lineNum">     200 </span>                :            :     }
+<span class="lineNum">     201 </span>                :            : 
+<span class="lineNum">     202 </span>                :            :     namespace detail // lcast_src_length
+<span class="lineNum">     203 </span>                :            :     {
+<span class="lineNum">     204 </span>                :            :         // Return max. length of string representation of Source;
+<span class="lineNum">     205 </span>                :            :         // 0 if unlimited (with exceptions for some types, see below).
+<span class="lineNum">     206 </span>                :            :         // Values with limited string representation are placed to
+<span class="lineNum">     207 </span>                :            :         // the buffer locally defined in lexical_cast function.
+<span class="lineNum">     208 </span>                :            :         // 1 is returned for few types such as CharT const* or
+<span class="lineNum">     209 </span>                :            :         // std::basic_string&lt;CharT&gt; that already have an internal
+<span class="lineNum">     210 </span>                :            :         // buffer ready to be reused by lexical_stream_limited_src.
+<span class="lineNum">     211 </span>                :            :         // Each specialization should have a correspondent operator&lt;&lt;
+<span class="lineNum">     212 </span>                :            :         // defined in lexical_stream_limited_src.
+<span class="lineNum">     213 </span>                :            :         template&lt; class CharT  // A result of widest_char transformation.
+<span class="lineNum">     214 </span>                :            :                 , class Source // Source type of lexical_cast.
+<span class="lineNum">     215 </span>                :            :                 &gt;
+<span class="lineNum">     216 </span>                :            :         struct lcast_src_length
+<span class="lineNum">     217 </span>                :            :         {
+<span class="lineNum">     218 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 0);
+<span class="lineNum">     219 </span>                :            :             // To check coverage, build the test with
+<span class="lineNum">     220 </span>                :            :             // bjam --v2 profile optimization=off
+<span class="lineNum">     221 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     222 </span>                :            :         };
+<span class="lineNum">     223 </span>                :            : 
+<span class="lineNum">     224 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     225 </span>                :            :         struct lcast_src_length&lt;char, bool&gt;
+<span class="lineNum">     226 </span>                :            :         {
+<span class="lineNum">     227 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     228 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     229 </span>                :            :         };
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     232 </span>                :            :         struct lcast_src_length&lt;char, char&gt;
+<span class="lineNum">     233 </span>                :            :         {
+<span class="lineNum">     234 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     235 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     236 </span>                :            :         };
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            :         // No specializations for:
+<span class="lineNum">     239 </span>                :            :         // lcast_src_length&lt;char, signed char&gt;
+<span class="lineNum">     240 </span>                :            :         // lcast_src_length&lt;char, unsigned char&gt;
+<span class="lineNum">     241 </span>                :            :         // lcast_src_length&lt;char, signed char*&gt;
+<span class="lineNum">     242 </span>                :            :         // lcast_src_length&lt;char, unsigned char*&gt;
+<span class="lineNum">     243 </span>                :            :         // lcast_src_length&lt;char, signed char const*&gt;
+<span class="lineNum">     244 </span>                :            :         // lcast_src_length&lt;char, unsigned char const*&gt;
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     247 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     248 </span>                :            :         struct lcast_src_length&lt;wchar_t, bool&gt;
+<span class="lineNum">     249 </span>                :            :         {
+<span class="lineNum">     250 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     251 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     252 </span>                :            :         };
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     255 </span>                :            :         struct lcast_src_length&lt;wchar_t, char&gt;
+<span class="lineNum">     256 </span>                :            :         {
+<span class="lineNum">     257 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     258 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     259 </span>                :            :         };
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            : #ifndef BOOST_NO_INTRINSIC_WCHAR_T
+<span class="lineNum">     262 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     263 </span>                :            :         struct lcast_src_length&lt;wchar_t, wchar_t&gt;
+<span class="lineNum">     264 </span>                :            :         {
+<span class="lineNum">     265 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     266 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     267 </span>                :            :         };
+<span class="lineNum">     268 </span>                :            : #endif
+<span class="lineNum">     269 </span>                :            : #endif
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     272 </span>                :            :         struct lcast_src_length&lt;char, char const*&gt;
+<span class="lineNum">     273 </span>                :            :         {
+<span class="lineNum">     274 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :             static void check_coverage() {}</span>
+<span class="lineNum">     276 </span>                :            :         };
+<span class="lineNum">     277 </span>                :            : 
+<span class="lineNum">     278 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     279 </span>                :            :         struct lcast_src_length&lt;char, char*&gt;
+<span class="lineNum">     280 </span>                :            :         {
+<span class="lineNum">     281 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :             static void check_coverage() {}</span>
+<span class="lineNum">     283 </span>                :            :         };
+<span class="lineNum">     284 </span>                :            : 
+<span class="lineNum">     285 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     286 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     287 </span>                :            :         struct lcast_src_length&lt;wchar_t, wchar_t const*&gt;
+<span class="lineNum">     288 </span>                :            :         {
+<span class="lineNum">     289 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     290 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     291 </span>                :            :         };
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     294 </span>                :            :         struct lcast_src_length&lt;wchar_t, wchar_t*&gt;
+<span class="lineNum">     295 </span>                :            :         {
+<span class="lineNum">     296 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     297 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     298 </span>                :            :         };
+<span class="lineNum">     299 </span>                :            : #endif
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :            : #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     302 </span>                :            :         template&lt;class CharT, class Traits, class Alloc&gt;
+<span class="lineNum">     303 </span>                :            :         struct lcast_src_length&lt; CharT, std::basic_string&lt;CharT,Traits,Alloc&gt; &gt;
+<span class="lineNum">     304 </span>                :            :         {
+<span class="lineNum">     305 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     306 </span>                :<span class="lineCov">         65 :             static void check_coverage() {}</span>
+<span class="lineNum">     307 </span>                :            :         };
+<span class="lineNum">     308 </span>                :            : #else
+<span class="lineNum">     309 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     310 </span>                :            :         struct lcast_src_length&lt; char, std::basic_string&lt;char&gt; &gt;
+<span class="lineNum">     311 </span>                :            :         {
+<span class="lineNum">     312 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     313 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     314 </span>                :            :         };
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     317 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     318 </span>                :            :         struct lcast_src_length&lt; wchar_t, std::basic_string&lt;wchar_t&gt; &gt;
+<span class="lineNum">     319 </span>                :            :         {
+<span class="lineNum">     320 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+<span class="lineNum">     321 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     322 </span>                :            :         };
+<span class="lineNum">     323 </span>                :            : #endif
+<span class="lineNum">     324 </span>                :            : #endif
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            :         // Helper for integral types.
+<span class="lineNum">     327 </span>                :            :         // Notes on length calculation:
+<span class="lineNum">     328 </span>                :            :         // Max length for 32bit int with grouping &quot;\1&quot; and thousands_sep ',':
+<span class="lineNum">     329 </span>                :            :         // &quot;-2,1,4,7,4,8,3,6,4,7&quot;
+<span class="lineNum">     330 </span>                :            :         //  ^                    - is_signed
+<span class="lineNum">     331 </span>                :            :         //   ^                   - 1 digit not counted by digits10
+<span class="lineNum">     332 </span>                :            :         //    ^^^^^^^^^^^^^^^^^^ - digits10 * 2
+<span class="lineNum">     333 </span>                :            :         //
+<span class="lineNum">     334 </span>                :            :         // Constant is_specialized is used instead of constant 1
+<span class="lineNum">     335 </span>                :            :         // to prevent buffer overflow in a rare case when
+<span class="lineNum">     336 </span>                :            :         // &lt;boost/limits.hpp&gt; doesn't add missing specialization for
+<span class="lineNum">     337 </span>                :            :         // numeric_limits&lt;T&gt; for some integral type T.
+<span class="lineNum">     338 </span>                :            :         // When is_specialized is false, the whole expression is 0.
+<span class="lineNum">     339 </span>                :            :         template&lt;class Source&gt;
+<span class="lineNum">     340 </span>                :            :         struct lcast_src_length_integral
+<span class="lineNum">     341 </span>                :            :         {
+<span class="lineNum">     342 </span>                :            : #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+<span class="lineNum">     343 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value =
+<span class="lineNum">     344 </span>                :            :                   std::numeric_limits&lt;Source&gt;::is_signed +
+<span class="lineNum">     345 </span>                :            :                   std::numeric_limits&lt;Source&gt;::is_specialized + // == 1
+<span class="lineNum">     346 </span>                :            :                   std::numeric_limits&lt;Source&gt;::digits10 * 2
+<span class="lineNum">     347 </span>                :            :               );
+<span class="lineNum">     348 </span>                :            : #else
+<span class="lineNum">     349 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value = 156);
+<span class="lineNum">     350 </span>                :            :             BOOST_STATIC_ASSERT(sizeof(Source) * CHAR_BIT &lt;= 256);
+<span class="lineNum">     351 </span>                :            : #endif
+<span class="lineNum">     352 </span>                :            :         };
+<span class="lineNum">     353 </span>                :            : 
+<span class="lineNum">     354 </span>                :            : #define BOOST_LCAST_DEF1(CharT, T)               \
+<span class="lineNum">     355 </span>                :            :     template&lt;&gt; struct lcast_src_length&lt;CharT, T&gt; \
+<span class="lineNum">     356 </span>                :            :         : lcast_src_length_integral&lt;T&gt;           \
+<span class="lineNum">     357 </span>                :            :     { static void check_coverage() {} };
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :            : #ifdef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     360 </span>                :            : #define BOOST_LCAST_DEF(T) BOOST_LCAST_DEF1(char, T)
+<span class="lineNum">     361 </span>                :            : #else
+<span class="lineNum">     362 </span>                :            : #define BOOST_LCAST_DEF(T)          \
+<span class="lineNum">     363 </span>                :            :         BOOST_LCAST_DEF1(char, T)   \
+<span class="lineNum">     364 </span>                :            :         BOOST_LCAST_DEF1(wchar_t, T)
+<span class="lineNum">     365 </span>                :            : #endif
+<span class="lineNum">     366 </span>                :            : 
+<span class="lineNum">     367 </span>                :            :         BOOST_LCAST_DEF(short)
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :         BOOST_LCAST_DEF(unsigned short)</span>
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :         BOOST_LCAST_DEF(int)</span>
+<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :         BOOST_LCAST_DEF(unsigned int)</span>
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :         BOOST_LCAST_DEF(long)</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :         BOOST_LCAST_DEF(unsigned long)</span>
+<span class="lineNum">     373 </span>                :            : #if defined(BOOST_HAS_LONG_LONG)
+<span class="lineNum">     374 </span>                :            :         BOOST_LCAST_DEF(boost::ulong_long_type)
+<span class="lineNum">     375 </span>                :            :         BOOST_LCAST_DEF(boost::long_long_type )
+<span class="lineNum">     376 </span>                :            : #elif defined(BOOST_HAS_MS_INT64)
+<span class="lineNum">     377 </span>                :            :         BOOST_LCAST_DEF(unsigned __int64)
+<span class="lineNum">     378 </span>                :            :         BOOST_LCAST_DEF(         __int64)
+<span class="lineNum">     379 </span>                :            : #endif
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>                :            : #undef BOOST_LCAST_DEF
+<span class="lineNum">     382 </span>                :            : #undef BOOST_LCAST_DEF1
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :            : #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
+<span class="lineNum">     385 </span>                :            :         // Helper for floating point types.
+<span class="lineNum">     386 </span>                :            :         // -1.23456789e-123456
+<span class="lineNum">     387 </span>                :            :         // ^                   sign
+<span class="lineNum">     388 </span>                :            :         //  ^                  leading digit
+<span class="lineNum">     389 </span>                :            :         //   ^                 decimal point 
+<span class="lineNum">     390 </span>                :            :         //    ^^^^^^^^         lcast_precision&lt;Source&gt;::value
+<span class="lineNum">     391 </span>                :            :         //            ^        &quot;e&quot;
+<span class="lineNum">     392 </span>                :            :         //             ^       exponent sign
+<span class="lineNum">     393 </span>                :            :         //              ^^^^^^ exponent (assumed 6 or less digits)
+<span class="lineNum">     394 </span>                :            :         // sign + leading digit + decimal point + &quot;e&quot; + exponent sign == 5
+<span class="lineNum">     395 </span>                :            :         template&lt;class Source&gt;
+<span class="lineNum">     396 </span>                :            :         struct lcast_src_length_floating
+<span class="lineNum">     397 </span>                :            :         {
+<span class="lineNum">     398 </span>                :            :             BOOST_STATIC_ASSERT(
+<span class="lineNum">     399 </span>                :            :                     std::numeric_limits&lt;Source&gt;::max_exponent10 &lt;=  999999L &amp;&amp;
+<span class="lineNum">     400 </span>                :            :                     std::numeric_limits&lt;Source&gt;::min_exponent10 &gt;= -999999L
+<span class="lineNum">     401 </span>                :            :                 );
+<span class="lineNum">     402 </span>                :            :             BOOST_STATIC_CONSTANT(std::size_t, value =
+<span class="lineNum">     403 </span>                :            :                     5 + lcast_precision&lt;Source&gt;::value + 6
+<span class="lineNum">     404 </span>                :            :                 );
+<span class="lineNum">     405 </span>                :            :         };
+<span class="lineNum">     406 </span>                :            : 
+<span class="lineNum">     407 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     408 </span>                :            :         struct lcast_src_length&lt;char,float&gt;
+<span class="lineNum">     409 </span>                :            :           : lcast_src_length_floating&lt;float&gt;
+<span class="lineNum">     410 </span>                :            :         {
+<span class="lineNum">     411 </span>                :<span class="lineNoCov">          0 :             static void check_coverage() {}</span>
+<span class="lineNum">     412 </span>                :            :         };
+<span class="lineNum">     413 </span>                :            : 
+<span class="lineNum">     414 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     415 </span>                :            :         struct lcast_src_length&lt;char,double&gt;
+<span class="lineNum">     416 </span>                :            :           : lcast_src_length_floating&lt;double&gt;
+<span class="lineNum">     417 </span>                :            :         {
+<span class="lineNum">     418 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     419 </span>                :            :         };
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     422 </span>                :            :         struct lcast_src_length&lt;char,long double&gt;
+<span class="lineNum">     423 </span>                :            :           : lcast_src_length_floating&lt;long double&gt;
+<span class="lineNum">     424 </span>                :            :         {
+<span class="lineNum">     425 </span>                :            :             static void check_coverage() {}
+<span class="lineNum">     426 </span>                :            :         };
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     429 </span>                :            :     template&lt;&gt;
+<span class="lineNum">     430 </span>                :            :     struct lcast_src_length&lt;wchar_t,float&gt;
+<span class="lineNum">     431 </span>                :            :       : lcast_src_length_floating&lt;float&gt;
+<span class="lineNum">     432 </span>                :            :     {
+<span class="lineNum">     433 </span>                :            :         static void check_coverage() {}
+<span class="lineNum">     434 </span>                :            :     };
+<span class="lineNum">     435 </span>                :            : 
+<span class="lineNum">     436 </span>                :            :     template&lt;&gt;
+<span class="lineNum">     437 </span>                :            :     struct lcast_src_length&lt;wchar_t,double&gt;
+<span class="lineNum">     438 </span>                :            :       : lcast_src_length_floating&lt;double&gt;
+<span class="lineNum">     439 </span>                :            :     {
+<span class="lineNum">     440 </span>                :            :         static void check_coverage() {}
+<span class="lineNum">     441 </span>                :            :     };
+<span class="lineNum">     442 </span>                :            : 
+<span class="lineNum">     443 </span>                :            :     template&lt;&gt;
+<span class="lineNum">     444 </span>                :            :     struct lcast_src_length&lt;wchar_t,long double&gt;
+<span class="lineNum">     445 </span>                :            :       : lcast_src_length_floating&lt;long double&gt;
+<span class="lineNum">     446 </span>                :            :     {
+<span class="lineNum">     447 </span>                :            :         static void check_coverage() {}
+<span class="lineNum">     448 </span>                :            :     };
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :            : #endif // #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     451 </span>                :            : #endif // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
+<span class="lineNum">     452 </span>                :            :     }
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :            :     namespace detail // '0' and '-' constants
+<span class="lineNum">     455 </span>                :            :     {
+<span class="lineNum">     456 </span>                :            :         template&lt;typename CharT&gt; struct lcast_char_constants;
+<span class="lineNum">     457 </span>                :            : 
+<span class="lineNum">     458 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     459 </span>                :            :         struct lcast_char_constants&lt;char&gt;
+<span class="lineNum">     460 </span>                :            :         {
+<span class="lineNum">     461 </span>                :            :             BOOST_STATIC_CONSTANT(char, zero  = '0');
+<span class="lineNum">     462 </span>                :            :             BOOST_STATIC_CONSTANT(char, minus = '-');
+<span class="lineNum">     463 </span>                :            :         };
+<span class="lineNum">     464 </span>                :            : 
+<span class="lineNum">     465 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     466 </span>                :            :         template&lt;&gt;
+<span class="lineNum">     467 </span>                :            :         struct lcast_char_constants&lt;wchar_t&gt;
+<span class="lineNum">     468 </span>                :            :         {
+<span class="lineNum">     469 </span>                :            :             BOOST_STATIC_CONSTANT(wchar_t, zero  = L'0');
+<span class="lineNum">     470 </span>                :            :             BOOST_STATIC_CONSTANT(wchar_t, minus = L'-');
+<span class="lineNum">     471 </span>                :            :         };
+<span class="lineNum">     472 </span>                :            : #endif
+<span class="lineNum">     473 </span>                :            :     }
+<span class="lineNum">     474 </span>                :            : 
+<span class="lineNum">     475 </span>                :            :     namespace detail // lexical_streambuf_fake
+<span class="lineNum">     476 </span>                :            :     {
+<span class="lineNum">     477 </span>                :            :         struct lexical_streambuf_fake
+<span class="lineNum">     478 </span>                :            :         {
+<span class="lineNum">     479 </span>                :            :         };
+<span class="lineNum">     480 </span>                :            :     }
+<span class="lineNum">     481 </span>                :            : 
+<span class="lineNum">     482 </span>                :            :     namespace detail // lcast_to_unsigned
+<span class="lineNum">     483 </span>                :            :     {
+<span class="lineNum">     484 </span>                :            : #if (defined _MSC_VER)
+<span class="lineNum">     485 </span>                :            : # pragma warning( push )
+<span class="lineNum">     486 </span>                :            : // C4146: unary minus operator applied to unsigned type, result still unsigned
+<span class="lineNum">     487 </span>                :            : # pragma warning( disable : 4146 )
+<span class="lineNum">     488 </span>                :            : #elif defined( __BORLANDC__ )
+<span class="lineNum">     489 </span>                :            : # pragma option push -w-8041
+<span class="lineNum">     490 </span>                :            : #endif
+<span class="lineNum">     491 </span>                :            :         template&lt;class T&gt;
+<span class="lineNum">     492 </span>                :            :         inline
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :         BOOST_DEDUCED_TYPENAME make_unsigned&lt;T&gt;::type lcast_to_unsigned(T value)</span>
+<span class="lineNum">     494 </span>                :            :         {
+<span class="lineNum">     495 </span>                :            :             typedef BOOST_DEDUCED_TYPENAME make_unsigned&lt;T&gt;::type result_type;
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :             result_type uvalue = static_cast&lt;result_type&gt;(value);</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :             return value &lt; 0 ? -uvalue : uvalue;</span>
+<span class="lineNum">     498 </span>                :            :         }
+<span class="lineNum">     499 </span>                :            : #if (defined _MSC_VER)
+<span class="lineNum">     500 </span>                :            : # pragma warning( pop )
+<span class="lineNum">     501 </span>                :            : #elif defined( __BORLANDC__ )
+<span class="lineNum">     502 </span>                :            : # pragma option pop
+<span class="lineNum">     503 </span>                :            : #endif
+<span class="lineNum">     504 </span>                :            :     }
+<span class="lineNum">     505 </span>                :            : 
+<span class="lineNum">     506 </span>                :            :     namespace detail // lcast_put_unsigned
+<span class="lineNum">     507 </span>                :            :     {
+<span class="lineNum">     508 </span>                :            :         template&lt;class Traits, class T, class CharT&gt;
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :         CharT* lcast_put_unsigned(T n, CharT* finish)</span>
+<span class="lineNum">     510 </span>                :            :         {
+<span class="lineNum">     511 </span>                :            : #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+<span class="lineNum">     512 </span>                :            :             BOOST_STATIC_ASSERT(!std::numeric_limits&lt;T&gt;::is_signed);
+<span class="lineNum">     513 </span>                :            : #endif
+<span class="lineNum">     514 </span>                :            : 
+<span class="lineNum">     515 </span>                :            : #ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+<span class="lineNum">     516 </span>                :            :             // TODO: use BOOST_NO_STD_LOCALE
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :             std::locale loc;</span>
+<span class="lineNum">     518 </span>                :            :             typedef std::numpunct&lt;CharT&gt; numpunct;
+<span class="lineNum">     519 </span>                :<span class="lineNoCov">          0 :             numpunct const&amp; np = BOOST_USE_FACET(numpunct, loc);</span>
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :             std::string const&amp; grouping = np.grouping();</span>
+<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 :             std::string::size_type const grouping_size = grouping.size();</span>
+<span class="lineNum">     522 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :             CharT thousands_sep = grouping_size ? np.thousands_sep() : 0;</span>
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :             std::string::size_type group = 0; // current group number</span>
+<span class="lineNum">     524 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :             char last_grp_size = grouping[0] &lt;= 0 ? CHAR_MAX : grouping[0];</span>
+<span class="lineNum">     525 </span>                :            :             // a) Since grouping is const, grouping[grouping.size()] returns 0.
+<span class="lineNum">     526 </span>                :            :             // b) It's safe to assume here and below that CHAR_MAX
+<span class="lineNum">     527 </span>                :            :             //    is equivalent to unlimited grouping:
+<span class="lineNum">     528 </span>                :            : #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+<span class="lineNum">     529 </span>                :            :             BOOST_STATIC_ASSERT(std::numeric_limits&lt;T&gt;::digits10 &lt; CHAR_MAX);
+<span class="lineNum">     530 </span>                :            : #endif
+<span class="lineNum">     531 </span>                :            : 
+<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :             char left = last_grp_size;</span>
+<span class="lineNum">     533 </span>                :            : #endif
+<span class="lineNum">     534 </span>                :            : 
+<span class="lineNum">     535 </span>                :            :             typedef typename Traits::int_type int_type;
+<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 :             CharT const czero = lcast_char_constants&lt;CharT&gt;::zero;</span>
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :             int_type const zero = Traits::to_int_type(czero);</span>
+<span class="lineNum">     538 </span>                :            : 
+<span class="lineNum">     539 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :             do</span>
+<span class="lineNum">     540 </span>                :            :             {
+<span class="lineNum">     541 </span>                :            : #ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
+<span class="lineNum">     542 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if(left == 0)</span>
+<span class="lineNum">     543 </span>                :            :                 {
+<span class="lineNum">     544 </span>                :<span class="lineNoCov">          0 :                     ++group;</span>
+<span class="lineNum">     545 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                     if(group &lt; grouping_size)</span>
+<span class="lineNum">     546 </span>                :            :                     {
+<span class="lineNum">     547 </span>                :<span class="lineNoCov">          0 :                         char const grp_size = grouping[group];</span>
+<span class="lineNum">     548 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         last_grp_size = grp_size &lt;= 0 ? CHAR_MAX : grp_size;</span>
+<span class="lineNum">     549 </span>                :            :                     }
+<span class="lineNum">     550 </span>                :            : 
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :                     left = last_grp_size;</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :                     --finish;</span>
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :                     Traits::assign(*finish, thousands_sep);</span>
+<span class="lineNum">     554 </span>                :            :                 }
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :                 --left;</span>
+<span class="lineNum">     557 </span>                :            : #endif
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :                 --finish;</span>
+<span class="lineNum">     560 </span>                :<span class="lineNoCov">          0 :                 int_type const digit = static_cast&lt;int_type&gt;(n % 10U);</span>
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :                 Traits::assign(*finish, Traits::to_char_type(zero + digit));</span>
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :                 n /= 10;</span>
+<span class="lineNum">     563 </span>                :            :             } while(n);
+<span class="lineNum">     564 </span>                :            : 
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :             return finish;</span>
+<span class="lineNum">     566 </span>                :            :         }
+<span class="lineNum">     567 </span>                :            :     }
+<span class="lineNum">     568 </span>                :            : 
+<span class="lineNum">     569 </span>                :            :     namespace detail // stream wrapper for handling lexical conversions
+<span class="lineNum">     570 </span>                :            :     {
+<span class="lineNum">     571 </span>                :            :         template&lt;typename Target, typename Source, typename Traits&gt;
+<span class="lineNum">     572 </span>                :            :         class lexical_stream
+<span class="lineNum">     573 </span>                :            :         {
+<span class="lineNum">     574 </span>                :            :         private:
+<span class="lineNum">     575 </span>                :            :             typedef typename widest_char&lt;
+<span class="lineNum">     576 </span>                :            :                 typename stream_char&lt;Target&gt;::type,
+<span class="lineNum">     577 </span>                :            :                 typename stream_char&lt;Source&gt;::type&gt;::type char_type;
+<span class="lineNum">     578 </span>                :            : 
+<span class="lineNum">     579 </span>                :            :             typedef Traits traits_type;
+<span class="lineNum">     580 </span>                :            : 
+<span class="lineNum">     581 </span>                :            :         public:
+<span class="lineNum">     582 </span>                :            :             lexical_stream(char_type* = 0, char_type* = 0)
+<span class="lineNum">     583 </span>                :            :             {
+<span class="lineNum">     584 </span>                :            :                 stream.unsetf(std::ios::skipws);
+<span class="lineNum">     585 </span>                :            :                 lcast_set_precision(stream, static_cast&lt;Source*&gt;(0), static_cast&lt;Target*&gt;(0) );
+<span class="lineNum">     586 </span>                :            :             }
+<span class="lineNum">     587 </span>                :            :             ~lexical_stream()
+<span class="lineNum">     588 </span>                :            :             {
+<span class="lineNum">     589 </span>                :            :                 #if defined(BOOST_NO_STRINGSTREAM)
+<span class="lineNum">     590 </span>                :            :                 stream.freeze(false);
+<span class="lineNum">     591 </span>                :            :                 #endif
+<span class="lineNum">     592 </span>                :            :             }
+<span class="lineNum">     593 </span>                :            :             bool operator&lt;&lt;(const Source &amp;input)
+<span class="lineNum">     594 </span>                :            :             {
+<span class="lineNum">     595 </span>                :            :                 return !(stream &lt;&lt; input).fail();
+<span class="lineNum">     596 </span>                :            :             }
+<span class="lineNum">     597 </span>                :            :             template&lt;typename InputStreamable&gt;
+<span class="lineNum">     598 </span>                :            :             bool operator&gt;&gt;(InputStreamable &amp;output)
+<span class="lineNum">     599 </span>                :            :             {
+<span class="lineNum">     600 </span>                :            :                 return !is_pointer&lt;InputStreamable&gt;::value &amp;&amp;
+<span class="lineNum">     601 </span>                :            :                        stream &gt;&gt; output &amp;&amp;
+<span class="lineNum">     602 </span>                :            :                        stream.get() ==
+<span class="lineNum">     603 </span>                :            : #if defined(__GNUC__) &amp;&amp; (__GNUC__&lt;3) &amp;&amp; defined(BOOST_NO_STD_WSTRING)
+<span class="lineNum">     604 </span>                :            : // GCC 2.9x lacks std::char_traits&lt;&gt;::eof().
+<span class="lineNum">     605 </span>                :            : // We use BOOST_NO_STD_WSTRING to filter out STLport and libstdc++-v3
+<span class="lineNum">     606 </span>                :            : // configurations, which do provide std::char_traits&lt;&gt;::eof().
+<span class="lineNum">     607 </span>                :            :     
+<span class="lineNum">     608 </span>                :            :                            EOF;
+<span class="lineNum">     609 </span>                :            : #else
+<span class="lineNum">     610 </span>                :            :                            traits_type::eof();
+<span class="lineNum">     611 </span>                :            : #endif
+<span class="lineNum">     612 </span>                :            :             }
+<span class="lineNum">     613 </span>                :            : 
+<span class="lineNum">     614 </span>                :            : #ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     615 </span>                :            : 
+<span class="lineNum">     616 </span>                :            :             bool operator&gt;&gt;(std::string &amp;output)
+<span class="lineNum">     617 </span>                :            :             {
+<span class="lineNum">     618 </span>                :            :                 #if defined(BOOST_NO_STRINGSTREAM)
+<span class="lineNum">     619 </span>                :            :                 stream &lt;&lt; '\0';
+<span class="lineNum">     620 </span>                :            :                 #endif
+<span class="lineNum">     621 </span>                :            :                 stream.str().swap(output);
+<span class="lineNum">     622 </span>                :            :                 return true;
+<span class="lineNum">     623 </span>                :            :             }
+<span class="lineNum">     624 </span>                :            :             #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     625 </span>                :            :             bool operator&gt;&gt;(std::wstring &amp;output)
+<span class="lineNum">     626 </span>                :            :             {
+<span class="lineNum">     627 </span>                :            :                 stream.str().swap(output);
+<span class="lineNum">     628 </span>                :            :                 return true;
+<span class="lineNum">     629 </span>                :            :             }
+<span class="lineNum">     630 </span>                :            :             #endif
+<span class="lineNum">     631 </span>                :            : 
+<span class="lineNum">     632 </span>                :            : #else
+<span class="lineNum">     633 </span>                :            :             bool operator&gt;&gt;(std::basic_string&lt;char_type,traits_type&gt;&amp; output)
+<span class="lineNum">     634 </span>                :            :             {
+<span class="lineNum">     635 </span>                :            :                 stream.str().swap(output);
+<span class="lineNum">     636 </span>                :            :                 return true;
+<span class="lineNum">     637 </span>                :            :             }
+<span class="lineNum">     638 </span>                :            : 
+<span class="lineNum">     639 </span>                :            :             template&lt;class Alloc&gt;
+<span class="lineNum">     640 </span>                :            :             bool operator&gt;&gt;(std::basic_string&lt;char_type,traits_type,Alloc&gt;&amp; out)
+<span class="lineNum">     641 </span>                :            :             {
+<span class="lineNum">     642 </span>                :            :                 std::basic_string&lt;char_type,traits_type&gt; str(stream.str());
+<span class="lineNum">     643 </span>                :            :                 out.assign(str.begin(), str.end());
+<span class="lineNum">     644 </span>                :            :                 return true;
+<span class="lineNum">     645 </span>                :            :             }
+<span class="lineNum">     646 </span>                :            : #endif
+<span class="lineNum">     647 </span>                :            :         private:
+<span class="lineNum">     648 </span>                :            :             #if defined(BOOST_NO_STRINGSTREAM)
+<span class="lineNum">     649 </span>                :            :             std::strstream stream;
+<span class="lineNum">     650 </span>                :            :             #elif defined(BOOST_NO_STD_LOCALE)
+<span class="lineNum">     651 </span>                :            :             std::stringstream stream;
+<span class="lineNum">     652 </span>                :            :             #else
+<span class="lineNum">     653 </span>                :            :             std::basic_stringstream&lt;char_type,traits_type&gt; stream;
+<span class="lineNum">     654 </span>                :            :             #endif
+<span class="lineNum">     655 </span>                :            :         };
+<span class="lineNum">     656 </span>                :            :     }
+<span class="lineNum">     657 </span>                :            : 
+<span class="lineNum">     658 </span>                :            :     namespace detail // optimized stream wrapper
+<span class="lineNum">     659 </span>                :            :     {
+<span class="lineNum">     660 </span>                :            :         // String representation of Source has an upper limit.
+<span class="lineNum">     661 </span>                :            :         template&lt; class CharT // a result of widest_char transformation
+<span class="lineNum">     662 </span>                :            :                 , class Base // lexical_streambuf_fake or basic_streambuf&lt;CharT&gt;
+<span class="lineNum">     663 </span>                :            :                 , class Traits // usually char_traits&lt;CharT&gt;
+<span class="lineNum">     664 </span>                :            :                 &gt;
+<span class="lineNum">     665 </span>                :            :         class lexical_stream_limited_src : public Base
+<span class="lineNum">     666 </span>                :            :         {
+<span class="lineNum">     667 </span>                :            :             // A string representation of Source is written to [start, finish).
+<span class="lineNum">     668 </span>                :            :             // Currently, it is assumed that [start, finish) is big enough
+<span class="lineNum">     669 </span>                :            :             // to hold a string representation of any Source value.
+<span class="lineNum">     670 </span>                :            :             CharT* start;
+<span class="lineNum">     671 </span>                :            :             CharT* finish;
+<span class="lineNum">     672 </span>                :            : 
+<span class="lineNum">     673 </span>                :            :         private:
+<span class="lineNum">     674 </span>                :            : 
+<span class="lineNum">     675 </span>                :            :             static void widen_and_assign(char*p, char ch)
+<span class="lineNum">     676 </span>                :            :             {
+<span class="lineNum">     677 </span>                :            :                 Traits::assign(*p, ch);
+<span class="lineNum">     678 </span>                :            :             }
+<span class="lineNum">     679 </span>                :            : 
+<span class="lineNum">     680 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     681 </span>                :            :             static void widen_and_assign(wchar_t* p, char ch)
+<span class="lineNum">     682 </span>                :            :             {
+<span class="lineNum">     683 </span>                :            :                 // TODO: use BOOST_NO_STD_LOCALE
+<span class="lineNum">     684 </span>                :            :                 std::locale loc;
+<span class="lineNum">     685 </span>                :            :                 wchar_t w = BOOST_USE_FACET(std::ctype&lt;wchar_t&gt;, loc).widen(ch);
+<span class="lineNum">     686 </span>                :            :                 Traits::assign(*p, w);
+<span class="lineNum">     687 </span>                :            :             }
+<span class="lineNum">     688 </span>                :            : 
+<span class="lineNum">     689 </span>                :            :             static void widen_and_assign(wchar_t* p, wchar_t ch)
+<span class="lineNum">     690 </span>                :            :             {
+<span class="lineNum">     691 </span>                :            :                 Traits::assign(*p, ch);
+<span class="lineNum">     692 </span>                :            :             }
+<span class="lineNum">     693 </span>                :            : 
+<span class="lineNum">     694 </span>                :            :             static void widen_and_assign(char*, wchar_t ch); // undefined
+<span class="lineNum">     695 </span>                :            : #endif
+<span class="lineNum">     696 </span>                :            : 
+<span class="lineNum">     697 </span>                :            :             template&lt;class OutputStreamable&gt;
+<span class="lineNum">     698 </span>                :<span class="lineNoCov">          0 :             bool lcast_put(const OutputStreamable&amp; input)</span>
+<span class="lineNum">     699 </span>                :            :             {
+<span class="lineNum">     700 </span>                :<span class="lineNoCov">          0 :                 this-&gt;setp(start, finish);</span>
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 :                 std::basic_ostream&lt;CharT&gt; stream(static_cast&lt;Base*&gt;(this));</span>
+<span class="lineNum">     702 </span>                :<span class="lineNoCov">          0 :                 lcast_set_precision(stream, static_cast&lt;OutputStreamable*&gt;(0));</span>
+<span class="lineNum">     703 </span>                :<span class="lineNoCov">          0 :                 bool const result = !(stream &lt;&lt; input).fail();</span>
+<span class="lineNum">     704 </span>                :<span class="lineNoCov">          0 :                 finish = this-&gt;pptr();</span>
+<span class="lineNum">     705 </span>                :<span class="lineNoCov">          0 :                 return result;</span>
+<span class="lineNum">     706 </span>                :            :             }
+<span class="lineNum">     707 </span>                :            : 
+<span class="lineNum">     708 </span>                :            :             // Undefined:
+<span class="lineNum">     709 </span>                :            :             lexical_stream_limited_src(lexical_stream_limited_src const&amp;);
+<span class="lineNum">     710 </span>                :            :             void operator=(lexical_stream_limited_src const&amp;);
+<span class="lineNum">     711 </span>                :            : 
+<span class="lineNum">     712 </span>                :            :         public:
+<span class="lineNum">     713 </span>                :            : 
+<span class="lineNum">     714 </span>                :<span class="lineCov">         65 :             lexical_stream_limited_src(CharT* sta, CharT* fin)</span>
+<span class="lineNum">     715 </span>                :            :               : start(sta)
+<span class="lineNum">     716 </span>                :<span class="lineCov">         65 :               , finish(fin)</span>
+<span class="lineNum">     717 </span>                :<span class="lineCov">         65 :             {}</span>
+<span class="lineNum">     718 </span>                :            : 
+<span class="lineNum">     719 </span>                :            :         public: // output
+<span class="lineNum">     720 </span>                :            : 
+<span class="lineNum">     721 </span>                :            :             template&lt;class Alloc&gt;
+<span class="lineNum">     722 </span>                :<span class="lineCov">         65 :             bool operator&lt;&lt;(std::basic_string&lt;CharT,Traits,Alloc&gt; const&amp; str)</span>
+<span class="lineNum">     723 </span>                :            :             {
+<span class="lineNum">     724 </span>                :<span class="lineCov">         65 :                 start = const_cast&lt;CharT*&gt;(str.data());</span>
+<span class="lineNum">     725 </span>                :<span class="lineCov">         65 :                 finish = start + str.length();</span>
+<span class="lineNum">     726 </span>                :<span class="lineCov">         65 :                 return true;</span>
+<span class="lineNum">     727 </span>                :            :             }
+<span class="lineNum">     728 </span>                :            : 
+<span class="lineNum">     729 </span>                :            :             bool operator&lt;&lt;(bool);
+<span class="lineNum">     730 </span>                :            :             bool operator&lt;&lt;(char);
+<span class="lineNum">     731 </span>                :            : #if !defined(BOOST_LCAST_NO_WCHAR_T) &amp;&amp; !defined(BOOST_NO_INTRINSIC_WCHAR_T)
+<span class="lineNum">     732 </span>                :            :             bool operator&lt;&lt;(wchar_t);
+<span class="lineNum">     733 </span>                :            : #endif
+<span class="lineNum">     734 </span>                :            :             bool operator&lt;&lt;(CharT const*);
+<span class="lineNum">     735 </span>                :            :             bool operator&lt;&lt;(short);
+<span class="lineNum">     736 </span>                :            :             bool operator&lt;&lt;(int);
+<span class="lineNum">     737 </span>                :            :             bool operator&lt;&lt;(long);
+<span class="lineNum">     738 </span>                :            :             bool operator&lt;&lt;(unsigned short);
+<span class="lineNum">     739 </span>                :            :             bool operator&lt;&lt;(unsigned int);
+<span class="lineNum">     740 </span>                :            :             bool operator&lt;&lt;(unsigned long);
+<span class="lineNum">     741 </span>                :            : #if defined(BOOST_HAS_LONG_LONG)
+<span class="lineNum">     742 </span>                :            :             bool operator&lt;&lt;(boost::ulong_long_type);
+<span class="lineNum">     743 </span>                :            :             bool operator&lt;&lt;(boost::long_long_type );
+<span class="lineNum">     744 </span>                :            : #elif defined(BOOST_HAS_MS_INT64)
+<span class="lineNum">     745 </span>                :            :             bool operator&lt;&lt;(unsigned __int64);
+<span class="lineNum">     746 </span>                :            :             bool operator&lt;&lt;(         __int64);
+<span class="lineNum">     747 </span>                :            : #endif
+<span class="lineNum">     748 </span>                :            :             // These three operators use ostream and streambuf.
+<span class="lineNum">     749 </span>                :            :             // lcast_streambuf_for_source&lt;T&gt;::value is true.
+<span class="lineNum">     750 </span>                :            :             bool operator&lt;&lt;(float);
+<span class="lineNum">     751 </span>                :            :             bool operator&lt;&lt;(double);
+<span class="lineNum">     752 </span>                :            :             bool operator&lt;&lt;(long double);
+<span class="lineNum">     753 </span>                :            : 
+<span class="lineNum">     754 </span>                :            :         public: // input
+<span class="lineNum">     755 </span>                :            : 
+<span class="lineNum">     756 </span>                :            :             // Generic istream-based algorithm.
+<span class="lineNum">     757 </span>                :            :             // lcast_streambuf_for_target&lt;InputStreamable&gt;::value is true.
+<span class="lineNum">     758 </span>                :            :             template&lt;typename InputStreamable&gt;
+<span class="lineNum">     759 </span>                :<span class="lineCov">         65 :             bool operator&gt;&gt;(InputStreamable&amp; output)</span>
+<span class="lineNum">     760 </span>                :            :             {
+<span class="lineNum">     761 </span>                :            : #if (defined _MSC_VER)
+<span class="lineNum">     762 </span>                :            : # pragma warning( push )
+<span class="lineNum">     763 </span>                :            :   // conditional expression is constant
+<span class="lineNum">     764 </span>                :            : # pragma warning( disable : 4127 )
+<span class="lineNum">     765 </span>                :            : #endif
+<span class="lineNum">     766 </span>                :            :                 if(is_pointer&lt;InputStreamable&gt;::value)
+<span class="lineNum">     767 </span>                :            :                     return false;
+<span class="lineNum">     768 </span>                :            : 
+<span class="lineNum">     769 </span>                :<span class="lineCov">         65 :                 this-&gt;setg(start, start, finish);</span>
+<span class="lineNum">     770 </span>                :<span class="lineCov">         65 :                 std::basic_istream&lt;CharT&gt; stream(static_cast&lt;Base*&gt;(this));</span>
+<span class="lineNum">     771 </span>                :<span class="lineCov">         65 :                 stream.unsetf(std::ios::skipws);</span>
+<span class="lineNum">     772 </span>                :<span class="lineCov">         65 :                 lcast_set_precision(stream, static_cast&lt;InputStreamable*&gt;(0));</span>
+<span class="lineNum">     773 </span>                :            : #if (defined _MSC_VER)
+<span class="lineNum">     774 </span>                :            : # pragma warning( pop )
+<span class="lineNum">     775 </span>                :            : #endif
+<span class="lineNum">     776 </span>                :            :                 return stream &gt;&gt; output &amp;&amp;
+<span class="lineNum">     777 </span>                :            :                     stream.get() ==
+<span class="lineNum">     778 </span>                :            : #if defined(__GNUC__) &amp;&amp; (__GNUC__&lt;3) &amp;&amp; defined(BOOST_NO_STD_WSTRING)
+<span class="lineNum">     779 </span>                :            :         // GCC 2.9x lacks std::char_traits&lt;&gt;::eof().
+<span class="lineNum">     780 </span>                :            :         // We use BOOST_NO_STD_WSTRING to filter out STLport and libstdc++-v3
+<span class="lineNum">     781 </span>                :            :         // configurations, which do provide std::char_traits&lt;&gt;::eof().
+<span class="lineNum">     782 </span>                :            : 
+<span class="lineNum">     783 </span>                :            :                     EOF;
+<span class="lineNum">     784 </span>                :            : #else
+<span class="lineNum">     785 </span>  [<span class="branchCov" title="Branch 2 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         65 :                 Traits::eof();</span>
+<span class="lineNum">     786 </span>                :            : #endif
+<span class="lineNum">     787 </span>                :            :             }
+<span class="lineNum">     788 </span>                :            : 
+<span class="lineNum">     789 </span>                :            :             bool operator&gt;&gt;(CharT&amp;);
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>                :            : #ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     792 </span>                :            : // This #if is in sync with lcast_streambuf_for_target
+<span class="lineNum">     793 </span>                :            : 
+<span class="lineNum">     794 </span>                :            :             bool operator&gt;&gt;(std::string&amp;);
+<span class="lineNum">     795 </span>                :            : 
+<span class="lineNum">     796 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">     797 </span>                :            :             bool operator&gt;&gt;(std::wstring&amp;);
+<span class="lineNum">     798 </span>                :            : #endif
+<span class="lineNum">     799 </span>                :            : 
+<span class="lineNum">     800 </span>                :            : #else
+<span class="lineNum">     801 </span>                :            :             template&lt;class Alloc&gt;
+<span class="lineNum">     802 </span>                :<span class="lineNoCov">          0 :             bool operator&gt;&gt;(std::basic_string&lt;CharT,Traits,Alloc&gt;&amp; str)</span>
+<span class="lineNum">     803 </span>                :            :             {
+<span class="lineNum">     804 </span>                :<span class="lineNoCov">          0 :                 str.assign(start, finish);</span>
+<span class="lineNum">     805 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     806 </span>                :            :             }
+<span class="lineNum">     807 </span>                :            : #endif
+<span class="lineNum">     808 </span>                :            :         };
+<span class="lineNum">     809 </span>                :            : 
+<span class="lineNum">     810 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     811 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     812 </span>                :            :                 bool value)
+<span class="lineNum">     813 </span>                :            :         {
+<span class="lineNum">     814 </span>                :            :             typedef typename Traits::int_type int_type;
+<span class="lineNum">     815 </span>                :            :             CharT const czero = lcast_char_constants&lt;CharT&gt;::zero;
+<span class="lineNum">     816 </span>                :            :             int_type const zero = Traits::to_int_type(czero);
+<span class="lineNum">     817 </span>                :            :             Traits::assign(*start, Traits::to_char_type(zero + value));
+<span class="lineNum">     818 </span>                :            :             finish = start + 1;
+<span class="lineNum">     819 </span>                :            :             return true;
+<span class="lineNum">     820 </span>                :            :         }
+<span class="lineNum">     821 </span>                :            : 
+<span class="lineNum">     822 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     823 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     824 </span>                :            :                 char ch)
+<span class="lineNum">     825 </span>                :            :         {
+<span class="lineNum">     826 </span>                :            :             widen_and_assign(start, ch);
+<span class="lineNum">     827 </span>                :            :             finish = start + 1;
+<span class="lineNum">     828 </span>                :            :             return true;
+<span class="lineNum">     829 </span>                :            :         }
+<span class="lineNum">     830 </span>                :            : 
+<span class="lineNum">     831 </span>                :            : #if !defined(BOOST_LCAST_NO_WCHAR_T) &amp;&amp; !defined(BOOST_NO_INTRINSIC_WCHAR_T)
+<span class="lineNum">     832 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     833 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     834 </span>                :            :                 wchar_t ch)
+<span class="lineNum">     835 </span>                :            :         {
+<span class="lineNum">     836 </span>                :            :             widen_and_assign(start, ch);
+<span class="lineNum">     837 </span>                :            :             finish = start + 1;
+<span class="lineNum">     838 </span>                :            :             return true;
+<span class="lineNum">     839 </span>                :            :         }
+<span class="lineNum">     840 </span>                :            : #endif
+<span class="lineNum">     841 </span>                :            : 
+<span class="lineNum">     842 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     843 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     844 </span>                :            :                 short n)
+<span class="lineNum">     845 </span>                :            :         {
+<span class="lineNum">     846 </span>                :            :             start = lcast_put_unsigned&lt;Traits&gt;(lcast_to_unsigned(n), finish);
+<span class="lineNum">     847 </span>                :            :             if(n &lt; 0)
+<span class="lineNum">     848 </span>                :            :             {
+<span class="lineNum">     849 </span>                :            :                 --start;
+<span class="lineNum">     850 </span>                :            :                 CharT const minus = lcast_char_constants&lt;CharT&gt;::minus;
+<span class="lineNum">     851 </span>                :            :                 Traits::assign(*start, minus);
+<span class="lineNum">     852 </span>                :            :             }
+<span class="lineNum">     853 </span>                :            :             return true;
+<span class="lineNum">     854 </span>                :            :         }
+<span class="lineNum">     855 </span>                :            : 
+<span class="lineNum">     856 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     857 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     858 </span>                :<span class="lineNoCov">          0 :                 int n)</span>
+<span class="lineNum">     859 </span>                :            :         {
+<span class="lineNum">     860 </span>                :<span class="lineNoCov">          0 :             start = lcast_put_unsigned&lt;Traits&gt;(lcast_to_unsigned(n), finish);</span>
+<span class="lineNum">     861 </span>                :<span class="lineNoCov">          0 :             if(n &lt; 0)</span>
+<span class="lineNum">     862 </span>                :            :             {
+<span class="lineNum">     863 </span>                :<span class="lineNoCov">          0 :                 --start;</span>
+<span class="lineNum">     864 </span>                :<span class="lineNoCov">          0 :                 CharT const minus = lcast_char_constants&lt;CharT&gt;::minus;</span>
+<span class="lineNum">     865 </span>                :<span class="lineNoCov">          0 :                 Traits::assign(*start, minus);</span>
+<span class="lineNum">     866 </span>                :            :             }
+<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :             return true;</span>
+<span class="lineNum">     868 </span>                :            :         }
+<span class="lineNum">     869 </span>                :            : 
+<span class="lineNum">     870 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     871 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     872 </span>                :<span class="lineNoCov">          0 :                 long n)</span>
+<span class="lineNum">     873 </span>                :            :         {
+<span class="lineNum">     874 </span>                :<span class="lineNoCov">          0 :             start = lcast_put_unsigned&lt;Traits&gt;(lcast_to_unsigned(n), finish);</span>
+<span class="lineNum">     875 </span>                :<span class="lineNoCov">          0 :             if(n &lt; 0)</span>
+<span class="lineNum">     876 </span>                :            :             {
+<span class="lineNum">     877 </span>                :<span class="lineNoCov">          0 :                 --start;</span>
+<span class="lineNum">     878 </span>                :<span class="lineNoCov">          0 :                 CharT const minus = lcast_char_constants&lt;CharT&gt;::minus;</span>
+<span class="lineNum">     879 </span>                :<span class="lineNoCov">          0 :                 Traits::assign(*start, minus);</span>
+<span class="lineNum">     880 </span>                :            :             }
+<span class="lineNum">     881 </span>                :<span class="lineNoCov">          0 :             return true;</span>
+<span class="lineNum">     882 </span>                :            :         }
+<span class="lineNum">     883 </span>                :            : 
+<span class="lineNum">     884 </span>                :            : #if defined(BOOST_HAS_LONG_LONG)
+<span class="lineNum">     885 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     886 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     887 </span>                :            :                 boost::long_long_type n)
+<span class="lineNum">     888 </span>                :            :         {
+<span class="lineNum">     889 </span>                :            :             start = lcast_put_unsigned&lt;Traits&gt;(lcast_to_unsigned(n), finish);
+<span class="lineNum">     890 </span>                :            :             if(n &lt; 0)
+<span class="lineNum">     891 </span>                :            :             {
+<span class="lineNum">     892 </span>                :            :                 --start;
+<span class="lineNum">     893 </span>                :            :                 CharT const minus = lcast_char_constants&lt;CharT&gt;::minus;
+<span class="lineNum">     894 </span>                :            :                 Traits::assign(*start, minus);
+<span class="lineNum">     895 </span>                :            :             }
+<span class="lineNum">     896 </span>                :            :             return true;
+<span class="lineNum">     897 </span>                :            :         }
+<span class="lineNum">     898 </span>                :            : #elif defined(BOOST_HAS_MS_INT64)
+<span class="lineNum">     899 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     900 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     901 </span>                :            :                 __int64 n)
+<span class="lineNum">     902 </span>                :            :         {
+<span class="lineNum">     903 </span>                :            :             start = lcast_put_unsigned&lt;Traits&gt;(lcast_to_unsigned(n), finish);
+<span class="lineNum">     904 </span>                :            :             if(n &lt; 0)
+<span class="lineNum">     905 </span>                :            :             {
+<span class="lineNum">     906 </span>                :            :                 --start;
+<span class="lineNum">     907 </span>                :            :                 CharT const minus = lcast_char_constants&lt;CharT&gt;::minus;
+<span class="lineNum">     908 </span>                :            :                 Traits::assign(*start, minus);
+<span class="lineNum">     909 </span>                :            :             }
+<span class="lineNum">     910 </span>                :            :             return true;
+<span class="lineNum">     911 </span>                :            :         }
+<span class="lineNum">     912 </span>                :            : #endif
+<span class="lineNum">     913 </span>                :            : 
+<span class="lineNum">     914 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     915 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     916 </span>                :<span class="lineNoCov">          0 :                 unsigned short n)</span>
+<span class="lineNum">     917 </span>                :            :         {
+<span class="lineNum">     918 </span>                :<span class="lineNoCov">          0 :             start = lcast_put_unsigned&lt;Traits&gt;(n, finish);</span>
+<span class="lineNum">     919 </span>                :<span class="lineNoCov">          0 :             return true;</span>
+<span class="lineNum">     920 </span>                :            :         }
+<span class="lineNum">     921 </span>                :            : 
+<span class="lineNum">     922 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     923 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     924 </span>                :<span class="lineNoCov">          0 :                 unsigned int n)</span>
+<span class="lineNum">     925 </span>                :            :         {
+<span class="lineNum">     926 </span>                :<span class="lineNoCov">          0 :             start = lcast_put_unsigned&lt;Traits&gt;(n, finish);</span>
+<span class="lineNum">     927 </span>                :<span class="lineNoCov">          0 :             return true;</span>
+<span class="lineNum">     928 </span>                :            :         }
+<span class="lineNum">     929 </span>                :            : 
+<span class="lineNum">     930 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     931 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     932 </span>                :<span class="lineNoCov">          0 :                 unsigned long n)</span>
+<span class="lineNum">     933 </span>                :            :         {
+<span class="lineNum">     934 </span>                :<span class="lineNoCov">          0 :             start = lcast_put_unsigned&lt;Traits&gt;(n, finish);</span>
+<span class="lineNum">     935 </span>                :<span class="lineNoCov">          0 :             return true;</span>
+<span class="lineNum">     936 </span>                :            :         }
+<span class="lineNum">     937 </span>                :            : 
+<span class="lineNum">     938 </span>                :            : #if defined(BOOST_HAS_LONG_LONG)
+<span class="lineNum">     939 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     940 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     941 </span>                :            :                 boost::ulong_long_type n)
+<span class="lineNum">     942 </span>                :            :         {
+<span class="lineNum">     943 </span>                :            :             start = lcast_put_unsigned&lt;Traits&gt;(n, finish);
+<span class="lineNum">     944 </span>                :            :             return true;
+<span class="lineNum">     945 </span>                :            :         }
+<span class="lineNum">     946 </span>                :            : #elif defined(BOOST_HAS_MS_INT64)
+<span class="lineNum">     947 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     948 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     949 </span>                :            :                 unsigned __int64 n)
+<span class="lineNum">     950 </span>                :            :         {
+<span class="lineNum">     951 </span>                :            :             start = lcast_put_unsigned&lt;Traits&gt;(n, finish);
+<span class="lineNum">     952 </span>                :            :             return true;
+<span class="lineNum">     953 </span>                :            :         }
+<span class="lineNum">     954 </span>                :            : #endif
+<span class="lineNum">     955 </span>                :            : 
+<span class="lineNum">     956 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     957 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     958 </span>                :<span class="lineNoCov">          0 :                 float val)</span>
+<span class="lineNum">     959 </span>                :            :         {
+<span class="lineNum">     960 </span>                :<span class="lineNoCov">          0 :             return this-&gt;lcast_put(val);</span>
+<span class="lineNum">     961 </span>                :            :         }
+<span class="lineNum">     962 </span>                :            : 
+<span class="lineNum">     963 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     964 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     965 </span>                :            :                 double val)
+<span class="lineNum">     966 </span>                :            :         {
+<span class="lineNum">     967 </span>                :            :             return this-&gt;lcast_put(val);
+<span class="lineNum">     968 </span>                :            :         }
+<span class="lineNum">     969 </span>                :            : 
+<span class="lineNum">     970 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     971 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     972 </span>                :            :                 long double val)
+<span class="lineNum">     973 </span>                :            :         {
+<span class="lineNum">     974 </span>                :            :             return this-&gt;lcast_put(val);
+<span class="lineNum">     975 </span>                :            :         }
+<span class="lineNum">     976 </span>                :            : 
+<span class="lineNum">     977 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     978 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&lt;&lt;(
+<span class="lineNum">     979 </span>                :<span class="lineNoCov">          0 :                 CharT const* str)</span>
+<span class="lineNum">     980 </span>                :            :         {
+<span class="lineNum">     981 </span>                :<span class="lineNoCov">          0 :             start = const_cast&lt;CharT*&gt;(str);</span>
+<span class="lineNum">     982 </span>                :<span class="lineNoCov">          0 :             finish = start + Traits::length(str);</span>
+<span class="lineNum">     983 </span>                :<span class="lineNoCov">          0 :             return true;</span>
+<span class="lineNum">     984 </span>                :            :         }
+<span class="lineNum">     985 </span>                :            : 
+<span class="lineNum">     986 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     987 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&gt;&gt;(
+<span class="lineNum">     988 </span>                :            :                 CharT&amp; output)
+<span class="lineNum">     989 </span>                :            :         {
+<span class="lineNum">     990 </span>                :            :             bool const ok = (finish - start == 1);
+<span class="lineNum">     991 </span>                :            :             if(ok)
+<span class="lineNum">     992 </span>                :            :                 Traits::assign(output, *start);
+<span class="lineNum">     993 </span>                :            :             return ok;
+<span class="lineNum">     994 </span>                :            :         }
+<span class="lineNum">     995 </span>                :            : 
+<span class="lineNum">     996 </span>                :            : #ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     997 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">     998 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&gt;&gt;(
+<span class="lineNum">     999 </span>                :            :                 std::string&amp; str)
+<span class="lineNum">    1000 </span>                :            :         {
+<span class="lineNum">    1001 </span>                :            :             str.assign(start, finish);
+<span class="lineNum">    1002 </span>                :            :             return true;
+<span class="lineNum">    1003 </span>                :            :         }
+<span class="lineNum">    1004 </span>                :            : 
+<span class="lineNum">    1005 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">    1006 </span>                :            :         template&lt;typename CharT, class Base, class Traits&gt;
+<span class="lineNum">    1007 </span>                :            :         inline bool lexical_stream_limited_src&lt;CharT,Base,Traits&gt;::operator&gt;&gt;(
+<span class="lineNum">    1008 </span>                :            :                 std::wstring&amp; str)
+<span class="lineNum">    1009 </span>                :            :         {
+<span class="lineNum">    1010 </span>                :            :             str.assign(start, finish);
+<span class="lineNum">    1011 </span>                :            :             return true;
+<span class="lineNum">    1012 </span>                :            :         }
+<span class="lineNum">    1013 </span>                :            : #endif
+<span class="lineNum">    1014 </span>                :            : #endif
+<span class="lineNum">    1015 </span>                :            :     }
+<span class="lineNum">    1016 </span>                :            : 
+<span class="lineNum">    1017 </span>                :            :     namespace detail // lcast_streambuf_for_source
+<span class="lineNum">    1018 </span>                :            :     {
+<span class="lineNum">    1019 </span>                :            :         // Returns true if optimized stream wrapper needs ostream for writing.
+<span class="lineNum">    1020 </span>                :            :         template&lt;class Source&gt;
+<span class="lineNum">    1021 </span>                :            :         struct lcast_streambuf_for_source
+<span class="lineNum">    1022 </span>                :            :         {
+<span class="lineNum">    1023 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1024 </span>                :            :         };
+<span class="lineNum">    1025 </span>                :            : 
+<span class="lineNum">    1026 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1027 </span>                :            :         struct lcast_streambuf_for_source&lt;float&gt;
+<span class="lineNum">    1028 </span>                :            :         {
+<span class="lineNum">    1029 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">    1030 </span>                :            :         };
+<span class="lineNum">    1031 </span>                :            :  
+<span class="lineNum">    1032 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1033 </span>                :            :         struct lcast_streambuf_for_source&lt;double&gt;
+<span class="lineNum">    1034 </span>                :            :         {
+<span class="lineNum">    1035 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">    1036 </span>                :            :         };
+<span class="lineNum">    1037 </span>                :            :   
+<span class="lineNum">    1038 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1039 </span>                :            :         struct lcast_streambuf_for_source&lt;long double&gt;
+<span class="lineNum">    1040 </span>                :            :         {
+<span class="lineNum">    1041 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">    1042 </span>                :            :         };
+<span class="lineNum">    1043 </span>                :            :     }
+<span class="lineNum">    1044 </span>                :            : 
+<span class="lineNum">    1045 </span>                :            :     namespace detail // lcast_streambuf_for_target
+<span class="lineNum">    1046 </span>                :            :     {
+<span class="lineNum">    1047 </span>                :            :         // Returns true if optimized stream wrapper needs istream for reading.
+<span class="lineNum">    1048 </span>                :            :         template&lt;class Target&gt;
+<span class="lineNum">    1049 </span>                :            :         struct lcast_streambuf_for_target
+<span class="lineNum">    1050 </span>                :            :         {
+<span class="lineNum">    1051 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">    1052 </span>                :            :         };
+<span class="lineNum">    1053 </span>                :            : 
+<span class="lineNum">    1054 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1055 </span>                :            :         struct lcast_streambuf_for_target&lt;char&gt;
+<span class="lineNum">    1056 </span>                :            :         {
+<span class="lineNum">    1057 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1058 </span>                :            :         };
+<span class="lineNum">    1059 </span>                :            : 
+<span class="lineNum">    1060 </span>                :            : #if !defined(BOOST_LCAST_NO_WCHAR_T) &amp;&amp; !defined(BOOST_NO_INTRINSIC_WCHAR_T)
+<span class="lineNum">    1061 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1062 </span>                :            :         struct lcast_streambuf_for_target&lt;wchar_t&gt;
+<span class="lineNum">    1063 </span>                :            :         {
+<span class="lineNum">    1064 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1065 </span>                :            :         };
+<span class="lineNum">    1066 </span>                :            : #endif
+<span class="lineNum">    1067 </span>                :            : 
+<span class="lineNum">    1068 </span>                :            : #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">    1069 </span>                :            :         template&lt;class Traits, class Alloc&gt;
+<span class="lineNum">    1070 </span>                :            :         struct lcast_streambuf_for_target&lt;
+<span class="lineNum">    1071 </span>                :            :                     std::basic_string&lt;char,Traits,Alloc&gt; &gt;
+<span class="lineNum">    1072 </span>                :            :         {
+<span class="lineNum">    1073 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1074 </span>                :            :         };
+<span class="lineNum">    1075 </span>                :            : 
+<span class="lineNum">    1076 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">    1077 </span>                :            :         template&lt;class Traits, class Alloc&gt;
+<span class="lineNum">    1078 </span>                :            :         struct lcast_streambuf_for_target&lt;
+<span class="lineNum">    1079 </span>                :            :                     std::basic_string&lt;wchar_t,Traits,Alloc&gt; &gt;
+<span class="lineNum">    1080 </span>                :            :         {
+<span class="lineNum">    1081 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1082 </span>                :            :         };
+<span class="lineNum">    1083 </span>                :            : #endif
+<span class="lineNum">    1084 </span>                :            : #else
+<span class="lineNum">    1085 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1086 </span>                :            :         struct lcast_streambuf_for_target&lt;std::string&gt;
+<span class="lineNum">    1087 </span>                :            :         {
+<span class="lineNum">    1088 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1089 </span>                :            :         };
+<span class="lineNum">    1090 </span>                :            : 
+<span class="lineNum">    1091 </span>                :            : #ifndef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">    1092 </span>                :            :         template&lt;&gt;
+<span class="lineNum">    1093 </span>                :            :         struct lcast_streambuf_for_target&lt;std::wstring&gt;
+<span class="lineNum">    1094 </span>                :            :         {
+<span class="lineNum">    1095 </span>                :            :             BOOST_STATIC_CONSTANT(bool, value = false);
+<span class="lineNum">    1096 </span>                :            :         };
+<span class="lineNum">    1097 </span>                :            : #endif
+<span class="lineNum">    1098 </span>                :            : #endif
+<span class="lineNum">    1099 </span>                :            :     }
+<span class="lineNum">    1100 </span>                :            : 
+<span class="lineNum">    1101 </span>                :            :     #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">    1102 </span>                :            : 
+<span class="lineNum">    1103 </span>                :            :     // call-by-const reference version
+<span class="lineNum">    1104 </span>                :            : 
+<span class="lineNum">    1105 </span>                :            :     namespace detail
+<span class="lineNum">    1106 </span>                :            :     {
+<span class="lineNum">    1107 </span>                :            :         template&lt;class T&gt;
+<span class="lineNum">    1108 </span>                :            :         struct array_to_pointer_decay
+<span class="lineNum">    1109 </span>                :            :         {
+<span class="lineNum">    1110 </span>                :            :             typedef T type;
+<span class="lineNum">    1111 </span>                :            :         };
+<span class="lineNum">    1112 </span>                :            : 
+<span class="lineNum">    1113 </span>                :            :         template&lt;class T, std::size_t N&gt;
+<span class="lineNum">    1114 </span>                :            :         struct array_to_pointer_decay&lt;T[N]&gt;
+<span class="lineNum">    1115 </span>                :            :         {
+<span class="lineNum">    1116 </span>                :            :             typedef const T * type;
+<span class="lineNum">    1117 </span>                :            :         };
+<span class="lineNum">    1118 </span>                :            : 
+<span class="lineNum">    1119 </span>                :            : #if (defined _MSC_VER)
+<span class="lineNum">    1120 </span>                :            : # pragma warning( push )
+<span class="lineNum">    1121 </span>                :            : # pragma warning( disable : 4701 ) // possible use of ... before initialization
+<span class="lineNum">    1122 </span>                :            : # pragma warning( disable : 4702 ) // unreachable code
+<span class="lineNum">    1123 </span>                :            : #endif
+<span class="lineNum">    1124 </span>                :            : 
+<span class="lineNum">    1125 </span>                :            :         template&lt; typename Target
+<span class="lineNum">    1126 </span>                :            :                 , typename Source
+<span class="lineNum">    1127 </span>                :            :                 , bool Unlimited // string representation of Source is unlimited
+<span class="lineNum">    1128 </span>                :            :                 , typename CharT
+<span class="lineNum">    1129 </span>                :            :                 &gt;
+<span class="lineNum">    1130 </span>                :            :         Target lexical_cast(
+<span class="lineNum">    1131 </span>                :            :             BOOST_DEDUCED_TYPENAME boost::call_traits&lt;Source&gt;::param_type arg,
+<span class="lineNum">    1132 </span>                :<span class="lineCov">         65 :             CharT* buf, std::size_t src_len)</span>
+<span class="lineNum">    1133 </span>                :            :         {
+<span class="lineNum">    1134 </span>                :            :             typedef BOOST_DEDUCED_TYPENAME
+<span class="lineNum">    1135 </span>                :            :                 deduce_char_traits&lt;CharT,Target,Source&gt;::type traits;
+<span class="lineNum">    1136 </span>                :            : 
+<span class="lineNum">    1137 </span>                :            :             typedef BOOST_DEDUCED_TYPENAME boost::mpl::if_c&lt;
+<span class="lineNum">    1138 </span>                :            :                 lcast_streambuf_for_target&lt;Target&gt;::value ||
+<span class="lineNum">    1139 </span>                :            :                 lcast_streambuf_for_source&lt;Source&gt;::value
+<span class="lineNum">    1140 </span>                :            :               , std::basic_streambuf&lt;CharT&gt;
+<span class="lineNum">    1141 </span>                :            :               , lexical_streambuf_fake
+<span class="lineNum">    1142 </span>                :            :               &gt;::type base;
+<span class="lineNum">    1143 </span>                :            : 
+<span class="lineNum">    1144 </span>                :            :             BOOST_DEDUCED_TYPENAME boost::mpl::if_c&lt;
+<span class="lineNum">    1145 </span>                :            :                 Unlimited
+<span class="lineNum">    1146 </span>                :            :               , detail::lexical_stream&lt;Target,Source,traits&gt;
+<span class="lineNum">    1147 </span>                :            :               , detail::lexical_stream_limited_src&lt;CharT,base,traits&gt;
+<span class="lineNum">    1148 </span>                :<span class="lineCov">         65 :               &gt;::type interpreter(buf, buf + src_len);</span>
+<span class="lineNum">    1149 </span>                :            : 
+<span class="lineNum">    1150 </span>                :<span class="lineNoCov">          0 :             Target result;</span>
+<span class="lineNum">    1151 </span>[<span class="branchCov" title="Branch 1 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>:<span class="lineCov">         65 :             if(!(interpreter &lt;&lt; arg &amp;&amp; interpreter &gt;&gt; result))</span>
+<span class="lineNum">         </span><span class="branchCov" title="Branch 7 was taken 65 times"> + </span><span class="branchNoExec" title="Block containing branch 9 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span> 
+<span class="lineNum">         </span>         <span class="branchNoExec" title="Block containing branch 14 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 15 was never executed"> # </span>]
+<span class="lineNum">    1152 </span>                :<span class="lineNoCov">          0 :                 BOOST_LCAST_THROW_BAD_CAST(Source, Target);</span>
+<span class="lineNum">    1153 </span>                :<span class="lineCov">         65 :             return result;</span>
+<span class="lineNum">    1154 </span>                :            :         }
+<span class="lineNum">    1155 </span>                :            : #if (defined _MSC_VER)
+<span class="lineNum">    1156 </span>                :            : # pragma warning( pop )
+<span class="lineNum">    1157 </span>                :            : #endif
+<span class="lineNum">    1158 </span>                :            :     }
+<span class="lineNum">    1159 </span>                :            : 
+<span class="lineNum">    1160 </span>                :            :     template&lt;typename Target, typename Source&gt;
+<span class="lineNum">    1161 </span>                :<span class="lineCov">         65 :     inline Target lexical_cast(const Source &amp;arg)</span>
+<span class="lineNum">    1162 </span>                :            :     {
+<span class="lineNum">    1163 </span>                :            :         typedef typename detail::array_to_pointer_decay&lt;Source&gt;::type src;
+<span class="lineNum">    1164 </span>                :            : 
+<span class="lineNum">    1165 </span>                :            :         typedef typename detail::widest_char&lt;
+<span class="lineNum">    1166 </span>                :            :             typename detail::stream_char&lt;Target&gt;::type
+<span class="lineNum">    1167 </span>                :            :           , typename detail::stream_char&lt;src&gt;::type
+<span class="lineNum">    1168 </span>                :            :           &gt;::type char_type;
+<span class="lineNum">    1169 </span>                :            : 
+<span class="lineNum">    1170 </span>                :            :         typedef detail::lcast_src_length&lt;char_type, src&gt; lcast_src_length;
+<span class="lineNum">    1171 </span>                :<span class="lineCov">         65 :         std::size_t const src_len = lcast_src_length::value;</span>
+<span class="lineNum">    1172 </span>                :            :         char_type buf[src_len + 1];
+<span class="lineNum">    1173 </span>                :<span class="lineCov">         65 :         lcast_src_length::check_coverage();</span>
+<span class="lineNum">    1174 </span>                :<span class="lineCov">         65 :         return detail::lexical_cast&lt;Target, src, !src_len&gt;(arg, buf, src_len);</span>
+<span class="lineNum">    1175 </span>                :            :     }
+<span class="lineNum">    1176 </span>                :            : 
+<span class="lineNum">    1177 </span>                :            :     #else
+<span class="lineNum">    1178 </span>                :            : 
+<span class="lineNum">    1179 </span>                :            :     // call-by-value fallback version (deprecated)
+<span class="lineNum">    1180 </span>                :            : 
+<span class="lineNum">    1181 </span>                :            :     template&lt;typename Target, typename Source&gt;
+<span class="lineNum">    1182 </span>                :            :     Target lexical_cast(Source arg)
+<span class="lineNum">    1183 </span>                :            :     {
+<span class="lineNum">    1184 </span>                :            :         typedef typename detail::widest_char&lt; 
+<span class="lineNum">    1185 </span>                :            :             BOOST_DEDUCED_TYPENAME detail::stream_char&lt;Target&gt;::type 
+<span class="lineNum">    1186 </span>                :            :           , BOOST_DEDUCED_TYPENAME detail::stream_char&lt;Source&gt;::type 
+<span class="lineNum">    1187 </span>                :            :         &gt;::type char_type; 
+<span class="lineNum">    1188 </span>                :            : 
+<span class="lineNum">    1189 </span>                :            :         typedef std::char_traits&lt;char_type&gt; traits;
+<span class="lineNum">    1190 </span>                :            :         detail::lexical_stream&lt;Target, Source, traits&gt; interpreter;
+<span class="lineNum">    1191 </span>                :            :         Target result;
+<span class="lineNum">    1192 </span>                :            : 
+<span class="lineNum">    1193 </span>                :            :         if(!(interpreter &lt;&lt; arg &amp;&amp; interpreter &gt;&gt; result))
+<span class="lineNum">    1194 </span>                :            : #ifndef BOOST_NO_TYPEID
+<span class="lineNum">    1195 </span>                :            :             throw_exception(bad_lexical_cast(typeid(Source), typeid(Target)));
+<span class="lineNum">    1196 </span>                :            : #else
+<span class="lineNum">    1197 </span>                :            :             throw_exception(bad_lexical_cast());
+<span class="lineNum">    1198 </span>                :            : #endif
+<span class="lineNum">    1199 </span>                :            :         return result;
+<span class="lineNum">    1200 </span>                :            :     }
+<span class="lineNum">    1201 </span>                :            : 
+<span class="lineNum">    1202 </span>                :            :     #endif
+<span class="lineNum">    1203 </span>                :            : }
+<span class="lineNum">    1204 </span>                :            : 
+<span class="lineNum">    1205 </span>                :            : // Copyright Kevlin Henney, 2000-2005.
+<span class="lineNum">    1206 </span>                :            : // Copyright Alexander Nasonov, 2006-2007.
+<span class="lineNum">    1207 </span>                :            : //
+<span class="lineNum">    1208 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">    1209 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">    1210 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">    1211 </span>                :            : 
+<span class="lineNum">    1212 </span>                :            : #undef BOOST_LCAST_NO_WCHAR_T
+<span class="lineNum">    1213 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/converter/arg_to_python.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/converter</a> - arg_to_python.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef ARG_TO_PYTHON_DWA200265_HPP
+<span class="lineNum">       6 </span>                :            : # define ARG_TO_PYTHON_DWA200265_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/ptr.hpp&gt;
+<span class="lineNum">       9 </span>                :            : # include &lt;boost/python/tag.hpp&gt;
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/to_python_indirect.hpp&gt;
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/converter/registered.hpp&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;boost/python/converter/registered_pointee.hpp&gt;
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/python/converter/arg_to_python_base.hpp&gt;
+<span class="lineNum">      15 </span>                :            : # include &lt;boost/python/converter/shared_ptr_to_python.hpp&gt;
+<span class="lineNum">      16 </span>                :            : // Bring in specializations
+<span class="lineNum">      17 </span>                :            : # include &lt;boost/python/converter/builtin_converters.hpp&gt;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : # include &lt;boost/python/object/function_handle.hpp&gt;
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : # include &lt;boost/python/base_type_traits.hpp&gt;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : # include &lt;boost/python/detail/indirect_traits.hpp&gt;
+<span class="lineNum">      24 </span>                :            : # include &lt;boost/python/detail/convertible.hpp&gt;
+<span class="lineNum">      25 </span>                :            : # include &lt;boost/python/detail/string_literal.hpp&gt;
+<span class="lineNum">      26 </span>                :            : # include &lt;boost/python/detail/value_is_shared_ptr.hpp&gt;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : # include &lt;boost/type_traits/cv_traits.hpp&gt;
+<span class="lineNum">      29 </span>                :            : # include &lt;boost/type_traits/composite_traits.hpp&gt;
+<span class="lineNum">      30 </span>                :            : # include &lt;boost/type_traits/function_traits.hpp&gt;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : # include &lt;boost/mpl/or.hpp&gt;
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : namespace boost { namespace python { namespace converter { 
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : template &lt;class T&gt; struct is_object_manager;
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : namespace detail
+<span class="lineNum">      40 </span>                :            : {
+<span class="lineNum">      41 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      42 </span>                :            :   struct function_arg_to_python : handle&lt;&gt;
+<span class="lineNum">      43 </span>                :            :   {
+<span class="lineNum">      44 </span>                :            :       function_arg_to_python(T const&amp; x);
+<span class="lineNum">      45 </span>                :            :   };
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      48 </span>                :            :   struct reference_arg_to_python : handle&lt;&gt;
+<span class="lineNum">      49 </span>                :            :   {
+<span class="lineNum">      50 </span>                :            :       reference_arg_to_python(T&amp; x);
+<span class="lineNum">      51 </span>                :            :    private:
+<span class="lineNum">      52 </span>                :            :       static PyObject* get_object(T&amp; x);
+<span class="lineNum">      53 </span>                :            :   };
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      56 </span>                :            :   struct shared_ptr_arg_to_python : handle&lt;&gt;
+<span class="lineNum">      57 </span>                :            :   {
+<span class="lineNum">      58 </span>                :            :       shared_ptr_arg_to_python(T const&amp; x);
+<span class="lineNum">      59 </span>                :            :    private:
+<span class="lineNum">      60 </span>                :            :       static PyObject* get_object(T&amp; x);
+<span class="lineNum">      61 </span>                :            :   };
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      64 </span>                :            :   struct value_arg_to_python : arg_to_python_base
+<span class="lineNum">      65 </span>                :            :   {
+<span class="lineNum">      66 </span>                :            :       // Throw an exception if the conversion can't succeed
+<span class="lineNum">      67 </span>                :            :       value_arg_to_python(T const&amp;);
+<span class="lineNum">      68 </span>                :            :   };
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :   template &lt;class Ptr&gt;
+<span class="lineNum">      71 </span>                :            :   struct pointer_deep_arg_to_python : arg_to_python_base
+<span class="lineNum">      72 </span>                :            :   {
+<span class="lineNum">      73 </span>                :            :       // Throw an exception if the conversion can't succeed
+<span class="lineNum">      74 </span>                :            :       pointer_deep_arg_to_python(Ptr);
+<span class="lineNum">      75 </span>                :            :   };
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :            :   template &lt;class Ptr&gt;
+<span class="lineNum">      78 </span>                :            :   struct pointer_shallow_arg_to_python : handle&lt;&gt;
+<span class="lineNum">      79 </span>                :            :   {
+<span class="lineNum">      80 </span>                :            :       // Throw an exception if the conversion can't succeed
+<span class="lineNum">      81 </span>                :            :       pointer_shallow_arg_to_python(Ptr);
+<span class="lineNum">      82 </span>                :            :    private:
+<span class="lineNum">      83 </span>                :            :       static PyObject* get_object(Ptr p);
+<span class="lineNum">      84 </span>                :            :   };
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :            :   // Convert types that manage a Python object to_python
+<span class="lineNum">      87 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      88 </span>                :            :   struct object_manager_arg_to_python
+<span class="lineNum">      89 </span>                :            :   {
+<span class="lineNum">      90 </span>                :            :       object_manager_arg_to_python(T const&amp; x) : m_src(x) {}
+<span class="lineNum">      91 </span>                :            :       
+<span class="lineNum">      92 </span>                :            :       PyObject* get() const
+<span class="lineNum">      93 </span>                :            :       {
+<span class="lineNum">      94 </span>                :            :           return python::upcast&lt;PyObject&gt;(get_managed_object(m_src, tag));
+<span class="lineNum">      95 </span>                :            :       }
+<span class="lineNum">      96 </span>                :            :       
+<span class="lineNum">      97 </span>                :            :    private:
+<span class="lineNum">      98 </span>                :            :       T const&amp; m_src;
+<span class="lineNum">      99 </span>                :            :   };
+<span class="lineNum">     100 </span>                :            : 
+<span class="lineNum">     101 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     102 </span>                :            :   struct select_arg_to_python
+<span class="lineNum">     103 </span>                :            :   {
+<span class="lineNum">     104 </span>                :            :       typedef typename unwrap_reference&lt;T&gt;::type unwrapped_referent;
+<span class="lineNum">     105 </span>                :            :       typedef typename unwrap_pointer&lt;T&gt;::type unwrapped_ptr;
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>                :            :       typedef typename mpl::if_&lt;
+<span class="lineNum">     108 </span>                :            :           // Special handling for char const[N]; interpret them as char
+<span class="lineNum">     109 </span>                :            :           // const* for the sake of conversion
+<span class="lineNum">     110 </span>                :            :           python::detail::is_string_literal&lt;T const&gt;
+<span class="lineNum">     111 </span>                :            :         , arg_to_python&lt;char const*&gt;
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :            :         , typename mpl::if_&lt;
+<span class="lineNum">     114 </span>                :            :               python::detail::value_is_shared_ptr&lt;T&gt;
+<span class="lineNum">     115 </span>                :            :             , shared_ptr_arg_to_python&lt;T&gt;
+<span class="lineNum">     116 </span>                :            :       
+<span class="lineNum">     117 </span>                :            :             , typename mpl::if_&lt;
+<span class="lineNum">     118 </span>                :            :                 mpl::or_&lt;
+<span class="lineNum">     119 </span>                :            :                     is_function&lt;T&gt;
+<span class="lineNum">     120 </span>                :            :                   , indirect_traits::is_pointer_to_function&lt;T&gt;
+<span class="lineNum">     121 </span>                :            :                   , is_member_function_pointer&lt;T&gt;
+<span class="lineNum">     122 </span>                :            :                 &gt;
+<span class="lineNum">     123 </span>                :            :                 , function_arg_to_python&lt;T&gt;
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :                 , typename mpl::if_&lt;
+<span class="lineNum">     126 </span>                :            :                       is_object_manager&lt;T&gt;
+<span class="lineNum">     127 </span>                :            :                     , object_manager_arg_to_python&lt;T&gt;
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :            :                     , typename mpl::if_&lt;
+<span class="lineNum">     130 </span>                :            :                           is_pointer&lt;T&gt;
+<span class="lineNum">     131 </span>                :            :                         , pointer_deep_arg_to_python&lt;T&gt;
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            :                         , typename mpl::if_&lt;
+<span class="lineNum">     134 </span>                :            :                               is_pointer_wrapper&lt;T&gt;
+<span class="lineNum">     135 </span>                :            :                             , pointer_shallow_arg_to_python&lt;unwrapped_ptr&gt;
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            :                             , typename mpl::if_&lt;
+<span class="lineNum">     138 </span>                :            :                                   is_reference_wrapper&lt;T&gt;
+<span class="lineNum">     139 </span>                :            :                                 , reference_arg_to_python&lt;unwrapped_referent&gt;
+<span class="lineNum">     140 </span>                :            :                                 , value_arg_to_python&lt;T&gt;
+<span class="lineNum">     141 </span>                :            :                               &gt;::type
+<span class="lineNum">     142 </span>                :            :                           &gt;::type
+<span class="lineNum">     143 </span>                :            :                       &gt;::type
+<span class="lineNum">     144 </span>                :            :                   &gt;::type
+<span class="lineNum">     145 </span>                :            :               &gt;::type
+<span class="lineNum">     146 </span>                :            :           &gt;::type
+<span class="lineNum">     147 </span>                :            :       &gt;::type
+<span class="lineNum">     148 </span>                :            :       
+<span class="lineNum">     149 </span>                :            :       type;
+<span class="lineNum">     150 </span>                :            :   };
+<span class="lineNum">     151 </span>                :            : }
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     154 </span>                :            : struct arg_to_python
+<span class="lineNum">     155 </span>                :            :     : detail::select_arg_to_python&lt;T&gt;::type
+<span class="lineNum">     156 </span>                :            : {
+<span class="lineNum">     157 </span>                :            :     typedef typename detail::select_arg_to_python&lt;T&gt;::type base;
+<span class="lineNum">     158 </span>                :            :  public: // member functions
+<span class="lineNum">     159 </span>                :            :     // Throw an exception if the conversion can't succeed
+<span class="lineNum">     160 </span>                :            :     arg_to_python(T const&amp; x);
+<span class="lineNum">     161 </span>                :            : };
+<span class="lineNum">     162 </span>                :            : 
+<span class="lineNum">     163 </span>                :            : //
+<span class="lineNum">     164 </span>                :            : // implementations
+<span class="lineNum">     165 </span>                :            : //
+<span class="lineNum">     166 </span>                :            : namespace detail
+<span class="lineNum">     167 </span>                :            : {
+<span class="lineNum">     168 </span>                :            :   // reject_raw_object_ptr -- cause a compile-time error if the user
+<span class="lineNum">     169 </span>                :            :   // should pass a raw Python object pointer
+<span class="lineNum">     170 </span>                :            :   using python::detail::yes_convertible;
+<span class="lineNum">     171 </span>                :            :   using python::detail::no_convertible;
+<span class="lineNum">     172 </span>                :            :   using python::detail::unspecialized;
+<span class="lineNum">     173 </span>                :            :   
+<span class="lineNum">     174 </span>                :            :   template &lt;class T&gt; struct cannot_convert_raw_PyObject;
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :            :   template &lt;class T, class Convertibility&gt;
+<span class="lineNum">     177 </span>                :            :   struct reject_raw_object_helper
+<span class="lineNum">     178 </span>                :            :   {
+<span class="lineNum">     179 </span>                :            :       static void error(Convertibility)
+<span class="lineNum">     180 </span>                :            :       {
+<span class="lineNum">     181 </span>                :            :           cannot_convert_raw_PyObject&lt;T*&gt;::to_python_use_handle_instead();
+<span class="lineNum">     182 </span>                :            :       }
+<span class="lineNum">     183 </span>                :            :       static void error(...) {}
+<span class="lineNum">     184 </span>                :            :   };
+<span class="lineNum">     185 </span>                :            :   
+<span class="lineNum">     186 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     187 </span>                :            :   inline void reject_raw_object_ptr(T*)
+<span class="lineNum">     188 </span>                :            :   {
+<span class="lineNum">     189 </span>                :            :       reject_raw_object_helper&lt;T,yes_convertible&gt;::error(
+<span class="lineNum">     190 </span>                :            :           python::detail::convertible&lt;PyObject const volatile*&gt;::check((T*)0));
+<span class="lineNum">     191 </span>                :            :       
+<span class="lineNum">     192 </span>                :            :       typedef typename remove_cv&lt;T&gt;::type value_type;
+<span class="lineNum">     193 </span>                :            :       
+<span class="lineNum">     194 </span>                :            :       reject_raw_object_helper&lt;T,no_convertible&gt;::error(
+<span class="lineNum">     195 </span>                :            :           python::detail::convertible&lt;unspecialized*&gt;::check(
+<span class="lineNum">     196 </span>                :            :               (base_type_traits&lt;value_type&gt;*)0
+<span class="lineNum">     197 </span>                :            :               ));
+<span class="lineNum">     198 </span>                :            :   }
+<span class="lineNum">     199 </span>                :            :   // ---------
+<span class="lineNum">     200 </span>                :            :       
+<span class="lineNum">     201 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     202 </span>                :            :   inline function_arg_to_python&lt;T&gt;::function_arg_to_python(T const&amp; x)
+<span class="lineNum">     203 </span>                :            :       : handle&lt;&gt;(python::objects::make_function_handle(x))
+<span class="lineNum">     204 </span>                :            :   {
+<span class="lineNum">     205 </span>                :            :   }
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :   inline value_arg_to_python&lt;T&gt;::value_arg_to_python(T const&amp; x)</span>
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :       : arg_to_python_base(&amp;x, registered&lt;T&gt;::converters)</span>
+<span class="lineNum">     210 </span>                :            :   {
+<span class="lineNum">     211 </span>                :            :   }
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :   template &lt;class Ptr&gt;
+<span class="lineNum">     214 </span>                :            :   inline pointer_deep_arg_to_python&lt;Ptr&gt;::pointer_deep_arg_to_python(Ptr x)
+<span class="lineNum">     215 </span>                :            :       : arg_to_python_base(x, registered_pointee&lt;Ptr&gt;::converters)
+<span class="lineNum">     216 </span>                :            :   {
+<span class="lineNum">     217 </span>                :            :       detail::reject_raw_object_ptr((Ptr)0);
+<span class="lineNum">     218 </span>                :            :   }
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     221 </span>                :            :   inline PyObject* reference_arg_to_python&lt;T&gt;::get_object(T&amp; x)
+<span class="lineNum">     222 </span>                :            :   {
+<span class="lineNum">     223 </span>                :            :       to_python_indirect&lt;T&amp;,python::detail::make_reference_holder&gt; convert;
+<span class="lineNum">     224 </span>                :            :       return convert(x);
+<span class="lineNum">     225 </span>                :            :   }
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     228 </span>                :            :   inline reference_arg_to_python&lt;T&gt;::reference_arg_to_python(T&amp; x)
+<span class="lineNum">     229 </span>                :            :       : handle&lt;&gt;(reference_arg_to_python&lt;T&gt;::get_object(x))
+<span class="lineNum">     230 </span>                :            :   {
+<span class="lineNum">     231 </span>                :            :   }
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     234 </span>                :            :   inline shared_ptr_arg_to_python&lt;T&gt;::shared_ptr_arg_to_python(T const&amp; x)
+<span class="lineNum">     235 </span>                :            :       : handle&lt;&gt;(shared_ptr_to_python(x))
+<span class="lineNum">     236 </span>                :            :   {
+<span class="lineNum">     237 </span>                :            :   }
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>                :            :   template &lt;class Ptr&gt;
+<span class="lineNum">     240 </span>                :            :   inline pointer_shallow_arg_to_python&lt;Ptr&gt;::pointer_shallow_arg_to_python(Ptr x)
+<span class="lineNum">     241 </span>                :            :       : handle&lt;&gt;(pointer_shallow_arg_to_python&lt;Ptr&gt;::get_object(x))
+<span class="lineNum">     242 </span>                :            :   {
+<span class="lineNum">     243 </span>                :            :       detail::reject_raw_object_ptr((Ptr)0);
+<span class="lineNum">     244 </span>                :            :   }
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            :   template &lt;class Ptr&gt;
+<span class="lineNum">     247 </span>                :            :   inline PyObject* pointer_shallow_arg_to_python&lt;Ptr&gt;::get_object(Ptr x)
+<span class="lineNum">     248 </span>                :            :   {
+<span class="lineNum">     249 </span>                :            :       to_python_indirect&lt;Ptr,python::detail::make_reference_holder&gt; convert;
+<span class="lineNum">     250 </span>                :            :       return convert(x);
+<span class="lineNum">     251 </span>                :            :   }
+<span class="lineNum">     252 </span>                :            : }
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 : inline arg_to_python&lt;T&gt;::arg_to_python(T const&amp; x)</span>
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :     : base(x)</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 : {}</span>
+<span class="lineNum">     258 </span>                :            : 
+<span class="lineNum">     259 </span>                :            : }}} // namespace boost::python::converter
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            : #endif // ARG_TO_PYTHON_DWA200265_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

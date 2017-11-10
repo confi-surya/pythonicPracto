@@ -1,0 +1,847 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/suite/indexing/detail/indexing_suite_detail.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/suite/indexing/detail</a> - indexing_suite_detail.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">66</td>
+            <td class="headerCovTableEntryLo">1.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //  (C) Copyright Joel de Guzman 2003.
+<span class="lineNum">       2 </span>                :            : //  Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : //  accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : //  http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : #ifndef INDEXING_SUITE_DETAIL_JDG20036_HPP
+<span class="lineNum">       7 </span>                :            : # define INDEXING_SUITE_DETAIL_JDG20036_HPP
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : # include &lt;boost/python/extract.hpp&gt;
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/scoped_ptr.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/get_pointer.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/detail/binary_search.hpp&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;boost/numeric/conversion/cast.hpp&gt;
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/type_traits/is_pointer.hpp&gt;
+<span class="lineNum">      15 </span>                :            : # include &lt;vector&gt;
+<span class="lineNum">      16 </span>                :            : # include &lt;map&gt;
+<span class="lineNum">      17 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : namespace boost { namespace python { namespace detail {
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #if defined(NDEBUG)
+<span class="lineNum">      22 </span>                :            : #define BOOST_PYTHON_INDEXING_CHECK_INVARIANT
+<span class="lineNum">      23 </span>                :            : #else
+<span class="lineNum">      24 </span>                :            : #define BOOST_PYTHON_INDEXING_CHECK_INVARIANT check_invariant()
+<span class="lineNum">      25 </span>                :            : #endif
+<span class="lineNum">      26 </span>                :            :     
+<span class="lineNum">      27 </span>                :            :     template &lt;class Proxy&gt;
+<span class="lineNum">      28 </span>                :            :     struct compare_proxy_index
+<span class="lineNum">      29 </span>                :            :     {
+<span class="lineNum">      30 </span>                :            :         //  This functor compares a proxy and an index.
+<span class="lineNum">      31 </span>                :            :         //  This is used by proxy_group::first_proxy to
+<span class="lineNum">      32 </span>                :            :         //  get first proxy with index i.
+<span class="lineNum">      33 </span>                :            :                 
+<span class="lineNum">      34 </span>                :            :         template &lt;class Index&gt;
+<span class="lineNum">      35 </span>                :            :         bool operator()(PyObject* prox, Index i) const
+<span class="lineNum">      36 </span>                :            :         {
+<span class="lineNum">      37 </span>                :            :             typedef typename Proxy::policies_type policies_type;
+<span class="lineNum">      38 </span>                :            :             Proxy&amp; proxy = extract&lt;Proxy&amp;&gt;(prox)();
+<span class="lineNum">      39 </span>                :            :             return policies_type::
+<span class="lineNum">      40 </span>                :            :                 compare_index(proxy.get_container(), proxy.get_index(), i);
+<span class="lineNum">      41 </span>                :            :         }
+<span class="lineNum">      42 </span>                :            :     };        
+<span class="lineNum">      43 </span>                :            :  
+<span class="lineNum">      44 </span>                :            :     //  The proxy_group class holds a vector of container element
+<span class="lineNum">      45 </span>                :            :     //  proxies. First, what is a container element proxy? A container 
+<span class="lineNum">      46 </span>                :            :     //  element proxy acts like a smart pointer holding a reference to 
+<span class="lineNum">      47 </span>                :            :     //  a container and an index (see container_element, for details). 
+<span class="lineNum">      48 </span>                :            :     //
+<span class="lineNum">      49 </span>                :            :     //  The proxies are held in a vector always sorted by its index.
+<span class="lineNum">      50 </span>                :            :     //  Various functions manage the addition, removal and searching
+<span class="lineNum">      51 </span>                :            :     //  of proxies from the vector.
+<span class="lineNum">      52 </span>                :            :     //
+<span class="lineNum">      53 </span>                :            :     template &lt;class Proxy&gt;
+<span class="lineNum">      54 </span>                :            :     class proxy_group
+<span class="lineNum">      55 </span>                :            :     {
+<span class="lineNum">      56 </span>                :            :     public:
+<span class="lineNum">      57 </span>                :            :     
+<span class="lineNum">      58 </span>                :            :         typedef typename std::vector&lt;PyObject*&gt;::const_iterator const_iterator;
+<span class="lineNum">      59 </span>                :            :         typedef typename std::vector&lt;PyObject*&gt;::iterator iterator;
+<span class="lineNum">      60 </span>                :            :         typedef typename Proxy::index_type index_type;
+<span class="lineNum">      61 </span>                :            :         typedef typename Proxy::policies_type policies_type;
+<span class="lineNum">      62 </span>                :            :         
+<span class="lineNum">      63 </span>                :            :         iterator
+<span class="lineNum">      64 </span>                :            :         first_proxy(index_type i)
+<span class="lineNum">      65 </span>                :            :         {
+<span class="lineNum">      66 </span>                :            :             // Return the first proxy with index &lt;= i
+<span class="lineNum">      67 </span>                :            :             return boost::detail::lower_bound(
+<span class="lineNum">      68 </span>                :            :                 proxies.begin(), proxies.end(), 
+<span class="lineNum">      69 </span>                :            :                 i, compare_proxy_index&lt;Proxy&gt;());
+<span class="lineNum">      70 </span>                :            :         }
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :            :         void
+<span class="lineNum">      73 </span>                :            :         remove(Proxy&amp; proxy)
+<span class="lineNum">      74 </span>                :            :         {
+<span class="lineNum">      75 </span>                :            :             // Remove a proxy
+<span class="lineNum">      76 </span>                :            :             for (iterator iter = first_proxy(proxy.get_index());
+<span class="lineNum">      77 </span>                :            :                 iter != proxies.end(); ++iter)
+<span class="lineNum">      78 </span>                :            :             {
+<span class="lineNum">      79 </span>                :            :                 if (&amp;extract&lt;Proxy&amp;&gt;(*iter)() == &amp;proxy)
+<span class="lineNum">      80 </span>                :            :                 {
+<span class="lineNum">      81 </span>                :            :                     proxies.erase(iter);
+<span class="lineNum">      82 </span>                :            :                     break;
+<span class="lineNum">      83 </span>                :            :                 }
+<span class="lineNum">      84 </span>                :            :             }
+<span class="lineNum">      85 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">      86 </span>                :            :         }
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :            :         void
+<span class="lineNum">      89 </span>                :            :         add(PyObject* prox)
+<span class="lineNum">      90 </span>                :            :         {
+<span class="lineNum">      91 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">      92 </span>                :            :             // Add a proxy
+<span class="lineNum">      93 </span>                :            :             proxies.insert(
+<span class="lineNum">      94 </span>                :            :                 first_proxy(extract&lt;Proxy&amp;&gt;(prox)().get_index()), prox);
+<span class="lineNum">      95 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">      96 </span>                :            :         }
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :            :         void
+<span class="lineNum">      99 </span>                :            :         erase(index_type i, mpl::false_)
+<span class="lineNum">     100 </span>                :            :         {
+<span class="lineNum">     101 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     102 </span>                :            :             // Erase the proxy with index i 
+<span class="lineNum">     103 </span>                :            :             replace(i, i+1, 0);
+<span class="lineNum">     104 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     105 </span>                :            :         }
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>                :            :         void
+<span class="lineNum">     108 </span>                :            :         erase(index_type i, mpl::true_)
+<span class="lineNum">     109 </span>                :            :         {
+<span class="lineNum">     110 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     111 </span>                :            :             // Erase the proxy with index i 
+<span class="lineNum">     112 </span>                :            :             
+<span class="lineNum">     113 </span>                :            :             iterator iter = first_proxy(i);
+<span class="lineNum">     114 </span>                :            :             extract&lt;Proxy&amp;&gt; p(*iter);
+<span class="lineNum">     115 </span>                :            :             
+<span class="lineNum">     116 </span>                :            :             if (iter != proxies.end() &amp;&amp; p().get_index() == i)
+<span class="lineNum">     117 </span>                :            :             {
+<span class="lineNum">     118 </span>                :            :                 extract&lt;Proxy&amp;&gt; p(*iter);
+<span class="lineNum">     119 </span>                :            :                 p().detach();
+<span class="lineNum">     120 </span>                :            :                 proxies.erase(iter);
+<span class="lineNum">     121 </span>                :            :             }
+<span class="lineNum">     122 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     123 </span>                :            :         }
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :         void
+<span class="lineNum">     126 </span>                :            :         erase(index_type from, index_type to)
+<span class="lineNum">     127 </span>                :            :         {
+<span class="lineNum">     128 </span>                :            :             // note: this cannot be called when container is not sliceable
+<span class="lineNum">     129 </span>                :            :             
+<span class="lineNum">     130 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     131 </span>                :            :             // Erase all proxies with indexes from..to 
+<span class="lineNum">     132 </span>                :            :             replace(from, to, 0);
+<span class="lineNum">     133 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     134 </span>                :            :         }
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :         void
+<span class="lineNum">     137 </span>                :            :         replace(
+<span class="lineNum">     138 </span>                :            :             index_type from, 
+<span class="lineNum">     139 </span>                :            :             index_type to, 
+<span class="lineNum">     140 </span>                :            :             typename std::vector&lt;PyObject*&gt;::size_type len)
+<span class="lineNum">     141 </span>                :            :         {
+<span class="lineNum">     142 </span>                :            :             // note: this cannot be called when container is not sliceable
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     145 </span>                :            :             // Erase all proxies with indexes from..to.
+<span class="lineNum">     146 </span>                :            :             // Adjust the displaced indexes such that the
+<span class="lineNum">     147 </span>                :            :             // final effect is that we have inserted *len*
+<span class="lineNum">     148 </span>                :            :             // number of proxies in the vacated region. This
+<span class="lineNum">     149 </span>                :            :             // procedure involves adjusting the indexes of 
+<span class="lineNum">     150 </span>                :            :             // the proxies.
+<span class="lineNum">     151 </span>                :            :             
+<span class="lineNum">     152 </span>                :            :             iterator left = first_proxy(from);
+<span class="lineNum">     153 </span>                :            :             iterator right = proxies.end(); // we'll adjust this later
+<span class="lineNum">     154 </span>                :            :             
+<span class="lineNum">     155 </span>                :            :             for (iterator iter = left; iter != right; ++iter)
+<span class="lineNum">     156 </span>                :            :             {
+<span class="lineNum">     157 </span>                :            :                 if (extract&lt;Proxy&amp;&gt;(*iter)().get_index() &gt; to)
+<span class="lineNum">     158 </span>                :            :                 {
+<span class="lineNum">     159 </span>                :            :                     right = iter; // adjust right
+<span class="lineNum">     160 </span>                :            :                     break;
+<span class="lineNum">     161 </span>                :            :                 }
+<span class="lineNum">     162 </span>                :            :                 extract&lt;Proxy&amp;&gt; p(*iter);
+<span class="lineNum">     163 </span>                :            :                 p().detach();
+<span class="lineNum">     164 </span>                :            :             }
+<span class="lineNum">     165 </span>                :            :             
+<span class="lineNum">     166 </span>                :            :             typename std::vector&lt;PyObject*&gt;::size_type 
+<span class="lineNum">     167 </span>                :            :                 offset = left-proxies.begin();
+<span class="lineNum">     168 </span>                :            :             proxies.erase(left, right);
+<span class="lineNum">     169 </span>                :            :             right = proxies.begin()+offset;
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :            :             while (right != proxies.end())
+<span class="lineNum">     172 </span>                :            :             {
+<span class="lineNum">     173 </span>                :            :                 typedef typename Proxy::container_type::difference_type difference_type;
+<span class="lineNum">     174 </span>                :            :                 extract&lt;Proxy&amp;&gt; p(*right);
+<span class="lineNum">     175 </span>                :            :                 p().set_index(
+<span class="lineNum">     176 </span>                :            :                     extract&lt;Proxy&amp;&gt;(*right)().get_index() 
+<span class="lineNum">     177 </span>                :            :                     - (difference_type(to) - from - len)
+<span class="lineNum">     178 </span>                :            :                 );
+<span class="lineNum">     179 </span>                :            :                     
+<span class="lineNum">     180 </span>                :            :                 ++right;
+<span class="lineNum">     181 </span>                :            :             }
+<span class="lineNum">     182 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     183 </span>                :            :         }
+<span class="lineNum">     184 </span>                :            :         
+<span class="lineNum">     185 </span>                :            :         PyObject*
+<span class="lineNum">     186 </span>                :            :         find(index_type i)
+<span class="lineNum">     187 </span>                :            :         {
+<span class="lineNum">     188 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     189 </span>                :            :             // Find the proxy with *exact* index i.
+<span class="lineNum">     190 </span>                :            :             // Return 0 (null) if no proxy with the 
+<span class="lineNum">     191 </span>                :            :             // given index is found.
+<span class="lineNum">     192 </span>                :            :             iterator iter = first_proxy(i);
+<span class="lineNum">     193 </span>                :            :             if (iter != proxies.end()
+<span class="lineNum">     194 </span>                :            :                 &amp;&amp; extract&lt;Proxy&amp;&gt;(*iter)().get_index() == i)
+<span class="lineNum">     195 </span>                :            :             {
+<span class="lineNum">     196 </span>                :            :                 BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     197 </span>                :            :                 return *iter;
+<span class="lineNum">     198 </span>                :            :             }
+<span class="lineNum">     199 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     200 </span>                :            :             return 0;
+<span class="lineNum">     201 </span>                :            :         }
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            :         typename std::vector&lt;PyObject*&gt;::size_type 
+<span class="lineNum">     204 </span>                :            :         size() const
+<span class="lineNum">     205 </span>                :            :         {
+<span class="lineNum">     206 </span>                :            :             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+<span class="lineNum">     207 </span>                :            :             // How many proxies are there so far?
+<span class="lineNum">     208 </span>                :            :             return proxies.size();
+<span class="lineNum">     209 </span>                :            :         } 
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :            :     private:
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            : #if !defined(NDEBUG)
+<span class="lineNum">     214 </span>                :            :         void
+<span class="lineNum">     215 </span>                :            :         check_invariant() const
+<span class="lineNum">     216 </span>                :            :         {
+<span class="lineNum">     217 </span>                :            :             for (const_iterator i = proxies.begin(); i != proxies.end(); ++i)
+<span class="lineNum">     218 </span>                :            :             {
+<span class="lineNum">     219 </span>                :            :                 if ((*i)-&gt;ob_refcnt &lt;= 0)
+<span class="lineNum">     220 </span>                :            :                 {
+<span class="lineNum">     221 </span>                :            :                     PyErr_SetString(PyExc_RuntimeError, 
+<span class="lineNum">     222 </span>                :            :                         &quot;Invariant: Proxy vector in an inconsistent state&quot;);
+<span class="lineNum">     223 </span>                :            :                     throw_error_already_set();
+<span class="lineNum">     224 </span>                :            :                 }
+<span class="lineNum">     225 </span>                :            :                 
+<span class="lineNum">     226 </span>                :            :                 if (i+1 != proxies.end())
+<span class="lineNum">     227 </span>                :            :                 {
+<span class="lineNum">     228 </span>                :            :                     if (extract&lt;Proxy&amp;&gt;(*(i+1))().get_index() ==
+<span class="lineNum">     229 </span>                :            :                         extract&lt;Proxy&amp;&gt;(*(i))().get_index())
+<span class="lineNum">     230 </span>                :            :                     {
+<span class="lineNum">     231 </span>                :            :                         PyErr_SetString(PyExc_RuntimeError, 
+<span class="lineNum">     232 </span>                :            :                             &quot;Invariant: Proxy vector in an inconsistent state (duplicate proxy)&quot;);
+<span class="lineNum">     233 </span>                :            :                         throw_error_already_set();
+<span class="lineNum">     234 </span>                :            :                     }
+<span class="lineNum">     235 </span>                :            :                 }
+<span class="lineNum">     236 </span>                :            :             }
+<span class="lineNum">     237 </span>                :            :         }
+<span class="lineNum">     238 </span>                :            : #endif
+<span class="lineNum">     239 </span>                :            :         
+<span class="lineNum">     240 </span>                :            :         std::vector&lt;PyObject*&gt; proxies;
+<span class="lineNum">     241 </span>                :            :     };
+<span class="lineNum">     242 </span>                :            :             
+<span class="lineNum">     243 </span>                :            :     // proxy_links holds a map of Container pointers (keys)
+<span class="lineNum">     244 </span>                :            :     // with proxy_group(s) (data). Various functions manage 
+<span class="lineNum">     245 </span>                :            :     // the addition, removal and searching of proxies from 
+<span class="lineNum">     246 </span>                :            :     // the map.
+<span class="lineNum">     247 </span>                :            :     //
+<span class="lineNum">     248 </span>                :            :     template &lt;class Proxy, class Container&gt;
+<span class="lineNum">     249 </span>                :            :     class proxy_links
+<span class="lineNum">     250 </span>                :            :     {
+<span class="lineNum">     251 </span>                :            :     public:
+<span class="lineNum">     252 </span>                :            :     
+<span class="lineNum">     253 </span>                :            :         typedef std::map&lt;Container*, proxy_group&lt;Proxy&gt; &gt; links_t;
+<span class="lineNum">     254 </span>                :            :         typedef typename Proxy::index_type index_type;
+<span class="lineNum">     255 </span>                :            : 
+<span class="lineNum">     256 </span>                :            :         void
+<span class="lineNum">     257 </span>                :            :         remove(Proxy&amp; proxy)
+<span class="lineNum">     258 </span>                :            :         {
+<span class="lineNum">     259 </span>                :            :             // Remove a proxy.
+<span class="lineNum">     260 </span>                :            :             typename links_t::iterator r = links.find(&amp;proxy.get_container());
+<span class="lineNum">     261 </span>                :            :             if (r != links.end())
+<span class="lineNum">     262 </span>                :            :             {
+<span class="lineNum">     263 </span>                :            :                 r-&gt;second.remove(proxy);
+<span class="lineNum">     264 </span>                :            :                 if (r-&gt;second.size() == 0)
+<span class="lineNum">     265 </span>                :            :                     links.erase(r);
+<span class="lineNum">     266 </span>                :            :             }
+<span class="lineNum">     267 </span>                :            :         }
+<span class="lineNum">     268 </span>                :            :         
+<span class="lineNum">     269 </span>                :            :         void
+<span class="lineNum">     270 </span>                :            :         add(PyObject* prox, Container&amp; container)
+<span class="lineNum">     271 </span>                :            :         {
+<span class="lineNum">     272 </span>                :            :             // Add a proxy
+<span class="lineNum">     273 </span>                :            :             links[&amp;container].add(prox);
+<span class="lineNum">     274 </span>                :            :         }
+<span class="lineNum">     275 </span>                :            :         
+<span class="lineNum">     276 </span>                :            :         template &lt;class NoSlice&gt;
+<span class="lineNum">     277 </span>                :            :         void erase(Container&amp; container, index_type i, NoSlice no_slice)
+<span class="lineNum">     278 </span>                :            :         {
+<span class="lineNum">     279 </span>                :            :             // Erase the proxy with index i 
+<span class="lineNum">     280 </span>                :            :             typename links_t::iterator r = links.find(&amp;container);
+<span class="lineNum">     281 </span>                :            :             if (r != links.end())
+<span class="lineNum">     282 </span>                :            :             {
+<span class="lineNum">     283 </span>                :            :                 r-&gt;second.erase(i, no_slice);
+<span class="lineNum">     284 </span>                :            :                 if (r-&gt;second.size() == 0)
+<span class="lineNum">     285 </span>                :            :                     links.erase(r);
+<span class="lineNum">     286 </span>                :            :             }
+<span class="lineNum">     287 </span>                :            :         }
+<span class="lineNum">     288 </span>                :            :         
+<span class="lineNum">     289 </span>                :            :         void
+<span class="lineNum">     290 </span>                :            :         erase(Container&amp; container, index_type from, index_type to)
+<span class="lineNum">     291 </span>                :            :         {
+<span class="lineNum">     292 </span>                :            :             // Erase all proxies with indexes from..to 
+<span class="lineNum">     293 </span>                :            :             typename links_t::iterator r = links.find(&amp;container);
+<span class="lineNum">     294 </span>                :            :             if (r != links.end())
+<span class="lineNum">     295 </span>                :            :             {
+<span class="lineNum">     296 </span>                :            :                 r-&gt;second.erase(from, to);
+<span class="lineNum">     297 </span>                :            :                 if (r-&gt;second.size() == 0)
+<span class="lineNum">     298 </span>                :            :                     links.erase(r);
+<span class="lineNum">     299 </span>                :            :             }
+<span class="lineNum">     300 </span>                :            :         }
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :         void
+<span class="lineNum">     303 </span>                :            :         replace(
+<span class="lineNum">     304 </span>                :            :             Container&amp; container, 
+<span class="lineNum">     305 </span>                :            :             index_type from, index_type to, index_type len)
+<span class="lineNum">     306 </span>                :            :         {
+<span class="lineNum">     307 </span>                :            :             // Erase all proxies with indexes from..to.
+<span class="lineNum">     308 </span>                :            :             // Adjust the displaced indexes such that the
+<span class="lineNum">     309 </span>                :            :             // final effect is that we have inserted *len*
+<span class="lineNum">     310 </span>                :            :             // number of proxies in the vacated region. This
+<span class="lineNum">     311 </span>                :            :             // procedure involves adjusting the indexes of 
+<span class="lineNum">     312 </span>                :            :             // the proxies.
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            :             typename links_t::iterator r = links.find(&amp;container);
+<span class="lineNum">     315 </span>                :            :             if (r != links.end())
+<span class="lineNum">     316 </span>                :            :             {
+<span class="lineNum">     317 </span>                :            :                 r-&gt;second.replace(from, to, len);
+<span class="lineNum">     318 </span>                :            :                 if (r-&gt;second.size() == 0)
+<span class="lineNum">     319 </span>                :            :                     links.erase(r);
+<span class="lineNum">     320 </span>                :            :             }
+<span class="lineNum">     321 </span>                :            :         }
+<span class="lineNum">     322 </span>                :            :         
+<span class="lineNum">     323 </span>                :            :         PyObject*
+<span class="lineNum">     324 </span>                :            :         find(Container&amp; container, index_type i)
+<span class="lineNum">     325 </span>                :            :         {
+<span class="lineNum">     326 </span>                :            :             // Find the proxy with *exact* index i.
+<span class="lineNum">     327 </span>                :            :             // Return 0 (null) if no proxy with the given 
+<span class="lineNum">     328 </span>                :            :             // index is found.
+<span class="lineNum">     329 </span>                :            :             typename links_t::iterator r = links.find(&amp;container);
+<span class="lineNum">     330 </span>                :            :             if (r != links.end())
+<span class="lineNum">     331 </span>                :            :                 return r-&gt;second.find(i);
+<span class="lineNum">     332 </span>                :            :             return 0;
+<span class="lineNum">     333 </span>                :            :         }
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            :     private:
+<span class="lineNum">     336 </span>                :            :     
+<span class="lineNum">     337 </span>                :            :         links_t links;
+<span class="lineNum">     338 </span>                :            :     };
+<span class="lineNum">     339 </span>                :            :     
+<span class="lineNum">     340 </span>                :            :     // container_element is our container proxy class.
+<span class="lineNum">     341 </span>                :            :     // This class acts like a smart pointer to a container
+<span class="lineNum">     342 </span>                :            :     // element. The class holds an index and a reference to
+<span class="lineNum">     343 </span>                :            :     // a container. Dereferencing the smart pointer will
+<span class="lineNum">     344 </span>                :            :     // retrieve the nth (index) element from the container.
+<span class="lineNum">     345 </span>                :            :     //
+<span class="lineNum">     346 </span>                :            :     // A container_element can also be detached from the
+<span class="lineNum">     347 </span>                :            :     // container. In such a detached state, the container_element
+<span class="lineNum">     348 </span>                :            :     // holds a copy of the nth (index) element, which it 
+<span class="lineNum">     349 </span>                :            :     // returns when dereferenced.
+<span class="lineNum">     350 </span>                :            :     //
+<span class="lineNum">     351 </span>                :            :     template &lt;class Container, class Index, class Policies&gt;
+<span class="lineNum">     352 </span>                :            :     class container_element
+<span class="lineNum">     353 </span>                :            :     {
+<span class="lineNum">     354 </span>                :            :     public:
+<span class="lineNum">     355 </span>                :            :     
+<span class="lineNum">     356 </span>                :            :         typedef Index index_type;
+<span class="lineNum">     357 </span>                :            :         typedef Container container_type;
+<span class="lineNum">     358 </span>                :            :         typedef typename Policies::data_type element_type;
+<span class="lineNum">     359 </span>                :            :         typedef Policies policies_type;
+<span class="lineNum">     360 </span>                :            :         typedef container_element&lt;Container, Index, Policies&gt; self_t;
+<span class="lineNum">     361 </span>                :            :         typedef proxy_group&lt;self_t&gt; links_type;
+<span class="lineNum">     362 </span>                :            :         
+<span class="lineNum">     363 </span>                :            :         container_element(object container, Index index)
+<span class="lineNum">     364 </span>                :            :             : ptr()
+<span class="lineNum">     365 </span>                :            :             , container(container)
+<span class="lineNum">     366 </span>                :            :             , index(index)
+<span class="lineNum">     367 </span>                :            :         {
+<span class="lineNum">     368 </span>                :            :         }
+<span class="lineNum">     369 </span>                :            :             
+<span class="lineNum">     370 </span>                :            :         container_element(container_element const&amp; ce)
+<span class="lineNum">     371 </span>                :            :           : ptr(ce.ptr.get() == 0 ? 0 : new element_type(*ce.ptr.get()))
+<span class="lineNum">     372 </span>                :            :           , container(ce.container)
+<span class="lineNum">     373 </span>                :            :           , index(ce.index)
+<span class="lineNum">     374 </span>                :            :         {
+<span class="lineNum">     375 </span>                :            :         }
+<span class="lineNum">     376 </span>                :            : 
+<span class="lineNum">     377 </span>                :            :         ~container_element()
+<span class="lineNum">     378 </span>                :            :         {
+<span class="lineNum">     379 </span>                :            :             if (!is_detached())
+<span class="lineNum">     380 </span>                :            :                 get_links().remove(*this);
+<span class="lineNum">     381 </span>                :            :         }
+<span class="lineNum">     382 </span>                :            :                       
+<span class="lineNum">     383 </span>                :            :         element_type&amp; operator*() const
+<span class="lineNum">     384 </span>                :            :         {
+<span class="lineNum">     385 </span>                :            :             if (is_detached())
+<span class="lineNum">     386 </span>                :            :                 return *get_pointer(ptr);
+<span class="lineNum">     387 </span>                :            :             return Policies::get_item(get_container(), index);
+<span class="lineNum">     388 </span>                :            :         }
+<span class="lineNum">     389 </span>                :            :         
+<span class="lineNum">     390 </span>                :            :         element_type* get() const
+<span class="lineNum">     391 </span>                :            :         {
+<span class="lineNum">     392 </span>                :            :             if (is_detached())
+<span class="lineNum">     393 </span>                :            :                 return get_pointer(ptr);
+<span class="lineNum">     394 </span>                :            :             return &amp;Policies::get_item(get_container(), index);
+<span class="lineNum">     395 </span>                :            :         }
+<span class="lineNum">     396 </span>                :            :         
+<span class="lineNum">     397 </span>                :            :         void
+<span class="lineNum">     398 </span>                :            :         detach()
+<span class="lineNum">     399 </span>                :            :         {
+<span class="lineNum">     400 </span>                :            :             if (!is_detached())
+<span class="lineNum">     401 </span>                :            :             {
+<span class="lineNum">     402 </span>                :            :                 ptr.reset(
+<span class="lineNum">     403 </span>                :            :                     new element_type(
+<span class="lineNum">     404 </span>                :            :                         Policies::get_item(get_container(), index)));
+<span class="lineNum">     405 </span>                :            :                 container = object(); // free container. reset it to None
+<span class="lineNum">     406 </span>                :            :             }
+<span class="lineNum">     407 </span>                :            :         }
+<span class="lineNum">     408 </span>                :            :         
+<span class="lineNum">     409 </span>                :            :         bool
+<span class="lineNum">     410 </span>                :            :         is_detached() const
+<span class="lineNum">     411 </span>                :            :         {
+<span class="lineNum">     412 </span>                :            :             return get_pointer(ptr) != 0;
+<span class="lineNum">     413 </span>                :            :         }
+<span class="lineNum">     414 </span>                :            : 
+<span class="lineNum">     415 </span>                :            :         Container&amp; 
+<span class="lineNum">     416 </span>                :            :         get_container() const
+<span class="lineNum">     417 </span>                :            :         {
+<span class="lineNum">     418 </span>                :            :             return extract&lt;Container&amp;&gt;(container)();
+<span class="lineNum">     419 </span>                :            :         }
+<span class="lineNum">     420 </span>                :            :         
+<span class="lineNum">     421 </span>                :            :         Index 
+<span class="lineNum">     422 </span>                :            :         get_index() const
+<span class="lineNum">     423 </span>                :            :         {
+<span class="lineNum">     424 </span>                :            :             return index;
+<span class="lineNum">     425 </span>                :            :         }
+<span class="lineNum">     426 </span>                :            : 
+<span class="lineNum">     427 </span>                :            :         void 
+<span class="lineNum">     428 </span>                :            :         set_index(Index i)
+<span class="lineNum">     429 </span>                :            :         {
+<span class="lineNum">     430 </span>                :            :             index = i;
+<span class="lineNum">     431 </span>                :            :         }
+<span class="lineNum">     432 </span>                :            :  
+<span class="lineNum">     433 </span>                :            :         static proxy_links&lt;self_t, Container&gt;&amp;
+<span class="lineNum">     434 </span>                :            :         get_links()
+<span class="lineNum">     435 </span>                :            :         {
+<span class="lineNum">     436 </span>                :            :             // All container_element(s) maintain links to
+<span class="lineNum">     437 </span>                :            :             // its container in a global map (see proxy_links).
+<span class="lineNum">     438 </span>                :            :             // This global &quot;links&quot; map is a singleton.
+<span class="lineNum">     439 </span>                :            :             
+<span class="lineNum">     440 </span>                :            :             static proxy_links&lt;self_t, Container&gt; links;
+<span class="lineNum">     441 </span>                :            :             return links; // singleton
+<span class="lineNum">     442 </span>                :            :         }
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :            :     private:
+<span class="lineNum">     445 </span>                :            :             
+<span class="lineNum">     446 </span>                :            :         container_element&amp; operator=(container_element const&amp; ce);
+<span class="lineNum">     447 </span>                :            : 
+<span class="lineNum">     448 </span>                :            :         scoped_ptr&lt;element_type&gt; ptr;
+<span class="lineNum">     449 </span>                :            :         object container;
+<span class="lineNum">     450 </span>                :            :         Index index;
+<span class="lineNum">     451 </span>                :            :     };
+<span class="lineNum">     452 </span>                :            : 
+<span class="lineNum">     453 </span>                :            :     template &lt;
+<span class="lineNum">     454 </span>                :            :           class Container
+<span class="lineNum">     455 </span>                :            :         , class DerivedPolicies
+<span class="lineNum">     456 </span>                :            :         , class ContainerElement
+<span class="lineNum">     457 </span>                :            :         , class Index
+<span class="lineNum">     458 </span>                :            :     &gt;
+<span class="lineNum">     459 </span>                :            :     struct no_proxy_helper
+<span class="lineNum">     460 </span>                :            :     {                
+<span class="lineNum">     461 </span>                :            :         static void
+<span class="lineNum">     462 </span>                :<span class="lineCov">          6 :         register_container_element()</span>
+<span class="lineNum">     463 </span>                :            :         { 
+<span class="lineNum">     464 </span>                :            :         }
+<span class="lineNum">     465 </span>                :            : 
+<span class="lineNum">     466 </span>                :            :         template &lt;class DataType&gt; 
+<span class="lineNum">     467 </span>                :            :         static object
+<span class="lineNum">     468 </span>                :            :         base_get_item_helper(DataType const&amp; p, mpl::true_)
+<span class="lineNum">     469 </span>                :            :         { 
+<span class="lineNum">     470 </span>                :            :             return object(ptr(p));
+<span class="lineNum">     471 </span>                :            :         }
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :            :         template &lt;class DataType&gt; 
+<span class="lineNum">     474 </span>                :            :         static object
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :         base_get_item_helper(DataType const&amp; x, mpl::false_)</span>
+<span class="lineNum">     476 </span>                :            :         { 
+<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :             return object(x);</span>
+<span class="lineNum">     478 </span>                :            :         }
+<span class="lineNum">     479 </span>                :            : 
+<span class="lineNum">     480 </span>                :            :         static object
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :         base_get_item_(back_reference&lt;Container&amp;&gt; const&amp; container, PyObject* i)</span>
+<span class="lineNum">     482 </span>                :            :         { 
+<span class="lineNum">     483 </span>                :            :             return base_get_item_helper(
+<span class="lineNum">     484 </span>                :            :                 DerivedPolicies::get_item(
+<span class="lineNum">     485 </span>                :            :                     container.get(), DerivedPolicies::
+<span class="lineNum">     486 </span>                :            :                         convert_index(container.get(), i))
+<span class="lineNum">     487 </span>                :            :               , is_pointer&lt;BOOST_DEDUCED_TYPENAME Container::value_type&gt;()
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :             );</span>
+<span class="lineNum">     489 </span>                :            :         }
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            :         static void
+<span class="lineNum">     492 </span>                :            :         base_replace_indexes(
+<span class="lineNum">     493 </span>                :            :             Container&amp; /*container*/, Index /*from*/, 
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :             Index /*to*/, Index /*n*/)</span>
+<span class="lineNum">     495 </span>                :            :         {
+<span class="lineNum">     496 </span>                :            :         }
+<span class="lineNum">     497 </span>                :            : 
+<span class="lineNum">     498 </span>                :            :         template &lt;class NoSlice&gt;
+<span class="lineNum">     499 </span>                :            :         static void
+<span class="lineNum">     500 </span>                :            :         base_erase_index(
+<span class="lineNum">     501 </span>                :<span class="lineNoCov">          0 :             Container&amp; /*container*/, Index /*i*/, NoSlice /*no_slice*/)</span>
+<span class="lineNum">     502 </span>                :            :         {
+<span class="lineNum">     503 </span>                :            :         }
+<span class="lineNum">     504 </span>                :            :         
+<span class="lineNum">     505 </span>                :            :         static void
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :         base_erase_indexes(Container&amp; /*container*/, Index /*from*/, Index /*to*/)</span>
+<span class="lineNum">     507 </span>                :            :         {
+<span class="lineNum">     508 </span>                :            :         }
+<span class="lineNum">     509 </span>                :            :     };            
+<span class="lineNum">     510 </span>                :            :           
+<span class="lineNum">     511 </span>                :            :     template &lt;
+<span class="lineNum">     512 </span>                :            :           class Container
+<span class="lineNum">     513 </span>                :            :         , class DerivedPolicies
+<span class="lineNum">     514 </span>                :            :         , class ContainerElement
+<span class="lineNum">     515 </span>                :            :         , class Index
+<span class="lineNum">     516 </span>                :            :     &gt;
+<span class="lineNum">     517 </span>                :            :     struct proxy_helper
+<span class="lineNum">     518 </span>                :            :     {        
+<span class="lineNum">     519 </span>                :            :         static void
+<span class="lineNum">     520 </span>                :            :         register_container_element()
+<span class="lineNum">     521 </span>                :            :         { 
+<span class="lineNum">     522 </span>                :            :             register_ptr_to_python&lt;ContainerElement&gt;();
+<span class="lineNum">     523 </span>                :            :         }
+<span class="lineNum">     524 </span>                :            : 
+<span class="lineNum">     525 </span>                :            :         static object
+<span class="lineNum">     526 </span>                :            :         base_get_item_(back_reference&lt;Container&amp;&gt; const&amp; container, PyObject* i)
+<span class="lineNum">     527 </span>                :            :         { 
+<span class="lineNum">     528 </span>                :            :             // Proxy
+<span class="lineNum">     529 </span>                :            :             Index idx = DerivedPolicies::convert_index(container.get(), i);
+<span class="lineNum">     530 </span>                :            : 
+<span class="lineNum">     531 </span>                :            :             if (PyObject* shared = 
+<span class="lineNum">     532 </span>                :            :                 ContainerElement::get_links().find(container.get(), idx))
+<span class="lineNum">     533 </span>                :            :             {
+<span class="lineNum">     534 </span>                :            :                 handle&lt;&gt; h(python::borrowed(shared));
+<span class="lineNum">     535 </span>                :            :                 return object(h);
+<span class="lineNum">     536 </span>                :            :             }
+<span class="lineNum">     537 </span>                :            :             else
+<span class="lineNum">     538 </span>                :            :             {
+<span class="lineNum">     539 </span>                :            :                 object prox(ContainerElement(container.source(), idx));
+<span class="lineNum">     540 </span>                :            :                 ContainerElement::
+<span class="lineNum">     541 </span>                :            :                     get_links().add(prox.ptr(), container.get());
+<span class="lineNum">     542 </span>                :            :                 return prox;
+<span class="lineNum">     543 </span>                :            :             }
+<span class="lineNum">     544 </span>                :            :         }
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :         static void
+<span class="lineNum">     547 </span>                :            :         base_replace_indexes(
+<span class="lineNum">     548 </span>                :            :             Container&amp; container, Index from, 
+<span class="lineNum">     549 </span>                :            :             Index to, Index n)
+<span class="lineNum">     550 </span>                :            :         {
+<span class="lineNum">     551 </span>                :            :             ContainerElement::get_links().replace(container, from, to, n);
+<span class="lineNum">     552 </span>                :            :         }
+<span class="lineNum">     553 </span>                :            :         
+<span class="lineNum">     554 </span>                :            :         template &lt;class NoSlice&gt;
+<span class="lineNum">     555 </span>                :            :         static void
+<span class="lineNum">     556 </span>                :            :         base_erase_index(
+<span class="lineNum">     557 </span>                :            :             Container&amp; container, Index i, NoSlice no_slice)
+<span class="lineNum">     558 </span>                :            :         {
+<span class="lineNum">     559 </span>                :            :             ContainerElement::get_links().erase(container, i, no_slice);
+<span class="lineNum">     560 </span>                :            :         }
+<span class="lineNum">     561 </span>                :            :         
+<span class="lineNum">     562 </span>                :            :         static void
+<span class="lineNum">     563 </span>                :            :         base_erase_indexes(
+<span class="lineNum">     564 </span>                :            :             Container&amp; container, Index from, Index to)
+<span class="lineNum">     565 </span>                :            :         {
+<span class="lineNum">     566 </span>                :            :             ContainerElement::get_links().erase(container, from, to);
+<span class="lineNum">     567 </span>                :            :         }
+<span class="lineNum">     568 </span>                :            :     };        
+<span class="lineNum">     569 </span>                :            :     
+<span class="lineNum">     570 </span>                :            :     template &lt;
+<span class="lineNum">     571 </span>                :            :           class Container
+<span class="lineNum">     572 </span>                :            :         , class DerivedPolicies
+<span class="lineNum">     573 </span>                :            :         , class ProxyHandler
+<span class="lineNum">     574 </span>                :            :         , class Data
+<span class="lineNum">     575 </span>                :            :         , class Index
+<span class="lineNum">     576 </span>                :            :     &gt;
+<span class="lineNum">     577 </span>                :            :     struct slice_helper
+<span class="lineNum">     578 </span>                :            :     {        
+<span class="lineNum">     579 </span>                :            :         static object 
+<span class="lineNum">     580 </span>                :<span class="lineNoCov">          0 :         base_get_slice(Container&amp; container, PySliceObject* slice)</span>
+<span class="lineNum">     581 </span>                :            :         { 
+<span class="lineNum">     582 </span>                :            :             Index from, to;
+<span class="lineNum">     583 </span>                :<span class="lineNoCov">          0 :             base_get_slice_data(container, slice, from, to);</span>
+<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 :             return DerivedPolicies::get_slice(container, from, to);</span>
+<span class="lineNum">     585 </span>                :            :         }
+<span class="lineNum">     586 </span>                :            : 
+<span class="lineNum">     587 </span>                :            :         static void
+<span class="lineNum">     588 </span>                :            :         base_get_slice_data(
+<span class="lineNum">     589 </span>                :<span class="lineNoCov">          0 :             Container&amp; container, PySliceObject* slice, Index&amp; from_, Index&amp; to_)</span>
+<span class="lineNum">     590 </span>                :            :         {
+<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :             if (Py_None != slice-&gt;step) {</span>
+<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :                 PyErr_SetString( PyExc_IndexError, &quot;slice step size not supported.&quot;);</span>
+<span class="lineNum">     593 </span>                :<span class="lineNoCov">          0 :                 throw_error_already_set();</span>
+<span class="lineNum">     594 </span>                :            :             }
+<span class="lineNum">     595 </span>                :            : 
+<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 :             Index min_index = DerivedPolicies::get_min_index(container);</span>
+<span class="lineNum">     597 </span>                :<span class="lineNoCov">          0 :             Index max_index = DerivedPolicies::get_max_index(container);</span>
+<span class="lineNum">     598 </span>                :            :             
+<span class="lineNum">     599 </span>                :<span class="lineNoCov">          0 :             if (Py_None == slice-&gt;start) {</span>
+<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :                 from_ = min_index;</span>
+<span class="lineNum">     601 </span>                :            :             }
+<span class="lineNum">     602 </span>                :            :             else {
+<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :                 long from = extract&lt;long&gt;( slice-&gt;start);</span>
+<span class="lineNum">     604 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (from &lt; 0) // Negative slice index</span>
+<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :                     from += max_index;</span>
+<span class="lineNum">     606 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (from &lt; 0) // Clip lower bounds to zero</span>
+<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :                     from = 0;</span>
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :                 from_ = boost::numeric_cast&lt;Index&gt;(from);</span>
+<span class="lineNum">     609 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (from_ &gt; max_index) // Clip upper bounds to max_index.</span>
+<span class="lineNum">     610 </span>                :<span class="lineNoCov">          0 :                     from_ = max_index;</span>
+<span class="lineNum">     611 </span>                :            :             }
+<span class="lineNum">     612 </span>                :            : 
+<span class="lineNum">     613 </span>                :<span class="lineNoCov">          0 :             if (Py_None == slice-&gt;stop) {</span>
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :                 to_ = max_index;</span>
+<span class="lineNum">     615 </span>                :            :             }
+<span class="lineNum">     616 </span>                :            :             else {
+<span class="lineNum">     617 </span>                :<span class="lineNoCov">          0 :                 long to = extract&lt;long&gt;( slice-&gt;stop);</span>
+<span class="lineNum">     618 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (to &lt; 0)</span>
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :                     to += max_index;</span>
+<span class="lineNum">     620 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (to &lt; 0)</span>
+<span class="lineNum">     621 </span>                :<span class="lineNoCov">          0 :                     to = 0;</span>
+<span class="lineNum">     622 </span>                :<span class="lineNoCov">          0 :                 to_ = boost::numeric_cast&lt;Index&gt;(to);</span>
+<span class="lineNum">     623 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (to_ &gt; max_index)</span>
+<span class="lineNum">     624 </span>                :<span class="lineNoCov">          0 :                     to_ = max_index;</span>
+<span class="lineNum">     625 </span>                :            :             }
+<span class="lineNum">     626 </span>                :            :         }        
+<span class="lineNum">     627 </span>                :            :    
+<span class="lineNum">     628 </span>                :            :         static void 
+<span class="lineNum">     629 </span>                :<span class="lineNoCov">          0 :         base_set_slice(Container&amp; container, PySliceObject* slice, PyObject* v)</span>
+<span class="lineNum">     630 </span>                :            :         {
+<span class="lineNum">     631 </span>                :            :             Index from, to;
+<span class="lineNum">     632 </span>                :<span class="lineNoCov">          0 :             base_get_slice_data(container, slice, from, to);</span>
+<span class="lineNum">     633 </span>                :            :             
+<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 :             extract&lt;Data&amp;&gt; elem(v);</span>
+<span class="lineNum">     635 </span>                :            :             // try if elem is an exact Data
+<span class="lineNum">     636 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :             if (elem.check())</span>
+<span class="lineNum">     637 </span>                :            :             {
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :                 ProxyHandler::base_replace_indexes(container, from, to, 1);</span>
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :                 DerivedPolicies::set_slice(container, from, to, elem());</span>
+<span class="lineNum">     640 </span>                :            :             }
+<span class="lineNum">     641 </span>                :            :             else
+<span class="lineNum">     642 </span>                :            :             {
+<span class="lineNum">     643 </span>                :            :                 //  try to convert elem to Data
+<span class="lineNum">     644 </span>                :<span class="lineNoCov">          0 :                 extract&lt;Data&gt; elem(v);</span>
+<span class="lineNum">     645 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (elem.check())</span>
+<span class="lineNum">     646 </span>                :            :                 {
+<span class="lineNum">     647 </span>                :<span class="lineNoCov">          0 :                     ProxyHandler::base_replace_indexes(container, from, to, 1);</span>
+<span class="lineNum">     648 </span>                :<span class="lineNoCov">          0 :                     DerivedPolicies::set_slice(container, from, to, elem());</span>
+<span class="lineNum">     649 </span>                :            :                 }
+<span class="lineNum">     650 </span>                :            :                 else
+<span class="lineNum">     651 </span>                :            :                 {
+<span class="lineNum">     652 </span>                :            :                     //  Otherwise, it must be a list or some container
+<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :                     handle&lt;&gt; l_(python::borrowed(v));</span>
+<span class="lineNum">     654 </span>                :<span class="lineNoCov">          0 :                     object l(l_);</span>
+<span class="lineNum">     655 </span>                :            :     
+<span class="lineNum">     656 </span>                :<span class="lineNoCov">          0 :                     std::vector&lt;Data&gt; temp;</span>
+<span class="lineNum">     657 </span>        [<span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span>]:<span class="lineNoCov">          0 :                     for (int i = 0; i &lt; l.attr(&quot;__len__&quot;)(); i++)</span>
+<span class="lineNum">     658 </span>                :            :                     {
+<span class="lineNum">     659 </span>                :<span class="lineNoCov">          0 :                         object elem(l[i]);</span>
+<span class="lineNum">     660 </span>                :<span class="lineNoCov">          0 :                         extract&lt;Data const&amp;&gt; x(elem);</span>
+<span class="lineNum">     661 </span>                :            :                         //  try if elem is an exact Data type
+<span class="lineNum">     662 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if (x.check())</span>
+<span class="lineNum">     663 </span>                :            :                         {
+<span class="lineNum">     664 </span>                :<span class="lineNoCov">          0 :                             temp.push_back(x());</span>
+<span class="lineNum">     665 </span>                :            :                         }
+<span class="lineNum">     666 </span>                :            :                         else
+<span class="lineNum">     667 </span>                :            :                         {
+<span class="lineNum">     668 </span>                :            :                             //  try to convert elem to Data type
+<span class="lineNum">     669 </span>                :<span class="lineNoCov">          0 :                             extract&lt;Data&gt; x(elem);</span>
+<span class="lineNum">     670 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :                             if (x.check())</span>
+<span class="lineNum">     671 </span>                :            :                             {
+<span class="lineNum">     672 </span>                :<span class="lineNoCov">          0 :                                 temp.push_back(x());</span>
+<span class="lineNum">     673 </span>                :            :                             }
+<span class="lineNum">     674 </span>                :            :                             else
+<span class="lineNum">     675 </span>                :            :                             {
+<span class="lineNum">     676 </span>                :<span class="lineNoCov">          0 :                                 PyErr_SetString(PyExc_TypeError, </span>
+<span class="lineNum">     677 </span>                :            :                                     &quot;Invalid sequence element&quot;);
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :                                 throw_error_already_set();</span>
+<span class="lineNum">     679 </span>                :            :                             }
+<span class="lineNum">     680 </span>                :            :                         }
+<span class="lineNum">     681 </span>                :            :                     }          
+<span class="lineNum">     682 </span>                :            :                   
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :                     ProxyHandler::base_replace_indexes(container, from, to, </span>
+<span class="lineNum">     684 </span>                :            :                         temp.end()-temp.begin());
+<span class="lineNum">     685 </span>                :<span class="lineNoCov">          0 :                     DerivedPolicies::set_slice(container, from, to, </span>
+<span class="lineNum">     686 </span>                :            :                         temp.begin(), temp.end());
+<span class="lineNum">     687 </span>                :            :                 }
+<span class="lineNum">     688 </span>                :            :             }            
+<span class="lineNum">     689 </span>                :            :         }
+<span class="lineNum">     690 </span>                :            :         
+<span class="lineNum">     691 </span>                :            :         static void 
+<span class="lineNum">     692 </span>                :<span class="lineNoCov">          0 :         base_delete_slice(Container&amp; container, PySliceObject* slice)</span>
+<span class="lineNum">     693 </span>                :            :         { 
+<span class="lineNum">     694 </span>                :            :             Index from, to;
+<span class="lineNum">     695 </span>                :<span class="lineNoCov">          0 :             base_get_slice_data(container, slice, from, to);</span>
+<span class="lineNum">     696 </span>                :<span class="lineNoCov">          0 :             ProxyHandler::base_erase_indexes(container, from, to);</span>
+<span class="lineNum">     697 </span>                :<span class="lineNoCov">          0 :             DerivedPolicies::delete_slice(container, from, to);</span>
+<span class="lineNum">     698 </span>                :            :         }  
+<span class="lineNum">     699 </span>                :            :     };
+<span class="lineNum">     700 </span>                :            :     
+<span class="lineNum">     701 </span>                :            :     template &lt;
+<span class="lineNum">     702 </span>                :            :           class Container
+<span class="lineNum">     703 </span>                :            :         , class DerivedPolicies
+<span class="lineNum">     704 </span>                :            :         , class ProxyHandler
+<span class="lineNum">     705 </span>                :            :         , class Data
+<span class="lineNum">     706 </span>                :            :         , class Index
+<span class="lineNum">     707 </span>                :            :     &gt;
+<span class="lineNum">     708 </span>                :            :     struct no_slice_helper
+<span class="lineNum">     709 </span>                :            :     {        
+<span class="lineNum">     710 </span>                :            :         static void
+<span class="lineNum">     711 </span>                :            :         slicing_not_suported()
+<span class="lineNum">     712 </span>                :            :         {
+<span class="lineNum">     713 </span>                :            :             PyErr_SetString(PyExc_RuntimeError, &quot;Slicing not supported&quot;);
+<span class="lineNum">     714 </span>                :            :             throw_error_already_set();
+<span class="lineNum">     715 </span>                :            :         }
+<span class="lineNum">     716 </span>                :            :         
+<span class="lineNum">     717 </span>                :            :         static object 
+<span class="lineNum">     718 </span>                :            :         base_get_slice(Container&amp; /*container*/, PySliceObject* /*slice*/)
+<span class="lineNum">     719 </span>                :            :         { 
+<span class="lineNum">     720 </span>                :            :             slicing_not_suported();
+<span class="lineNum">     721 </span>                :            :             return object();
+<span class="lineNum">     722 </span>                :            :         }
+<span class="lineNum">     723 </span>                :            :    
+<span class="lineNum">     724 </span>                :            :         static void 
+<span class="lineNum">     725 </span>                :            :         base_set_slice(Container&amp; /*container*/, PySliceObject* /*slice*/, PyObject* /*v*/)
+<span class="lineNum">     726 </span>                :            :         {
+<span class="lineNum">     727 </span>                :            :             slicing_not_suported();
+<span class="lineNum">     728 </span>                :            :         }
+<span class="lineNum">     729 </span>                :            :         
+<span class="lineNum">     730 </span>                :            :         static void 
+<span class="lineNum">     731 </span>                :            :         base_delete_slice(Container&amp; /*container*/, PySliceObject* /*slice*/)
+<span class="lineNum">     732 </span>                :            :         { 
+<span class="lineNum">     733 </span>                :            :             slicing_not_suported();
+<span class="lineNum">     734 </span>                :            :         }  
+<span class="lineNum">     735 </span>                :            :     };
+<span class="lineNum">     736 </span>                :            : 
+<span class="lineNum">     737 </span>                :            : #ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+<span class="lineNum">     738 </span>                :            : }} // namespace python::detail
+<span class="lineNum">     739 </span>                :            : #endif
+<span class="lineNum">     740 </span>                :            : 
+<span class="lineNum">     741 </span>                :            :     template &lt;class Container, class Index, class Policies&gt;
+<span class="lineNum">     742 </span>                :            :     inline typename Policies::data_type* 
+<span class="lineNum">     743 </span>                :            :     get_pointer(
+<span class="lineNum">     744 </span>                :            :         python::detail::container_element&lt;Container, Index, Policies&gt; const&amp; p)
+<span class="lineNum">     745 </span>                :            :     {
+<span class="lineNum">     746 </span>                :            :         // Get the pointer of a container_element smart pointer
+<span class="lineNum">     747 </span>                :            :         return p.get();
+<span class="lineNum">     748 </span>                :            :     }
+<span class="lineNum">     749 </span>                :            : 
+<span class="lineNum">     750 </span>                :            : #ifndef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+<span class="lineNum">     751 </span>                :            :     // Don't hide these other get_pointer overloads
+<span class="lineNum">     752 </span>                :            :     using boost::python::get_pointer;
+<span class="lineNum">     753 </span>                :            :     using boost::get_pointer;
+<span class="lineNum">     754 </span>                :            : }} // namespace python::detail
+<span class="lineNum">     755 </span>                :            : #endif
+<span class="lineNum">     756 </span>                :            : 
+<span class="lineNum">     757 </span>                :            : } // namespace boost
+<span class="lineNum">     758 </span>                :            : 
+<span class="lineNum">     759 </span>                :            : #endif // INDEXING_SUITE_DETAIL_JDG20036_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

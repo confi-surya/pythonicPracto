@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/back_reference.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python</a> - back_reference.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef BACK_REFERENCE_DWA2002510_HPP
+<span class="lineNum">       6 </span>                :            : # define BACK_REFERENCE_DWA2002510_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/object_fwd.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/python/detail/dependent.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/detail/raw_pyobject.hpp&gt;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : namespace boost { namespace python { 
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      17 </span>                :            : struct back_reference
+<span class="lineNum">      18 </span>                :            : {
+<span class="lineNum">      19 </span>                :            :  private: // types
+<span class="lineNum">      20 </span>                :            :     typedef typename detail::dependent&lt;object,T&gt;::type source_t;
+<span class="lineNum">      21 </span>                :            :  public:
+<span class="lineNum">      22 </span>                :            :     typedef T type;
+<span class="lineNum">      23 </span>                :            :     
+<span class="lineNum">      24 </span>                :            :     back_reference(PyObject*, T);
+<span class="lineNum">      25 </span>                :            :     source_t const&amp; source() const;
+<span class="lineNum">      26 </span>                :            :     T get() const;
+<span class="lineNum">      27 </span>                :            :  private:
+<span class="lineNum">      28 </span>                :            :     source_t m_source;
+<span class="lineNum">      29 </span>                :            :     T m_value;
+<span class="lineNum">      30 </span>                :            : };
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">      33 </span>                :            : template&lt;typename T&gt;
+<span class="lineNum">      34 </span>                :            : class is_back_reference
+<span class="lineNum">      35 </span>                :            : {
+<span class="lineNum">      36 </span>                :            :  public:
+<span class="lineNum">      37 </span>                :            :     BOOST_STATIC_CONSTANT(bool, value = false); 
+<span class="lineNum">      38 </span>                :            : };
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : template&lt;typename T&gt;
+<span class="lineNum">      41 </span>                :            : class is_back_reference&lt;back_reference&lt;T&gt; &gt;
+<span class="lineNum">      42 </span>                :            : {
+<span class="lineNum">      43 </span>                :            :  public:
+<span class="lineNum">      44 </span>                :            :     BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">      45 </span>                :            : };
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : # else // no partial specialization
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : }} // namespace boost::python
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            : #include &lt;boost/type.hpp&gt;
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :            : namespace boost { namespace python {
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :            : namespace detail
+<span class="lineNum">      56 </span>                :            : {
+<span class="lineNum">      57 </span>                :            :   typedef char (&amp;yes_back_reference_t)[1];
+<span class="lineNum">      58 </span>                :            :   typedef char (&amp;no_back_reference_t)[2];
+<span class="lineNum">      59 </span>                :            :       
+<span class="lineNum">      60 </span>                :            :   no_back_reference_t is_back_reference_test(...);
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :            :   template&lt;typename T&gt;
+<span class="lineNum">      63 </span>                :            :   yes_back_reference_t is_back_reference_test(boost::type&lt; back_reference&lt;T&gt; &gt;);
+<span class="lineNum">      64 </span>                :            : }
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :            : template&lt;typename T&gt;
+<span class="lineNum">      67 </span>                :            : class is_back_reference
+<span class="lineNum">      68 </span>                :            : {
+<span class="lineNum">      69 </span>                :            :  public:
+<span class="lineNum">      70 </span>                :            :     BOOST_STATIC_CONSTANT(
+<span class="lineNum">      71 </span>                :            :         bool, value = (
+<span class="lineNum">      72 </span>                :            :             sizeof(detail::is_back_reference_test(boost::type&lt;T&gt;()))
+<span class="lineNum">      73 </span>                :            :             == sizeof(detail::yes_back_reference_t)));
+<span class="lineNum">      74 </span>                :            : };
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            : # endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            : //
+<span class="lineNum">      79 </span>                :            : // implementations
+<span class="lineNum">      80 </span>                :            : //
+<span class="lineNum">      81 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      82 </span>                :<span class="lineCov">          8 : back_reference&lt;T&gt;::back_reference(PyObject* p, T x)</span>
+<span class="lineNum">      83 </span>                :            :     : m_source(detail::borrowed_reference(p))
+<span class="lineNum">      84 </span>                :<span class="lineCov">          8 :       , m_value(x)</span>
+<span class="lineNum">      85 </span>                :            : {
+<span class="lineNum">      86 </span>                :            : }
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      89 </span>                :<span class="lineCov">          8 : typename back_reference&lt;T&gt;::source_t const&amp; back_reference&lt;T&gt;::source() const</span>
+<span class="lineNum">      90 </span>                :            : {
+<span class="lineNum">      91 </span>                :<span class="lineCov">          8 :     return m_source;</span>
+<span class="lineNum">      92 </span>                :            : }
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      95 </span>                :<span class="lineCov">         16 : T back_reference&lt;T&gt;::get() const</span>
+<span class="lineNum">      96 </span>                :            : {
+<span class="lineNum">      97 </span>                :<span class="lineCov">         16 :     return m_value;</span>
+<span class="lineNum">      98 </span>                :            : }
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : }} // namespace boost::python
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :            : #endif // BACK_REFERENCE_DWA2002510_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

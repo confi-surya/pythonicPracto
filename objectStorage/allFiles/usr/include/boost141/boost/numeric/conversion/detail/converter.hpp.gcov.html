@@ -1,0 +1,690 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/numeric/conversion/detail/converter.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/numeric/conversion/detail</a> - converter.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //  (c) Copyright Fernando Luis Cacciola Carballal 2000-2004
+<span class="lineNum">       2 </span>                :            : //  Use, modification, and distribution is subject to the Boost Software
+<span class="lineNum">       3 </span>                :            : //  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : //  http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : //  See library home page at http://www.boost.org/libs/numeric/conversion
+<span class="lineNum">       7 </span>                :            : //
+<span class="lineNum">       8 </span>                :            : // Contact the author at: fernando_cacciola@hotmail.com
+<span class="lineNum">       9 </span>                :            : //
+<span class="lineNum">      10 </span>                :            : #ifndef BOOST_NUMERIC_CONVERSION_DETAIL_CONVERTER_FLC_12NOV2002_HPP
+<span class="lineNum">      11 </span>                :            : #define BOOST_NUMERIC_CONVERSION_DETAIL_CONVERTER_FLC_12NOV2002_HPP
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : #include &lt;functional&gt;
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : #include &quot;boost/numeric/conversion/detail/meta.hpp&quot;
+<span class="lineNum">      16 </span>                :            : #include &quot;boost/numeric/conversion/detail/conversion_traits.hpp&quot;
+<span class="lineNum">      17 </span>                :            : #include &quot;boost/numeric/conversion/bounds.hpp&quot;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : #include &quot;boost/type_traits/is_same.hpp&quot;
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &quot;boost/mpl/integral_c.hpp&quot;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : namespace boost { namespace numeric { namespace convdetail
+<span class="lineNum">      24 </span>                :            : {
+<span class="lineNum">      25 </span>                :            :   // Integral Constants representing rounding modes
+<span class="lineNum">      26 </span>                :            :   typedef mpl::integral_c&lt;std::float_round_style, std::round_toward_zero&gt;         round2zero_c ;
+<span class="lineNum">      27 </span>                :            :   typedef mpl::integral_c&lt;std::float_round_style, std::round_to_nearest&gt;          round2nearest_c ;
+<span class="lineNum">      28 </span>                :            :   typedef mpl::integral_c&lt;std::float_round_style, std::round_toward_infinity&gt;     round2inf_c ;
+<span class="lineNum">      29 </span>                :            :   typedef mpl::integral_c&lt;std::float_round_style, std::round_toward_neg_infinity&gt; round2neg_inf_c ;
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            :   // Metafunction:
+<span class="lineNum">      32 </span>                :            :   //
+<span class="lineNum">      33 </span>                :            :   //   for_round_style&lt;RoundStyle,RoundToZero,RoundToNearest,RoundToInf,RoundToNegInf&gt;::type
+<span class="lineNum">      34 </span>                :            :   //
+<span class="lineNum">      35 </span>                :            :   // {RoundStyle} Integral Constant specifying a round style as declared above.
+<span class="lineNum">      36 </span>                :            :   // {RoundToZero,RoundToNearest,RoundToInf,RoundToNegInf} arbitrary types.
+<span class="lineNum">      37 </span>                :            :   //
+<span class="lineNum">      38 </span>                :            :   // Selects one of the 4 types according to the value of RoundStyle.
+<span class="lineNum">      39 </span>                :            :   //
+<span class="lineNum">      40 </span>                :            :   template&lt;class RoundStyle,class RoundToZero,class RoundToNearest,class RoundToInf,class RoundToNegInf&gt;
+<span class="lineNum">      41 </span>                :            :   struct for_round_style
+<span class="lineNum">      42 </span>                :            :   {
+<span class="lineNum">      43 </span>                :            :     typedef ct_switch4&lt;RoundStyle
+<span class="lineNum">      44 </span>                :            :                        , round2zero_c, round2nearest_c, round2inf_c // round2neg_inf_c
+<span class="lineNum">      45 </span>                :            :                        , RoundToZero , RoundToNearest , RoundToInf , RoundToNegInf
+<span class="lineNum">      46 </span>                :            :                       &gt; selector ;
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            :     typedef typename selector::type type ;
+<span class="lineNum">      49 </span>                :            :   } ;
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :            : 
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            : 
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">      69 </span>                :            : //                             Range Checking Logic.
+<span class="lineNum">      70 </span>                :            : //
+<span class="lineNum">      71 </span>                :            : // The range checking logic is built up by combining 1 or 2 predicates.
+<span class="lineNum">      72 </span>                :            : // Each predicate is encapsulated in a template class and exposes
+<span class="lineNum">      73 </span>                :            : // the static member function 'apply'.
+<span class="lineNum">      74 </span>                :            : //
+<span class="lineNum">      75 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            :   // Because a particular logic can combine either 1 or two predicates, the following
+<span class="lineNum">      79 </span>                :            :   // tags are used to allow the predicate applier to receive 2 preds, but optimize away
+<span class="lineNum">      80 </span>                :            :   // one of them if it is 'non-applicable'
+<span class="lineNum">      81 </span>                :            :   struct non_applicable { typedef mpl::false_ do_apply ; } ;
+<span class="lineNum">      82 </span>                :            :   struct applicable     { typedef mpl::true_  do_apply ; } ;
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            :   //--------------------------------------------------------------------------
+<span class="lineNum">      86 </span>                :            :   //
+<span class="lineNum">      87 </span>                :            :   //                      Range Checking Logic implementations.
+<span class="lineNum">      88 </span>                :            :   //
+<span class="lineNum">      89 </span>                :            :   // The following classes, collectivelly named 'Predicates', are instantiated within
+<span class="lineNum">      90 </span>                :            :   // the corresponding range checkers.
+<span class="lineNum">      91 </span>                :            :   // Their static member function 'apply' is called to perform the actual range checking logic.
+<span class="lineNum">      92 </span>                :            :   //--------------------------------------------------------------------------
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :            :     // s &lt; Lowest(T) ? cNegOverflow : cInRange
+<span class="lineNum">      95 </span>                :            :     //
+<span class="lineNum">      96 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">      97 </span>                :            :     struct LT_LoT : applicable
+<span class="lineNum">      98 </span>                :            :     {
+<span class="lineNum">      99 </span>                :            :       typedef typename Traits::target_type T ;
+<span class="lineNum">     100 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     101 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     104 </span>                :            :       {
+<span class="lineNum">     105 </span>                :            :         return s &lt; static_cast&lt;S&gt;(bounds&lt;T&gt;::lowest()) ? cNegOverflow : cInRange ;
+<span class="lineNum">     106 </span>                :            :       }
+<span class="lineNum">     107 </span>                :            :     } ;
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :            :     // s &lt; 0 ? cNegOverflow : cInRange
+<span class="lineNum">     110 </span>                :            :     //
+<span class="lineNum">     111 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">     112 </span>                :            :     struct LT_Zero : applicable
+<span class="lineNum">     113 </span>                :            :     {
+<span class="lineNum">     114 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     115 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :       static range_check_result apply ( argument_type s )</span>
+<span class="lineNum">     118 </span>                :            :       {
+<span class="lineNum">     119 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         return s &lt; static_cast&lt;S&gt;(0) ? cNegOverflow : cInRange ;</span>
+<span class="lineNum">     120 </span>                :            :       }
+<span class="lineNum">     121 </span>                :            :     } ;
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :     // s &lt;= Lowest(T)-1 ? cNegOverflow : cInRange
+<span class="lineNum">     124 </span>                :            :     //
+<span class="lineNum">     125 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">     126 </span>                :            :     struct LE_PrevLoT : applicable
+<span class="lineNum">     127 </span>                :            :     {
+<span class="lineNum">     128 </span>                :            :       typedef typename Traits::target_type T ;
+<span class="lineNum">     129 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     130 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     133 </span>                :            :       {
+<span class="lineNum">     134 </span>                :            :         return s &lt;= static_cast&lt;S&gt;(bounds&lt;T&gt;::lowest()) - static_cast&lt;S&gt;(1.0)
+<span class="lineNum">     135 </span>                :            :                  ? cNegOverflow : cInRange ;
+<span class="lineNum">     136 </span>                :            :       }
+<span class="lineNum">     137 </span>                :            :     } ;
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :     // s &lt; Lowest(T)-0.5 ? cNegOverflow : cInRange
+<span class="lineNum">     140 </span>                :            :     //
+<span class="lineNum">     141 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">     142 </span>                :            :     struct LT_HalfPrevLoT : applicable
+<span class="lineNum">     143 </span>                :            :     {
+<span class="lineNum">     144 </span>                :            :       typedef typename Traits::target_type T ;
+<span class="lineNum">     145 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     146 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     149 </span>                :            :       {
+<span class="lineNum">     150 </span>                :            :         return s &lt; static_cast&lt;S&gt;(bounds&lt;T&gt;::lowest()) - static_cast&lt;S&gt;(0.5)
+<span class="lineNum">     151 </span>                :            :                  ? cNegOverflow : cInRange ;
+<span class="lineNum">     152 </span>                :            :       }
+<span class="lineNum">     153 </span>                :            :     } ;
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            :     // s &gt; Highest(T) ? cPosOverflow : cInRange
+<span class="lineNum">     156 </span>                :            :     //
+<span class="lineNum">     157 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">     158 </span>                :            :     struct GT_HiT : applicable
+<span class="lineNum">     159 </span>                :            :     {
+<span class="lineNum">     160 </span>                :            :       typedef typename Traits::target_type T ;
+<span class="lineNum">     161 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     162 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     165 </span>                :            :       {
+<span class="lineNum">     166 </span>                :            :         return s &gt; static_cast&lt;S&gt;(bounds&lt;T&gt;::highest())
+<span class="lineNum">     167 </span>                :            :                  ? cPosOverflow : cInRange ;
+<span class="lineNum">     168 </span>                :            :       }
+<span class="lineNum">     169 </span>                :            :     } ;
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :            :     // s &gt;= Lowest(T) + 1 ? cPosOverflow : cInRange
+<span class="lineNum">     172 </span>                :            :     //
+<span class="lineNum">     173 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">     174 </span>                :            :     struct GE_SuccHiT : applicable
+<span class="lineNum">     175 </span>                :            :     {
+<span class="lineNum">     176 </span>                :            :       typedef typename Traits::target_type T ;
+<span class="lineNum">     177 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     178 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     181 </span>                :            :       {
+<span class="lineNum">     182 </span>                :            :         return s &gt;= static_cast&lt;S&gt;(bounds&lt;T&gt;::highest()) + static_cast&lt;S&gt;(1.0)
+<span class="lineNum">     183 </span>                :            :                  ? cPosOverflow : cInRange ;
+<span class="lineNum">     184 </span>                :            :       }
+<span class="lineNum">     185 </span>                :            :     } ;
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :            :     // s &gt;= Lowest(T) + 0.5 ? cPosgOverflow : cInRange
+<span class="lineNum">     188 </span>                :            :     //
+<span class="lineNum">     189 </span>                :            :     template&lt;class Traits&gt;
+<span class="lineNum">     190 </span>                :            :     struct GT_HalfSuccHiT : applicable
+<span class="lineNum">     191 </span>                :            :     {
+<span class="lineNum">     192 </span>                :            :       typedef typename Traits::target_type T ;
+<span class="lineNum">     193 </span>                :            :       typedef typename Traits::source_type S ;
+<span class="lineNum">     194 </span>                :            :       typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     195 </span>                :            : 
+<span class="lineNum">     196 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     197 </span>                :            :       {
+<span class="lineNum">     198 </span>                :            :         return s &gt;= static_cast&lt;S&gt;(bounds&lt;T&gt;::highest()) + static_cast&lt;S&gt;(0.5)
+<span class="lineNum">     199 </span>                :            :                  ? cPosOverflow : cInRange ;
+<span class="lineNum">     200 </span>                :            :       }
+<span class="lineNum">     201 </span>                :            :     } ;
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            : 
+<span class="lineNum">     204 </span>                :            :   //--------------------------------------------------------------------------
+<span class="lineNum">     205 </span>                :            :   //
+<span class="lineNum">     206 </span>                :            :   // Predicate Combiner.
+<span class="lineNum">     207 </span>                :            :   //
+<span class="lineNum">     208 </span>                :            :   // This helper classes are used to possibly combine the range checking logic
+<span class="lineNum">     209 </span>                :            :   // individually performed by the predicates
+<span class="lineNum">     210 </span>                :            :   //
+<span class="lineNum">     211 </span>                :            :   //--------------------------------------------------------------------------
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :            :     // Applies both predicates: first 'PredA', and if it equals 'cInRange', 'PredB'
+<span class="lineNum">     215 </span>                :            :     template&lt;class PredA, class PredB&gt;
+<span class="lineNum">     216 </span>                :            :     struct applyBoth
+<span class="lineNum">     217 </span>                :            :     {
+<span class="lineNum">     218 </span>                :            :       typedef typename PredA::argument_type argument_type ;
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :            :       static range_check_result apply ( argument_type s )
+<span class="lineNum">     221 </span>                :            :       {
+<span class="lineNum">     222 </span>                :            :         range_check_result r = PredA::apply(s) ;
+<span class="lineNum">     223 </span>                :            :         if ( r == cInRange )
+<span class="lineNum">     224 </span>                :            :           r = PredB::apply(s);
+<span class="lineNum">     225 </span>                :            :         return r ;
+<span class="lineNum">     226 </span>                :            :       }
+<span class="lineNum">     227 </span>                :            :     } ;
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :            :     template&lt;class PredA, class PredB&gt;
+<span class="lineNum">     230 </span>                :            :     struct combine
+<span class="lineNum">     231 </span>                :            :     {
+<span class="lineNum">     232 </span>                :            :       typedef applyBoth&lt;PredA,PredB&gt; Both ;
+<span class="lineNum">     233 </span>                :            :       typedef void                   NNone ; // 'None' is defined as a macro in (/usr/X11R6/include/X11/X.h)
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            :       typedef typename PredA::do_apply do_applyA ;
+<span class="lineNum">     236 </span>                :            :       typedef typename PredB::do_apply do_applyB ;
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            :       typedef typename for_both&lt;do_applyA, do_applyB, Both, PredA, PredB, NNone&gt;::type type ;
+<span class="lineNum">     239 </span>                :            :     } ;
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            : 
+<span class="lineNum">     247 </span>                :            : 
+<span class="lineNum">     248 </span>                :            : 
+<span class="lineNum">     249 </span>                :            : 
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            : 
+<span class="lineNum">     252 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     253 </span>                :            : //                             Range Checker classes.
+<span class="lineNum">     254 </span>                :            : //
+<span class="lineNum">     255 </span>                :            : // The following classes are VISIBLE base classes of the user-level converter&lt;&gt; class.
+<span class="lineNum">     256 </span>                :            : // They supply the optimized 'out_of_range()' and 'validate_range()' static member functions
+<span class="lineNum">     257 </span>                :            : // visible in the user interface.
+<span class="lineNum">     258 </span>                :            : //
+<span class="lineNum">     259 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            :   // Dummy range checker.
+<span class="lineNum">     262 </span>                :            :   template&lt;class Traits&gt;
+<span class="lineNum">     263 </span>                :            :   struct dummy_range_checker
+<span class="lineNum">     264 </span>                :            :   {
+<span class="lineNum">     265 </span>                :            :     typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     266 </span>                :            : 
+<span class="lineNum">     267 </span>                :            :     static range_check_result out_of_range ( argument_type ) { return cInRange ; }
+<span class="lineNum">     268 </span>                :            :     static void validate_range ( argument_type ) {}
+<span class="lineNum">     269 </span>                :            :   } ;
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>                :            :   // Generic range checker.
+<span class="lineNum">     272 </span>                :            :   //
+<span class="lineNum">     273 </span>                :            :   // All the range checking logic for all possible combinations of source and target
+<span class="lineNum">     274 </span>                :            :   // can be arranged in terms of one or two predicates, which test overflow on both neg/pos 'sides'
+<span class="lineNum">     275 </span>                :            :   // of the ranges.
+<span class="lineNum">     276 </span>                :            :   //
+<span class="lineNum">     277 </span>                :            :   // These predicates are given here as IsNegOverflow and IsPosOverflow.
+<span class="lineNum">     278 </span>                :            :   //
+<span class="lineNum">     279 </span>                :            :   template&lt;class Traits, class IsNegOverflow, class IsPosOverflow, class OverflowHandler&gt;
+<span class="lineNum">     280 </span>                :            :   struct generic_range_checker
+<span class="lineNum">     281 </span>                :            :   {
+<span class="lineNum">     282 </span>                :            :     typedef OverflowHandler overflow_handler ;
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :            :     typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :     static range_check_result out_of_range ( argument_type s )</span>
+<span class="lineNum">     287 </span>                :            :     {
+<span class="lineNum">     288 </span>                :            :       typedef typename combine&lt;IsNegOverflow,IsPosOverflow&gt;::type Predicate ;
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :       return Predicate::apply(s);</span>
+<span class="lineNum">     291 </span>                :            :     }
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :     static void validate_range ( argument_type s )</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :       { OverflowHandler()( out_of_range(s) ) ; }</span>
+<span class="lineNum">     295 </span>                :            :   } ;
+<span class="lineNum">     296 </span>                :            : 
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     300 </span>                :            : //
+<span class="lineNum">     301 </span>                :            : // Selectors for the optimized Range Checker class.
+<span class="lineNum">     302 </span>                :            : //
+<span class="lineNum">     303 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     304 </span>                :            : 
+<span class="lineNum">     305 </span>                :            :   template&lt;class Traits,class OverflowHandler&gt;
+<span class="lineNum">     306 </span>                :            :   struct GetRC_Sig2Sig_or_Unsig2Unsig
+<span class="lineNum">     307 </span>                :            :   {
+<span class="lineNum">     308 </span>                :            :     typedef dummy_range_checker&lt;Traits&gt; Dummy ;
+<span class="lineNum">     309 </span>                :            : 
+<span class="lineNum">     310 </span>                :            :     typedef LT_LoT&lt;Traits&gt; Pred1 ;
+<span class="lineNum">     311 </span>                :            :     typedef GT_HiT&lt;Traits&gt; Pred2 ;
+<span class="lineNum">     312 </span>                :            : 
+<span class="lineNum">     313 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred1,Pred2,OverflowHandler&gt; Normal ;
+<span class="lineNum">     314 </span>                :            : 
+<span class="lineNum">     315 </span>                :            :     typedef typename Traits::subranged subranged ;
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>                :            :     typedef typename mpl::if_&lt;subranged,Normal,Dummy&gt;::type type ;
+<span class="lineNum">     318 </span>                :            :   } ;
+<span class="lineNum">     319 </span>                :            : 
+<span class="lineNum">     320 </span>                :            :   template&lt;class Traits, class OverflowHandler&gt;
+<span class="lineNum">     321 </span>                :            :   struct GetRC_Sig2Unsig
+<span class="lineNum">     322 </span>                :            :   {
+<span class="lineNum">     323 </span>                :            :     typedef LT_Zero&lt;Traits&gt; Pred1 ;
+<span class="lineNum">     324 </span>                :            :     typedef GT_HiT &lt;Traits&gt; Pred2 ;
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred1,Pred2,OverflowHandler&gt; ChoiceA ;
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred1,non_applicable,OverflowHandler&gt; ChoiceB ;
+<span class="lineNum">     329 </span>                :            : 
+<span class="lineNum">     330 </span>                :            :     typedef typename Traits::target_type T ;
+<span class="lineNum">     331 </span>                :            :     typedef typename Traits::source_type S ;
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :            :     typedef typename subranged_Unsig2Sig&lt;S,T&gt;::type oposite_subranged ;
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            :     typedef typename mpl::not_&lt;oposite_subranged&gt;::type positively_subranged ;
+<span class="lineNum">     336 </span>                :            : 
+<span class="lineNum">     337 </span>                :            :     typedef typename mpl::if_&lt;positively_subranged,ChoiceA,ChoiceB&gt;::type type ;
+<span class="lineNum">     338 </span>                :            :   } ;
+<span class="lineNum">     339 </span>                :            : 
+<span class="lineNum">     340 </span>                :            :   template&lt;class Traits, class OverflowHandler&gt;
+<span class="lineNum">     341 </span>                :            :   struct GetRC_Unsig2Sig
+<span class="lineNum">     342 </span>                :            :   {
+<span class="lineNum">     343 </span>                :            :     typedef GT_HiT&lt;Traits&gt; Pred1 ;
+<span class="lineNum">     344 </span>                :            : 
+<span class="lineNum">     345 </span>                :            :     typedef generic_range_checker&lt;Traits,non_applicable,Pred1,OverflowHandler&gt; type ;
+<span class="lineNum">     346 </span>                :            :   } ;
+<span class="lineNum">     347 </span>                :            : 
+<span class="lineNum">     348 </span>                :            :   template&lt;class Traits,class OverflowHandler&gt;
+<span class="lineNum">     349 </span>                :            :   struct GetRC_Int2Int
+<span class="lineNum">     350 </span>                :            :   {
+<span class="lineNum">     351 </span>                :            :     typedef GetRC_Sig2Sig_or_Unsig2Unsig&lt;Traits,OverflowHandler&gt; Sig2SigQ     ;
+<span class="lineNum">     352 </span>                :            :     typedef GetRC_Sig2Unsig             &lt;Traits,OverflowHandler&gt; Sig2UnsigQ   ;
+<span class="lineNum">     353 </span>                :            :     typedef GetRC_Unsig2Sig             &lt;Traits,OverflowHandler&gt; Unsig2SigQ   ;
+<span class="lineNum">     354 </span>                :            :     typedef Sig2SigQ                                             Unsig2UnsigQ ;
+<span class="lineNum">     355 </span>                :            : 
+<span class="lineNum">     356 </span>                :            :     typedef typename Traits::sign_mixture sign_mixture ;
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :            :     typedef typename
+<span class="lineNum">     359 </span>                :            :       for_sign_mixture&lt;sign_mixture,Sig2SigQ,Sig2UnsigQ,Unsig2SigQ,Unsig2UnsigQ&gt;::type
+<span class="lineNum">     360 </span>                :            :         selector ;
+<span class="lineNum">     361 </span>                :            : 
+<span class="lineNum">     362 </span>                :            :     typedef typename selector::type type ;
+<span class="lineNum">     363 </span>                :            :   } ;
+<span class="lineNum">     364 </span>                :            : 
+<span class="lineNum">     365 </span>                :            :   template&lt;class Traits&gt;
+<span class="lineNum">     366 </span>                :            :   struct GetRC_Int2Float
+<span class="lineNum">     367 </span>                :            :   {
+<span class="lineNum">     368 </span>                :            :     typedef dummy_range_checker&lt;Traits&gt; type ;
+<span class="lineNum">     369 </span>                :            :   } ;
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            :   template&lt;class Traits, class OverflowHandler, class Float2IntRounder&gt;
+<span class="lineNum">     372 </span>                :            :   struct GetRC_Float2Int
+<span class="lineNum">     373 </span>                :            :   {
+<span class="lineNum">     374 </span>                :            :     typedef LE_PrevLoT    &lt;Traits&gt; Pred1 ;
+<span class="lineNum">     375 </span>                :            :     typedef GE_SuccHiT    &lt;Traits&gt; Pred2 ;
+<span class="lineNum">     376 </span>                :            :     typedef LT_HalfPrevLoT&lt;Traits&gt; Pred3 ;
+<span class="lineNum">     377 </span>                :            :     typedef GT_HalfSuccHiT&lt;Traits&gt; Pred4 ;
+<span class="lineNum">     378 </span>                :            :     typedef GT_HiT        &lt;Traits&gt; Pred5 ;
+<span class="lineNum">     379 </span>                :            :     typedef LT_LoT        &lt;Traits&gt; Pred6 ;
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred1,Pred2,OverflowHandler&gt; ToZero    ;
+<span class="lineNum">     382 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred3,Pred4,OverflowHandler&gt; ToNearest ;
+<span class="lineNum">     383 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred1,Pred5,OverflowHandler&gt; ToInf     ;
+<span class="lineNum">     384 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred6,Pred2,OverflowHandler&gt; ToNegInf  ;
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :            :     typedef typename Float2IntRounder::round_style round_style ;
+<span class="lineNum">     387 </span>                :            : 
+<span class="lineNum">     388 </span>                :            :     typedef typename for_round_style&lt;round_style,ToZero,ToNearest,ToInf,ToNegInf&gt;::type type ;
+<span class="lineNum">     389 </span>                :            :   } ;
+<span class="lineNum">     390 </span>                :            : 
+<span class="lineNum">     391 </span>                :            :   template&lt;class Traits, class OverflowHandler&gt;
+<span class="lineNum">     392 </span>                :            :   struct GetRC_Float2Float
+<span class="lineNum">     393 </span>                :            :   {
+<span class="lineNum">     394 </span>                :            :     typedef dummy_range_checker&lt;Traits&gt; Dummy ;
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :            :     typedef LT_LoT&lt;Traits&gt; Pred1 ;
+<span class="lineNum">     397 </span>                :            :     typedef GT_HiT&lt;Traits&gt; Pred2 ;
+<span class="lineNum">     398 </span>                :            : 
+<span class="lineNum">     399 </span>                :            :     typedef generic_range_checker&lt;Traits,Pred1,Pred2,OverflowHandler&gt; Normal ;
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :            :     typedef typename Traits::subranged subranged ;
+<span class="lineNum">     402 </span>                :            : 
+<span class="lineNum">     403 </span>                :            :     typedef typename mpl::if_&lt;subranged,Normal,Dummy&gt;::type type ;
+<span class="lineNum">     404 </span>                :            :   } ;
+<span class="lineNum">     405 </span>                :            : 
+<span class="lineNum">     406 </span>                :            :   template&lt;class Traits, class OverflowHandler, class Float2IntRounder&gt;
+<span class="lineNum">     407 </span>                :            :   struct GetRC_BuiltIn2BuiltIn
+<span class="lineNum">     408 </span>                :            :   {
+<span class="lineNum">     409 </span>                :            :     typedef GetRC_Int2Int&lt;Traits,OverflowHandler&gt;                    Int2IntQ ;
+<span class="lineNum">     410 </span>                :            :     typedef GetRC_Int2Float&lt;Traits&gt;                                  Int2FloatQ ;
+<span class="lineNum">     411 </span>                :            :     typedef GetRC_Float2Int&lt;Traits,OverflowHandler,Float2IntRounder&gt; Float2IntQ ;
+<span class="lineNum">     412 </span>                :            :     typedef GetRC_Float2Float&lt;Traits,OverflowHandler&gt;                Float2FloatQ ;
+<span class="lineNum">     413 </span>                :            : 
+<span class="lineNum">     414 </span>                :            :     typedef typename Traits::int_float_mixture int_float_mixture ;
+<span class="lineNum">     415 </span>                :            : 
+<span class="lineNum">     416 </span>                :            :     typedef typename for_int_float_mixture&lt;int_float_mixture, Int2IntQ, Int2FloatQ, Float2IntQ, Float2FloatQ&gt;::type selector ;
+<span class="lineNum">     417 </span>                :            : 
+<span class="lineNum">     418 </span>                :            :     typedef typename selector::type type ;
+<span class="lineNum">     419 </span>                :            :   } ;
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :            :   template&lt;class Traits, class OverflowHandler, class Float2IntRounder&gt;
+<span class="lineNum">     422 </span>                :            :   struct GetRC
+<span class="lineNum">     423 </span>                :            :   {
+<span class="lineNum">     424 </span>                :            :     typedef GetRC_BuiltIn2BuiltIn&lt;Traits,OverflowHandler,Float2IntRounder&gt; BuiltIn2BuiltInQ ;
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>                :            :     typedef dummy_range_checker&lt;Traits&gt; Dummy ;
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :            :     typedef mpl::identity&lt;Dummy&gt; DummyQ ;
+<span class="lineNum">     429 </span>                :            : 
+<span class="lineNum">     430 </span>                :            :     typedef typename Traits::udt_builtin_mixture udt_builtin_mixture ;
+<span class="lineNum">     431 </span>                :            : 
+<span class="lineNum">     432 </span>                :            :     typedef typename for_udt_builtin_mixture&lt;udt_builtin_mixture,BuiltIn2BuiltInQ,DummyQ,DummyQ,DummyQ&gt;::type selector ;
+<span class="lineNum">     433 </span>                :            : 
+<span class="lineNum">     434 </span>                :            :     typedef typename selector::type type ;
+<span class="lineNum">     435 </span>                :            :   } ;
+<span class="lineNum">     436 </span>                :            : 
+<span class="lineNum">     437 </span>                :            : 
+<span class="lineNum">     438 </span>                :            : 
+<span class="lineNum">     439 </span>                :            : 
+<span class="lineNum">     440 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     441 </span>                :            : //                             Converter classes.
+<span class="lineNum">     442 </span>                :            : //
+<span class="lineNum">     443 </span>                :            : // The following classes are VISIBLE base classes of the user-level converter&lt;&gt; class.
+<span class="lineNum">     444 </span>                :            : // They supply the optimized 'nearbyint()' and 'convert()' static member functions
+<span class="lineNum">     445 </span>                :            : // visible in the user interface.
+<span class="lineNum">     446 </span>                :            : //
+<span class="lineNum">     447 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     448 </span>                :            : 
+<span class="lineNum">     449 </span>                :            :   //
+<span class="lineNum">     450 </span>                :            :   // Trivial Converter : used when (cv-unqualified) T == (cv-unqualified)  S
+<span class="lineNum">     451 </span>                :            :   //
+<span class="lineNum">     452 </span>                :            :   template&lt;class Traits&gt;
+<span class="lineNum">     453 </span>                :            :   struct trivial_converter_impl : public std::unary_function&lt;  BOOST_DEDUCED_TYPENAME Traits::argument_type
+<span class="lineNum">     454 </span>                :            :                                                               ,BOOST_DEDUCED_TYPENAME Traits::result_type
+<span class="lineNum">     455 </span>                :            :                                                             &gt;
+<span class="lineNum">     456 </span>                :            :                                  ,public dummy_range_checker&lt;Traits&gt;
+<span class="lineNum">     457 </span>                :            :   {
+<span class="lineNum">     458 </span>                :            :     typedef Traits traits ;
+<span class="lineNum">     459 </span>                :            : 
+<span class="lineNum">     460 </span>                :            :     typedef typename Traits::source_type   source_type   ;
+<span class="lineNum">     461 </span>                :            :     typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     462 </span>                :            :     typedef typename Traits::result_type   result_type   ;
+<span class="lineNum">     463 </span>                :            : 
+<span class="lineNum">     464 </span>                :            :     static result_type low_level_convert ( argument_type s ) { return s ; }
+<span class="lineNum">     465 </span>                :            :     static source_type nearbyint         ( argument_type s ) { return s ; }
+<span class="lineNum">     466 </span>                :            :     static result_type convert           ( argument_type s ) { return s ; }
+<span class="lineNum">     467 </span>                :            :   } ;
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            : 
+<span class="lineNum">     470 </span>                :            :   //
+<span class="lineNum">     471 </span>                :            :   // Rounding Converter : used for float to integral conversions.
+<span class="lineNum">     472 </span>                :            :   //
+<span class="lineNum">     473 </span>                :            :   template&lt;class Traits,class RangeChecker,class RawConverter,class Float2IntRounder&gt;
+<span class="lineNum">     474 </span>                :            :   struct rounding_converter : public std::unary_function&lt;  BOOST_DEDUCED_TYPENAME Traits::argument_type
+<span class="lineNum">     475 </span>                :            :                                                           ,BOOST_DEDUCED_TYPENAME Traits::result_type
+<span class="lineNum">     476 </span>                :            :                                                         &gt;
+<span class="lineNum">     477 </span>                :            :                              ,public RangeChecker
+<span class="lineNum">     478 </span>                :            :                              ,public Float2IntRounder
+<span class="lineNum">     479 </span>                :            :                              ,public RawConverter
+<span class="lineNum">     480 </span>                :            :   {
+<span class="lineNum">     481 </span>                :            :     typedef RangeChecker     RangeCheckerBase ;
+<span class="lineNum">     482 </span>                :            :     typedef Float2IntRounder Float2IntRounderBase ;
+<span class="lineNum">     483 </span>                :            :     typedef RawConverter     RawConverterBase ;
+<span class="lineNum">     484 </span>                :            : 
+<span class="lineNum">     485 </span>                :            :     typedef Traits traits ;
+<span class="lineNum">     486 </span>                :            : 
+<span class="lineNum">     487 </span>                :            :     typedef typename Traits::source_type   source_type   ;
+<span class="lineNum">     488 </span>                :            :     typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     489 </span>                :            :     typedef typename Traits::result_type   result_type   ;
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            :     static result_type convert ( argument_type s )
+<span class="lineNum">     492 </span>                :            :     {
+<span class="lineNum">     493 </span>                :            :       RangeCheckerBase::validate_range(s);
+<span class="lineNum">     494 </span>                :            :       source_type s1 = Float2IntRounderBase::nearbyint(s);
+<span class="lineNum">     495 </span>                :            :       return RawConverterBase::low_level_convert(s1);
+<span class="lineNum">     496 </span>                :            :     }
+<span class="lineNum">     497 </span>                :            :   } ;
+<span class="lineNum">     498 </span>                :            : 
+<span class="lineNum">     499 </span>                :            : 
+<span class="lineNum">     500 </span>                :            :   //
+<span class="lineNum">     501 </span>                :            :   // Non-Rounding Converter : used for all other conversions.
+<span class="lineNum">     502 </span>                :            :   //
+<span class="lineNum">     503 </span>                :            :   template&lt;class Traits,class RangeChecker,class RawConverter&gt;
+<span class="lineNum">     504 </span>                :            :   struct non_rounding_converter : public std::unary_function&lt; BOOST_DEDUCED_TYPENAME Traits::argument_type
+<span class="lineNum">     505 </span>                :            :                                                              ,BOOST_DEDUCED_TYPENAME Traits::result_type
+<span class="lineNum">     506 </span>                :            :                                                            &gt;
+<span class="lineNum">     507 </span>                :            :                                  ,public RangeChecker
+<span class="lineNum">     508 </span>                :            :                                  ,public RawConverter
+<span class="lineNum">     509 </span>                :            :   {
+<span class="lineNum">     510 </span>                :            :     typedef RangeChecker RangeCheckerBase ;
+<span class="lineNum">     511 </span>                :            :     typedef RawConverter RawConverterBase ;
+<span class="lineNum">     512 </span>                :            : 
+<span class="lineNum">     513 </span>                :            :     typedef Traits traits ;
+<span class="lineNum">     514 </span>                :            : 
+<span class="lineNum">     515 </span>                :            :     typedef typename Traits::source_type   source_type   ;
+<span class="lineNum">     516 </span>                :            :     typedef typename Traits::argument_type argument_type ;
+<span class="lineNum">     517 </span>                :            :     typedef typename Traits::result_type   result_type   ;
+<span class="lineNum">     518 </span>                :            : 
+<span class="lineNum">     519 </span>                :            :     static source_type nearbyint ( argument_type s ) { return s ; }
+<span class="lineNum">     520 </span>                :            : 
+<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 :     static result_type convert ( argument_type s )</span>
+<span class="lineNum">     522 </span>                :            :     {
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :       RangeCheckerBase::validate_range(s);</span>
+<span class="lineNum">     524 </span>                :<span class="lineNoCov">          0 :       return RawConverterBase::low_level_convert(s);</span>
+<span class="lineNum">     525 </span>                :            :     }
+<span class="lineNum">     526 </span>                :            :   } ;
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>                :            : 
+<span class="lineNum">     529 </span>                :            : 
+<span class="lineNum">     530 </span>                :            : 
+<span class="lineNum">     531 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     532 </span>                :            : //
+<span class="lineNum">     533 </span>                :            : // Selectors for the optimized Converter class.
+<span class="lineNum">     534 </span>                :            : //
+<span class="lineNum">     535 </span>                :            : //--------------------------------------------------------------------------
+<span class="lineNum">     536 </span>                :            : 
+<span class="lineNum">     537 </span>                :            :   template&lt;class Traits,class OverflowHandler,class Float2IntRounder,class RawConverter, class UserRangeChecker&gt;
+<span class="lineNum">     538 </span>                :            :   struct get_non_trivial_converter
+<span class="lineNum">     539 </span>                :            :   {
+<span class="lineNum">     540 </span>                :            :     typedef GetRC&lt;Traits,OverflowHandler,Float2IntRounder&gt; InternalRangeCheckerQ ;
+<span class="lineNum">     541 </span>                :            : 
+<span class="lineNum">     542 </span>                :            :     typedef is_same&lt;UserRangeChecker,UseInternalRangeChecker&gt; use_internal_RC ;
+<span class="lineNum">     543 </span>                :            : 
+<span class="lineNum">     544 </span>                :            :     typedef mpl::identity&lt;UserRangeChecker&gt; UserRangeCheckerQ ;
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :     typedef typename
+<span class="lineNum">     547 </span>                :            :       mpl::eval_if&lt;use_internal_RC,InternalRangeCheckerQ,UserRangeCheckerQ&gt;::type
+<span class="lineNum">     548 </span>                :            :         RangeChecker ;
+<span class="lineNum">     549 </span>                :            : 
+<span class="lineNum">     550 </span>                :            :     typedef non_rounding_converter&lt;Traits,RangeChecker,RawConverter&gt;              NonRounding ;
+<span class="lineNum">     551 </span>                :            :     typedef rounding_converter&lt;Traits,RangeChecker,RawConverter,Float2IntRounder&gt; Rounding ;
+<span class="lineNum">     552 </span>                :            : 
+<span class="lineNum">     553 </span>                :            :     typedef mpl::identity&lt;NonRounding&gt; NonRoundingQ ;
+<span class="lineNum">     554 </span>                :            :     typedef mpl::identity&lt;Rounding&gt;    RoundingQ    ;
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :            :     typedef typename Traits::int_float_mixture int_float_mixture ;
+<span class="lineNum">     557 </span>                :            : 
+<span class="lineNum">     558 </span>                :            :     typedef typename
+<span class="lineNum">     559 </span>                :            :       for_int_float_mixture&lt;int_float_mixture, NonRoundingQ, NonRoundingQ, RoundingQ, NonRoundingQ&gt;::type
+<span class="lineNum">     560 </span>                :            :         selector ;
+<span class="lineNum">     561 </span>                :            : 
+<span class="lineNum">     562 </span>                :            :     typedef typename selector::type type ;
+<span class="lineNum">     563 </span>                :            :   } ;
+<span class="lineNum">     564 </span>                :            : 
+<span class="lineNum">     565 </span>                :            :   template&lt; class Traits
+<span class="lineNum">     566 </span>                :            :            ,class OverflowHandler
+<span class="lineNum">     567 </span>                :            :            ,class Float2IntRounder
+<span class="lineNum">     568 </span>                :            :            ,class RawConverter
+<span class="lineNum">     569 </span>                :            :            ,class UserRangeChecker
+<span class="lineNum">     570 </span>                :            :           &gt;
+<span class="lineNum">     571 </span>                :            :   struct get_converter_impl
+<span class="lineNum">     572 </span>                :            :   {
+<span class="lineNum">     573 </span>                :            : #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT( 0x0561 ) )
+<span class="lineNum">     574 </span>                :            :     // bcc55 prefers sometimes template parameters to be explicit local types.
+<span class="lineNum">     575 </span>                :            :     // (notice that is is illegal to reuse the names like this)
+<span class="lineNum">     576 </span>                :            :     typedef Traits           Traits ;
+<span class="lineNum">     577 </span>                :            :     typedef OverflowHandler  OverflowHandler ;
+<span class="lineNum">     578 </span>                :            :     typedef Float2IntRounder Float2IntRounder ;
+<span class="lineNum">     579 </span>                :            :     typedef RawConverter     RawConverter ;
+<span class="lineNum">     580 </span>                :            :     typedef UserRangeChecker UserRangeChecker ;
+<span class="lineNum">     581 </span>                :            : #endif
+<span class="lineNum">     582 </span>                :            : 
+<span class="lineNum">     583 </span>                :            :     typedef trivial_converter_impl&lt;Traits&gt; Trivial ;
+<span class="lineNum">     584 </span>                :            :     typedef mpl::identity        &lt;Trivial&gt; TrivialQ ;
+<span class="lineNum">     585 </span>                :            : 
+<span class="lineNum">     586 </span>                :            :     typedef get_non_trivial_converter&lt; Traits
+<span class="lineNum">     587 </span>                :            :                                       ,OverflowHandler
+<span class="lineNum">     588 </span>                :            :                                       ,Float2IntRounder
+<span class="lineNum">     589 </span>                :            :                                       ,RawConverter
+<span class="lineNum">     590 </span>                :            :                                       ,UserRangeChecker
+<span class="lineNum">     591 </span>                :            :                                      &gt; NonTrivialQ ;
+<span class="lineNum">     592 </span>                :            : 
+<span class="lineNum">     593 </span>                :            :     typedef typename Traits::trivial trivial ;
+<span class="lineNum">     594 </span>                :            : 
+<span class="lineNum">     595 </span>                :            :     typedef typename mpl::eval_if&lt;trivial,TrivialQ,NonTrivialQ&gt;::type type ;
+<span class="lineNum">     596 </span>                :            :   } ;
+<span class="lineNum">     597 </span>                :            : 
+<span class="lineNum">     598 </span>                :            : } } } // namespace boost::numeric::convdetail
+<span class="lineNum">     599 </span>                :            : 
+<span class="lineNum">     600 </span>                :            : #endif
+<span class="lineNum">     601 </span>                :            : 
+<span class="lineNum">     602 </span>                :            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/common/accountLibrary/writer.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/accountLibrary</a> - writer.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">58</td>
+            <td class="headerCovTableEntryLo">51.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;accountLibrary/writer.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &quot;libraryUtils/object_storage_exception.h&quot;
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       5 </span>                :            : namespace accountInfoFile
+<span class="lineNum">       6 </span>                :            : {
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : Writer::Writer(boost::shared_ptr&lt;fileHandler::FileHandler&gt;  file,
+<span class="lineNum">       9 </span>                :            :                 boost::shared_ptr&lt;StaticDataBlockWriter&gt; static_data_block_writer,
+<span class="lineNum">      10 </span>                :            :                 boost::shared_ptr&lt;NonStaticDataBlockWriter&gt; non_static_data_block_writer,
+<span class="lineNum">      11 </span>                :            :                 boost::shared_ptr&lt;NonStaticDataBlockBuilder&gt; non_static_data_block_reader,
+<span class="lineNum">      12 </span>                :            :                 boost::shared_ptr&lt;TrailerStatBlockWriter&gt; trailer_stat_block_writer,
+<span class="lineNum">      13 </span>                :<span class="lineCov">        376 :                 boost::shared_ptr&lt;TrailerStatBlockBuilder&gt; trailer_stat_block_reader):</span>
+<span class="lineNum">      14 </span>                :            :                 file(file),
+<span class="lineNum">      15 </span>                :            :                 static_data_block_writer(static_data_block_writer),
+<span class="lineNum">      16 </span>                :            :                 non_static_data_block_writer(non_static_data_block_writer),
+<span class="lineNum">      17 </span>                :            :                 non_static_data_block_reader(non_static_data_block_reader),
+<span class="lineNum">      18 </span>                :            :                 trailer_stat_block_writer(trailer_stat_block_writer),
+<span class="lineNum">      19 </span>                :<span class="lineCov">        376 :                 trailer_stat_block_reader(trailer_stat_block_reader)</span>
+<span class="lineNum">      20 </span>                :            : {
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            :         ;
+<span class="lineNum">      23 </span>                :            : }
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            : void Writer::write_static_data_block(boost::shared_ptr&lt;StaticDataBlock&gt; static_data_block,
+<span class="lineNum">      27 </span>                :            :                                         boost::shared_ptr&lt;NonStaticDataBlock&gt; non_static_data_block,
+<span class="lineNum">      28 </span>                :            :                                         boost::shared_ptr&lt;recordStructure::AccountStat&gt; stat,
+<span class="lineNum">      29 </span>                :<span class="lineCov">        168 :                                         boost::shared_ptr&lt;TrailerBlock&gt; trailer)</span>
+<span class="lineNum">      30 </span>                :            : {
+<span class="lineNum">      31 </span>                :            :         uint64_t static_record_offset = trailer-&gt;static_data_block_offset + (sizeof(StaticDataBlockBuilder::StaticBlock_) *
+<span class="lineNum">      32 </span>                :<span class="lineCov">        168 :                                                 (trailer-&gt;sorted_record + trailer-&gt;unsorted_record - static_data_block-&gt;get_size()));</span>
+<span class="lineNum">      33 </span>                :            :         uint64_t non_static_record_offset = trailer-&gt;non_static_data_block_offset + 
+<span class="lineNum">      34 </span>                :            :                         (sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * 
+<span class="lineNum">      35 </span>                :<span class="lineCov">        168 :                         (trailer-&gt;sorted_record + trailer-&gt;unsorted_record - non_static_data_block-&gt;get_size()));</span>
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :<span class="lineCov">        168 :         block_buffer_size_tuple static_data_tuple = this-&gt;static_data_block_writer-&gt;get_writable_block(static_data_block);</span>
+<span class="lineNum">      38 </span>                :<span class="lineCov">        336 :         block_buffer_size_tuple non_static_data_tuple = this-&gt;non_static_data_block_writer-&gt;get_writable_block(non_static_data_block);</span>
+<span class="lineNum">      39 </span>                :<span class="lineCov">        336 :         block_buffer_size_tuple trailer_stat_tuple = this-&gt;trailer_stat_block_writer-&gt;get_writable_block(stat, trailer);</span>
+<span class="lineNum">      40 </span>                :            :         
+<span class="lineNum">      41 </span>                :            :         try
+<span class="lineNum">      42 </span>                :            :         {
+<span class="lineNum">      43 </span>                :<span class="lineCov">        336 :                 this-&gt;file-&gt;write(static_data_tuple.get&lt;0&gt;(), static_data_tuple.get&lt;1&gt;(), static_record_offset); // use old trailer</span>
+<span class="lineNum">      44 </span>                :<span class="lineCov">        168 :                 this-&gt;file-&gt;write(non_static_data_tuple.get&lt;0&gt;(), non_static_data_tuple.get&lt;1&gt;(), non_static_record_offset);</span>
+<span class="lineNum">      45 </span>                :<span class="lineCov">        168 :                 this-&gt;file-&gt;sync();  //ensure stat and trailer go in one sync</span>
+<span class="lineNum">      46 </span>                :<span class="lineCov">        168 :                 this-&gt;file-&gt;write(trailer_stat_tuple.get&lt;0&gt;(), trailer_stat_tuple.get&lt;1&gt;(), trailer-&gt;stat_block_offset);</span>
+<span class="lineNum">      47 </span>                :<span class="lineCov">        168 :                 this-&gt;file-&gt;sync();</span>
+<span class="lineNum">      48 </span>                :            :         }
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :         catch(OSDException::WriteFileException e)</span>
+<span class="lineNum">      50 </span>                :            :         {
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :                 delete[] static_data_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :                 delete[] non_static_data_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :                 delete[] trailer_stat_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :                 throw e;</span>
+<span class="lineNum">      55 </span>                :            :         }
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :<span class="lineCov">        336 :         delete[] static_data_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">      58 </span>                :<span class="lineCov">        168 :         delete[] non_static_data_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">      59 </span>                :<span class="lineCov">        168 :         delete[] trailer_stat_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">      60 </span>                :            : }
+<span class="lineNum">      61 </span>                :            : //UNCOVERED_CODE_BEGIN: 
+<span class="lineNum">      62 </span>                :            : void Writer::write_non_static_data_block(boost::shared_ptr&lt;NonStaticDataBlock&gt; non_static_data_block, boost::shared_ptr&lt;TrailerBlock&gt; trailer, uint64_t non_static_static_position)
+<span class="lineNum">      63 </span>                :            : {
+<span class="lineNum">      64 </span>                :            :                 uint64_t non_static_record_offset = trailer-&gt;non_static_data_block_offset +
+<span class="lineNum">      65 </span>                :            :                                                 (sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * non_static_static_position);
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            :         block_buffer_size_tuple non_static_data_tuple = this-&gt;non_static_data_block_writer-&gt;get_writable_block(non_static_data_block);
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :            :         try
+<span class="lineNum">      70 </span>                :            :         {
+<span class="lineNum">      71 </span>                :            :                 this-&gt;file-&gt;write(non_static_data_tuple.get&lt;0&gt;(), non_static_data_tuple.get&lt;1&gt;(), non_static_record_offset);
+<span class="lineNum">      72 </span>                :            :                 this-&gt;file-&gt;sync();
+<span class="lineNum">      73 </span>                :            :         }
+<span class="lineNum">      74 </span>                :            :         catch(OSDException::WriteFileException e)
+<span class="lineNum">      75 </span>                :            :         {
+<span class="lineNum">      76 </span>                :            :                 delete[] non_static_data_tuple.get&lt;0&gt;();
+<span class="lineNum">      77 </span>                :            :                 throw e;
+<span class="lineNum">      78 </span>                :            :         }
+<span class="lineNum">      79 </span>                :            : 
+<span class="lineNum">      80 </span>                :            :         delete[] non_static_data_tuple.get&lt;0&gt;();
+<span class="lineNum">      81 </span>                :            : }
+<span class="lineNum">      82 </span>                :            : //UNCOVERED_CODE_END
+<span class="lineNum">      83 </span>                :            : void Writer::write_non_static_data_block(void *buffer, boost::shared_ptr&lt;TrailerBlock&gt; trailer,
+<span class="lineNum">      84 </span>                :<span class="lineCov">         62 :                 uint64_t start, uint64_t count)</span>
+<span class="lineNum">      85 </span>                :            : {
+<span class="lineNum">      86 </span>                :<span class="lineCov">         62 :         uint64_t size = sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * count;</span>
+<span class="lineNum">      87 </span>                :<span class="lineCov">         62 :         uint64_t offset = trailer-&gt;non_static_data_block_offset + sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * start;</span>
+<span class="lineNum">      88 </span>                :<span class="lineCov">         62 :         this-&gt;file-&gt;write(reinterpret_cast&lt;char *&gt;(buffer), size, offset);</span>
+<span class="lineNum">      89 </span>                :            : }
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            : void Writer::write_stat_trailer_block(boost::shared_ptr&lt;recordStructure::AccountStat&gt; stat,
+<span class="lineNum">      93 </span>                :<span class="lineCov">         69 :                                         boost::shared_ptr&lt;TrailerBlock&gt; trailer)</span>
+<span class="lineNum">      94 </span>                :            : {
+<span class="lineNum">      95 </span>                :<span class="lineCov">         69 :         block_buffer_size_tuple trailer_stat_tuple = this-&gt;trailer_stat_block_writer-&gt;get_writable_block(stat, trailer);</span>
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :            :         try
+<span class="lineNum">      98 </span>                :            :         {
+<span class="lineNum">      99 </span>                :<span class="lineCov">        138 :                 this-&gt;file-&gt;write(trailer_stat_tuple.get&lt;0&gt;(), trailer_stat_tuple.get&lt;1&gt;(), trailer-&gt;stat_block_offset);</span>
+<span class="lineNum">     100 </span>                :<span class="lineCov">         69 :                 this-&gt;file-&gt;sync();</span>
+<span class="lineNum">     101 </span>                :            :         }
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :         catch(OSDException::WriteFileException e)</span>
+<span class="lineNum">     103 </span>                :            :         {
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :                 delete[] trailer_stat_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :                 throw e;</span>
+<span class="lineNum">     106 </span>                :            :         }
+<span class="lineNum">     107 </span>                :<span class="lineCov">        138 :         delete[] trailer_stat_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">     108 </span>                :            : }
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :<span class="lineCov">        103 : void Writer::write_file(boost::shared_ptr&lt;recordStructure::AccountStat&gt; stat, boost::shared_ptr&lt;TrailerBlock&gt; trailer )</span>
+<span class="lineNum">     112 </span>                :            : {
+<span class="lineNum">     113 </span>                :            :         
+<span class="lineNum">     114 </span>                :<span class="lineCov">        103 :         block_buffer_size_tuple trailer_stat_tuple = this-&gt;trailer_stat_block_writer-&gt;get_writable_block(stat, trailer);</span>
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :         try
+<span class="lineNum">     117 </span>                :            :         {
+<span class="lineNum">     118 </span>                :<span class="lineCov">        206 :                 this-&gt;file-&gt;write(trailer_stat_tuple.get&lt;0&gt;(), trailer_stat_tuple.get&lt;1&gt;(), trailer-&gt;stat_block_offset);</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">        103 :                 this-&gt;file-&gt;sync();</span>
+<span class="lineNum">     120 </span>                :            :         }
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :         catch(OSDException::WriteFileException e)</span>
+<span class="lineNum">     122 </span>                :            :         {
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :                 delete[] trailer_stat_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :                 throw e;</span>
+<span class="lineNum">     125 </span>                :            :         }
+<span class="lineNum">     126 </span>                :<span class="lineCov">        206 :         delete[] trailer_stat_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">     127 </span>                :            : }
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :            : void Writer::write_record(StaticDataBlockBuilder::StaticBlock_ const * static_record,
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :                                 NonStaticDataBlockBuilder::NonStaticBlock_ const * non_static_record)</span>
+<span class="lineNum">     131 </span>                :            : {
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         this-&gt;static_append_writer-&gt;append(static_record, sizeof(StaticDataBlockBuilder::StaticBlock_));</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :         this-&gt;non_static_append_writer-&gt;append(non_static_record, sizeof(NonStaticDataBlockBuilder::NonStaticBlock_));</span>
+<span class="lineNum">     134 </span>                :            : }
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 : void Writer::flush_record()</span>
+<span class="lineNum">     137 </span>                :            : {
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :         this-&gt;static_append_writer-&gt;flush();</span>
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         this-&gt;non_static_append_writer-&gt;flush();</span>
+<span class="lineNum">     140 </span>                :            : }
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 : void Writer::begin_compaction(boost::shared_ptr&lt;TrailerBlock&gt; trailer, uint64_t max_size)</span>
+<span class="lineNum">     143 </span>                :            : {
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :         this-&gt;file-&gt;open_tmp_file(&quot;.compact&quot;);</span>
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :         uint64_t buffer_size = std::min(max_size * sizeof(StaticDataBlockBuilder::StaticBlock_), 5 * 1024 * 1024UL);</span>
+<span class="lineNum">     146 </span>                :            :         this-&gt;static_append_writer.reset(new AppendWriter(this-&gt;file,
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :                                                 trailer-&gt;static_data_block_offset, buffer_size));</span>
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :         buffer_size = std::min(max_size * sizeof(NonStaticDataBlockBuilder::NonStaticBlock_), 5 * 1024 * 1024UL);</span>
+<span class="lineNum">     149 </span>                :            :         this-&gt;non_static_append_writer.reset(new AppendWriter(this-&gt;file,
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :                                                 trailer-&gt;non_static_data_block_offset, buffer_size));</span>
+<span class="lineNum">     151 </span>                :            : }
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 : void Writer::finish_compaction()</span>
+<span class="lineNum">     154 </span>                :            : {
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :         this-&gt;static_append_writer.reset();</span>
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :         this-&gt;non_static_append_writer.reset();</span>
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :         this-&gt;file-&gt;rename_tmp_file(&quot;.compact&quot;);</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         this-&gt;file-&gt;reopen();</span>
+<span class="lineNum">     159 </span>                :            : }
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

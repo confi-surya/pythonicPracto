@@ -1,0 +1,103 @@
+diff --git a/remote/hydra042/spsingh/7thJune/objectStorage/src/osd/accountUpdaterService/monitor.py b/remote/hydra042/spsingh/15thJune/objectStorage/src/osd/accountUpdaterService/monitor.py
+index b6c5100..ba921a0 100644
+--- a/remote/hydra042/spsingh/7thJune/objectStorage/src/osd/accountUpdaterService/monitor.py
++++ b/remote/hydra042/spsingh/15thJune/objectStorage/src/osd/accountUpdaterService/monitor.py
+@@ -151,13 +151,52 @@ class GlobalVariables:
+     def put_into_Queue(self):
+         self.__get_comp_counter_queue.put(True)
+ 
++    def load_gl_map(self):
++        self.logger.info("Sending request for retrieving global map")
++        retry = 3
++        counter = 0
++        while counter < retry:
++            counter += 1
++            try:
++                self.gl_info = self.request_handler.get_gl_info()
++                self.conn_obj = self.request_handler.connector(IoType.SOCKETIO, self.gl_info)
++                if self.conn_obj != None:
++                    result = self.request_handler.get_global_map(self.__service_id, self.conn_obj)
++                    if result.status.get_status_code() == Resp.SUCCESS:
++                        self.__global_map = result.message.map()
++                        self.__global_map_version = result.message.version()
++                        self.logger.info("Global map version: %s"
++                            %(self.__global_map_version))
++                        self.__acc_updater_map = self.__global_map['accountUpdater-server'][0]
++                        self.__acc_updater_map_version = self.__global_map['accountUpdater-server'][1]
++                        self.__acc_map = self.__global_map['account-server'][0]
++                        self.__acc_map_version = self.__global_map['account-server'][1]
++                        self.__cont_map = self.__global_map['container-server'][0]
++                        self.__cont_map_version = self.__global_map['container-server'][1]
++                        self.conn_obj.close()
++                        return True
++                    else:
++                        self.logger.warning("load_gl_map() error code: %s msg: %s" \
++                            % (result.status.get_status_code(), \
++                            result.status.get_status_message()))
++                        self.conn_obj.close()
++            except Exception as ex:
++                self.logger.exception("Exception occured during get_global_map"
++                    ":%s" %ex)
++                if self.conn_obj:
++                    self.conn_obj.close()
++            self.logger.warning("Failed to get global map, Retry: %s" % counter)
++        self.logger.error("Failed to load global map")
++        return False
++
+     def get_from_Queue(self):
+         try:
+             comp_counter = self.__get_comp_counter_queue.get(block=True, \
+                 timeout=300)
+             return comp_counter
+         except Queue.Empty:
+-            self.logger.error("Queue is empty")
++            self.logger.error("Queue is empty now loading gl map")
++            self.load_gl_map()
+             raise Queue.Empty("Nothing in queue")
+      
+     def load_ownership(self):
+@@ -210,44 +249,6 @@ class GlobalVariables:
+     def get_ownershipList(self):
+         return self.__ownership_list
+ 
+-    def load_gl_map(self):
+-        self.logger.info("Sending request for retrieving global map")
+-        retry = 3
+-        counter = 0
+-        while counter < retry:
+-            counter += 1
+-            try:
+-                self.gl_info = self.request_handler.get_gl_info()
+-                self.conn_obj = self.request_handler.connector(IoType.SOCKETIO, self.gl_info)
+-                if self.conn_obj != None:
+-                    result = self.request_handler.get_global_map(self.__service_id, self.conn_obj)
+-                    if result.status.get_status_code() == Resp.SUCCESS:
+-                        self.__global_map = result.message.map()
+-                        self.__global_map_version = result.message.version()
+-                        self.logger.info("Global map version: %s" 
+-                            %(self.__global_map_version))
+-                        self.__acc_updater_map = self.__global_map['accountUpdater-server'][0]
+-                        self.__acc_updater_map_version = self.__global_map['accountUpdater-server'][1]
+-                        self.__acc_map = self.__global_map['account-server'][0]
+-                        self.__acc_map_version = self.__global_map['account-server'][1]
+-                        self.__cont_map = self.__global_map['container-server'][0]
+-                        self.__cont_map_version = self.__global_map['container-server'][1]
+-                        self.conn_obj.close()
+-                        return True 
+-                    else:
+-                        self.logger.warning("load_gl_map() error code: %s msg: %s" \
+-                            % (result.status.get_status_code(), \
+-                            result.status.get_status_message()))
+-                        self.conn_obj.close()
+-            except Exception as ex:
+-                self.logger.exception("Exception occured during get_global_map"
+-                    ":%s" %ex)
+-                if self.conn_obj:
+-                    self.conn_obj.close()
+-            self.logger.warning("Failed to get global map, Retry: %s" % counter)
+-        self.logger.error("Failed to load global map")
+-        return False
+-
+     def get_account_map(self):
+         while not self.__acc_map:
+             self.load_gl_map()

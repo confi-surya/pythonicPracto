@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/include/libraryUtils/job_manager.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/include/libraryUtils</a> - job_manager.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">59</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef __JOB_MANAGER_H__
+<span class="lineNum">       2 </span>                :            : #define __JOB_MANAGER_H__
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &lt;list&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">       6 </span>                :            : #include &lt;boost/make_shared.hpp&gt;
+<span class="lineNum">       7 </span>                :            : #include &lt;boost/function.hpp&gt;
+<span class="lineNum">       8 </span>                :            : #include &lt;boost/thread/condition_variable.hpp&gt;
+<span class="lineNum">       9 </span>                :            : #include &lt;cool/debug.h&gt;
+<span class="lineNum">      10 </span>                :            : #include &quot;containerLibrary/memory_writer.h&quot;
+<span class="lineNum">      11 </span>                :            : #include &quot;containerLibrary/journal_writer.h&quot;
+<span class="lineNum">      12 </span>                :            : #include &quot;libraryUtils/record_structure.h&quot;
+<span class="lineNum">      13 </span>                :            : #include &quot;libraryUtils/journal.h&quot;
+<span class="lineNum">      14 </span>                :            : #include &quot;libraryUtils/object_storage_log_setup.h&quot;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : using namespace object_storage_log_setup;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : namespace job_manager
+<span class="lineNum">      19 </span>                :            : {
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : using recordStructure::JournalOffset;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : class CallbackMaintainer
+<span class="lineNum">      24 </span>                :            : {
+<span class="lineNum">      25 </span>                :            :         public:
+<span class="lineNum">      26 </span>                :            :                 boost::function&lt;void(void)&gt; success;
+<span class="lineNum">      27 </span>                :            :                 void failure();
+<span class="lineNum">      28 </span>                :            :                 void timeout();
+<span class="lineNum">      29 </span>                :<span class="lineNoCov">          0 :                 CallbackMaintainer(boost::function&lt;void(void)&gt; const &amp; success = boost::function&lt;void(void)&gt;())</span>
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 :                 :success(success)</span>
+<span class="lineNum">      31 </span>                :<span class="lineNoCov">          0 :                 {}</span>
+<span class="lineNum">      32 </span>                :            : };
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : class Job
+<span class="lineNum">      35 </span>                :            : {
+<span class="lineNum">      36 </span>                :            :         private:
+<span class="lineNum">      37 </span>                :            :                 int job_id;
+<span class="lineNum">      38 </span>                :            :                 boost::shared_ptr&lt;CallbackMaintainer&gt; callback_ptr;
+<span class="lineNum">      39 </span>                :            :         public:
+<span class="lineNum">      40 </span>                :            :                 //boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; record_ptr;
+<span class="lineNum">      41 </span>                :            :                 boost::shared_ptr&lt;recordStructure::Record&gt; record_ptr;
+<span class="lineNum">      42 </span>                :            :                 bool memory_flag;
+<span class="lineNum">      43 </span>                :            :                 virtual ~Job() = 0;
+<span class="lineNum">      44 </span>                :            :                 virtual void write() = 0;
+<span class="lineNum">      45 </span>                :            :                 virtual void execute_callback() = 0;
+<span class="lineNum">      46 </span>                :            : //              recordStructure::ObjectRecord getObjectRecord() = 0;
+<span class="lineNum">      47 </span>                :            : //              CallbackMaintainer getCallback() = 0;
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : };
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            : class WriteJob: public Job
+<span class="lineNum">      52 </span>                :            : {
+<span class="lineNum">      53 </span>                :            :         public:
+<span class="lineNum">      54 </span>                :            : /*              WriteJob(boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; record,
+<span class="lineNum">      55 </span>                :            :                                 boost::shared_ptr&lt;CallbackMaintainer&gt; callback_obj,
+<span class="lineNum">      56 </span>                :            :                                 boost::shared_ptr&lt;journal_manager::JournalWriteHandler&gt; writer_ptr
+<span class="lineNum">      57 </span>                :            :                 );
+<span class="lineNum">      58 </span>                :            : */
+<span class="lineNum">      59 </span>                :            :                 WriteJob(boost::shared_ptr&lt;recordStructure::Record&gt; record,
+<span class="lineNum">      60 </span>                :            :                                 boost::shared_ptr&lt;CallbackMaintainer&gt; callback_obj,
+<span class="lineNum">      61 </span>                :            :                                 boost::shared_ptr&lt;journal_manager::JournalWriteHandler&gt; writer_ptr,
+<span class="lineNum">      62 </span>                :            :                                 bool memory_flag
+<span class="lineNum">      63 </span>                :            :                 );
+<span class="lineNum">      64 </span>                :            :                 void write();
+<span class="lineNum">      65 </span>                :            :                 void execute_callback();
+<span class="lineNum">      66 </span>                :            : //              recordStructure::ObjectRecord get_object_record();
+<span class="lineNum">      67 </span>                :            : //              CallbackMaintainer get_callback();
+<span class="lineNum">      68 </span>                :            : //              boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; record_ptr;
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :         private:
+<span class="lineNum">      71 </span>                :            :                 boost::shared_ptr&lt;CallbackMaintainer&gt; callback_ptr;
+<span class="lineNum">      72 </span>                :            :                 uint64_t job_id;
+<span class="lineNum">      73 </span>                :            :                 boost::shared_ptr&lt;journal_manager::JournalWriteHandler&gt; writer_ptr;
+<span class="lineNum">      74 </span>                :            : };
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            : class SyncJobs
+<span class="lineNum">      77 </span>                :            : {
+<span class="lineNum">      78 </span>                :            :         public:
+<span class="lineNum">      79 </span>                :            :                 SyncJobs(boost::shared_ptr&lt;journal_manager::JournalWriteHandler&gt; sync_ptr,
+<span class="lineNum">      80 </span>                :            :                                 boost::shared_ptr&lt;container_library::MemoryManager&gt; memory_ptr);
+<span class="lineNum">      81 </span>                :            :                 SyncJobs(boost::shared_ptr&lt;journal_manager::JournalWriteHandler&gt; sync_ptr);
+<span class="lineNum">      82 </span>                :            :                 void execute();
+<span class="lineNum">      83 </span>                :            :                 JournalOffset get_last_sync_offset();
+<span class="lineNum">      84 </span>                :            :                 boost::shared_ptr&lt;container_library::MemoryManager&gt; get_memory_ptr();
+<span class="lineNum">      85 </span>                :            :         private:
+<span class="lineNum">      86 </span>                :            :                 uint64_t job_id;
+<span class="lineNum">      87 </span>                :            :                 boost::shared_ptr&lt;journal_manager::JournalWriteHandler&gt; sync_ptr;
+<span class="lineNum">      88 </span>                :            :                 boost::shared_ptr&lt;container_library::MemoryManager&gt; memory_ptr;
+<span class="lineNum">      89 </span>                :            : };
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">      92 </span>                :            : class BatchJob
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>                :            :         private:
+<span class="lineNum">      95 </span>                :            :                 std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt; tasks;
+<span class="lineNum">      96 </span>                :            :                 boost::shared_ptr&lt;SyncJobs&gt; sync_jobs_ptr;
+<span class="lineNum">      97 </span>                :            :                 void remove_list();
+<span class="lineNum">      98 </span>                :            :                 
+<span class="lineNum">      99 </span>                :            :         public:
+<span class="lineNum">     100 </span>                :            :                 BatchJob(std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt; tasks, boost::shared_ptr&lt;SyncJobs&gt; sync_jobs_ptr);
+<span class="lineNum">     101 </span>                :            :                 void execute_for_container();
+<span class="lineNum">     102 </span>                :            :                 void execute_for_transaction();
+<span class="lineNum">     103 </span>                :            :                 void execute();
+<span class="lineNum">     104 </span>                :            : };
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 : void BatchJob&lt;JobType&gt;::execute()</span>
+<span class="lineNum">     108 </span>                :            : {
+<span class="lineNum">     109 </span>                :            :         try
+<span class="lineNum">     110 </span>                :            :         {
+<span class="lineNum">     111 </span>                :            :                 typedef typename std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt;::iterator IT;
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Writing &quot; &lt;&lt; this-&gt;tasks.size() &lt;&lt; &quot; batch jobs in Journal&quot;);  </span>
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :                 for(IT it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)</span>
+<span class="lineNum">     114 </span>                :            :                 {
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :                         (*it)-&gt;write();</span>
+<span class="lineNum">     116 </span>                :            :                 }
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sync_jobs_ptr-&gt;execute();</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :                 for(IT it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)</span>
+<span class="lineNum">     119 </span>                :            :                 {
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :                         (*it)-&gt;execute_callback();</span>
+<span class="lineNum">     121 </span>                :            :                 }
+<span class="lineNum">     122 </span>                :            :         }
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :         catch(...)</span>
+<span class="lineNum">     124 </span>                :            :         {
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(FATAL, &quot;Failed to write/sync jobs in Journal due to exception raise&quot;);</span>
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;Failed to write jobs in Journal due to exception raise&quot;);</span>
+<span class="lineNum">     127 </span>                :            :         }
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :            : }
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     132 </span>                :            : void BatchJob&lt;JobType&gt;::execute_for_container()
+<span class="lineNum">     133 </span>                :            : {
+<span class="lineNum">     134 </span>                :            :         typedef typename std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt;::iterator IT;
+<span class="lineNum">     135 </span>                :            :         OSDLOG(INFO, osd_container_lib_log_tag &lt;&lt; &quot;Writing &quot; &lt;&lt; this-&gt;tasks.size() &lt;&lt; &quot; batch jobs in Journal&quot;);
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            :         //record type1 is the object records comming from update_container interface
+<span class="lineNum">     138 </span>                :            :         std::pair&lt;bool,std::vector&lt;boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; &gt; &gt; record_type1;
+<span class="lineNum">     139 </span>                :            :         record_type1.first = true;
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>                :            :         //record_type2 is the object records comming from accept_container interface
+<span class="lineNum">     142 </span>                :            :         std::pair&lt;bool,std::vector&lt;boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; &gt; &gt; record_type2;
+<span class="lineNum">     143 </span>                :            :         record_type2.first = false;
+<span class="lineNum">     144 </span>                :            :         
+<span class="lineNum">     145 </span>                :            :         std::list&lt;std::pair&lt;bool,std::vector&lt;boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; &gt; &gt; &gt;::iterator it1;
+<span class="lineNum">     146 </span>                :            :         //it1-&gt;second.reserve(this-&gt;tasks.size());
+<span class="lineNum">     147 </span>                :            :         //for(std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt;::iterator it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)
+<span class="lineNum">     148 </span>                :            :         
+<span class="lineNum">     149 </span>                :            :         for(IT it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)
+<span class="lineNum">     150 </span>                :            :         {
+<span class="lineNum">     151 </span>                :            :                 try
+<span class="lineNum">     152 </span>                :            :                 {
+<span class="lineNum">     153 </span>                :            :                         (*it)-&gt;write();
+<span class="lineNum">     154 </span>                :            :                         if ( (*it)-&gt;memory_flag )
+<span class="lineNum">     155 </span>                :            :                         {
+<span class="lineNum">     156 </span>                :            :                                 record_type1.second.push_back(boost::dynamic_pointer_cast&lt;recordStructure::FinalObjectRecord&gt;((*it)-&gt;record_ptr));
+<span class="lineNum">     157 </span>                :            :                         }
+<span class="lineNum">     158 </span>                :            :                         else
+<span class="lineNum">     159 </span>                :            :                         {
+<span class="lineNum">     160 </span>                :            :                                 record_type2.second.push_back(boost::dynamic_pointer_cast&lt;recordStructure::FinalObjectRecord&gt;((*it)-&gt;record_ptr));
+<span class="lineNum">     161 </span>                :            :                         }
+<span class="lineNum">     162 </span>                :            :                 }
+<span class="lineNum">     163 </span>                :            :                 catch(...)
+<span class="lineNum">     164 </span>                :            :                 {
+<span class="lineNum">     165 </span>                :            :                         OSDLOG(FATAL, osd_container_lib_log_tag &lt;&lt; &quot;Journal writing Failed in execute_for_container&quot;);
+<span class="lineNum">     166 </span>                :            :                         PASSERT(false, &quot;Journal writing Failed in execute_for_container&quot;);    
+<span class="lineNum">     167 </span>                :            :                 }
+<span class="lineNum">     168 </span>                :            :         }
+<span class="lineNum">     169 </span>                :            :         std::list&lt;std::pair&lt;bool,std::vector&lt;boost::shared_ptr&lt;recordStructure::FinalObjectRecord&gt; &gt; &gt; &gt; records;
+<span class="lineNum">     170 </span>                :            :         if ( record_type1.second.size() &gt; 0 )
+<span class="lineNum">     171 </span>                :            :         {
+<span class="lineNum">     172 </span>                :            :                 records.push_back(record_type1);
+<span class="lineNum">     173 </span>                :            :         }
+<span class="lineNum">     174 </span>                :            :         if ( record_type2.second.size() &gt; 0 )
+<span class="lineNum">     175 </span>                :            :         {
+<span class="lineNum">     176 </span>                :            :                 records.push_back(record_type2);
+<span class="lineNum">     177 </span>                :            :         }       
+<span class="lineNum">     178 </span>                :            :         try
+<span class="lineNum">     179 </span>                :            :         {       
+<span class="lineNum">     180 </span>                :            :                 JournalOffset prev_off = this-&gt;sync_jobs_ptr-&gt;get_last_sync_offset();
+<span class="lineNum">     181 </span>                :            :                 OSDLOG(DEBUG, osd_container_lib_log_tag &lt;&lt; &quot;Syncing Journal, previous sync offset is: &quot; &lt;&lt; prev_off);
+<span class="lineNum">     182 </span>                :            :                 this-&gt;sync_jobs_ptr-&gt;execute();
+<span class="lineNum">     183 </span>                :            :                 JournalOffset sync_off = this-&gt;sync_jobs_ptr-&gt;get_last_sync_offset();
+<span class="lineNum">     184 </span>                :            :                 OSDLOG(DEBUG, osd_container_lib_log_tag &lt;&lt; &quot;Sync complete, new sync offset is: &quot; &lt;&lt; sync_off &lt;&lt; &quot;. Now executing callbacks&quot;);
+<span class="lineNum">     185 </span>                :            :                 this-&gt;sync_jobs_ptr-&gt;get_memory_ptr()-&gt;add_entries(records, prev_off, sync_off);
+<span class="lineNum">     186 </span>                :            :         
+<span class="lineNum">     187 </span>                :            :                 for(IT it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)
+<span class="lineNum">     188 </span>                :            :                 {
+<span class="lineNum">     189 </span>                :            :                         (*it)-&gt;execute_callback();
+<span class="lineNum">     190 </span>                :            :                 }
+<span class="lineNum">     191 </span>                :            :                 this-&gt;remove_list();
+<span class="lineNum">     192 </span>                :            :         }
+<span class="lineNum">     193 </span>                :            :         catch(...)
+<span class="lineNum">     194 </span>                :            :         {
+<span class="lineNum">     195 </span>                :            :                 OSDLOG(FATAL, osd_container_lib_log_tag &lt;&lt; &quot;Journal sync Failed in execute_for_container&quot;);
+<span class="lineNum">     196 </span>                :            :                 PASSERT(false, &quot;Journal sync Failed in execute_for_container&quot;);
+<span class="lineNum">     197 </span>                :            :         }
+<span class="lineNum">     198 </span>                :            : }
+<span class="lineNum">     199 </span>                :            : 
+<span class="lineNum">     200 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 : void BatchJob&lt;JobType&gt;::execute_for_transaction()</span>
+<span class="lineNum">     202 </span>                :            : {
+<span class="lineNum">     203 </span>                :            :         try
+<span class="lineNum">     204 </span>                :            :         {
+<span class="lineNum">     205 </span>                :            :                 typedef typename std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt;::iterator IT;
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, osd_transaction_lib_log_tag &lt;&lt; &quot;Writing &quot; &lt;&lt; this-&gt;tasks.size() &lt;&lt; &quot; batch jobs in Journal&quot;);     </span>
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :                 for(IT it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)</span>
+<span class="lineNum">     208 </span>                :            :                 {
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :                         (*it)-&gt;write();</span>
+<span class="lineNum">     210 </span>                :            :                 }
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sync_jobs_ptr-&gt;execute();</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :                 for(IT it = this-&gt;tasks.begin(); it != this-&gt;tasks.end(); it++)</span>
+<span class="lineNum">     213 </span>                :            :                 {
+<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :                         (*it)-&gt;execute_callback();</span>
+<span class="lineNum">     215 </span>                :            :                 }
+<span class="lineNum">     216 </span>                :            :         }
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :         catch(...)</span>
+<span class="lineNum">     218 </span>                :            :         {
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(FATAL, osd_transaction_lib_log_tag &lt;&lt; &quot;Failed to write/sync jobs in Journal due to exception raise&quot;);</span>
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;Failed to write jobs in Journal due to exception raise&quot;);</span>
+<span class="lineNum">     221 </span>                :            :         }
+<span class="lineNum">     222 </span>                :            : }
+<span class="lineNum">     223 </span>                :            : 
+<span class="lineNum">     224 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     225 </span>                :            : void BatchJob&lt;JobType&gt;::remove_list()
+<span class="lineNum">     226 </span>                :            : {
+<span class="lineNum">     227 </span>                :            :         this-&gt;tasks.clear();
+<span class="lineNum">     228 </span>                :            : }
+<span class="lineNum">     229 </span>                :            : 
+<span class="lineNum">     230 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 : BatchJob&lt;JobType&gt;::BatchJob(std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt; tasks, boost::shared_ptr&lt;SyncJobs&gt; sync_jobs_ptr):tasks(tasks), sync_jobs_ptr(sync_jobs_ptr)</span>
+<span class="lineNum">     232 </span>                :            : {
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            : }
+<span class="lineNum">     235 </span>                :            : 
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     238 </span>                :            : class JobQueueMgr
+<span class="lineNum">     239 </span>                :            : {
+<span class="lineNum">     240 </span>                :            :         private:
+<span class="lineNum">     241 </span>                :            :                 std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt; tasks;
+<span class="lineNum">     242 </span>                :            :                 boost::condition_variable taskPresentCondition;
+<span class="lineNum">     243 </span>                :            :                 boost::mutex mtx;
+<span class="lineNum">     244 </span>                :            :                 boost::shared_ptr&lt;SyncJobs&gt; sync_jobs_ptr;
+<span class="lineNum">     245 </span>                :            :         public:
+<span class="lineNum">     246 </span>                :            :                 JobQueueMgr(boost::shared_ptr&lt;SyncJobs&gt; sync_jobs_ptr);
+<span class="lineNum">     247 </span>                :            :                 void push_job(std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt; job_ptr_list);
+<span class="lineNum">     248 </span>                :            :                 boost::shared_ptr&lt;JobType&gt; pop_job();
+<span class="lineNum">     249 </span>                :            :                 boost::shared_ptr&lt;BatchJob&lt;JobType&gt; &gt; get_job();
+<span class="lineNum">     250 </span>                :            :                 uint64_t get_queue_size();              // Testing interface
+<span class="lineNum">     251 </span>                :            :                 bool stop;
+<span class="lineNum">     252 </span>                :            :                 void stop_queue();
+<span class="lineNum">     253 </span>                :            : };
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 : JobQueueMgr&lt;JobType&gt;::JobQueueMgr(boost::shared_ptr&lt;SyncJobs&gt; sync_jobs_ptr):sync_jobs_ptr(sync_jobs_ptr), stop(false)</span>
+<span class="lineNum">     257 </span>                :            : {
+<span class="lineNum">     258 </span>                :            : 
+<span class="lineNum">     259 </span>                :            : }
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     262 </span>                :            : uint64_t JobQueueMgr&lt;JobType&gt;::get_queue_size()
+<span class="lineNum">     263 </span>                :            : {
+<span class="lineNum">     264 </span>                :            :         return this-&gt;tasks.size();
+<span class="lineNum">     265 </span>                :            : }
+<span class="lineNum">     266 </span>                :            : 
+<span class="lineNum">     267 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 : void JobQueueMgr&lt;JobType&gt;::push_job(std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt; job_ptr_list)</span>
+<span class="lineNum">     269 </span>                :            : {
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(mtx);</span>
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :         typename std::list&lt;boost::shared_ptr&lt;JobType&gt; &gt;::iterator it = job_ptr_list.begin();</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :         for ( ; it != job_ptr_list.end(); it++ )</span>
+<span class="lineNum">     273 </span>                :            :         {
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :                 this-&gt;tasks.push_back(*it);</span>
+<span class="lineNum">     275 </span>                :            :         }
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :         this-&gt;taskPresentCondition.notify_one();</span>
+<span class="lineNum">     277 </span>                :            : }
+<span class="lineNum">     278 </span>                :            : 
+<span class="lineNum">     279 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 : void JobQueueMgr&lt;JobType&gt;::stop_queue()</span>
+<span class="lineNum">     281 </span>                :            : {
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;JobQueueMgr&lt;JobType&gt;::stop_queue()&quot;);</span>
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :         this-&gt;stop = true;</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :         this-&gt;taskPresentCondition.notify_one();</span>
+<span class="lineNum">     285 </span>                :            : }
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>                :            : //TODO: obsolete
+<span class="lineNum">     288 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     289 </span>                :            : boost::shared_ptr&lt;JobType&gt; JobQueueMgr&lt;JobType&gt;::pop_job()
+<span class="lineNum">     290 </span>                :            : {
+<span class="lineNum">     291 </span>                :            :         return this-&gt;tasks.front();
+<span class="lineNum">     292 </span>                :            : }
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 : boost::shared_ptr&lt;BatchJob&lt;JobType&gt; &gt; JobQueueMgr&lt;JobType&gt;::get_job()</span>
+<span class="lineNum">     296 </span>                :            : {
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(mtx);</span>
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;BatchJob&lt;JobType&gt; &gt; ob;</span>
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :         while (this-&gt;tasks.empty() and (!this-&gt;stop))</span>
+<span class="lineNum">     300 </span>                :            :         {
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :                 this-&gt;taskPresentCondition.wait(lock);</span>
+<span class="lineNum">     302 </span>                :            :         }
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :         if (!this-&gt;tasks.empty())</span>
+<span class="lineNum">     304 </span>                :            :         {
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :                 ob.reset(new BatchJob&lt;JobType&gt;(this-&gt;tasks, this-&gt;sync_jobs_ptr));</span>
+<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :                 this-&gt;tasks.clear();</span>
+<span class="lineNum">     307 </span>                :            :         }
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :         return ob;</span>
+<span class="lineNum">     309 </span>                :            : }
+<span class="lineNum">     310 </span>                :            : 
+<span class="lineNum">     311 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     312 </span>                :            : class JobExecutor
+<span class="lineNum">     313 </span>                :            : {
+<span class="lineNum">     314 </span>                :            :         boost::shared_ptr&lt;JobQueueMgr&lt;JobType&gt; &gt; job_queue_ptr;
+<span class="lineNum">     315 </span>                :            :         public:
+<span class="lineNum">     316 </span>                :            :                 JobExecutor(boost::shared_ptr&lt;JobQueueMgr&lt;JobType&gt; &gt; job_queue_ptr);
+<span class="lineNum">     317 </span>                :            :                 void execute_for_container();
+<span class="lineNum">     318 </span>                :            :                 void execute_for_transaction();
+<span class="lineNum">     319 </span>                :            :                 void execute_for_global_leader();
+<span class="lineNum">     320 </span>                :            :                 void stop();
+<span class="lineNum">     321 </span>                :            :                 
+<span class="lineNum">     322 </span>                :            : };
+<span class="lineNum">     323 </span>                :            : 
+<span class="lineNum">     324 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 : JobExecutor&lt;JobType&gt;::JobExecutor(boost::shared_ptr&lt;JobQueueMgr&lt;JobType&gt; &gt; queue_ptr):job_queue_ptr(queue_ptr)</span>
+<span class="lineNum">     326 </span>                :            : {
+<span class="lineNum">     327 </span>                :            : }
+<span class="lineNum">     328 </span>                :            : 
+<span class="lineNum">     329 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 : void JobExecutor&lt;JobType&gt;::stop()</span>
+<span class="lineNum">     331 </span>                :            : {
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :         this-&gt;job_queue_ptr-&gt;stop_queue();</span>
+<span class="lineNum">     333 </span>                :            : }
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     336 </span>                :            : void JobExecutor&lt;JobType&gt;::execute_for_container()
+<span class="lineNum">     337 </span>                :            : {
+<span class="lineNum">     338 </span>                :            :         while(1)
+<span class="lineNum">     339 </span>                :            :         {
+<span class="lineNum">     340 </span>                :            :         {
+<span class="lineNum">     341 </span>                :            :                 boost::shared_ptr&lt;BatchJob&lt;JobType&gt; &gt; batch_job_ptr = this-&gt;job_queue_ptr-&gt;get_job();
+<span class="lineNum">     342 </span>                :            :                 if (batch_job_ptr)
+<span class="lineNum">     343 </span>                :            :                 {
+<span class="lineNum">     344 </span>                :            :                         batch_job_ptr-&gt;execute_for_container();
+<span class="lineNum">     345 </span>                :            :                 }
+<span class="lineNum">     346 </span>                :            :                 else
+<span class="lineNum">     347 </span>                :            :                 {
+<span class="lineNum">     348 </span>                :            :                         break;
+<span class="lineNum">     349 </span>                :            :                 }
+<span class="lineNum">     350 </span>                :            :         }
+<span class="lineNum">     351 </span>                :            :         }
+<span class="lineNum">     352 </span>                :            : }
+<span class="lineNum">     353 </span>                :            : 
+<span class="lineNum">     354 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 : void JobExecutor&lt;JobType&gt;::execute_for_transaction()</span>
+<span class="lineNum">     356 </span>                :            : {
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :         while(1)</span>
+<span class="lineNum">     358 </span>                :            :         {
+<span class="lineNum">     359 </span>                :            :         {
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;BatchJob&lt;JobType&gt; &gt; batch_job_ptr = this-&gt;job_queue_ptr-&gt;get_job();</span>
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :                 if (batch_job_ptr)</span>
+<span class="lineNum">     362 </span>                :            :                 {
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :                         batch_job_ptr-&gt;execute_for_transaction();</span>
+<span class="lineNum">     364 </span>                :            :                 }
+<span class="lineNum">     365 </span>                :            :                 else
+<span class="lineNum">     366 </span>                :            :                 {
+<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">     368 </span>                :            :                 }
+<span class="lineNum">     369 </span>                :            :         }
+<span class="lineNum">     370 </span>                :            :         }
+<span class="lineNum">     371 </span>                :            :         
+<span class="lineNum">     372 </span>                :            : }
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>                :            : template&lt;typename JobType&gt;
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 : void JobExecutor&lt;JobType&gt;::execute_for_global_leader()</span>
+<span class="lineNum">     376 </span>                :            : {
+<span class="lineNum">     377 </span>                :<span class="lineNoCov">          0 :         while(1)</span>
+<span class="lineNum">     378 </span>                :            :         {
+<span class="lineNum">     379 </span>                :            :         {
+<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;BatchJob&lt;JobType&gt; &gt; batch_job_ptr = this-&gt;job_queue_ptr-&gt;get_job();</span>
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :                 if (batch_job_ptr)</span>
+<span class="lineNum">     382 </span>                :            :                 {
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :                         batch_job_ptr-&gt;execute();</span>
+<span class="lineNum">     384 </span>                :            :                 }
+<span class="lineNum">     385 </span>                :            :                 else
+<span class="lineNum">     386 </span>                :            :                 {
+<span class="lineNum">     387 </span>                :<span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">     388 </span>                :            :                 }
+<span class="lineNum">     389 </span>                :            :         }
+<span class="lineNum">     390 </span>                :            :         }
+<span class="lineNum">     391 </span>                :            : }
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :            : } // namespace job_manager
+<span class="lineNum">     394 </span>                :            : 
+<span class="lineNum">     395 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

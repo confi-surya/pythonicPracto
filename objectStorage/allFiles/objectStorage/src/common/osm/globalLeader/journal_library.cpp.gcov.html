@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/common/osm/globalLeader/journal_library.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/globalLeader</a> - journal_library.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;osm/globalLeader/journal_library.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &quot;osm/osmServer/utils.h&quot;
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : namespace global_leader
+<span class="lineNum">       5 </span>                :            : {
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : JournalLibrary::JournalLibrary(
+<span class="lineNum">      10 </span>                :            :         std::string journal_path,
+<span class="lineNum">      11 </span>                :            : //      cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr,
+<span class="lineNum">      12 </span>                :            :         boost::shared_ptr&lt;component_manager::ComponentMapManager&gt; component_map_mgr,
+<span class="lineNum">      13 </span>                :            :         boost::function&lt;std::vector&lt;std::string&gt;(void)&gt; get_state_change_ids
+<span class="lineNum">      14 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">      15 </span>                :<span class="lineNoCov">          0 :         component_map_mgr(component_map_mgr)</span>
+<span class="lineNum">      16 </span>                :            : {
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 :         GLUtils util_obj;</span>
+<span class="lineNum">      18 </span>                :<span class="lineNoCov">          0 :         cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr = util_obj.get_journal_config();</span>
+<span class="lineNum">      19 </span>                :            : //      cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt; parser_ptr = get_config_parser();
+<span class="lineNum">      20 </span>                :            :         this-&gt;journal_writer_ptr.reset(new journal_manager::GLJournalWriteHandler(
+<span class="lineNum">      21 </span>                :            :                                                 journal_path, parser_ptr, component_map_mgr, get_state_change_ids
+<span class="lineNum">      22 </span>                :            :                                                 )
+<span class="lineNum">      23 </span>                :<span class="lineNoCov">          0 :                                         );</span>
+<span class="lineNum">      24 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;job_manager::SyncJobs&gt; sync_jobs_ptr(new job_manager::SyncJobs(journal_writer_ptr));</span>
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 :         this-&gt;queue_ptr.reset(new job_manager::JobQueueMgr&lt;job_manager::Job&gt;(sync_jobs_ptr));</span>
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 :         this-&gt;job_executor_ptr.reset(new job_manager::JobExecutor&lt;job_manager::Job&gt;(this-&gt;queue_ptr));</span>
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :         this-&gt;job_executor_thread = boost::thread(boost::bind(&amp;job_manager::JobExecutor&lt;job_manager::Job&gt;::execute_for_global_leader, this-&gt;job_executor_ptr));</span>
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 :         this-&gt;service_to_record_type_map_ptr.reset(new ServiceToRecordTypeMapper());</span>
+<span class="lineNum">      29 </span>                :            :         ServiceToRecordTypeBuilder type_builder;
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 :         type_builder.register_services(this-&gt;service_to_record_type_map_ptr);</span>
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : }
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 : boost::shared_ptr&lt;journal_manager::GLJournalWriteHandler&gt; JournalLibrary::get_journal_writer()</span>
+<span class="lineNum">      35 </span>                :            : {       
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 :         return this-&gt;journal_writer_ptr;</span>
+<span class="lineNum">      37 </span>                :            : }
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : void JournalLibrary::add_entry_in_journal(
+<span class="lineNum">      40 </span>                :            :         std::vector&lt;boost::shared_ptr&lt;recordStructure::Record&gt; &gt; gl_records,
+<span class="lineNum">      41 </span>                :            :         boost::function&lt;void(void)&gt; const &amp; done
+<span class="lineNum">      42 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">      43 </span>                :            : {
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :         std::list&lt;boost::shared_ptr&lt;job_manager::Job&gt; &gt; job_ptr_list;</span>
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;boost::shared_ptr&lt;recordStructure::Record&gt; &gt;::iterator it = gl_records.begin();</span>
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :         for ( ; it != (--gl_records.end()); ++it)</span>
+<span class="lineNum">      47 </span>                :            :         {
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;job_manager::CallbackMaintainer&gt; callback_ptr(new job_manager::CallbackMaintainer(NULL));</span>
+<span class="lineNum">      49 </span>                :            :                 boost::shared_ptr&lt;job_manager::Job&gt; job_ptr =
+<span class="lineNum">      50 </span>                :            :                                 boost::make_shared&lt;job_manager::WriteJob&gt;(
+<span class="lineNum">      51 </span>                :            :                                         job_manager::WriteJob(
+<span class="lineNum">      52 </span>                :            :                                                 //boost::make_shared&lt;recordStructure::Record&gt;(*it),
+<span class="lineNum">      53 </span>                :            :                                                 *it,
+<span class="lineNum">      54 </span>                :            :                                                 callback_ptr,
+<span class="lineNum">      55 </span>                :            :                                                 this-&gt;journal_writer_ptr,
+<span class="lineNum">      56 </span>                :            :                                                 false
+<span class="lineNum">      57 </span>                :            :                                         )
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :                                 );</span>
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :                 job_ptr_list.push_back(job_ptr);</span>
+<span class="lineNum">      60 </span>                :            :         }
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;job_manager::CallbackMaintainer&gt; callback_ptr(new job_manager::CallbackMaintainer(done));</span>
+<span class="lineNum">      63 </span>                :            :         boost::shared_ptr&lt;job_manager::Job&gt; job_ptr =
+<span class="lineNum">      64 </span>                :            :                                 boost::make_shared&lt;job_manager::WriteJob&gt;(
+<span class="lineNum">      65 </span>                :            :                                         job_manager::WriteJob(
+<span class="lineNum">      66 </span>                :            :                                                 //boost::make_shared&lt;recordStructure::Record&gt;(*it),
+<span class="lineNum">      67 </span>                :            :                                                 *it,
+<span class="lineNum">      68 </span>                :            :                                                 callback_ptr,
+<span class="lineNum">      69 </span>                :            :                                                 this-&gt;journal_writer_ptr,
+<span class="lineNum">      70 </span>                :            :                                                 false
+<span class="lineNum">      71 </span>                :            :                                         )
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 :                                 );</span>
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :         job_ptr_list.push_back(job_ptr);</span>
+<span class="lineNum">      74 </span>                :            :         //std::cout &lt;&lt; &quot;JournalLibrary::add_entry_in_journal\n&quot;;
+<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 :         this-&gt;queue_ptr-&gt;push_job(job_ptr_list);</span>
+<span class="lineNum">      76 </span>                :            : }
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            : /* It is only adding transient map into list of records to be flushed on journal */
+<span class="lineNum">      79 </span>                :            : void JournalLibrary::prepare_transient_record_for_journal(
+<span class="lineNum">      80 </span>                :            :         std::string service_id,
+<span class="lineNum">      81 </span>                :            :         std::vector&lt;boost::shared_ptr&lt;recordStructure::Record&gt; &gt; &amp; node_rec_records
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">      83 </span>                :            : {
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :         GLUtils util_obj;</span>
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :         std::string service_name = util_obj.get_service_name(service_id);</span>
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :         int type = this-&gt;service_to_record_type_map_ptr-&gt;get_type_for_service(service_name);</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;recordStructure::Record&gt; tmap_ptr = this-&gt;component_map_mgr-&gt;convert_tmap_into_journal_record(service_name, type);</span>
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :         node_rec_records.push_back(tmap_ptr);</span>
+<span class="lineNum">      89 </span>                :            : }
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            : } // namespace global_leader
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

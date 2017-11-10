@@ -1,0 +1,980 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/osm/localLeader/monitoring_manager.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/localLeader</a> - monitoring_manager.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">479</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;osm/localLeader/monitoring_manager.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &quot;communication/message.h&quot;
+<span class="lineNum">       3 </span>                :            : #include &quot;communication/message_result_wrapper.h&quot;
+<span class="lineNum">       4 </span>                :            : #include &quot;communication/message_type_enum.pb.h&quot;
+<span class="lineNum">       5 </span>                :            : //#include &quot;communication/message_interface_handlers.h&quot;
+<span class="lineNum">       6 </span>                :            : #include &quot;communication/communication.h&quot;
+<span class="lineNum">       7 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       8 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">       9 </span>                :            : using namespace objectStorage;
+<span class="lineNum">      10 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::insert(int fd)</span>
+<span class="lineNum">      11 </span>                :            : {
+<span class="lineNum">      12 </span>                :<span class="lineNoCov">          0 :     if(fd &lt; 0)</span>
+<span class="lineNum">      13 </span>                :            :     {
+<span class="lineNum">      14 </span>                :<span class="lineNoCov">          0 :         return; </span>
+<span class="lineNum">      15 </span>                :            :     }
+<span class="lineNum">      16 </span>                :<span class="lineNoCov">          0 :     FD_SET(fd, &amp;this-&gt;m_fd_set);</span>
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 :     this-&gt;m_fds.insert(fd);</span>
+<span class="lineNum">      18 </span>                :<span class="lineNoCov">          0 :     if (fd &gt; this-&gt;m_max) this-&gt;m_max = fd;</span>
+<span class="lineNum">      19 </span>                :            : }
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 : void  MonitoringManager::erase(int fd)</span>
+<span class="lineNum">      22 </span>                :            : {
+<span class="lineNum">      23 </span>                :<span class="lineNoCov">          0 :     if(fd &lt; 0)</span>
+<span class="lineNum">      24 </span>                :            :     {
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">      26 </span>                :            :     }
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :     FD_CLR(fd, &amp;this-&gt;m_fd_set);</span>
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 :     this-&gt;m_fds.erase(fd);</span>
+<span class="lineNum">      29 </span>                :<span class="lineNoCov">          0 :     if (fd == this-&gt;m_max) {</span>
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;m_fds.size() == 0) {</span>
+<span class="lineNum">      31 </span>                :<span class="lineNoCov">          0 :             this-&gt;m_max = -1;</span>
+<span class="lineNum">      32 </span>                :            :         } else {
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :             this-&gt;m_max = *m_fds.rbegin();</span>
+<span class="lineNum">      34 </span>                :            :         }
+<span class="lineNum">      35 </span>                :            :     }   
+<span class="lineNum">      36 </span>                :            : }
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : MonitoringManager::MonitoringManager(boost::shared_ptr&lt;HfsChecker&gt; checker,
+<span class="lineNum">      39 </span>                :<span class="lineNoCov">          0 :         cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt;config_parser)</span>
+<span class="lineNum">      40 </span>                :            : {
+<span class="lineNum">      41 </span>                :<span class="lineNoCov">          0 :     this-&gt;stop = false;</span>
+<span class="lineNum">      42 </span>                :<span class="lineNoCov">          0 :     this-&gt;recovery_disable  = false;</span>
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 :     FD_ZERO(&amp;this-&gt;m_fd_set);</span>
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :     this-&gt;m_max = -1;</span>
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :     this-&gt;recovery_identifier_thread.reset();</span>
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :     this-&gt;recovery_process_thread.reset();</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :     this-&gt;hfs_checker = checker;</span>
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :     this-&gt;config_parser = config_parser;</span>
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :     this-&gt;notify_to_gl_result = false;</span>
+<span class="lineNum">      50 </span>                :            : }
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 : MonitoringManager::~MonitoringManager()</span>
+<span class="lineNum">      53 </span>                :            : {
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :     FD_ZERO(&amp;this-&gt;m_fd_set);</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :     this-&gt;recovery_identifier_thread.reset();        </span>
+<span class="lineNum">      56 </span>                :<span class="lineNoCov">          0 :     this-&gt;hfs_checker.reset();</span>
+<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 :     this-&gt;config_parser.reset();</span>
+<span class="lineNum">      58 </span>                :            : }
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::failure_handler()</span>
+<span class="lineNum">      61 </span>                :            : {
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Do nothing&quot;);</span>
+<span class="lineNum">      63 </span>                :            : }
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::success_handler(boost::shared_ptr&lt;MessageResultWrap&gt; result)</span>
+<span class="lineNum">      66 </span>                :            : {
+<span class="lineNum">      67 </span>                :            : }
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::send_ack_to_service(std::string service_id, boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm, bool flag)</span>
+<span class="lineNum">      70 </span>                :            : {
+<span class="lineNum">      71 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;ErrorStatus&gt; error_status;</span>
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 :     std::string msg = &quot;&quot;;</span>
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :     if( !flag)</span>
+<span class="lineNum">      74 </span>                :            :     {
+<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;send negative ack of strm packet to osd service&quot;);</span>
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :         msg = &quot;failed the start the monitoring of osd service&quot;;</span>
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :         error_status.reset( new ErrorStatus(OSDException::OSDErrorCode::OSD_START_MONITORING_FAILED, msg));</span>
+<span class="lineNum">      78 </span>                :            :     }
+<span class="lineNum">      79 </span>                :            :     else
+<span class="lineNum">      80 </span>                :            :     {
+<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Send success ack to osd service for strm packet&quot;);</span>
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :         msg = &quot;start the monitoring of osd service&quot;;</span>
+<span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 :         error_status.reset( new ErrorStatus(OSDException::OSDSuccessCode::OSD_START_MONITORING_SUCCESS, msg));</span>
+<span class="lineNum">      84 </span>                :            :     }
+<span class="lineNum">      85 </span>                :            :     boost::shared_ptr&lt;comm_messages::OsdStartMonitoringAck&gt; obj(new comm_messages::OsdStartMonitoringAck(
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :                 service_id, error_status)); </span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;MessageResultWrap&gt; result1(new MessageResultWrap(messageTypeEnum::typeEnums::OSD_START_MONITORING_ACK));</span>
+<span class="lineNum">      88 </span>                :            :     MessageExternalInterface::sync_send_osd_start_monitoring_ack(
+<span class="lineNum">      89 </span>                :            :             obj.get(),
+<span class="lineNum">      90 </span>                :            :             comm,
+<span class="lineNum">      91 </span>                :            :             boost::bind(&amp;MonitoringManager::success_handler, this, result1),
+<span class="lineNum">      92 </span>                :            :             boost::bind(&amp;MonitoringManager::failure_handler, this)
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :             );</span>
+<span class="lineNum">      94 </span>                :            : }
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            : void MonitoringManager::start_monitoring(boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm,int fd, std::string service_id, 
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :         int32_t port, std::string ip)</span>
+<span class="lineNum">      98 </span>                :            : {
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :     if( verify_recovery_disable() )</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :     it = this-&gt;monitor_status_map.find(service_id);</span>
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :     if(it != this-&gt;monitor_status_map.end())</span>
+<span class="lineNum">     104 </span>                :            :     {
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_fd(fd);</span>
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_comm_obj(comm);</span>
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_ip_addr(ip);</span>
+<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_port(port);   </span>
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_service_status(OSDException::OSDServiceStatus::RUN);</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_heartbeat_count(HEARTBEAT_COUNT);</span>
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_timeout(it-&gt;second.get_hrbt_timeout());</span>
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.update_last_update_time();</span>
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :         this-&gt;insert(fd);</span>
+<span class="lineNum">     114 </span>                :            : //        this-&gt;send_ack_to_service(it-&gt;first, it-&gt;second.get_comm_obj(), true);
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :         this-&gt;send_ack_to_service(it-&gt;first, comm, true); //TODO: devesh: verify this change</span>
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :         return; </span>
+<span class="lineNum">     117 </span>                :            :     }
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :     OSDLOG(DEBUG, &quot;start_monitoring Service is not registered : &quot;&lt;&lt; service_id);</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :     this-&gt;send_ack_to_service(service_id, comm, false);</span>
+<span class="lineNum">     120 </span>                :            : }
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::end_monitoring(boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm, std::string service_id)</span>
+<span class="lineNum">     123 </span>                :            : {
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :     it = this-&gt;monitor_status_map.find(service_id);</span>
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :     if(it != this-&gt;monitor_status_map.end())</span>
+<span class="lineNum">     127 </span>                :            :     {
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :         this-&gt;erase(it-&gt;second.get_fd());</span>
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_fd(-1);</span>
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_service_status(OSDException::OSDServiceStatus::UREG);</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_msg_type(OSDException::OSDMsgTypeInMap::ENDM);</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_obj(it-&gt;second.get_comm_obj());</span>
+<span class="lineNum">     133 </span>                :            :         //this-&gt;send_ack_to_service(it-&gt;first, it-&gt;second.get_comm_obj(), true);
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :         this-&gt;send_ack_to_service(it-&gt;first, sync_obj, true);</span>
+<span class="lineNum">     135 </span>                :            :     }   
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :     OSDLOG(DEBUG, &quot;end_monitoring Service is not registered&quot; &lt;&lt; service_id);</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :     this-&gt;send_ack_to_service(service_id, comm, false);</span>
+<span class="lineNum">     138 </span>                :            : }
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::end_all()</span>
+<span class="lineNum">     141 </span>                :            : {
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :     for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     144 </span>                :            :     {
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_obj(it-&gt;second.get_comm_obj());</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :         this-&gt;end_monitoring(sync_obj, it-&gt;first);</span>
+<span class="lineNum">     147 </span>                :            :     }
+<span class="lineNum">     148 </span>                :            : }
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            : bool MonitoringManager::register_service(std::string service_id, uint64_t strm_timeout, uint64_t hrbt_timeout, uint16_t time_gap,
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :         uint16_t retry_count)   </span>
+<span class="lineNum">     152 </span>                :            : {
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :     MonitorStatusMap msm(strm_timeout, hrbt_timeout, time_gap, retry_count) ;</span>
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :     it = this-&gt;monitor_status_map.find(service_id);</span>
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :     if(it == this-&gt;monitor_status_map.end())</span>
+<span class="lineNum">     157 </span>                :            :     {
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_status_map.insert(std::make_pair(service_id, msm));            </span>
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Registration of service id &quot;&lt;&lt;service_id&lt;&lt; &quot; successfully&quot;);</span>
+<span class="lineNum">     160 </span>                :            :     }
+<span class="lineNum">     161 </span>                :            :     else
+<span class="lineNum">     162 </span>                :            :     {   
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Registration of service id &quot;&lt;&lt;service_id&lt;&lt; &quot;success&quot;);</span>
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         it-&gt;second = msm;</span>
+<span class="lineNum">     165 </span>                :            :     }
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     167 </span>                :            : }
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::un_register_service(int fd, std::string service_id)</span>
+<span class="lineNum">     170 </span>                :            : {
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :     it = this-&gt;monitor_status_map.find(service_id);</span>
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :     if(it != this-&gt;monitor_status_map.end())</span>
+<span class="lineNum">     174 </span>                :            :     {
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :         this-&gt;erase(it-&gt;second.get_fd());</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; com(it-&gt;second.get_comm_obj());</span>
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :         this-&gt;send_ack_to_service(it-&gt;first, com, true);</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_status_map.erase( it );</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     180 </span>                :            :     }
+<span class="lineNum">     181 </span>                :            :     else
+<span class="lineNum">     182 </span>                :            :     {
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Service is not registered&quot;);   </span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     185 </span>                :            :     }
+<span class="lineNum">     186 </span>                :            : }
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::is_register_service(std::string service_id)</span>
+<span class="lineNum">     189 </span>                :            : {
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :     it = this-&gt;monitor_status_map.find(service_id);</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :     if(it != this-&gt;monitor_status_map.end())</span>
+<span class="lineNum">     193 </span>                :            :     {
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     195 </span>                :            :     }
+<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">     197 </span>                :            : }
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :            : bool MonitoringManager::recv_heartbeat(boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm, 
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :         uint64_t &amp; comm_code)</span>
+<span class="lineNum">     201 </span>                :            : {
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;ErrorStatus&gt; error_status;</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;MessageResult&lt;comm_messages::HeartBeat&gt; &gt; heartbeat( new MessageResult&lt;comm_messages::HeartBeat&gt;());</span>
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :     heartbeat = MessageExternalInterface::sync_read_heartbeat( comm);</span>
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :     bool status = heartbeat-&gt;get_status();</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :     uint64_t return_code = heartbeat-&gt;get_return_code();</span>
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :     if( !status)</span>
+<span class="lineNum">     208 </span>                :            :     {
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :             comm_code = return_code;</span>
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :             OSDLOG(DEBUG,&quot;Communication error reported with return code : &quot; &lt;&lt; return_code);</span>
+<span class="lineNum">     211 </span>                :            :         //OSDLOG(INFO, &quot;Unable to receive the heartbeat from service&quot;);
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     213 </span>                :            :     }
+<span class="lineNum">     214 </span>                :            :     //OSDLOG(DEBUG, &quot;Recvd the heartbeat from osd service successfully&quot;);
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;comm_messages::HeartBeatAck&gt; obj( new comm_messages::HeartBeatAck(123));</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;MessageResultWrap&gt; result1(new MessageResultWrap(messageTypeEnum::typeEnums::HEART_BEAT_ACK));</span>
+<span class="lineNum">     217 </span>                :            :     MessageExternalInterface::sync_send_heartbeat_ack(
+<span class="lineNum">     218 </span>                :            :                     obj.get(),
+<span class="lineNum">     219 </span>                :            :                     comm,
+<span class="lineNum">     220 </span>                :            :                     boost::bind(&amp;MonitoringManager::success_handler, this, result1),
+<span class="lineNum">     221 </span>                :            :                     boost::bind(&amp;MonitoringManager::failure_handler, this)
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :                     );  </span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">     224 </span>                :            : }
+<span class="lineNum">     225 </span>                :            : 
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::stop_recovery_identifier()</span>
+<span class="lineNum">     227 </span>                :            : {
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :     if(recovery_identifier_thread)</span>
+<span class="lineNum">     229 </span>                :            :     {
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :             this-&gt;recovery_identifier_thread-&gt;interrupt();</span>
+<span class="lineNum">     231 </span>                :            : #ifndef DEBUG_MODE
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :             this-&gt;recovery_identifier_thread-&gt;join();</span>
+<span class="lineNum">     233 </span>                :            : #endif
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :             this-&gt;recovery_identifier_thread.reset();</span>
+<span class="lineNum">     235 </span>                :            :     }
+<span class="lineNum">     236 </span>                :            : }
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::start_recovery_identifier()</span>
+<span class="lineNum">     239 </span>                :            : {
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :     this-&gt;recovery_identifier_thread.reset(new boost::thread(boost::bind(&amp;MonitoringManager::service_monitoring, this)));</span>
+<span class="lineNum">     241 </span>                :            : }
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::start()</span>
+<span class="lineNum">     244 </span>                :            : {
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :     GLUtils gl_util;</span>
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Monitoring thread start&quot;);</span>
+<span class="lineNum">     248 </span>                :            :     try
+<span class="lineNum">     249 </span>                :            :     {
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :         for(;;)</span>
+<span class="lineNum">     251 </span>                :            :         {
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :             boost::this_thread::sleep( boost::posix_time::seconds(3));</span>
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :             boost::this_thread::interruption_point();</span>
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :             while( verify_recovery_disable() )</span>
+<span class="lineNum">     255 </span>                :            :             {
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep( boost::posix_time::seconds(5));</span>
+<span class="lineNum">     257 </span>                :            :             }
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :             if(this-&gt;m_max == -1 )</span>
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :                 continue;</span>
+<span class="lineNum">     260 </span>                :            :             int error;
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :             std::set&lt;int64_t&gt; active_fds = gl_util.selectOnSockets(this-&gt;m_fds, error, this-&gt;config_parser-&gt;select_timeoutValue());</span>
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :             if(active_fds.size()&lt;=0)</span>
+<span class="lineNum">     263 </span>                :            :             {
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :                     continue;</span>
+<span class="lineNum">     265 </span>                :            :             }
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :             for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     267 </span>                :            :             {   
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :                 int fd = it-&gt;second.get_fd();</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :                 if(fd ==  -1)</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :                     continue;</span>
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :                 std::set&lt;int64_t&gt;::iterator active_fd_it = active_fds.find(fd);</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :                 if(active_fd_it != active_fds.end()){</span>
+<span class="lineNum">     273 </span>                :            :                         uint64_t comm_code;
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :                         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; com(it-&gt;second.get_comm_obj());</span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :                         if(this-&gt;recv_heartbeat(com, comm_code)) </span>
+<span class="lineNum">     276 </span>                :            :                         {                               
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :                                 it-&gt;second.update_last_update_time();</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Recvd the heartbeat from osd service successfully: &quot; &lt;&lt; it-&gt;first);</span>
+<span class="lineNum">     279 </span>                :            :                         }else{
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :                                 if(Communication::TIMEOUT_OCCURED == comm_code) {</span>
+<span class="lineNum">     281 </span>                :            :                                          /* 4 is communication error for TIMEOUT_OCCURED */
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(DEBUG, &quot;TIMEOUT OCCURED while getting heartbeat&quot;);     </span>
+<span class="lineNum">     283 </span>                :            :                                 }else  {
+<span class="lineNum">     284 </span>                :            :                                         /*16 is for communication error as bad FD, broken pipe*/
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;erase(fd);</span>
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :                                         it-&gt;second.set_fd(-1);</span>
+<span class="lineNum">     287 </span>                :            :                                 }
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Unable to receive the heartbeat from service: &quot; &lt;&lt; it-&gt;first);</span>
+<span class="lineNum">     289 </span>                :            :                         }
+<span class="lineNum">     290 </span>                :            :                 }
+<span class="lineNum">     291 </span>                :            :             }
+<span class="lineNum">     292 </span>                :            :         }
+<span class="lineNum">     293 </span>                :            :     }
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :     catch (boost::thread_interrupted&amp;) </span>
+<span class="lineNum">     295 </span>                :            :     {
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Monitoring thread stop&quot;);</span>
+<span class="lineNum">     297 </span>                :            :     }
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            : }
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::is_hfs_avaialble()</span>
+<span class="lineNum">     302 </span>                :            : {
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :     if( this-&gt;hfs_checker-&gt;get_gfs_stat() != OSDException::OSDHfsStatus::NOT_READABILITY )        </span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">     306 </span>                :            : }
+<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::if_notify_to_gl_success() const</span>
+<span class="lineNum">     308 </span>                :            : {
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :         return this-&gt;notify_to_gl_result;</span>
+<span class="lineNum">     310 </span>                :            : }
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::notify_to_gl()</span>
+<span class="lineNum">     312 </span>                :            : {
+<span class="lineNum">     313 </span>                :            :     OsmUtils ut;
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :     GLUtils utils;</span>
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :     boost::tuple&lt;std::string, uint32_t&gt; info = ut.get_ip_and_port_of_gl();</span>
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :     this-&gt;notify_to_gl_result = false;</span>
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Connect to gl with ip and port: &quot;&lt;&lt;boost::get&lt;0&gt;(info)&lt;&lt;&quot;  &quot;&lt;&lt;boost::get&lt;1&gt;(info));</span>
+<span class="lineNum">     318 </span>                :            :         
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :     if(info.get&lt;1&gt;() == 0) {</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;CORRUPTED ENTRIES IN GL INFO FILE&quot;);</span>
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :     }else if(info.get&lt;1&gt;() == 6) {</span>
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Stopping OSD services as failed to read gl info file in 10 retry attempts&quot;);</span>
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :         this-&gt;stop_all_service();   </span>
+<span class="lineNum">     324 </span>                :            :     }
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            :     boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm( 
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :         new Communication::SynchronousCommunication( boost::get&lt;0&gt;(info), boost::get&lt;1&gt;(info)));</span>
+<span class="lineNum">     328 </span>                :            : 
+<span class="lineNum">     329 </span>                :            : 
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :         if(!comm-&gt;is_connected())</span>
+<span class="lineNum">     331 </span>                :            :         {
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Connection from gl failed: &quot;&lt;&lt;boost::get&lt;0&gt;(info)&lt;&lt;&quot;  &quot;&lt;&lt;boost::get&lt;1&gt;(info));</span>
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     334 </span>                :            :         }
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;ErrorStatus&gt; error_status( new ErrorStatus(0, &quot;&quot;));</span>
+<span class="lineNum">     336 </span>                :            :     std::string node_id = utils.get_my_node_id() + &quot;_&quot; +
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :         boost::lexical_cast&lt;std::string&gt;(this-&gt;config_parser-&gt;osm_portValue());</span>
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;comm_messages::NodeFailover&gt; obj( new comm_messages::NodeFailover(node_id, error_status));  </span>
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;MessageResultWrap&gt; result1(new MessageResultWrap(messageTypeEnum::typeEnums::NODE_FAILOVER));</span>
+<span class="lineNum">     340 </span>                :            :     MessageExternalInterface::sync_send_node_failover(
+<span class="lineNum">     341 </span>                :            :             obj.get(),
+<span class="lineNum">     342 </span>                :            :             comm,
+<span class="lineNum">     343 </span>                :            :             boost::bind(&amp;MonitoringManager::success_handler, this, result1),
+<span class="lineNum">     344 </span>                :            :             boost::bind(&amp;MonitoringManager::failure_handler, this)
+<span class="lineNum">     345 </span>                :<span class="lineNoCov">          0 :             );</span>
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;MessageResult&lt;comm_messages::NodeFailoverAck&gt; &gt;ack_obj;</span>
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :     ack_obj = MessageExternalInterface::sync_read_node_failover_ack(comm);</span>
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :     if( !ack_obj-&gt;get_status())</span>
+<span class="lineNum">     349 </span>                :            :     {
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Failed to recvd node failover ack from gl&quot;);</span>
+<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :         if( comm)</span>
+<span class="lineNum">     352 </span>                :            :             //delete comm;
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :             comm.reset();</span>
+<span class="lineNum">     354 </span>                :            : //        comm = NULL;
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     356 </span>                :            :     }
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :     OSDLOG(DEBUG, &quot;Node failover done&quot;);</span>
+<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :     if( comm)</span>
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :         comm.reset();</span>
+<span class="lineNum">     360 </span>                :            : //        delete comm;
+<span class="lineNum">     361 </span>                :            : //    comm = NULL;
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :     this-&gt;notify_to_gl_result = true;</span>
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">     364 </span>                :            : }
+<span class="lineNum">     365 </span>                :            : 
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::join()</span>
+<span class="lineNum">     367 </span>                :            : {
+<span class="lineNum">     368 </span>                :            : #ifndef DEBUG_MODE
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :        if(this-&gt;recovery_identifier_thread)</span>
+<span class="lineNum">     370 </span>                :            :         {
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :             this-&gt;recovery_identifier_thread-&gt;join();</span>
+<span class="lineNum">     372 </span>                :            :         }
+<span class="lineNum">     373 </span>                :            : #endif
+<span class="lineNum">     374 </span>                :            :     /*boost::mutex::scoped_lock lock(this-&gt;mtx);
+<span class="lineNum">     375 </span>                :            :       while (!this-&gt;stop);
+<span class="lineNum">     376 </span>                :            :       this-&gt;condition.wait(lock);*/
+<span class="lineNum">     377 </span>                :            : }
+<span class="lineNum">     378 </span>                :            : 
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::enable_mon_thread()</span>
+<span class="lineNum">     380 </span>                :            : {
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Enable monitoring thread&quot;);</span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :         this-&gt;stop = false;</span>
+<span class="lineNum">     383 </span>                :            : }
+<span class="lineNum">     384 </span>                :            : 
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::stop_mon_thread()</span>
+<span class="lineNum">     386 </span>                :            : {
+<span class="lineNum">     387 </span>                :            :     //boost::mutex::scoped_lock lock(this-&gt;mtx);
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :     OSDLOG(DEBUG, &quot;Disable monitoring thread&quot;);</span>
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :     this-&gt;stop = true;</span>
+<span class="lineNum">     390 </span>                :            :     //this-&gt;condition.notify_one();
+<span class="lineNum">     391 </span>                :            : }
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::wait(uint16_t timeout)</span>
+<span class="lineNum">     394 </span>                :            : {
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :     boost::asio::io_service io_service_obj;</span>
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :     boost::asio::deadline_timer timer(io_service_obj);</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :     timer.expires_from_now(boost::posix_time::seconds(timeout));</span>
+<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :     io_service_obj.run();</span>
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :     timer.wait();</span>
+<span class="lineNum">     400 </span>                :            : }
+<span class="lineNum">     401 </span>                :            : 
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::unmount_file_system()</span>
+<span class="lineNum">     403 </span>                :            : {
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Unmount the all global filesystem&quot;);</span>
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :     GLUtils utils;</span>
+<span class="lineNum">     406 </span>                :<span class="lineNoCov">          0 :     char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :     if( osd_config_dir)</span>
+<span class="lineNum">     408 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     409 </span>                :            :     return utils.umount_file_system(this-&gt;config_parser-&gt;export_pathValue(),
+<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :             this-&gt;config_parser-&gt;UMOUNT_HYDRAFSValue(), this-&gt;config_parser-&gt;HFS_BUSY_TIMEOUTValue()); </span>
+<span class="lineNum">     411 </span>                :            : }
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::mount_file_system()</span>
+<span class="lineNum">     414 </span>                :            : {
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Mount the all global filesystem&quot;);</span>
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :     char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :     if( osd_config_dir)</span>
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 :     GLUtils utils;</span>
+<span class="lineNum">     420 </span>                :            :     return utils.mount_file_system(this-&gt;config_parser-&gt;export_pathValue(), this-&gt;config_parser-&gt;mount_commandValue(),
+<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 :             this-&gt;config_parser-&gt;HFS_BUSY_TIMEOUTValue());</span>
+<span class="lineNum">     422 </span>                :            : }
+<span class="lineNum">     423 </span>                :            : 
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::verify_recovery_disable()</span>
+<span class="lineNum">     425 </span>                :            : {
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :     return this-&gt;recovery_disable;</span>
+<span class="lineNum">     427 </span>                :            : }
+<span class="lineNum">     428 </span>                :            : 
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::change_recovery_status(bool flag)</span>
+<span class="lineNum">     430 </span>                :            : {
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :     OSDLOG(DEBUG, &quot;Change the recovery status &quot;&lt;&lt;flag);</span>
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :     this-&gt;recovery_disable = flag;</span>
+<span class="lineNum">     433 </span>                :            : } 
+<span class="lineNum">     434 </span>                :            : 
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 : boost::tuple&lt;std::list&lt;boost::shared_ptr&lt;ServiceObject&gt; &gt;, bool&gt; MonitoringManager::get_service_port_and_ip()</span>
+<span class="lineNum">     436 </span>                :            : {
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :     std::list&lt;boost::shared_ptr&lt;ServiceObject&gt; &gt; service_info_list;</span>
+<span class="lineNum">     438 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 :     for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     440 </span>                :            :     {
+<span class="lineNum">     441 </span>                :<span class="lineNoCov">          0 :         if( it-&gt;second.get_port() == -1)</span>
+<span class="lineNum">     442 </span>                :            :         {       
+<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :             service_info_list.clear();</span>
+<span class="lineNum">     444 </span>                :<span class="lineNoCov">          0 :             return boost::make_tuple(service_info_list, false); </span>
+<span class="lineNum">     445 </span>                :            :         }
+<span class="lineNum">     446 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; service_record( new ServiceObject());</span>
+<span class="lineNum">     447 </span>                :<span class="lineNoCov">          0 :         service_record-&gt;set_service_id(it-&gt;first);</span>
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :         service_record-&gt;set_ip(it-&gt;second.get_ip_addr());</span>
+<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :         service_record-&gt;set_port(it-&gt;second.get_port());</span>
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :         service_info_list.push_back(service_record);</span>
+<span class="lineNum">     451 </span>                :            :     }
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Return service info_list&quot;);</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :     return boost::make_tuple(service_info_list, true);</span>
+<span class="lineNum">     454 </span>                :            : }
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 : std::string service_name_only (const std::string&amp; str)</span>
+<span class="lineNum">     457 </span>                :            : {
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :           std::size_t found = str.find_last_of(&quot;-&quot;);</span>
+<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :             return str.substr(0,found);</span>
+<span class="lineNum">     460 </span>                :            : }
+<span class="lineNum">     461 </span>                :            : 
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::service_monitoring(void)</span>
+<span class="lineNum">     463 </span>                :            : {
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Recovery Identifier thread start&quot;);</span>
+<span class="lineNum">     465 </span>                :            :     try
+<span class="lineNum">     466 </span>                :            :     {
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :         std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :         map&lt;string, boost::tuple&lt;boost::thread::native_handle_type, bool&gt; &gt; :: iterator recovery_thread_it;</span>
+<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :         for(;;)</span>
+<span class="lineNum">     470 </span>                :            :         {
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :                 if( this-&gt;stop)</span>
+<span class="lineNum">     472 </span>                :            :                 {
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Exiting Recovery Identifier thread &quot;);</span>
+<span class="lineNum">     474 </span>                :<span class="lineNoCov">          0 :                         return;</span>
+<span class="lineNum">     475 </span>                :            :                 }
+<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep( boost::posix_time::seconds(3));      </span>
+<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::interruption_point();</span>
+<span class="lineNum">     478 </span>                :<span class="lineNoCov">          0 :                 bool flag = false;</span>
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :                 for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     480 </span>                :            :                 {
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :                         if( this-&gt;stop)</span>
+<span class="lineNum">     482 </span>                :            :                         {
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Exiting Recovery Identifier thread &quot;);</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :                                 return;</span>
+<span class="lineNum">     485 </span>                :            :                         }
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :                         bool stop_service_recovery = false;</span>
+<span class="lineNum">     487 </span>                :            :                         time_t now;
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :                         time(&amp;now);</span>
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 :                         if ( ((now - it-&gt;second.get_last_update_time()) &gt; it-&gt;second.get_timeout()) </span>
+<span class="lineNum">     490 </span>                :            :                                         &amp;&amp; ((it-&gt;second.get_service_status() == OSDException::OSDServiceStatus::REG) ||
+<span class="lineNum">     491 </span>                :            :                                                 (it-&gt;second.get_service_status() == OSDException::OSDServiceStatus::RUN)))
+<span class="lineNum">     492 </span>                :            :                         {
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Recovery of &quot;&lt;&lt; it-&gt;first&lt;&lt;&quot; Start &quot;&lt;&lt; it-&gt;second.get_service_status()); </span>
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :                                 if(strstr((it-&gt;first).c_str(), &quot;containerChild-server&quot;) != NULL)</span>
+<span class="lineNum">     495 </span>                :            :                                 {
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :                                         std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it2;</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :                                         for(it2 = this-&gt;monitor_status_map.begin(); it2 != this-&gt;monitor_status_map.end(); it2++)</span>
+<span class="lineNum">     498 </span>                :            :                                         {
+<span class="lineNum">     499 </span>                :<span class="lineNoCov">          0 :                                                 if(strstr((it2-&gt;first).c_str(), &quot;container-server&quot;) != NULL)</span>
+<span class="lineNum">     500 </span>                :            :                                                 {
+<span class="lineNum">     501 </span>                :<span class="lineNoCov">          0 :                                                         this-&gt;erase(it2-&gt;second.get_fd());</span>
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :                                                         it2-&gt;second.set_msg_type(OSDException::OSDMsgTypeInMap::STRM);</span>
+<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :                                                         it2-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTR);</span>
+<span class="lineNum">     504 </span>                :<span class="lineNoCov">          0 :                                                         break;</span>
+<span class="lineNum">     505 </span>                :            :                                                 }
+<span class="lineNum">     506 </span>                :            :                                         }
+<span class="lineNum">     507 </span>                :            :                                 }
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :                                 if(strstr((it-&gt;first).c_str(), &quot;container-server&quot;) != NULL)</span>
+<span class="lineNum">     509 </span>                :            :                                 {
+<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :                                         std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it2;</span>
+<span class="lineNum">     511 </span>                :<span class="lineNoCov">          0 :                                         for(it2 = this-&gt;monitor_status_map.begin(); it2 != this-&gt;monitor_status_map.end(); it2++)</span>
+<span class="lineNum">     512 </span>                :            :                                         {
+<span class="lineNum">     513 </span>                :<span class="lineNoCov">          0 :                                                 if(strstr((it2-&gt;first).c_str(), &quot;containerChild-server&quot;) != NULL)</span>
+<span class="lineNum">     514 </span>                :            :                                                 {
+<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 :                                                         this-&gt;erase(it2-&gt;second.get_fd());</span>
+<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :                                                         it2-&gt;second.set_msg_type(OSDException::OSDMsgTypeInMap::STRM);</span>
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :                                                         it2-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTR);</span>
+<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :                                                         break;</span>
+<span class="lineNum">     519 </span>                :            :                                                 }
+<span class="lineNum">     520 </span>                :            :                                         }
+<span class="lineNum">     521 </span>                :            :                                 }
+<span class="lineNum">     522 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;erase(it-&gt;second.get_fd());</span>
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :                                 it-&gt;second.set_msg_type(OSDException::OSDMsgTypeInMap::STRM);</span>
+<span class="lineNum">     524 </span>                :<span class="lineNoCov">          0 :                                 it-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTR);</span>
+<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 :                                 if( this-&gt;is_hfs_avaialble())</span>
+<span class="lineNum">     526 </span>                :            :                                 {
+<span class="lineNum">     527 </span>                :<span class="lineNoCov">          0 :                                         if( this-&gt;stop)</span>
+<span class="lineNum">     528 </span>                :            :                                         {
+<span class="lineNum">     529 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Exiting Recovery Identifier thread &quot;);</span>
+<span class="lineNum">     530 </span>                :<span class="lineNoCov">          0 :                                                 return;</span>
+<span class="lineNum">     531 </span>                :            :                                         }
+<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :                                         it-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTR);</span>
+<span class="lineNum">     533 </span>                :<span class="lineNoCov">          0 :                                         if( this-&gt;verify_recovery_disable() )</span>
+<span class="lineNum">     534 </span>                :<span class="lineNoCov">          0 :                                                 continue;</span>
+<span class="lineNum">     535 </span>                :<span class="lineNoCov">          0 :                                         GLUtils gl_util;</span>
+<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 :                                         std::string service_name = this-&gt;get_service_name(it-&gt;first);</span>
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :                                         if(config_parser-&gt;containerChild_nameValue() + &quot;-server&quot; != std::string(service_name))</span>
+<span class="lineNum">     538 </span>                :            :                                         {
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :                                                 std::string service_only = service_name_only(service_name);</span>
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :                                                 CLOG(SYSMSG::OSD_SERVICE_RESTART, gl_util.get_my_node_id().c_str(), service_only.c_str());</span>
+<span class="lineNum">     541 </span>                :            :                                         }
+<span class="lineNum">     542 </span>                :            :                         
+<span class="lineNum">     543 </span>                :            :                                         this-&gt;recovery_process_thread.reset( 
+<span class="lineNum">     544 </span>                :            :                                                         new boost::thread(boost::bind(&amp;MonitoringManager::start_service_recovery,
+<span class="lineNum">     545 </span>                :<span class="lineNoCov">          0 :                                                                         this, it-&gt;first)));</span>
+<span class="lineNum">     546 </span>                :            :                                 }
+<span class="lineNum">     547 </span>                :            :                                 else
+<span class="lineNum">     548 </span>                :            :                                 {
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;HFS is not available so Stopping all services&quot;);</span>
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :                                         bool fail_over_done = false;</span>
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;stop_all_service(); // Stopping services as HFS not available</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;unmount_file_system();</span>
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :                                         if( this-&gt;mount_file_system())</span>
+<span class="lineNum">     554 </span>                :            :                                         {
+<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Hfs is available and start the all osd service&quot;); </span>
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :                                                 if( this-&gt;start_all_service())</span>
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :                                                         continue;</span>
+<span class="lineNum">     558 </span>                :            :                                         }       
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Stop the all osd service because hfs is not availbale&quot;);        </span>
+<span class="lineNum">     560 </span>                :<span class="lineNoCov">          0 :                                         if( !this-&gt;stop_all_service())</span>
+<span class="lineNum">     561 </span>                :            :                                         {
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Unable to stop the all osd service&quot;);</span>
+<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;change_recovery_status(false); </span>
+<span class="lineNum">     564 </span>                :<span class="lineNoCov">          0 :                                                 it-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTF);</span>
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :                                                 continue;</span>
+<span class="lineNum">     566 </span>                :            :                                         }
+<span class="lineNum">     567 </span>                :<span class="lineNoCov">          0 :                                         bool hfs_avaialble = false;</span>
+<span class="lineNum">     568 </span>                :<span class="lineNoCov">          0 :                                         while(!this-&gt;is_hfs_avaialble())</span>
+<span class="lineNum">     569 </span>                :            :                                         {
+<span class="lineNum">     570 </span>                :<span class="lineNoCov">          0 :                                                 if( !fail_over_done &amp;&amp; this-&gt;notify_to_gl())</span>
+<span class="lineNum">     571 </span>                :            :                                                 {
+<span class="lineNum">     572 </span>                :<span class="lineNoCov">          0 :                                                         OSDLOG(INFO, &quot;Notification to gl failed for node failover&quot;);  </span>
+<span class="lineNum">     573 </span>                :<span class="lineNoCov">          0 :                                                         fail_over_done = true;</span>
+<span class="lineNum">     574 </span>                :            :                                                 }
+<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;stop_all_service(); // Stopping services as HFS not available</span>
+<span class="lineNum">     576 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;unmount_file_system();</span>
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :                                                 if( this-&gt;mount_file_system())</span>
+<span class="lineNum">     578 </span>                :            :                                                 {
+<span class="lineNum">     579 </span>                :<span class="lineNoCov">          0 :                                                         hfs_avaialble = true;</span>
+<span class="lineNum">     580 </span>                :<span class="lineNoCov">          0 :                                                         uint64_t timeout = this-&gt;config_parser-&gt;hfs_avaialble_check_intervalValue();</span>
+<span class="lineNum">     581 </span>                :<span class="lineNoCov">          0 :                                                         boost::this_thread::sleep(boost::posix_time::seconds(timeout));</span>
+<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :                                                         continue;</span>
+<span class="lineNum">     583 </span>                :            :                                                 }
+<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 :                                                 uint64_t timeout = this-&gt;config_parser-&gt;remount_intervalValue();</span>
+<span class="lineNum">     585 </span>                :<span class="lineNoCov">          0 :                                                 boost::this_thread::sleep(boost::posix_time::seconds(timeout));</span>
+<span class="lineNum">     586 </span>                :            :                                         }
+<span class="lineNum">     587 </span>                :<span class="lineNoCov">          0 :                                         if( hfs_avaialble )</span>
+<span class="lineNum">     588 </span>                :            :                                         {
+<span class="lineNum">     589 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Hfs is available and start the all osd service&quot;);</span>
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :                                                 if( this-&gt;start_all_service())</span>
+<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :                                                         continue;</span>
+<span class="lineNum">     592 </span>                :            :                                         }
+<span class="lineNum">     593 </span>                :            :                                 }
+<span class="lineNum">     594 </span>                :            :                         }
+<span class="lineNum">     595 </span>                :<span class="lineNoCov">          0 :                         else if((it-&gt;second.get_service_status() == OSDException::OSDServiceStatus::MTF))</span>
+<span class="lineNum">     596 </span>                :            :                         {
+<span class="lineNum">     597 </span>                :            :                                 /*
+<span class="lineNum">     598 </span>                :            :                                    if( !this-&gt;stop_all_service() )
+<span class="lineNum">     599 </span>                :            :                                    {
+<span class="lineNum">     600 </span>                :            :                                    OSDLOG(INFO, &quot;All osd service stop failed&quot;);       
+<span class="lineNum">     601 </span>                :            :                                    this-&gt;change_recovery_status(false);
+<span class="lineNum">     602 </span>                :            :                                    it-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTF);
+<span class="lineNum">     603 </span>                :            :                                    continue;
+<span class="lineNum">     604 </span>                :            :                                    }
+<span class="lineNum">     605 </span>                :            :                                  */
+<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;stop_all_service();</span>
+<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;All osd services stop successfully&quot;);   </span>
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :                                 uint8_t retry_count = 0;</span>
+<span class="lineNum">     609 </span>                :<span class="lineNoCov">          0 :                                 while( retry_count != MAX_RETRY_COUNT &amp;&amp; !this-&gt;notify_to_gl()) </span>
+<span class="lineNum">     610 </span>                :            :                                 {                                       
+<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Unable to send the notification to gl for node failover&quot;);      </span>
+<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :                                         retry_count++;</span>
+<span class="lineNum">     613 </span>                :<span class="lineNoCov">          0 :                                         uint64_t timeout = this-&gt;config_parser-&gt;thread_wait_timeoutValue();       </span>
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Wait for next try send to notify to gl for node failover&quot;&lt;&lt;timeout);</span>
+<span class="lineNum">     615 </span>                :<span class="lineNoCov">          0 :                                         boost::this_thread::sleep(boost::posix_time::seconds(timeout));</span>
+<span class="lineNum">     616 </span>                :            :                                 }
+<span class="lineNum">     617 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;stop_all_service();    </span>
+<span class="lineNum">     618 </span>                :            :                                 
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Terminate the recovery indentifier thread&quot;);</span>
+<span class="lineNum">     620 </span>                :<span class="lineNoCov">          0 :                                 flag = true;                    </span>
+<span class="lineNum">     621 </span>                :            :                                 //this-&gt;terminate();
+<span class="lineNum">     622 </span>                :<span class="lineNoCov">          0 :                                 break;          </span>
+<span class="lineNum">     623 </span>                :            :                         }
+<span class="lineNum">     624 </span>                :            :                 }
+<span class="lineNum">     625 </span>                :<span class="lineNoCov">          0 :                         if( flag)</span>
+<span class="lineNum">     626 </span>                :<span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     627 </span>                :            :         }
+<span class="lineNum">     628 </span>                :            :     }
+<span class="lineNum">     629 </span>                :<span class="lineNoCov">          0 :     catch(boost::thread_interrupted&amp;)</span>
+<span class="lineNum">     630 </span>                :            :     {
+<span class="lineNum">     631 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Closing Recovery Indentifier Thread\n&quot;);</span>
+<span class="lineNum">     632 </span>                :            :     }
+<span class="lineNum">     633 </span>                :            : }
+<span class="lineNum">     634 </span>                :            : 
+<span class="lineNum">     635 </span>                :<span class="lineNoCov">          0 : std::string MonitoringManager::get_service_name(std::string service_id) </span>
+<span class="lineNum">     636 </span>                :            : {
+<span class="lineNum">     637 </span>                :            :         /*start*/
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :         std::size_t pos = service_id.find_last_of('_');</span>
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :         if(pos == std::string::npos)</span>
+<span class="lineNum">     640 </span>                :            :         {
+<span class="lineNum">     641 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG,&quot;Wrong Service Id : &quot; &lt;&lt; service_id);</span>
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :                 return std::string(&quot;&quot;);</span>
+<span class="lineNum">     643 </span>                :            :         }
+<span class="lineNum">     644 </span>                :<span class="lineNoCov">          0 :         std::string service_name = service_id.substr(pos+1);</span>
+<span class="lineNum">     645 </span>                :<span class="lineNoCov">          0 :         return service_name;</span>
+<span class="lineNum">     646 </span>                :            :         /*end*/
+<span class="lineNum">     647 </span>                :            :         /*
+<span class="lineNum">     648 </span>                :            :     const char* name = NULL;  
+<span class="lineNum">     649 </span>                :            :     name = service_id;
+<span class="lineNum">     650 </span>                :            :     if( !name)
+<span class="lineNum">     651 </span>                :            :     {
+<span class="lineNum">     652 </span>                :            :         return NULL;
+<span class="lineNum">     653 </span>                :            :     }
+<span class="lineNum">     654 </span>                :            :     name = service_id + std::strlen(service_id) - 1;
+<span class="lineNum">     655 </span>                :            :     while( name != service_id &amp;&amp; *name != '_')
+<span class="lineNum">     656 </span>                :            :         --name;
+<span class="lineNum">     657 </span>                :            :     if( name == service_id )
+<span class="lineNum">     658 </span>                :            :         return NULL;
+<span class="lineNum">     659 </span>                :            :     return ++name;
+<span class="lineNum">     660 </span>                :            :     */
+<span class="lineNum">     661 </span>                :            : }
+<span class="lineNum">     662 </span>                :            : 
+<span class="lineNum">     663 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::start_service_recovery(std::string service_id)</span>
+<span class="lineNum">     664 </span>                :            : {
+<span class="lineNum">     665 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     666 </span>                :<span class="lineNoCov">          0 :     it = this-&gt;monitor_status_map.find(service_id);  </span>
+<span class="lineNum">     667 </span>                :<span class="lineNoCov">          0 :     if ( it != this-&gt;monitor_status_map.end() )</span>
+<span class="lineNum">     668 </span>                :            :     {
+<span class="lineNum">     669 </span>                :<span class="lineNoCov">          0 :         string service_name = this-&gt;get_service_name(service_id.c_str());</span>
+<span class="lineNum">     670 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Starting recovery for service &quot; &lt;&lt; service_name);</span>
+<span class="lineNum">     671 </span>                :<span class="lineNoCov">          0 :         if ( service_name== std::string(&quot;&quot;))</span>
+<span class="lineNum">     672 </span>                :            :         {
+<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;service name returned NULL&quot;);</span>
+<span class="lineNum">     674 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     675 </span>                :            :         }
+<span class="lineNum">     676 </span>                :            : /* handling container-server-child special case start */
+<span class="lineNum">     677 </span>                :            :         //if(std::string(&quot;containerChild-server&quot;) == std::string(service_name))
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :         if(config_parser-&gt;containerChild_nameValue() + &quot;-server&quot; == std::string(service_name))</span>
+<span class="lineNum">     679 </span>                :            :         {
+<span class="lineNum">     680 </span>                :<span class="lineNoCov">          0 :                 RecoveryManager recovery_mgr;   </span>
+<span class="lineNum">     681 </span>                :            :                 /* Make service name as container-server */
+<span class="lineNum">     682 </span>                :<span class="lineNoCov">          0 :                 service_name = std::string(config_parser-&gt;container_server_nameValue() + &quot;-server&quot;).c_str();</span>
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :                 recovery_mgr.stop_service(service_name);</span>
+<span class="lineNum">     684 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Container-server-child not working, starting container server recovery&quot;);</span>
+<span class="lineNum">     685 </span>                :            : /* handling container-server-child special case end */
+<span class="lineNum">     686 </span>                :            :         //}else if(std::string(&quot;account-updater-server&quot;) == std::string(service_name))
+<span class="lineNum">     687 </span>                :<span class="lineNoCov">          0 :         }else if(config_parser-&gt;account_updater_server_nameValue() + &quot;-server&quot; == std::string(service_name))</span>
+<span class="lineNum">     688 </span>                :            :         {
+<span class="lineNum">     689 </span>                :            : /* account-updater-server is in service_name, but command wants account-updater start */
+<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :                 service_name = std::string(config_parser-&gt;account_updater_server_nameValue()).c_str();</span>
+<span class="lineNum">     691 </span>                :            : /* account-updater-server is in service_name, but command wants account-updater end */
+<span class="lineNum">     692 </span>                :            :         }
+<span class="lineNum">     693 </span>                :            : 
+<span class="lineNum">     694 </span>                :<span class="lineNoCov">          0 :         int retry_count = 1;</span>
+<span class="lineNum">     695 </span>                :<span class="lineNoCov">          0 :         while( retry_count &lt;= it-&gt;second.get_retry_count() )  </span>
+<span class="lineNum">     696 </span>                :            :         {
+<span class="lineNum">     697 </span>                :<span class="lineNoCov">          0 :             RecoveryManager recovery_mgr;       </span>
+<span class="lineNum">     698 </span>                :<span class="lineNoCov">          0 :             if( recovery_mgr.start_service(service_name, </span>
+<span class="lineNum">     699 </span>                :            :                         boost::lexical_cast&lt;std::string&gt;(this-&gt;config_parser-&gt;osm_portValue())))  
+<span class="lineNum">     700 </span>                :            :             {
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second.set_service_status(OSDException::OSDServiceStatus::REG);</span>
+<span class="lineNum">     702 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second.set_heartbeat_count(1);</span>
+<span class="lineNum">     703 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second.set_timeout(it-&gt;second.get_strm_timeout());</span>
+<span class="lineNum">     704 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second.update_last_update_time();</span>
+<span class="lineNum">     705 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Recovery of &quot; &lt;&lt; service_name &lt;&lt; &quot; completed successfully&quot;);</span>
+<span class="lineNum">     706 </span>                :            : 
+<span class="lineNum">     707 </span>                :<span class="lineNoCov">          0 :                 break;  </span>
+<span class="lineNum">     708 </span>                :            :             }   
+<span class="lineNum">     709 </span>                :            :             else {
+<span class="lineNum">     710 </span>                :<span class="lineNoCov">          0 :                 retry_count++; </span>
+<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Count for attempt to start the service  = &quot;&lt;&lt; retry_count );     </span>
+<span class="lineNum">     712 </span>                :<span class="lineNoCov">          0 :                 uint64_t timeout = this-&gt;config_parser-&gt;thread_wait_timeoutValue();</span>
+<span class="lineNum">     713 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep(boost::posix_time::seconds(timeout));</span>
+<span class="lineNum">     714 </span>                :            :             }
+<span class="lineNum">     715 </span>                :            :         }
+<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :         if( retry_count &gt; it-&gt;second.get_retry_count() ) </span>
+<span class="lineNum">     717 </span>                :            :         {
+<span class="lineNum">     718 </span>                :<span class="lineNoCov">          0 :             GLUtils gl_util;</span>
+<span class="lineNum">     719 </span>                :<span class="lineNoCov">          0 :             OSDLOG(INFO, service_name&lt;&lt;&quot; failed to start the service in all attempt&quot;); </span>
+<span class="lineNum">     720 </span>                :<span class="lineNoCov">          0 :             CLOG(SYSMSG::OSD_SERVICE_START_FAILED, gl_util.get_my_node_id().c_str());</span>
+<span class="lineNum">     721 </span>                :<span class="lineNoCov">          0 :             if(OSDException::OSDServiceStatus::NDFO != it-&gt;second.get_service_status())</span>
+<span class="lineNum">     722 </span>                :            :             {
+<span class="lineNum">     723 </span>                :<span class="lineNoCov">          0 :                     it-&gt;second.set_service_status(OSDException::OSDServiceStatus::MTF);</span>
+<span class="lineNum">     724 </span>                :<span class="lineNoCov">          0 :                     this-&gt;change_recovery_status(true);</span>
+<span class="lineNum">     725 </span>                :            :             }
+<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 :             this-&gt;all_service_started = false;</span>
+<span class="lineNum">     727 </span>                :            :         } 
+<span class="lineNum">     728 </span>                :            :     }
+<span class="lineNum">     729 </span>                :            : }
+<span class="lineNum">     730 </span>                :            : 
+<span class="lineNum">     731 </span>                :            : 
+<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::update_table_in_case_stop_service()</span>
+<span class="lineNum">     733 </span>                :            : {
+<span class="lineNum">     734 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     735 </span>                :<span class="lineNoCov">          0 :     for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     736 </span>                :            :     {
+<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :         if( it-&gt;second.get_fd() &gt; 0)</span>
+<span class="lineNum">     738 </span>                :<span class="lineNoCov">          0 :             this-&gt;erase(it-&gt;second.get_fd());</span>
+<span class="lineNum">     739 </span>                :<span class="lineNoCov">          0 :         it-&gt;second.set_service_status(OSDException::OSDServiceStatus::NDFO);</span>
+<span class="lineNum">     740 </span>                :            :     }
+<span class="lineNum">     741 </span>                :            : } 
+<span class="lineNum">     742 </span>                :            : 
+<span class="lineNum">     743 </span>                :            : 
+<span class="lineNum">     744 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::stop_all_service()</span>
+<span class="lineNum">     745 </span>                :            : {
+<span class="lineNum">     746 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Stop the all service&quot;);</span>
+<span class="lineNum">     747 </span>                :<span class="lineNoCov">          0 :     this-&gt;change_recovery_status(true);</span>
+<span class="lineNum">     748 </span>                :<span class="lineNoCov">          0 :     this-&gt;update_table_in_case_stop_service();</span>
+<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :     RecoveryManager recovery_mgr;</span>
+<span class="lineNum">     750 </span>                :<span class="lineNoCov">          0 :     bool retVal = recovery_mgr.stop_all_service();</span>
+<span class="lineNum">     751 </span>                :<span class="lineNoCov">          0 :     if(retVal == false)</span>
+<span class="lineNum">     752 </span>                :            :     {
+<span class="lineNum">     753 </span>                :            :             /* stop all could not stop all services, need to kill services forcefully */
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 :             this-&gt;kill_all_services();</span>
+<span class="lineNum">     755 </span>                :            :     }
+<span class="lineNum">     756 </span>                :<span class="lineNoCov">          0 :     return retVal;</span>
+<span class="lineNum">     757 </span>                :            : }
+<span class="lineNum">     758 </span>                :            : /*
+<span class="lineNum">     759 </span>                :            : bool MonitoringManager::node_stop_operation(int fd)
+<span class="lineNum">     760 </span>                :            : {
+<span class="lineNum">     761 </span>                :            :     cool::unused(fd);
+<span class="lineNum">     762 </span>                :            :     RecoveryManager recovery_mgr;
+<span class="lineNum">     763 </span>                :            :     this-&gt;update_table_in_case_stop_service();
+<span class="lineNum">     764 </span>                :            :     recovery_mgr.stop_service(config_parser-&gt;proxy_server_nameValue());
+<span class="lineNum">     765 </span>                :            :     this-&gt;notify_to_gl();
+<span class="lineNum">     766 </span>                :            :     recovery_mgr.stop_all_service();    
+<span class="lineNum">     767 </span>                :            :     //[TODO]: send the ack to user on given fd
+<span class="lineNum">     768 </span>                :            :     return true;
+<span class="lineNum">     769 </span>                :            : }
+<span class="lineNum">     770 </span>                :            : */
+<span class="lineNum">     771 </span>                :            : 
+<span class="lineNum">     772 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::start_all_service()</span>
+<span class="lineNum">     773 </span>                :            : {
+<span class="lineNum">     774 </span>                :<span class="lineNoCov">          0 :     this-&gt;all_service_started = true;</span>
+<span class="lineNum">     775 </span>                :<span class="lineNoCov">          0 :     RecoveryManager recovery_mgr;</span>
+<span class="lineNum">     776 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :     for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     778 </span>                :            :     {
+<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :             start_service_recovery(it-&gt;first);</span>
+<span class="lineNum">     780 </span>                :            :     }
+<span class="lineNum">     781 </span>                :<span class="lineNoCov">          0 :     return this-&gt;all_service_started;</span>
+<span class="lineNum">     782 </span>                :            : #if 0 
+<span class="lineNum">     783 </span>                :            :     if(!recovery_mgr.start_all_service( boost::lexical_cast&lt;std::string&gt;((this-&gt;config_parser-&gt;osm_portValue()))))
+<span class="lineNum">     784 </span>                :            :         return false;
+<span class="lineNum">     785 </span>                :            :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;
+<span class="lineNum">     786 </span>                :            :     for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)
+<span class="lineNum">     787 </span>                :            :     {
+<span class="lineNum">     788 </span>                :            :         it-&gt;second.set_service_status(OSDException::OSDServiceStatus::REG);
+<span class="lineNum">     789 </span>                :            :     }
+<span class="lineNum">     790 </span>                :            :     return true;        
+<span class="lineNum">     791 </span>                :            : #endif
+<span class="lineNum">     792 </span>                :            : }
+<span class="lineNum">     793 </span>                :            : 
+<span class="lineNum">     794 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::send_http_requeset_for_service_stop(int32_t port, std::string ip, std::string service_name)</span>
+<span class="lineNum">     795 </span>                :            : {
+<span class="lineNum">     796 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;MessageResult&lt;comm_messages::BlockRequestsAck&gt; &gt; obj;</span>
+<span class="lineNum">     797 </span>                :<span class="lineNoCov">          0 :     boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm(new Communication::SynchronousCommunication(ip, port));</span>
+<span class="lineNum">     798 </span>                :<span class="lineNoCov">          0 :         if(!comm-&gt;is_connected())</span>
+<span class="lineNum">     799 </span>                :            :         {
+<span class="lineNum">     800 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Http connection with service failed: &quot;&lt;&lt; service_name);</span>
+<span class="lineNum">     801 </span>                :<span class="lineNoCov">          0 :                 return ;</span>
+<span class="lineNum">     802 </span>                :            :         }
+<span class="lineNum">     803 </span>                :<span class="lineNoCov">          0 :     std::map&lt;std::string, std::string&gt; dict;</span>
+<span class="lineNum">     804 </span>                :<span class="lineNoCov">          0 :     dict[&quot;X-GLOBAL-MAP-VERSION&quot;] = &quot;-1&quot;;</span>
+<span class="lineNum">     805 </span>                :<span class="lineNoCov">          0 :     comm_messages::BlockRequests req(dict);</span>
+<span class="lineNum">     806 </span>                :<span class="lineNoCov">          0 :     uint32_t timeout = this-&gt;config_parser-&gt;service_stop_intervalValue();</span>
+<span class="lineNum">     807 </span>                :<span class="lineNoCov">          0 :     obj = MessageExternalInterface::send_stop_service_http_request(comm, &amp;req, ip, port, timeout);</span>
+<span class="lineNum">     808 </span>                :<span class="lineNoCov">          0 :     if( !obj-&gt;get_status())</span>
+<span class="lineNum">     809 </span>                :            :     {
+<span class="lineNum">     810 </span>                :<span class="lineNoCov">          0 :             RecoveryManager recovery_mgr;</span>
+<span class="lineNum">     811 </span>                :<span class="lineNoCov">          0 :             if(config_parser-&gt;account_updater_server_nameValue() + &quot;-server&quot; == std::string(service_name))</span>
+<span class="lineNum">     812 </span>                :            :             {
+<span class="lineNum">     813 </span>                :            :                     /* account-updater-server is in service_name, but command wants account-updater start */
+<span class="lineNum">     814 </span>                :<span class="lineNoCov">          0 :                     service_name = std::string(config_parser-&gt;account_updater_server_nameValue()).c_str();</span>
+<span class="lineNum">     815 </span>                :            :                     /* account-updater-server is in service_name, but command wants account-updater end */
+<span class="lineNum">     816 </span>                :            :             }
+<span class="lineNum">     817 </span>                :<span class="lineNoCov">          0 :             OSDLOG(DEBUG, &quot; Service: &quot;&lt;&lt;service_name&lt;&lt; &quot;stopped  forcefully obj status: &quot; &lt;&lt; obj-&gt;get_status());</span>
+<span class="lineNum">     818 </span>                :<span class="lineNoCov">          0 :             recovery_mgr.stop_service(service_name);</span>
+<span class="lineNum">     819 </span>                :            :     }
+<span class="lineNum">     820 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Service: &quot;&lt;&lt;service_name&lt;&lt;&quot; stopped successfully&quot;);</span>
+<span class="lineNum">     821 </span>                :            : }
+<span class="lineNum">     822 </span>                :            : 
+<span class="lineNum">     823 </span>                :            : 
+<span class="lineNum">     824 </span>                :<span class="lineNoCov">          0 : bool MonitoringManager::system_stop_operation()</span>
+<span class="lineNum">     825 </span>                :            : {
+<span class="lineNum">     826 </span>                :<span class="lineNoCov">          0 :     this-&gt;update_table_in_case_stop_service();</span>
+<span class="lineNum">     827 </span>                :<span class="lineNoCov">          0 :     this-&gt;change_recovery_status(true);</span>
+<span class="lineNum">     828 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;System stop operaton started&quot;);</span>
+<span class="lineNum">     829 </span>                :<span class="lineNoCov">          0 :     GLUtils utils;</span>
+<span class="lineNum">     830 </span>                :<span class="lineNoCov">          0 :     bool flag = true;</span>
+<span class="lineNum">     831 </span>                :            :     boost::thread *thr[number_of_service];
+<span class="lineNum">     832 </span>                :<span class="lineNoCov">          0 :     uint8_t count = 0;</span>
+<span class="lineNum">     833 </span>                :<span class="lineNoCov">          0 :     std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     834 </span>                :<span class="lineNoCov">          0 :     for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     835 </span>                :            :     {
+<span class="lineNum">     836 </span>                :<span class="lineNoCov">          0 :         if( count &gt; number_of_service)</span>
+<span class="lineNum">     837 </span>                :            :         {
+<span class="lineNum">     838 </span>                :<span class="lineNoCov">          0 :             OSDLOG(ERROR, &quot;Number of running service is more then number of osd service&quot;);</span>
+<span class="lineNum">     839 </span>                :<span class="lineNoCov">          0 :             flag = false;</span>
+<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     841 </span>                :            :         }
+<span class="lineNum">     842 </span>                :<span class="lineNoCov">          0 :         int32_t port = it-&gt;second.get_port();</span>
+<span class="lineNum">     843 </span>                :<span class="lineNoCov">          0 :         std::string ip = it-&gt;second.get_ip_addr();</span>
+<span class="lineNum">     844 </span>                :<span class="lineNoCov">          0 :         if( port == -1 &amp;&amp; (ip.compare(&quot;&quot;) == 0))</span>
+<span class="lineNum">     845 </span>                :<span class="lineNoCov">          0 :             continue; </span>
+<span class="lineNum">     846 </span>                :<span class="lineNoCov">          0 :         std::string service_name = this-&gt;get_service_name(it-&gt;first.c_str());</span>
+<span class="lineNum">     847 </span>                :            :         //if(service_name == std::string(&quot;containerChild-server&quot;))
+<span class="lineNum">     848 </span>                :<span class="lineNoCov">          0 :         if(config_parser-&gt;containerChild_nameValue() + &quot;-server&quot; == std::string(service_name))</span>
+<span class="lineNum">     849 </span>                :            :         {
+<span class="lineNum">     850 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;skipping container child process&quot;);</span>
+<span class="lineNum">     851 </span>                :            :                 continue;
+<span class="lineNum">     852 </span>                :            :         }
+<span class="lineNum">     853 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Send the http request to service :&quot;&lt;&lt;service_name);</span>
+<span class="lineNum">     854 </span>                :            :         thr[count] = new boost::thread(boost::bind(&amp;MonitoringManager::send_http_requeset_for_service_stop, this, port, ip, 
+<span class="lineNum">     855 </span>                :<span class="lineNoCov">          0 :                     service_name));</span>
+<span class="lineNum">     856 </span>                :<span class="lineNoCov">          0 :         count++;</span>
+<span class="lineNum">     857 </span>                :            :     }
+<span class="lineNum">     858 </span>                :<span class="lineNoCov">          0 :     uint8_t i = 0;</span>
+<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :     for( ; i &lt; count; i++)</span>
+<span class="lineNum">     860 </span>                :            :     {
+<span class="lineNum">     861 </span>                :<span class="lineNoCov">          0 :         if( thr[i]-&gt;joinable())</span>
+<span class="lineNum">     862 </span>                :<span class="lineNoCov">          0 :             thr[i]-&gt;timed_join(boost::posix_time::seconds(this-&gt;config_parser-&gt;service_stop_intervalValue()));</span>
+<span class="lineNum">     863 </span>                :            :     }
+<span class="lineNum">     864 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;System stop operation successfully&quot;);</span>
+<span class="lineNum">     865 </span>                :<span class="lineNoCov">          0 :     RecoveryManager recovery_mgr;</span>
+<span class="lineNum">     866 </span>                :<span class="lineNoCov">          0 :     OSDLOG(INFO, &quot;Try to stop the all osd services for surety&quot;);</span>
+<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :     if(!recovery_mgr.stop_all_service())</span>
+<span class="lineNum">     868 </span>                :            :     {
+<span class="lineNum">     869 </span>                :<span class="lineNoCov">          0 :             std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     870 </span>                :<span class="lineNoCov">          0 :             for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     871 </span>                :            :             {
+<span class="lineNum">     872 </span>                :<span class="lineNoCov">          0 :                     std::string service_name = this-&gt;get_service_name(it-&gt;first.c_str());</span>
+<span class="lineNum">     873 </span>                :<span class="lineNoCov">          0 :                     service_name.erase (service_name.find_last_of('-'), service_name.size()-1);</span>
+<span class="lineNum">     874 </span>                :            : 
+<span class="lineNum">     875 </span>                :<span class="lineNoCov">          0 :                     recovery_mgr.kill_service(service_name);</span>
+<span class="lineNum">     876 </span>                :            :             }
+<span class="lineNum">     877 </span>                :            :     }
+<span class="lineNum">     878 </span>                :<span class="lineNoCov">          0 :     return flag;</span>
+<span class="lineNum">     879 </span>                :            : }
+<span class="lineNum">     880 </span>                :            : 
+<span class="lineNum">     881 </span>                :<span class="lineNoCov">          0 : void MonitoringManager::kill_all_services()</span>
+<span class="lineNum">     882 </span>                :            : {
+<span class="lineNum">     883 </span>                :<span class="lineNoCov">          0 :         RecoveryManager recovery_mgr;</span>
+<span class="lineNum">     884 </span>                :<span class="lineNoCov">          0 :         std::map &lt; std::string, MonitorStatusMap &gt; ::iterator it;</span>
+<span class="lineNum">     885 </span>                :<span class="lineNoCov">          0 :         for(it = this-&gt;monitor_status_map.begin(); it != this-&gt;monitor_status_map.end(); it++)</span>
+<span class="lineNum">     886 </span>                :            :         {
+<span class="lineNum">     887 </span>                :<span class="lineNoCov">          0 :                 std::string service_name = this-&gt;get_service_name(it-&gt;first.c_str());</span>
+<span class="lineNum">     888 </span>                :<span class="lineNoCov">          0 :                 service_name.erase (service_name.find_last_of('-'), service_name.size()-1);</span>
+<span class="lineNum">     889 </span>                :            : 
+<span class="lineNum">     890 </span>                :<span class="lineNoCov">          0 :                 recovery_mgr.kill_service(service_name);</span>
+<span class="lineNum">     891 </span>                :            :         }
+<span class="lineNum">     892 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

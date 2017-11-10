@@ -1,0 +1,73 @@
+import os.path
+
+Import('context')
+
+context.module(
+	name = "ContainerLib",
+	#srcs = context.SRCS_ALL, 
+	srcs = context.split("""
+		containerInfoFile_manager.cpp
+		containerInfoFile.cpp
+		containerInfoFile_builder.cpp
+		container_library.cpp
+		container_py_binding.cpp
+		file_writer.cpp
+		trailer_stat_block_builder.cpp
+		trailer_stat_block_writer.cpp
+		index_block.cpp
+		index_block_builder.cpp
+		index_block_writer.cpp
+		data_block_writer.cpp
+		data_block_iterator.cpp
+		reader.cpp
+		writer.cpp
+		updater_info.cpp
+		memory_writer.cpp
+		journal_writer.cpp
+		journal_reader.cpp
+		journal_library.cpp
+		../libraryUtils/info_file_sorter.cpp
+		../libraryUtils/job_manager.cpp
+		../libraryUtils/record_structure.cpp
+		../libraryUtils/serialize.cpp
+		../libraryUtils/helper.cpp
+		../libraryUtils/file_handler.cpp
+		../libraryUtils/journal.cpp
+		../libraryUtils/object_storage_log_setup.cpp
+		../libraryUtils/lock_manager.cpp
+		../libraryUtils/osd_logger_initialize.cpp
+                ../libraryUtils/stats.cpp
+                ../libraryUtils/osdStatGather.cpp
+                ../libraryUtils/statFactory.cpp
+                ../libraryUtils/statManager.cpp
+
+	"""),
+
+	requiredLibs = context.split("""
+		boost_thread
+		boost_thread-mt
+		boost_system
+		boost_python
+		boost_filesystem
+		pthread
+		#boost_chrono
+		#boost_timer
+		rt
+		cool
+		statGather
+                coolNet
+		#libraryUtils
+        """),
+
+	targetType = context.TYPE_DLL,
+	libs = context.split("""
+		#any external libs  that you may need.
+
+		libraryUtils
+	"""),
+	# only in case of unit test dir
+	#wholeLibs = context.split("""
+	#       gmock
+	#""")
+)
+

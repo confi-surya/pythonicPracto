@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/signature.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python</a> - signature.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : ///////////////////////////////////////////////////////////////////////////////
+<span class="lineNum">       2 </span>                :            : //
+<span class="lineNum">       3 </span>                :            : // Copyright David Abrahams 2002, Joel de Guzman, 2002.
+<span class="lineNum">       4 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       5 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       6 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>                :            : //
+<span class="lineNum">       8 </span>                :            : ///////////////////////////////////////////////////////////////////////////////
+<span class="lineNum">       9 </span>                :            : #if !defined(BOOST_PP_IS_ITERATING)
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : # ifndef SIGNATURE_JDG20020813_HPP
+<span class="lineNum">      12 </span>                :            : #  define SIGNATURE_JDG20020813_HPP
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : # include &lt;boost/mpl/if.hpp&gt;
+<span class="lineNum">      17 </span>                :            : # include &lt;boost/type_traits/is_convertible.hpp&gt;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : #  include &lt;boost/python/detail/preprocessor.hpp&gt;
+<span class="lineNum">      20 </span>                :            : #  include &lt;boost/preprocessor/repeat.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #  include &lt;boost/preprocessor/enum.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #  include &lt;boost/preprocessor/enum_params.hpp&gt;
+<span class="lineNum">      23 </span>                :            : #  include &lt;boost/preprocessor/empty.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #  include &lt;boost/preprocessor/arithmetic/sub.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #  include &lt;boost/preprocessor/iterate.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #  include &lt;boost/python/detail/type_list.hpp&gt;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : #  include &lt;boost/preprocessor/debug/line.hpp&gt;
+<span class="lineNum">      29 </span>                :            : #  include &lt;boost/preprocessor/arithmetic/sub.hpp&gt;
+<span class="lineNum">      30 </span>                :            : #  include &lt;boost/preprocessor/arithmetic/inc.hpp&gt;
+<span class="lineNum">      31 </span>                :            : #  include &lt;boost/preprocessor/repetition/enum_trailing_params.hpp&gt;
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : # define BOOST_PYTHON_LIST_INC(n)        \
+<span class="lineNum">      34 </span>                :            :    BOOST_PP_CAT(mpl::vector, BOOST_PP_INC(n))
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : ///////////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      37 </span>                :            : namespace boost { namespace python { namespace detail {
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : // A metafunction returning C1 if C1 is derived from C2, and C2
+<span class="lineNum">      40 </span>                :            : // otherwise
+<span class="lineNum">      41 </span>                :            : template &lt;class C1, class C2&gt;
+<span class="lineNum">      42 </span>                :            : struct most_derived
+<span class="lineNum">      43 </span>                :            : {
+<span class="lineNum">      44 </span>                :            :     typedef typename mpl::if_&lt;
+<span class="lineNum">      45 </span>                :            :         is_convertible&lt;C1*,C2*&gt;
+<span class="lineNum">      46 </span>                :            :       , C1
+<span class="lineNum">      47 </span>                :            :       , C2
+<span class="lineNum">      48 </span>                :            :     &gt;::type type;
+<span class="lineNum">      49 </span>                :            : };
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            : //  The following macros generate expansions for::
+<span class="lineNum">      52 </span>                :            : //
+<span class="lineNum">      53 </span>                :            : //      template &lt;class RT, class T0... class TN&gt;
+<span class="lineNum">      54 </span>                :            : //      inline mpl::vector&lt;RT, T0...TN&gt;
+<span class="lineNum">      55 </span>                :            : //      get_signature(RT(*)(T0...TN), void* = 0)
+<span class="lineNum">      56 </span>                :            : //      {
+<span class="lineNum">      57 </span>                :            : //          return mpl::list&lt;RT, T0...TN&gt;();
+<span class="lineNum">      58 </span>                :            : //      }
+<span class="lineNum">      59 </span>                :            : //
+<span class="lineNum">      60 </span>                :            : //   And, for an appropriate assortment of cv-qualifications::
+<span class="lineNum">      61 </span>                :            : //
+<span class="lineNum">      62 </span>                :            : //      template &lt;class RT, class ClassT, class T0... class TN&gt;
+<span class="lineNum">      63 </span>                :            : //      inline mpl::vector&lt;RT, ClassT&amp;, T0...TN&gt;
+<span class="lineNum">      64 </span>                :            : //      get_signature(RT(ClassT::*)(T0...TN) cv))
+<span class="lineNum">      65 </span>                :            : //      {
+<span class="lineNum">      66 </span>                :            : //          return mpl::list&lt;RT, ClassT&amp;, T0...TN&gt;();
+<span class="lineNum">      67 </span>                :            : //      }
+<span class="lineNum">      68 </span>                :            : //
+<span class="lineNum">      69 </span>                :            : //      template &lt;class Target, class RT, class ClassT, class T0... class TN&gt;
+<span class="lineNum">      70 </span>                :            : //      inline mpl::vector&lt;
+<span class="lineNum">      71 </span>                :            : //          RT
+<span class="lineNum">      72 </span>                :            : //        , typename most_derived&lt;Target, ClassT&gt;::type&amp;
+<span class="lineNum">      73 </span>                :            : //        , T0...TN
+<span class="lineNum">      74 </span>                :            : //      &gt;
+<span class="lineNum">      75 </span>                :            : //      get_signature(RT(ClassT::*)(T0...TN) cv), Target*)
+<span class="lineNum">      76 </span>                :            : //      {
+<span class="lineNum">      77 </span>                :            : //          return mpl::list&lt;RT, ClassT&amp;, T0...TN&gt;();
+<span class="lineNum">      78 </span>                :            : //      }
+<span class="lineNum">      79 </span>                :            : //
+<span class="lineNum">      80 </span>                :            : //  There are two forms for invoking get_signature::
+<span class="lineNum">      81 </span>                :            : //
+<span class="lineNum">      82 </span>                :            : //      get_signature(f)
+<span class="lineNum">      83 </span>                :            : //
+<span class="lineNum">      84 </span>                :            : //  and ::
+<span class="lineNum">      85 </span>                :            : //
+<span class="lineNum">      86 </span>                :            : //      get_signature(f,(Target*)0)
+<span class="lineNum">      87 </span>                :            : //
+<span class="lineNum">      88 </span>                :            : //  These functions extract the return type, class (for member
+<span class="lineNum">      89 </span>                :            : //  functions) and arguments of the input signature and stuff them in
+<span class="lineNum">      90 </span>                :            : //  an mpl type sequence.  Note that cv-qualification is dropped from
+<span class="lineNum">      91 </span>                :            : //  the &quot;hidden this&quot; argument of member functions; that is a
+<span class="lineNum">      92 </span>                :            : //  necessary sacrifice to ensure that an lvalue from_python converter
+<span class="lineNum">      93 </span>                :            : //  is used.  A pointer is not used so that None will be rejected for
+<span class="lineNum">      94 </span>                :            : //  overload resolution.
+<span class="lineNum">      95 </span>                :            : //
+<span class="lineNum">      96 </span>                :            : //  The second form of get_signature essentially downcasts the &quot;hidden
+<span class="lineNum">      97 </span>                :            : //  this&quot; argument of member functions to Target, because the function
+<span class="lineNum">      98 </span>                :            : //  may actually be a member of a base class which is not wrapped, and
+<span class="lineNum">      99 </span>                :            : //  in that case conversion from python would fail.
+<span class="lineNum">     100 </span>                :            : //
+<span class="lineNum">     101 </span>                :            : // @group {
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            : #  define BOOST_PP_ITERATION_PARAMS_1                                   \
+<span class="lineNum">     104 </span>                :            :     (3, (0, BOOST_PYTHON_MAX_ARITY, &lt;boost/python/signature.hpp&gt;))
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            : #  include BOOST_PP_ITERATE()
+<span class="lineNum">     107 </span>                :            : #  undef BOOST_PYTHON_LIST_INC
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :            : // }
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            : }}} // namespace boost::python::detail
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :            : # endif // SIGNATURE_JDG20020813_HPP
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            : // For gcc 4.4 compatability, we must include the
+<span class="lineNum">     117 </span>                :            : // BOOST_PP_ITERATION_DEPTH test inside an #else clause.
+<span class="lineNum">     118 </span>                :            : #else // BOOST_PP_IS_ITERATING
+<span class="lineNum">     119 </span>                :            : #if BOOST_PP_ITERATION_DEPTH() == 1 // defined(BOOST_PP_IS_ITERATING)
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :            : # define N BOOST_PP_ITERATION()
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            : template &lt;
+<span class="lineNum">     124 </span>                :            :     class RT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)&gt;
+<span class="lineNum">     125 </span>                :            : inline BOOST_PYTHON_LIST_INC(N)&lt;
+<span class="lineNum">     126 </span>                :            :     RT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)&gt;
+<span class="lineNum">     127 </span>                :<span class="lineCov">        168 : get_signature(RT(*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)), void* = 0)</span>
+<span class="lineNum">     128 </span>                :            : {
+<span class="lineNum">     129 </span>                :            :     return BOOST_PYTHON_LIST_INC(N)&lt;
+<span class="lineNum">     130 </span>                :            :             RT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
+<span class="lineNum">     131 </span>                :<span class="lineCov">        168 :         &gt;();</span>
+<span class="lineNum">     132 </span>                :            : }
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            : # undef N
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            : # define BOOST_PP_ITERATION_PARAMS_2 \
+<span class="lineNum">     137 </span>                :            :     (3, (0, 3, &lt;boost/python/signature.hpp&gt;))
+<span class="lineNum">     138 </span>                :            : # include BOOST_PP_ITERATE()
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            : #else
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            : # define N BOOST_PP_RELATIVE_ITERATION(1)
+<span class="lineNum">     143 </span>                :            : # define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_ITERATION())
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>                :            : template &lt;
+<span class="lineNum">     146 </span>                :            :     class RT, class ClassT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)&gt;
+<span class="lineNum">     147 </span>                :            : inline BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))&lt;
+<span class="lineNum">     148 </span>                :            :     RT, ClassT&amp; BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)&gt;
+<span class="lineNum">     149 </span>                :            : get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)) Q)
+<span class="lineNum">     150 </span>                :            : {
+<span class="lineNum">     151 </span>                :            :     return BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))&lt;
+<span class="lineNum">     152 </span>                :            :             RT, ClassT&amp; BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
+<span class="lineNum">     153 </span>                :            :         &gt;();
+<span class="lineNum">     154 </span>                :            : }
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            : template &lt;
+<span class="lineNum">     157 </span>                :            :     class Target
+<span class="lineNum">     158 </span>                :            :   , class RT
+<span class="lineNum">     159 </span>                :            :   , class ClassT
+<span class="lineNum">     160 </span>                :            :     BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)
+<span class="lineNum">     161 </span>                :            : &gt;
+<span class="lineNum">     162 </span>                :            : inline BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))&lt;
+<span class="lineNum">     163 </span>                :            :     RT
+<span class="lineNum">     164 </span>                :            :   , typename most_derived&lt;Target, ClassT&gt;::type&amp;
+<span class="lineNum">     165 </span>                :            :     BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
+<span class="lineNum">     166 </span>                :            : &gt;
+<span class="lineNum">     167 </span>                :            : get_signature(
+<span class="lineNum">     168 </span>                :            :     RT(ClassT::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)) Q
+<span class="lineNum">     169 </span>                :            :   , Target*
+<span class="lineNum">     170 </span>                :<span class="lineCov">        258 : )</span>
+<span class="lineNum">     171 </span>                :            : {
+<span class="lineNum">     172 </span>                :            :     return BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))&lt;
+<span class="lineNum">     173 </span>                :            :         RT
+<span class="lineNum">     174 </span>                :            :       , BOOST_DEDUCED_TYPENAME most_derived&lt;Target, ClassT&gt;::type&amp;
+<span class="lineNum">     175 </span>                :            :         BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
+<span class="lineNum">     176 </span>                :<span class="lineCov">        258 :     &gt;();</span>
+<span class="lineNum">     177 </span>                :            : }
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :            : # undef Q
+<span class="lineNum">     180 </span>                :            : # undef N
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            : #endif // BOOST_PP_ITERATION_DEPTH()
+<span class="lineNum">     183 </span>                :            : #endif // !defined(BOOST_PP_IS_ITERATING)
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

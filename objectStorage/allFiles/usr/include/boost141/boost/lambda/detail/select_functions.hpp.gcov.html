@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/lambda/detail/select_functions.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/lambda/detail</a> - select_functions.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // -- select_functions.hpp -- Boost Lambda Library --------------------------
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : // Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
+<span class="lineNum">       4 </span>                :            : //
+<span class="lineNum">       5 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       6 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       7 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>                :            : //
+<span class="lineNum">       9 </span>                :            : // For more information, see http://www.boost.org
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : #ifndef BOOST_LAMBDA_SELECT_FUNCTIONS_HPP
+<span class="lineNum">      13 </span>                :            : #define BOOST_LAMBDA_SELECT_FUNCTIONS_HPP
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : namespace boost { 
+<span class="lineNum">      16 </span>                :            : namespace lambda {
+<span class="lineNum">      17 </span>                :            : namespace detail {
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : // select functions -------------------------------
+<span class="lineNum">      21 </span>                :            : template&lt;class Any, CALL_TEMPLATE_ARGS&gt;
+<span class="lineNum">      22 </span>                :<span class="lineCov">        113 : inline Any&amp; select(Any&amp; any, CALL_FORMAL_ARGS) { CALL_USE_ARGS; return any; }</span>
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : template&lt;class Arg, CALL_TEMPLATE_ARGS&gt;
+<span class="lineNum">      26 </span>                :            : inline typename Arg::template sig&lt;tuple&lt;CALL_REFERENCE_TYPES&gt; &gt;::type
+<span class="lineNum">      27 </span>                :<span class="lineCov">        113 : select ( const lambda_functor&lt;Arg&gt;&amp; op, CALL_FORMAL_ARGS ) { </span>
+<span class="lineNum">      28 </span>                :            :   return op.template call&lt;
+<span class="lineNum">      29 </span>                :            :     typename Arg::template sig&lt;tuple&lt;CALL_REFERENCE_TYPES&gt; &gt;::type
+<span class="lineNum">      30 </span>                :<span class="lineCov">        113 :   &gt;(CALL_ACTUAL_ARGS); </span>
+<span class="lineNum">      31 </span>                :            : }
+<span class="lineNum">      32 </span>                :            : template&lt;class Arg, CALL_TEMPLATE_ARGS&gt;
+<span class="lineNum">      33 </span>                :            : inline typename Arg::template sig&lt;tuple&lt;CALL_REFERENCE_TYPES&gt; &gt;::type
+<span class="lineNum">      34 </span>                :            : select ( lambda_functor&lt;Arg&gt;&amp; op, CALL_FORMAL_ARGS) { 
+<span class="lineNum">      35 </span>                :            :   return op.template call&lt;
+<span class="lineNum">      36 </span>                :            :     typename Arg::template sig&lt;tuple&lt;CALL_REFERENCE_TYPES&gt; &gt;::type
+<span class="lineNum">      37 </span>                :            :   &gt;(CALL_ACTUAL_ARGS); 
+<span class="lineNum">      38 </span>                :            : }
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : // ------------------------------------------------------------------------
+<span class="lineNum">      41 </span>                :            : // select functions where the return type is explicitly given
+<span class="lineNum">      42 </span>                :            : // Note: on many functions, this return type is just discarded.
+<span class="lineNum">      43 </span>                :            : // The select functions are inside a class template, and the return type
+<span class="lineNum">      44 </span>                :            : // is a class template argument.
+<span class="lineNum">      45 </span>                :            : // The first implementation used function templates with an explicitly 
+<span class="lineNum">      46 </span>                :            : // specified template parameter.
+<span class="lineNum">      47 </span>                :            : // However, this resulted in ambiguous calls (at least with gcc 2.95.2 
+<span class="lineNum">      48 </span>                :            : // and edg 2.44). Not sure whether the compilers were right or wrong. 
+<span class="lineNum">      49 </span>                :            :   
+<span class="lineNum">      50 </span>                :            : template&lt;class RET&gt; struct r_select {
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :            : // Any == RET
+<span class="lineNum">      53 </span>                :            :   template&lt;class Any, CALL_TEMPLATE_ARGS&gt;
+<span class="lineNum">      54 </span>                :            :   static 
+<span class="lineNum">      55 </span>                :<span class="lineCov">        339 :   inline RET go (Any&amp; any, CALL_FORMAL_ARGS) { CALL_USE_ARGS; return any; }</span>
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            :   template&lt;class Arg, CALL_TEMPLATE_ARGS&gt; 
+<span class="lineNum">      59 </span>                :            :   static 
+<span class="lineNum">      60 </span>                :<span class="lineCov">        226 :   inline RET go (const lambda_functor&lt;Arg&gt;&amp; op, CALL_FORMAL_ARGS ) {</span>
+<span class="lineNum">      61 </span>                :<span class="lineCov">        226 :     return op.template call&lt;RET&gt;(CALL_ACTUAL_ARGS); </span>
+<span class="lineNum">      62 </span>                :            :   }
+<span class="lineNum">      63 </span>                :            :   template&lt;class Arg, CALL_TEMPLATE_ARGS&gt; 
+<span class="lineNum">      64 </span>                :            :   static 
+<span class="lineNum">      65 </span>                :            :   inline RET go (lambda_functor&lt;Arg&gt;&amp; op, CALL_FORMAL_ARGS ) { 
+<span class="lineNum">      66 </span>                :            :     return op.template call&lt;RET&gt;(CALL_ACTUAL_ARGS); 
+<span class="lineNum">      67 </span>                :            :   }
+<span class="lineNum">      68 </span>                :            : };
+<span class="lineNum">      69 </span>                :            :    
+<span class="lineNum">      70 </span>                :            : } // namespace detail
+<span class="lineNum">      71 </span>                :            : } // namespace lambda
+<span class="lineNum">      72 </span>                :            : } // namespace boost
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

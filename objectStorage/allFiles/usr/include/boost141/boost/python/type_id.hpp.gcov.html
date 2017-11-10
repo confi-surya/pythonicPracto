@@ -1,0 +1,280 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/type_id.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python</a> - type_id.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">54.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef TYPE_ID_DWA2002517_HPP
+<span class="lineNum">       6 </span>                :            : # define TYPE_ID_DWA2002517_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/detail/msvc_typeinfo.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/operators.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;typeinfo&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;cstring&gt;
+<span class="lineNum">      14 </span>                :            : # include &lt;ostream&gt;
+<span class="lineNum">      15 </span>                :            : # include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      16 </span>                :            : # include &lt;boost/detail/workaround.hpp&gt;
+<span class="lineNum">      17 </span>                :            : # include &lt;boost/type_traits/same_traits.hpp&gt;
+<span class="lineNum">      18 </span>                :            : # include &lt;boost/type_traits/broken_compiler_spec.hpp&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+<span class="lineNum">      21 </span>                :            : #   if defined(__GNUC__)                                                \
+<span class="lineNum">      22 </span>                :            :     &amp;&amp; ((__GNUC__ &gt; 3) || ((__GNUC__ == 3) &amp;&amp; (__GNUC_MINOR__ &gt;= 1)))   \
+<span class="lineNum">      23 </span>                :            :     &amp;&amp; !defined(__EDG_VERSION__)
+<span class="lineNum">      24 </span>                :            : #    define BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+<span class="lineNum">      25 </span>                :            : #   endif
+<span class="lineNum">      26 </span>                :            : #  endif
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : namespace boost { namespace python { 
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : // for this compiler at least, cross-shared-library type_info
+<span class="lineNum">      31 </span>                :            : // comparisons don't work, so use typeid(x).name() instead. It's not
+<span class="lineNum">      32 </span>                :            : // yet clear what the best default strategy is.
+<span class="lineNum">      33 </span>                :            : # if (defined(__GNUC__) &amp;&amp; __GNUC__ &gt;= 3) \
+<span class="lineNum">      34 </span>                :            :  || defined(_AIX) \
+<span class="lineNum">      35 </span>                :            :  || (   defined(__sgi) &amp;&amp; defined(__host_mips)) \
+<span class="lineNum">      36 </span>                :            :  || (defined(__hpux) &amp;&amp; defined(__HP_aCC)) \
+<span class="lineNum">      37 </span>                :            :  || (defined(linux) &amp;&amp; defined(__INTEL_COMPILER) &amp;&amp; defined(__ICC))
+<span class="lineNum">      38 </span>                :            : #  define BOOST_PYTHON_TYPE_ID_NAME
+<span class="lineNum">      39 </span>                :            : # endif 
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : #ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+<span class="lineNum">      42 </span>                :            : // Runtime detection of broken cxxabi::__cxa_demangle versions,
+<span class="lineNum">      43 </span>                :            : // to avoid #ifdef clutter.
+<span class="lineNum">      44 </span>                :            : bool cxxabi_cxa_demangle_is_broken();
+<span class="lineNum">      45 </span>                :            : #define BOOST_PYTHON_HAVE_CXXABI_CXA_DEMANGLE_IS_BROKEN
+<span class="lineNum">      46 </span>                :            : #endif
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            : // type ids which represent the same information as std::type_info
+<span class="lineNum">      49 </span>                :            : // (i.e. the top-level reference and cv-qualifiers are stripped), but
+<span class="lineNum">      50 </span>                :            : // which works across shared libraries.
+<span class="lineNum">      51 </span>                :            : struct type_info : private totally_ordered&lt;type_info&gt;
+<span class="lineNum">      52 </span>                :            : {
+<span class="lineNum">      53 </span>                :            :     inline type_info(std::type_info const&amp; = typeid(void));
+<span class="lineNum">      54 </span>                :            :     
+<span class="lineNum">      55 </span>                :            :     inline bool operator&lt;(type_info const&amp; rhs) const;
+<span class="lineNum">      56 </span>                :            :     inline bool operator==(type_info const&amp; rhs) const;
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            :     char const* name() const;
+<span class="lineNum">      59 </span>                :            :     friend BOOST_PYTHON_DECL std::ostream&amp; operator&lt;&lt;(
+<span class="lineNum">      60 </span>                :            :         std::ostream&amp;, type_info const&amp;);
+<span class="lineNum">      61 </span>                :            :     
+<span class="lineNum">      62 </span>                :            :  private: // data members
+<span class="lineNum">      63 </span>                :            : #  ifdef BOOST_PYTHON_TYPE_ID_NAME
+<span class="lineNum">      64 </span>                :            :     typedef char const* base_id_t;
+<span class="lineNum">      65 </span>                :            : #  else
+<span class="lineNum">      66 </span>                :            :     typedef std::type_info const* base_id_t;
+<span class="lineNum">      67 </span>                :            : #  endif
+<span class="lineNum">      68 </span>                :            :     
+<span class="lineNum">      69 </span>                :            :     base_id_t m_base_type;
+<span class="lineNum">      70 </span>                :            : };
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :            : #  ifdef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
+<span class="lineNum">      73 </span>                :            : #   define BOOST_PYTHON_EXPLICIT_TT_DEF(T) ::boost::type&lt;T&gt;*
+<span class="lineNum">      74 </span>                :            : #  else
+<span class="lineNum">      75 </span>                :            : #   define BOOST_PYTHON_EXPLICIT_TT_DEF(T)
+<span class="lineNum">      76 </span>                :            : #  endif
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      79 </span>                :<span class="lineCov">       3518 : inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))</span>
+<span class="lineNum">      80 </span>                :            : {
+<span class="lineNum">      81 </span>                :            :     return type_info(
+<span class="lineNum">      82 </span>                :            : #  if !defined(_MSC_VER)                                       \
+<span class="lineNum">      83 </span>                :            :       || (!BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300)                \
+<span class="lineNum">      84 </span>                :            :           &amp;&amp; !BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, &lt;= 700))
+<span class="lineNum">      85 </span>                :            :         typeid(T)
+<span class="lineNum">      86 </span>                :            : #  else // strip the decoration which msvc and Intel mistakenly leave in
+<span class="lineNum">      87 </span>                :            :         python::detail::msvc_typeid((boost::type&lt;T&gt;*)0)
+<span class="lineNum">      88 </span>                :            : #  endif 
+<span class="lineNum">      89 </span>                :<span class="lineCov">       3518 :         );</span>
+<span class="lineNum">      90 </span>                :            : }
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            : #  if (defined(__EDG_VERSION__) &amp;&amp; __EDG_VERSION__ &lt; 245) \
+<span class="lineNum">      93 </span>                :            :    || (defined(__sgi) &amp;&amp; defined(_COMPILER_VERSION) &amp;&amp; _COMPILER_VERSION &lt;= 744)
+<span class="lineNum">      94 </span>                :            : // Older EDG-based compilers seems to mistakenly distinguish &quot;int&quot; from
+<span class="lineNum">      95 </span>                :            : // &quot;signed int&quot;, etc., but only in typeid() expressions. However
+<span class="lineNum">      96 </span>                :            : // though int == signed int, the &quot;signed&quot; decoration is propagated
+<span class="lineNum">      97 </span>                :            : // down into template instantiations. Explicit specialization stops
+<span class="lineNum">      98 </span>                :            : // that from taking hold.
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : #   define BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(T)              \
+<span class="lineNum">     101 </span>                :            : template &lt;&gt;                                                     \
+<span class="lineNum">     102 </span>                :            : inline type_info type_id&lt;T&gt;(BOOST_PYTHON_EXPLICIT_TT_DEF(T))    \
+<span class="lineNum">     103 </span>                :            : {                                                               \
+<span class="lineNum">     104 </span>                :            :     return type_info(typeid(T));                                \
+<span class="lineNum">     105 </span>                :            : }
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>                :            : BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(short)
+<span class="lineNum">     108 </span>                :            : BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(int)
+<span class="lineNum">     109 </span>                :            : BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long)
+<span class="lineNum">     110 </span>                :            : // using Python's macro instead of Boost's - we don't seem to get the
+<span class="lineNum">     111 </span>                :            : // config right all the time.
+<span class="lineNum">     112 </span>                :            : #   ifdef HAVE_LONG_LONG
+<span class="lineNum">     113 </span>                :            : BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long long)
+<span class="lineNum">     114 </span>                :            : #   endif
+<span class="lineNum">     115 </span>                :            : #   undef BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID
+<span class="lineNum">     116 </span>                :            : #  endif
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            : //
+<span class="lineNum">     119 </span>                :<span class="lineCov">       3616 : inline type_info::type_info(std::type_info const&amp; id)</span>
+<span class="lineNum">     120 </span>                :            :     : m_base_type(
+<span class="lineNum">     121 </span>                :            : #  ifdef BOOST_PYTHON_TYPE_ID_NAME
+<span class="lineNum">     122 </span>                :            :         id.name()
+<span class="lineNum">     123 </span>                :            : #  else
+<span class="lineNum">     124 </span>                :            :         &amp;id
+<span class="lineNum">     125 </span>                :            : #  endif
+<span class="lineNum">     126 </span>                :<span class="lineCov">       3616 :         )</span>
+<span class="lineNum">     127 </span>                :            : {
+<span class="lineNum">     128 </span>                :            : }
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            : inline bool type_info::operator&lt;(type_info const&amp; rhs) const
+<span class="lineNum">     131 </span>                :            : {
+<span class="lineNum">     132 </span>                :            : #  ifdef BOOST_PYTHON_TYPE_ID_NAME
+<span class="lineNum">     133 </span>                :            :     return std::strcmp(m_base_type, rhs.m_base_type) &lt; 0;
+<span class="lineNum">     134 </span>                :            : #  else
+<span class="lineNum">     135 </span>                :            :     return m_base_type-&gt;before(*rhs.m_base_type);
+<span class="lineNum">     136 </span>                :            : #  endif 
+<span class="lineNum">     137 </span>                :            : }
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :<span class="lineCov">       2754 : inline bool type_info::operator==(type_info const&amp; rhs) const</span>
+<span class="lineNum">     140 </span>                :            : {
+<span class="lineNum">     141 </span>                :            : #  ifdef BOOST_PYTHON_TYPE_ID_NAME
+<span class="lineNum">     142 </span>                :<span class="lineCov">       2754 :     return !std::strcmp(m_base_type, rhs.m_base_type);</span>
+<span class="lineNum">     143 </span>                :            : #  else
+<span class="lineNum">     144 </span>                :            :     return *m_base_type == *rhs.m_base_type;
+<span class="lineNum">     145 </span>                :            : #  endif 
+<span class="lineNum">     146 </span>                :            : }
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            : #  ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+<span class="lineNum">     149 </span>                :            : namespace detail
+<span class="lineNum">     150 </span>                :            : {
+<span class="lineNum">     151 </span>                :            :   BOOST_PYTHON_DECL char const* gcc_demangle(char const*);
+<span class="lineNum">     152 </span>                :            : }
+<span class="lineNum">     153 </span>                :            : #  endif
+<span class="lineNum">     154 </span>                :            :     
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 : inline char const* type_info::name() const</span>
+<span class="lineNum">     156 </span>                :            : {
+<span class="lineNum">     157 </span>                :            :     char const* raw_name
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         = m_base_type</span>
+<span class="lineNum">     159 </span>                :            : #  ifndef BOOST_PYTHON_TYPE_ID_NAME
+<span class="lineNum">     160 </span>                :            :           -&gt;name()
+<span class="lineNum">     161 </span>                :            : #  endif
+<span class="lineNum">     162 </span>                :            :         ;
+<span class="lineNum">     163 </span>                :            :     
+<span class="lineNum">     164 </span>                :            : #  ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :     return detail::gcc_demangle(raw_name);</span>
+<span class="lineNum">     166 </span>                :            : #  else
+<span class="lineNum">     167 </span>                :            :     return raw_name;
+<span class="lineNum">     168 </span>                :            : #  endif 
+<span class="lineNum">     169 </span>                :            : }
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            : BOOST_PYTHON_DECL std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, type_info const&amp;);
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            : #  if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+<span class="lineNum">     175 </span>                :            : template&lt;&gt;
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 : inline type_info type_id&lt;void&gt;(BOOST_PYTHON_EXPLICIT_TT_DEF(void))</span>
+<span class="lineNum">     177 </span>                :            : {
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :     return type_info (typeid (void *));</span>
+<span class="lineNum">     179 </span>                :            : }
+<span class="lineNum">     180 </span>                :            : #   ifndef BOOST_NO_CV_VOID_SPECIALIZATIONS
+<span class="lineNum">     181 </span>                :            : template&lt;&gt;
+<span class="lineNum">     182 </span>                :            : inline type_info type_id&lt;const volatile void&gt;(BOOST_PYTHON_EXPLICIT_TT_DEF(const volatile void))
+<span class="lineNum">     183 </span>                :            : {
+<span class="lineNum">     184 </span>                :            :     return type_info (typeid (void *));
+<span class="lineNum">     185 </span>                :            : }
+<span class="lineNum">     186 </span>                :            : #  endif
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :            : # endif 
+<span class="lineNum">     189 </span>                :            : 
+<span class="lineNum">     190 </span>                :            : }} // namespace boost::python
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>                :            : #endif // TYPE_ID_DWA2002517_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

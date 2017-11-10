@@ -1,0 +1,1265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/common/osm/osmServer/utils.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/osmServer</a> - utils.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">605</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &lt;list&gt;
+<span class="lineNum">       2 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">       3 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">       4 </span>                :            : #include &lt;stdio.h&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;sstream&gt;
+<span class="lineNum">       6 </span>                :            : #include &lt;fcntl.h&gt;
+<span class="lineNum">       7 </span>                :            : #include &lt;dirent.h&gt;
+<span class="lineNum">       8 </span>                :            : #include &lt;stdlib.h&gt;
+<span class="lineNum">       9 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">      10 </span>                :            : #include &lt;sys/stat.h&gt;
+<span class="lineNum">      11 </span>                :            : #include &lt;sys/types.h&gt;
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : #include &lt;boost/foreach.hpp&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;boost/date_time/posix_time/posix_time.hpp&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;signal.h&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;boost/filesystem.hpp&gt;
+<span class="lineNum">      17 </span>                :            : #include &lt;boost/lexical_cast.hpp&gt;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : #include &quot;cool/shellCommandsExecution.h&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;osm/osmServer/osm_info_file.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;osm/osmServer/utils.h&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;osm/globalLeader/journal_writer.h&quot;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/algorithm/string.hpp&gt;
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : using namespace std;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : /*const static std::string node_name_delimiter = &quot;_&quot;;
+<span class="lineNum">      28 </span>                :            : //const static std::string GLOBAL_LEADER_INFORMATION_FILE = &quot;/export/osd_meta_config/osd_global_leader_information&quot;;
+<span class="lineNum">      29 </span>                :            : const static std::string GLOBAL_LEADER_INFORMATION_FILE = &quot;/remote/hydra042/gmishra/gl_config/osd_global_leader_information&quot;;
+<span class="lineNum">      30 </span>                :            : */
+<span class="lineNum">      31 </span>                :            : const static int MAX_RETRY_COUNT_FS_CREATE = 3;
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 : GLUtils::GLUtils()</span>
+<span class="lineNum">      34 </span>                :            : {
+<span class="lineNum">      35 </span>                :            :         
+<span class="lineNum">      36 </span>                :            : }
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 : GLUtils::~GLUtils()</span>
+<span class="lineNum">      39 </span>                :            : {
+<span class="lineNum">      40 </span>                :            :         
+<span class="lineNum">      41 </span>                :            : }
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_node_id(std::string node_name, int32_t port)</span>
+<span class="lineNum">      44 </span>                :            : {
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :         return (node_name + node_name_delimiter + boost::lexical_cast&lt;std::string&gt;(port));</span>
+<span class="lineNum">      46 </span>                :            : }
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 : uint64_t GLUtils::get_osm_port_from_id(std::string node_id)     //HN0101_64014</span>
+<span class="lineNum">      49 </span>                :            : {
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :         return boost::lexical_cast&lt;uint64_t&gt;(node_id.substr(node_id.find(node_name_delimiter)+1, node_id.size()));</span>
+<span class="lineNum">      51 </span>                :            : }
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_node_name(std::string service_id)      //Will return HN0101</span>
+<span class="lineNum">      54 </span>                :            : {
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :         return service_id.substr(0, service_id.find_last_of(node_name_delimiter));</span>
+<span class="lineNum">      56 </span>                :            : }
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_service_id(std::string node_id, std::string service_name)</span>
+<span class="lineNum">      59 </span>                :            : {
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :         return (node_id + &quot;_&quot; + service_name);</span>
+<span class="lineNum">      61 </span>                :            : }
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_node_id(std::string service_id)</span>
+<span class="lineNum">      64 </span>                :            : {
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :         return service_id.substr(0, service_id.find_last_of(node_name_delimiter));</span>
+<span class="lineNum">      66 </span>                :            : }
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_service_name(std::string service_id)</span>
+<span class="lineNum">      69 </span>                :            : {
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 :         return service_id.substr(service_id.find_last_of(node_name_delimiter)+1, service_id.size());</span>
+<span class="lineNum">      71 </span>                :            : }
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 : std::set&lt;int64_t&gt; GLUtils::selectOnSockets(std::set&lt;int64_t&gt; fd_list, int &amp; error, int timeout)</span>
+<span class="lineNum">      74 </span>                :            : {
+<span class="lineNum">      75 </span>                :            :         fd_set sockets;
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :         FD_ZERO(&amp;sockets);</span>
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :         int64_t maxfd = 0;</span>
+<span class="lineNum">      78 </span>                :            :         struct timeval t;
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :         if(timeout &gt; 0)</span>
+<span class="lineNum">      80 </span>                :            :         {
+<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :                 t.tv_sec = timeout;</span>
+<span class="lineNum">      82 </span>                :            :         }
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :         for (std::set&lt;int64_t&gt;::iterator it = fd_list.begin(); it != fd_list.end(); ++it)</span>
+<span class="lineNum">      85 </span>                :            :         {
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :                 FD_SET(*it, &amp;sockets);</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :                 maxfd = std::max(maxfd, *it);</span>
+<span class="lineNum">      88 </span>                :            :         }
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :         std::set&lt;int64_t&gt; return_set;</span>
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :         int active_fd_count = ::select(maxfd + 1, &amp;sockets, NULL, NULL, &amp;t);</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :         int32_t const errnoTmp = errno;</span>
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :         if ( active_fd_count &lt; 0 )</span>
+<span class="lineNum">      93 </span>                :            :         {
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :                 error = errnoTmp;</span>
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :                 return return_set;</span>
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :         }else if(active_fd_count == 0)</span>
+<span class="lineNum">      97 </span>                :            :         {
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG,&quot;Select timeout&quot;);</span>
+<span class="lineNum">      99 </span>                :            :         }
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :         BOOST_FOREACH(int64_t const fd, fd_list)</span>
+<span class="lineNum">     101 </span>                :            :         {
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :                 if (FD_ISSET(fd, &amp;sockets))</span>
+<span class="lineNum">     103 </span>                :            :                 {
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :                         return_set.insert(fd);</span>
+<span class="lineNum">     105 </span>                :            :                 }
+<span class="lineNum">     106 </span>                :            :         }
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :         return return_set;</span>
+<span class="lineNum">     108 </span>                :            : }
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_node_ip(std::string node_id)</span>
+<span class="lineNum">     111 </span>                :            : {
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :         std::string command = &quot;grep -w &quot; + node_id + &quot; /etc/hosts&quot;;</span>
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :         FILE *proc = popen(command.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">     114 </span>                :            :         char buf[1024];
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) )</span>
+<span class="lineNum">     116 </span>                :            :         {
+<span class="lineNum">     117 </span>                :            :                 //std::cout &lt;&lt; buf &lt;&lt; std::endl;
+<span class="lineNum">     118 </span>                :            :         }
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :         ::pclose(proc);</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :         std::string ip(buf);</span>
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :         return ip.substr(0, ip.find(&quot;\t&quot;));   //TODO: Verify if space or tab</span>
+<span class="lineNum">     122 </span>                :            : }
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 : bool GLUtils::verify_if_single_hydra()</span>
+<span class="lineNum">     125 </span>                :            : {
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :         std::string command = &quot;sudo /opt/HYDRAstor/hydragui/bin/system_getNodeIDList.pl --type=MIX 2&gt;/dev/null&quot;;</span>
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :         bool is_single_hydra = false;</span>
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :         vector&lt;string&gt;hybrid_nodes;</span>
+<span class="lineNum">     129 </span>                :            :         char hybrid_node[50];
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :         int cmd_exit_status = -1;</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :         FILE *proc = popen(command.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :         if(proc != NULL)</span>
+<span class="lineNum">     134 </span>                :            :         {
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :                 while (!feof(proc) &amp;&amp; fgets(hybrid_node,sizeof(hybrid_node),proc)) // total hybrid node in configuration, storing in vector</span>
+<span class="lineNum">     136 </span>                :            :                 {
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :                         hybrid_nodes.push_back(boost::to_upper_copy&lt;std::string&gt;(hybrid_node));</span>
+<span class="lineNum">     138 </span>                :            :                 }
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :                 cmd_exit_status = ::pclose(proc); // command execution exit status</span>
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;number of hybrid nodes: &quot; &lt;&lt;hybrid_nodes.size() &lt;&lt;&quot;cmd_exit_status: &quot; &lt;&lt;cmd_exit_status);</span>
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :                 if((cmd_exit_status == 0) &amp;&amp; (hybrid_nodes.size() == 0)) // if no hybrid node present then exit</span>
+<span class="lineNum">     143 </span>                :            :                 {
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;no hybrid node present in configuration.&quot;);</span>
+<span class="lineNum">     145 </span>                :            :                         exit;
+<span class="lineNum">     146 </span>                :            :                 }
+<span class="lineNum">     147 </span>                :            :         
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :                 if((cmd_exit_status == 0) &amp;&amp; (hybrid_nodes.size() == 1)) // if one hybrid node present in configuration</span>
+<span class="lineNum">     149 </span>                :            :                 {
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Single hybrid node configuration.&quot;);</span>
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :                         is_single_hydra = true;</span>
+<span class="lineNum">     152 </span>                :            :                 }
+<span class="lineNum">     153 </span>                :            :         }
+<span class="lineNum">     154 </span>                :            :         else
+<span class="lineNum">     155 </span>                :            :         {
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;popen failed for command: sudo /opt/HYDRAstor/hydragui/bin/system_getNodeIDList.pl --type=MIX error: &quot; &lt;&lt;errno);</span>
+<span class="lineNum">     157 </span>                :            :         }
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :         return is_single_hydra;</span>
+<span class="lineNum">     160 </span>                :            : }
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 : bool GLUtils::verify_if_alternate()</span>
+<span class="lineNum">     163 </span>                :            : {
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         std::string my_node_id = this-&gt;get_my_node_id();</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :         std::string command = &quot;sudo /opt/HYDRAstor/cluster_management/Migrate/GetClusterNode_Current.sh | grep -w Alternative | cut -d'=' -f2 $1&quot;;</span>
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :         FILE *proc = popen(command.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">     167 </span>                :            :         char buf[10];
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :         memset(buf, '\0', 10);</span>
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) );</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :         ::pclose(proc);</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :         std::string str(buf);</span>
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :         str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());</span>
+<span class="lineNum">     173 </span>                :            : //      return strncmp(buf, my_node_id.c_str(), my_node_id.size());
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :         if(str == my_node_id)</span>
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     176 </span>                :            :         else
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     178 </span>                :            : }
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::read_GL_file()     //GL file will contain ID IP PORT tab separated in a single line</span>
+<span class="lineNum">     181 </span>                :            : {
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :         std::string cmd;</span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :         if (osd_config)</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :                 cmd = &quot;find &quot; + std::string(osd_config) + &quot; -name &quot; + GLOBAL_LEADER_INFORMATION_FILE + &quot;* | xargs cat $1&quot;;</span>
+<span class="lineNum">     186 </span>                :            :         else
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :                 cmd = &quot;find &quot; + CONFIG_FILESYSTEM + &quot; -name &quot; + GLOBAL_LEADER_INFORMATION_FILE + &quot;* | xargs cat $1&quot;;</span>
+<span class="lineNum">     188 </span>                :            : /*      char buf[50];
+<span class="lineNum">     189 </span>                :            :         memset(buf, '\0', 50);
+<span class="lineNum">     190 </span>                :            :         FILE *proc = popen(cmd.c_str(),&quot;r&quot;);
+<span class="lineNum">     191 </span>                :            :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) );
+<span class="lineNum">     192 </span>                :            :         std::string str(buf);
+<span class="lineNum">     193 </span>                :            :         str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
+<span class="lineNum">     194 </span>                :            :         ::pclose(proc); */
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :         int32 ret = -1;</span>
+<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :         cool::ShellCommand command(cmd.c_str());</span>
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :         cool::Option&lt;cool::CommandResult&gt; result  = command.run();</span>
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :         ret = result.getRefValue().getExitCode();</span>
+<span class="lineNum">     199 </span>                :            :         
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :         std::string str;</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :         if(ret == 0) {  </span>
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :               str = result.getRefValue().getOutputString();</span>
+<span class="lineNum">     203 </span>                :            :         }
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :         return str;</span>
+<span class="lineNum">     206 </span>                :            : }
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_my_node_id()</span>
+<span class="lineNum">     209 </span>                :            : {
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :         FILE *proc = popen(&quot;hostname&quot;,&quot;r&quot;);;</span>
+<span class="lineNum">     211 </span>                :            :         char buf[10];
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :         memset(buf, '\0', 10);</span>
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) );</span>
+<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :         ::pclose(proc);</span>
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :         std::string node(buf);</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :         node.erase(std::remove(node.begin(), node.end(), '\n'), node.end());</span>
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :         return node;</span>
+<span class="lineNum">     218 </span>                :            : }
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_my_service_id(int32_t port)</span>
+<span class="lineNum">     221 </span>                :            : {
+<span class="lineNum">     222 </span>                :            :         //std::cout &lt;&lt; &quot;My service id: &quot; &lt;&lt; (this-&gt;get_my_node_id() + &quot;_&quot; + boost::lexical_cast&lt;std::string&gt;(port)) &lt;&lt; std::endl;
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :         return (this-&gt;get_my_node_id() + &quot;_&quot; + boost::lexical_cast&lt;std::string&gt;(port));</span>
+<span class="lineNum">     224 </span>                :            : }
+<span class="lineNum">     225 </span>                :            : 
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_osd_service_id(int port, std::string service_name)</span>
+<span class="lineNum">     227 </span>                :            : {
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :         return ( this-&gt;get_my_service_id(port) + &quot;_&quot; + service_name + &quot;-&quot; + &quot;server&quot;);</span>
+<span class="lineNum">     229 </span>                :            : }
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 : cool::SharedPtr&lt;config_file::ConfigFileParser&gt; GLUtils::get_journal_config()</span>
+<span class="lineNum">     232 </span>                :            : {
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :         cool::config::ConfigurationBuilder&lt;config_file::ConfigFileParser&gt; config_file_builder;</span>
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :         if (osd_config_dir)</span>
+<span class="lineNum">     236 </span>                :            :                 //config_file_builder.readFromFile(std::string(osd_config_dir).append(&quot;/osm.conf&quot;));
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(std::string(osd_config_dir).append(&quot;/gl_journal.conf&quot;));</span>
+<span class="lineNum">     238 </span>                :            :         else
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(&quot;/opt/HYDRAstor/objectStorage/configFiles/product/libConfig/gl_journal.conf&quot;);</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         return config_file_builder.buildConfiguration();</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :            : }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 : cool::SharedPtr&lt;config_file::OsdServiceConfigFileParser&gt; GLUtils::get_osm_timeout_config()</span>
+<span class="lineNum">     245 </span>                :            : {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :         cool::config::ConfigurationBuilder&lt;config_file::OsdServiceConfigFileParser&gt; config_file_builder;</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :         if (osd_config_dir)</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(std::string(osd_config_dir).append(&quot;/OsdServiceConfigFile.conf&quot;));</span>
+<span class="lineNum">     250 </span>                :            :         else
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(&quot;/opt/HYDRAstor/objectStorage/configFiles/product/libConfig/OsdServiceConfigFile.conf&quot;);</span>
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :         return config_file_builder.buildConfiguration();</span>
+<span class="lineNum">     253 </span>                :            : }
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 : cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt; GLUtils::get_config()</span>
+<span class="lineNum">     256 </span>                :            : {
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :         cool::config::ConfigurationBuilder&lt;config_file::OSMConfigFileParser&gt; config_file_builder;</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :         if (osd_config_dir)</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(std::string(osd_config_dir).append(&quot;/osm.conf&quot;));</span>
+<span class="lineNum">     261 </span>                :            :         else
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(&quot;/opt/HYDRAstor/objectStorage/configFiles/product/libConfig/osm.conf&quot;);</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         return config_file_builder.buildConfiguration();                        </span>
+<span class="lineNum">     264 </span>                :            : }
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 : bool GLUtils::verify_if_gl(bool if_cluster, int32_t port)</span>
+<span class="lineNum">     267 </span>                :            : {
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :         if (if_cluster)</span>
+<span class="lineNum">     269 </span>                :            :         {
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :                 std::string str = read_GL_file();</span>
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :                 if (str.substr(0, str.find(&quot;\t&quot;)) == this-&gt;get_my_service_id(port))</span>
+<span class="lineNum">     272 </span>                :            :                 {
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;I am GL according to GL Info&quot;);</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :                         return true;</span>
+<span class="lineNum">     275 </span>                :            :                 }
+<span class="lineNum">     276 </span>                :            :         }
+<span class="lineNum">     277 </span>                :            :         else
+<span class="lineNum">     278 </span>                :            :         {
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                 if(this-&gt;verify_if_single_hydra())</span>
+<span class="lineNum">     280 </span>                :            :                 {
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;I am GL since this is mini hydra&quot;);</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :                         this-&gt;remove_GL_specific_file(GLOBAL_LEADER_INFORMATION_FILE);</span>
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :                         return true;</span>
+<span class="lineNum">     284 </span>                :            :                 }
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :                 else if (this-&gt;verify_if_alternate())</span>
+<span class="lineNum">     286 </span>                :            :                 {
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;I am GL since this is alternate node&quot;);</span>
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :                         this-&gt;remove_GL_specific_file(GLOBAL_LEADER_INFORMATION_FILE);</span>
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :                         return true;</span>
+<span class="lineNum">     290 </span>                :            :                 }
+<span class="lineNum">     291 </span>                :            :         }
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     293 </span>                :            : }
+<span class="lineNum">     294 </span>                :            : 
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 : enum network_messages::NodeStatusEnum GLUtils::verify_if_part_of_cluster(std::string node_id)</span>
+<span class="lineNum">     296 </span>                :            : {
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :         enum network_messages::NodeStatusEnum node_stat = network_messages::NEW;</span>
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :         cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt; parser_ptr = this-&gt;get_config();</span>
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :         std::string node_info_file_path = parser_ptr-&gt;node_info_file_pathValue();</span>
+<span class="lineNum">     300 </span>                :            :         
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :         osm_info_file_manager::NodeInfoFileReadHandler nodeInfoFileReadObj(node_info_file_path);</span>
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;recordStructure::NodeInfoFileRecord&gt; recordPtr = nodeInfoFileReadObj.get_record_from_id(node_id);</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :         if(recordPtr)   </span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :                 node_stat = static_cast&lt;network_messages::NodeStatusEnum&gt;(recordPtr-&gt;get_node_status());</span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :         return node_stat;</span>
+<span class="lineNum">     306 </span>                :            : }
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            : /*
+<span class="lineNum">     309 </span>                :            : void register_gl_msg_handler()
+<span class="lineNum">     310 </span>                :            : {
+<span class="lineNum">     311 </span>                :            :         std::cout &lt;&lt; &quot;Registering GL Msg Handler\n&quot;;
+<span class="lineNum">     312 </span>                :            : }
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            : void register_ll_full_functionality()
+<span class="lineNum">     315 </span>                :            : {
+<span class="lineNum">     316 </span>                :            :         std::cout &lt;&lt; &quot;Registering LL full functionality\n&quot;;
+<span class="lineNum">     317 </span>                :            : }
+<span class="lineNum">     318 </span>                :            : */
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 : bool GLUtils::verify_cluster_existence(std::string node_info_file_path, std::string config_fs_name)</span>
+<span class="lineNum">     320 </span>                :            : {
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :         std::string cmd;</span>
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :         if(node_info_file_path.substr(node_info_file_path.size()-1, node_info_file_path.size()) == &quot;/&quot;)</span>
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :                 cmd = &quot;sudo cat /proc/mounts | grep -w &quot; + node_info_file_path.substr(0, node_info_file_path.size()-1) + &quot; | cut -d' ' -f2 $1 | cut -d'/' -f3 $1&quot;;</span>
+<span class="lineNum">     324 </span>                :            :         
+<span class="lineNum">     325 </span>                :            :         char buf[50];
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :         memset(buf, '\0', 50);</span>
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :         FILE *proc = popen(cmd.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :         fgets(buf,sizeof(buf),proc);</span>
+<span class="lineNum">     329 </span>                :<span class="lineNoCov">          0 :         ::pclose(proc);</span>
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :         std::string str(buf);</span>
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :         str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());</span>
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :         if ( str == config_fs_name )</span>
+<span class="lineNum">     333 </span>                :            :         {
+<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 :                 if ( boost::filesystem::exists( node_info_file_path + osm_info_file_manager::NODE_INFO_FILE_NAME) )</span>
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :                         return true;</span>
+<span class="lineNum">     336 </span>                :            :         }
+<span class="lineNum">     337 </span>                :            :         
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     339 </span>                :            : }
+<span class="lineNum">     340 </span>                :            : 
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 : bool GLUtils::license_check()</span>
+<span class="lineNum">     342 </span>                :            : {
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     344 </span>                :            : }
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_mount_path(std::string path, std::string file_system, bool create)</span>
+<span class="lineNum">     347 </span>                :            : {
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :         std::string mount_path = path + &quot;/&quot; + file_system;</span>
+<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :         if( create )</span>
+<span class="lineNum">     350 </span>                :            :         {
+<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :                 if( !boost::filesystem::exists(mount_path))</span>
+<span class="lineNum">     352 </span>                :            :                 {
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :                         if (::mkdir(mount_path.c_str(),S_IRWXU | S_IRWXG) == -1) </span>
+<span class="lineNum">     354 </span>                :            :                         {
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :                                  OSDLOG(DEBUG, &quot;Could not create Log Dir: &quot; &lt;&lt; mount_path.c_str() &lt;&lt; &quot; system error #&quot; &lt;&lt; errno);</span>
+<span class="lineNum">     356 </span>                :            :                         }
+<span class="lineNum">     357 </span>                :            :                 }
+<span class="lineNum">     358 </span>                :            :         }
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :         return mount_path;              </span>
+<span class="lineNum">     360 </span>                :            : }
+<span class="lineNum">     361 </span>                :            : 
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_mount_command(std::string cmd, std::string file_system, std::string options, std::string mount_path)</span>
+<span class="lineNum">     363 </span>                :            : {
+<span class="lineNum">     364 </span>                :<span class="lineNoCov">          0 :         std::string mount_command = cmd;</span>
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :         mount_command = mount_command + &quot; &quot; + options + &quot; &quot; + file_system + &quot; &quot; + mount_path; </span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :         return mount_command;</span>
+<span class="lineNum">     367 </span>                :            : }
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_unmount_command(std::string cmd, std::string file_system, std::string options)</span>
+<span class="lineNum">     370 </span>                :            : {
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :         std::string umount_command = cmd;</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :         umount_command = umount_command + &quot; -f &quot; + options + file_system;</span>
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :         return umount_command;</span>
+<span class="lineNum">     374 </span>                :            : }
+<span class="lineNum">     375 </span>                :            : /*start*/
+<span class="lineNum">     376 </span>                :            : bool GLUtils::create_and_mount_file_system(std::string path, std::string cmd, std::string mkfs_command, 
+<span class="lineNum">     377 </span>                :<span class="lineNoCov">          0 :                 std:: string fsexist_command, uint32_t timeout)</span>
+<span class="lineNum">     378 </span>                :            : {
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 :         bool flag = true;</span>
+<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 :         std::string filesystem_name = &quot;.osd_meta_config&quot;;</span>
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO,&quot;Mount the file system osd_meta_config&quot;);  </span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :         std::string mount_path = this-&gt;get_mount_path(path, filesystem_name);</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :         if( !this-&gt;is_mount(mount_path))</span>
+<span class="lineNum">     384 </span>                :            :         {
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :                 std::string mount_command = this-&gt;get_mount_command(cmd, filesystem_name, &quot;-d&quot;, mount_path);</span>
+<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Mount command = &quot;&lt;&lt;mount_command);</span>
+<span class="lineNum">     387 </span>                :<span class="lineNoCov">          0 :                 int status = 20;</span>
+<span class="lineNum">     388 </span>                :            :                 FILE *fp;
+<span class="lineNum">     389 </span>                :            : 
+<span class="lineNum">     390 </span>                :            :                 /*special handling for meta_config_filesystem*/
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :                 if( !boost::filesystem::exists(mount_path))</span>
+<span class="lineNum">     392 </span>                :            :                 {
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :                         if (::mkdir(mount_path.c_str(),S_IRWXU | S_IRWXG) == -1) </span>
+<span class="lineNum">     394 </span>                :            :                         {
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :                                 if(errno != EEXIST)</span>
+<span class="lineNum">     396 </span>                :            :                                 {
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(DEBUG, &quot;Could not create osd_meta_config Dir: &quot; &lt;&lt; mount_path.c_str() &lt;&lt; &quot; system error #&quot; &lt;&lt; errno);</span>
+<span class="lineNum">     398 </span>                :<span class="lineNoCov">          0 :                                         return false;</span>
+<span class="lineNum">     399 </span>                :            :                                 }
+<span class="lineNum">     400 </span>                :            :                         }
+<span class="lineNum">     401 </span>                :            :                 }
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 :                 std::string cmd = fsexist_command + &quot; .osd_meta_config&quot;;</span>
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :                 CommandExecuter cmd_executor;</span>
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;file system check command : &quot; &lt;&lt; cmd);</span>
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :                 cmd_executor.exec_command(cmd.c_str(), &amp;fp, &amp;status);</span>
+<span class="lineNum">     406 </span>                :<span class="lineNoCov">          0 :                 status = status&gt;&gt;8;</span>
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Status of command : &quot; &lt;&lt; status);</span>
+<span class="lineNum">     408 </span>                :<span class="lineNoCov">          0 :                 uint32_t timeout_left = timeout;</span>
+<span class="lineNum">     409 </span>                :<span class="lineNoCov">          0 :                 if(0 != status)</span>
+<span class="lineNum">     410 </span>                :            :                 {
+<span class="lineNum">     411 </span>                :<span class="lineNoCov">          0 :                         int retry_count = 0;</span>
+<span class="lineNum">     412 </span>                :            :                         //while(timeout_left &gt; 0)
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :                         while(1)</span>
+<span class="lineNum">     414 </span>                :            :                         {
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :                                 CommandExecuter cmd_exec;</span>
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :                                 string my_node_id = this-&gt;get_my_node_id();</span>
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :                                 string command = &quot;chmod -R 777 /export/.osd_meta_config;&quot;;</span>
+<span class="lineNum">     418 </span>                :            :                                 //command = command + &quot;clido fs create name=osd_meta_config  node=&quot; + my_node_id + &quot;;&quot;;
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 :                                 command = command + mkfs_command + &quot; -r copy .osd_meta_config&quot;;</span>
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :                                 cmd_exec.exec_command(command.c_str(), &amp;fp, &amp;status);</span>
+<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;file system create command : &quot; &lt;&lt; command);</span>
+<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :                                 status = status&gt;&gt;8;</span>
+<span class="lineNum">     423 </span>                :            :                                 /*Error check for already created filesystem TBD*/
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :                                 if(status != 0 &amp;&amp; status != 3) //0 for success and 3 for fs already created</span>
+<span class="lineNum">     425 </span>                :            :                                 {
+<span class="lineNum">     426 </span>                :            :                                 //      if (status == HFS_NOT_READY)
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :                                         if (status == HFS_NOT_READY or status == HFS_BUSY or status == HFS_SERVER_BUSY)</span>
+<span class="lineNum">     428 </span>                :            :                                         {
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Filesystem &quot; &lt;&lt; filesystem_name &lt;&lt; &quot; status is &quot; &lt;&lt; status);</span>
+<span class="lineNum">     430 </span>                :            :                                                 //timeout_left = timeout_left - SLEEP_TIME;
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :                                                 boost::this_thread::sleep(boost::posix_time::seconds(SLEEP_TIME));</span>
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :                                                 flag = false;</span>
+<span class="lineNum">     433 </span>                :            :                                         }
+<span class="lineNum">     434 </span>                :            :                                         else
+<span class="lineNum">     435 </span>                :            :                                         {
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;osd_meta_config filesystem couldn't be created due to err code: &quot; &lt;&lt; status);</span>
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :                                                 return false;</span>
+<span class="lineNum">     438 </span>                :            :                                         }
+<span class="lineNum">     439 </span>                :            : 
+<span class="lineNum">     440 </span>                :            :                                 }
+<span class="lineNum">     441 </span>                :            :                                 else
+<span class="lineNum">     442 </span>                :            :                                 {
+<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :                                         flag = true;</span>
+<span class="lineNum">     444 </span>                :<span class="lineNoCov">          0 :                                         break;</span>
+<span class="lineNum">     445 </span>                :            :                                 }
+<span class="lineNum">     446 </span>                :            :                         }
+<span class="lineNum">     447 </span>                :            :                 }
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :                 if(!flag)</span>
+<span class="lineNum">     449 </span>                :            :                 {
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;File system osd_meta_config could not be created&quot;);</span>
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :                         return  flag;</span>
+<span class="lineNum">     452 </span>                :            :                 }
+<span class="lineNum">     453 </span>                :            :                 /*Special handling for meta_config_filesystem ends*/
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :                 status =20;</span>
+<span class="lineNum">     456 </span>                :            :                 //while( timeout &gt; 0)
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :                 while(1)</span>
+<span class="lineNum">     458 </span>                :            :                 {
+<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :                         CommandExecuter cmd_exec;</span>
+<span class="lineNum">     460 </span>                :<span class="lineNoCov">          0 :                         cmd_exec.exec_command(mount_command.c_str(), &amp;fp, &amp;status);</span>
+<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :                         status = status&gt;&gt;8;</span>
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Status of mount command &quot;&lt;&lt; mount_command&lt;&lt;&quot; is &quot;&lt;&lt;status);</span>
+<span class="lineNum">     463 </span>                :            :                         //if( status != HFS_BUSY )
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :                         if( status == 11 or status == 0)        //11 is for already mounted and 0 for success</span>
+<span class="lineNum">     465 </span>                :            :                         {
+<span class="lineNum">     466 </span>                :<span class="lineNoCov">          0 :                                 flag = true;</span>
+<span class="lineNum">     467 </span>                :            :                                 break;
+<span class="lineNum">     468 </span>                :            :                         }
+<span class="lineNum">     469 </span>                :            :                         else
+<span class="lineNum">     470 </span>                :            :                         {
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :                                 if (status == HFS_BUSY or status == HFS_NOT_READY or status == HFS_SERVER_BUSY)</span>
+<span class="lineNum">     472 </span>                :            :                                 {
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Filesystem &quot; &lt;&lt; filesystem_name &lt;&lt; &quot; status is &quot; &lt;&lt; status);</span>
+<span class="lineNum">     474 </span>                :            :                                         //timeout = timeout - SLEEP_TIME;
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :                                         boost::this_thread::sleep(boost::posix_time::seconds(SLEEP_TIME));</span>
+<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :                                         flag = false;</span>
+<span class="lineNum">     477 </span>                :            :                                 }
+<span class="lineNum">     478 </span>                :            :                                 else
+<span class="lineNum">     479 </span>                :            :                                 {
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :                                         return false;</span>
+<span class="lineNum">     481 </span>                :            :                                 }
+<span class="lineNum">     482 </span>                :            :                         }
+<span class="lineNum">     483 </span>                :            :                 }
+<span class="lineNum">     484 </span>                :            :         }
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;mount_file_system return status &quot; &lt;&lt; flag);</span>
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :         return  flag;</span>
+<span class="lineNum">     487 </span>                :            : }
+<span class="lineNum">     488 </span>                :            : /*end*/
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 : bool GLUtils::mount_file_system(std::string path, std::string cmd, uint32_t timeout)</span>
+<span class="lineNum">     490 </span>                :            : {
+<span class="lineNum">     491 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt;list = this-&gt;get_global_file_system_list();</span>
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt;::iterator it;</span>
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :         bool flag = true;</span>
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :         for( it = list.begin(); it != list.end(); it++)</span>
+<span class="lineNum">     495 </span>                :            :         {
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :                 flag = true;</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :                 std::string mount_path = this-&gt;get_mount_path(path, *it, true);</span>
+<span class="lineNum">     498 </span>                :<span class="lineNoCov">          0 :                 if( !this-&gt;is_mount(mount_path))</span>
+<span class="lineNum">     499 </span>                :            :                 {
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 :                         std::string mount_command = this-&gt;get_mount_command(cmd, *it, &quot;-d&quot;, mount_path);</span>
+<span class="lineNum">     501 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Mount command = &quot;&lt;&lt;mount_command);</span>
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :                         int status = 20;</span>
+<span class="lineNum">     503 </span>                :            :                         FILE *fp;
+<span class="lineNum">     504 </span>                :            :                         //while( timeout &gt; 0)
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :                         while(1)</span>
+<span class="lineNum">     506 </span>                :            :                         {
+<span class="lineNum">     507 </span>                :<span class="lineNoCov">          0 :                                 CommandExecuter cmd_exec;</span>
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :                                 cmd_exec.exec_command(mount_command.c_str(), &amp;fp, &amp;status);</span>
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :                                 status = status&gt;&gt;8;</span>
+<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Status of mount command &quot;&lt;&lt; mount_command&lt;&lt;&quot; is &quot;&lt;&lt;status);</span>
+<span class="lineNum">     511 </span>                :            :                                 //if( status != HFS_BUSY )
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 :                                 if( status == 11 or status == 0)        //11 is for already mounted and 0 for success</span>
+<span class="lineNum">     513 </span>                :            :                                 {
+<span class="lineNum">     514 </span>                :<span class="lineNoCov">          0 :                                         flag = true;</span>
+<span class="lineNum">     515 </span>                :            :                                         break;
+<span class="lineNum">     516 </span>                :            :                                 }
+<span class="lineNum">     517 </span>                :            :                                 else
+<span class="lineNum">     518 </span>                :            :                                 {
+<span class="lineNum">     519 </span>                :            :                                         //if (status == HFS_BUSY)
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :                                         if (status == HFS_BUSY or status == HFS_NOT_READY or status == HFS_SERVER_BUSY)</span>
+<span class="lineNum">     521 </span>                :            :                                         {
+<span class="lineNum">     522 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Filesystem &quot;&lt;&lt;*it&lt;&lt;&quot; status is &quot;&lt;&lt; status);</span>
+<span class="lineNum">     523 </span>                :            :                                                 //timeout = timeout - SLEEP_TIME;
+<span class="lineNum">     524 </span>                :            :                                                 //boost::this_thread::sleep(boost::posix_time::seconds(timeout));
+<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 :                                                 boost::this_thread::sleep(boost::posix_time::seconds(SLEEP_TIME));</span>
+<span class="lineNum">     526 </span>                :<span class="lineNoCov">          0 :                                                 flag = false;</span>
+<span class="lineNum">     527 </span>                :            :                                         }
+<span class="lineNum">     528 </span>                :            :                                         else
+<span class="lineNum">     529 </span>                :            :                                         {
+<span class="lineNum">     530 </span>                :            :                                                 //flag = false;
+<span class="lineNum">     531 </span>                :            :                                                 //break;
+<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :                                                 return false;</span>
+<span class="lineNum">     533 </span>                :            :                                         }
+<span class="lineNum">     534 </span>                :            :                                 }
+<span class="lineNum">     535 </span>                :            :                         }
+<span class="lineNum">     536 </span>                :            :                 }
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :                 if(flag == false)</span>
+<span class="lineNum">     538 </span>                :            :                 {
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :                         return flag;</span>
+<span class="lineNum">     540 </span>                :            :                 }
+<span class="lineNum">     541 </span>                :            :         }
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;mount_file_system return status &quot;&lt;&lt;flag);</span>
+<span class="lineNum">     543 </span>                :<span class="lineNoCov">          0 :         return  flag;</span>
+<span class="lineNum">     544 </span>                :            : }
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :<span class="lineNoCov">          0 : std::string GLUtils::get_version_from_file_name(std::string file_name)</span>
+<span class="lineNum">     547 </span>                :            : {
+<span class="lineNum">     548 </span>                :<span class="lineNoCov">          0 :         std::string str2 = file_name.substr(file_name.find_last_of(node_name_delimiter) + 1, file_name.size());</span>
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :         std::string str3 = str2.substr(0, str2.find_first_of(lock_file_delimeter));</span>
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :         return str3;</span>
+<span class="lineNum">     551 </span>                :            : }
+<span class="lineNum">     552 </span>                :            : 
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 : bool GLUtils::umount_file_system(std::string path, std::string cmd, uint32_t timeout)</span>
+<span class="lineNum">     554 </span>                :            : {
+<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt;list = this-&gt;get_global_file_system_list();</span>
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt;::iterator it;</span>
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :         bool flag = false;</span>
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :         for( it = list.begin(); it != list.end(); it++)</span>
+<span class="lineNum">     559 </span>                :            :         {
+<span class="lineNum">     560 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Unmount the filesytem &quot;&lt;&lt;*it);</span>
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :                 std::string mount_path = this-&gt;get_mount_path(path, *it);</span>
+<span class="lineNum">     562 </span>                :            :                 try
+<span class="lineNum">     563 </span>                :            :                 {
+<span class="lineNum">     564 </span>                :<span class="lineNoCov">          0 :                         std::string umount_command = this-&gt;get_unmount_command(cmd, *it, &quot;&quot;);</span>
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Unmount command = &quot;&lt;&lt;umount_command);</span>
+<span class="lineNum">     566 </span>                :<span class="lineNoCov">          0 :                         int status = 20;</span>
+<span class="lineNum">     567 </span>                :            :                         FILE *fp;
+<span class="lineNum">     568 </span>                :            :                         //while( timeout &gt; 0)
+<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 :                         while(1)</span>
+<span class="lineNum">     570 </span>                :            :                         {
+<span class="lineNum">     571 </span>                :<span class="lineNoCov">          0 :                                 CommandExecuter cmd_exec;</span>
+<span class="lineNum">     572 </span>                :<span class="lineNoCov">          0 :                                 cmd_exec.exec_command(umount_command.c_str(), &amp;fp, &amp;status);</span>
+<span class="lineNum">     573 </span>                :<span class="lineNoCov">          0 :                                 status = status&gt;&gt;8;</span>
+<span class="lineNum">     574 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Status of unmount command &quot;&lt;&lt; umount_command&lt;&lt;&quot; is &quot;&lt;&lt;status);</span>
+<span class="lineNum">     575 </span>                :            :                                 //if( status != HFS_BUSY )
+<span class="lineNum">     576 </span>                :<span class="lineNoCov">          0 :                                 if (status != HFS_BUSY and status != HFS_NOT_READY and status != HFS_SERVER_BUSY)</span>
+<span class="lineNum">     577 </span>                :            :                                 {
+<span class="lineNum">     578 </span>                :<span class="lineNoCov">          0 :                                         flag = true;</span>
+<span class="lineNum">     579 </span>                :            :                                         break;
+<span class="lineNum">     580 </span>                :            :                                 }
+<span class="lineNum">     581 </span>                :            :                                 else
+<span class="lineNum">     582 </span>                :            :                                 {
+<span class="lineNum">     583 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Filesystem &quot;&lt;&lt;*it&lt;&lt;&quot; status is &quot;&lt;&lt; status);</span>
+<span class="lineNum">     584 </span>                :            :                                         //timeout = timeout - SLEEP_TIME;
+<span class="lineNum">     585 </span>                :<span class="lineNoCov">          0 :                                         boost::this_thread::sleep(boost::posix_time::seconds(SLEEP_TIME));</span>
+<span class="lineNum">     586 </span>                :<span class="lineNoCov">          0 :                                         flag = false;</span>
+<span class="lineNum">     587 </span>                :            :                                 }
+<span class="lineNum">     588 </span>                :            :                         }
+<span class="lineNum">     589 </span>                :            :                 }
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :                 catch(...)</span>
+<span class="lineNum">     591 </span>                :            :                 {
+<span class="lineNum">     592 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Exception accure during hfs unmount&quot;);</span>
+<span class="lineNum">     593 </span>                :<span class="lineNoCov">          0 :                         flag = false;</span>
+<span class="lineNum">     594 </span>                :            :                 }
+<span class="lineNum">     595 </span>                :            :         }       
+<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Unmount_file_system return status &quot;&lt;&lt;flag);</span>
+<span class="lineNum">     597 </span>                :<span class="lineNoCov">          0 :         return flag;</span>
+<span class="lineNum">     598 </span>                :            : }
+<span class="lineNum">     599 </span>                :            : 
+<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 : bool GLUtils::rename_gl_info_file(std::string version, int32_t gl_port)</span>
+<span class="lineNum">     601 </span>                :            : {
+<span class="lineNum">     602 </span>                :            :         namespace fs = boost::filesystem;
+<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :         std::string dir = CONFIG_FILESYSTEM;</span>
+<span class="lineNum">     604 </span>                :<span class="lineNoCov">          0 :         fs::path someDir(dir);</span>
+<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :         fs::directory_iterator end_iter;</span>
+<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :         for( fs::directory_iterator dir_iter(someDir) ; dir_iter != end_iter ; ++dir_iter)</span>
+<span class="lineNum">     607 </span>                :            :         {
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :                 size_t pos = dir_iter-&gt;path().string().find(GLOBAL_LEADER_INFORMATION_FILE);</span>
+<span class="lineNum">     609 </span>                :<span class="lineNoCov">          0 :                 if (fs::is_regular_file(dir_iter-&gt;path()) &amp;&amp; pos != std::string::npos)</span>
+<span class="lineNum">     610 </span>                :            :                 {
+<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :                         std::string current_version = dir_iter-&gt;path().string().substr(pos + GLOBAL_LEADER_INFORMATION_FILE.size() + 1);</span>
+<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 :                         if(current_version == version)</span>
+<span class="lineNum">     613 </span>                :            :                         {
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;GL Info file not changed since election started.&quot;);</span>
+<span class="lineNum">     615 </span>                :<span class="lineNoCov">          0 :                                 float new_gl_version = boost::lexical_cast&lt;float&gt;(current_version) + 1.0;</span>
+<span class="lineNum">     616 </span>                :<span class="lineNoCov">          0 :                                 std::string str_gl_version = boost::str(boost::format(&quot;%.1f&quot;) % new_gl_version);</span>
+<span class="lineNum">     617 </span>                :<span class="lineNoCov">          0 :                                 std::string gl_file = dir + &quot;/&quot; + GLOBAL_LEADER_INFORMATION_FILE + node_name_delimiter + str_gl_version;</span>
+<span class="lineNum">     618 </span>                :<span class="lineNoCov">          0 :                                 int ret = ::rename(dir_iter-&gt;path().string().c_str(), gl_file.c_str());</span>
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :                                 if(ret == -1)</span>
+<span class="lineNum">     620 </span>                :            :                                 {
+<span class="lineNum">     621 </span>                :<span class="lineNoCov">          0 :                                         return false;</span>
+<span class="lineNum">     622 </span>                :            :                                 }
+<span class="lineNum">     623 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Renamed Info file from &quot; &lt;&lt; dir_iter-&gt;path().string() &lt;&lt; &quot; to &quot; &lt;&lt; gl_file);</span>
+<span class="lineNum">     624 </span>                :<span class="lineNoCov">          0 :                                 std::string node_id = this-&gt;get_my_service_id(gl_port);      //eg HN0101_61014</span>
+<span class="lineNum">     625 </span>                :<span class="lineNoCov">          0 :                                 std::string node_name = this-&gt;get_my_node_id();                      //eg HN0101</span>
+<span class="lineNum">     626 </span>                :<span class="lineNoCov">          0 :                                 std::string node_ip = this-&gt;get_node_ip(node_name);</span>
+<span class="lineNum">     627 </span>                :<span class="lineNoCov">          0 :                                 std::string data = node_id + &quot;\t&quot; + node_ip + &quot;\t&quot; + boost::lexical_cast&lt;std::string&gt;(gl_port);</span>
+<span class="lineNum">     628 </span>                :<span class="lineNoCov">          0 :                                 int fd = ::open(gl_file.c_str(), O_RDWR | O_TRUNC, 0777);</span>
+<span class="lineNum">     629 </span>                :<span class="lineNoCov">          0 :                                 int64_t ret_value = ::write(fd, data.c_str(), data.size());</span>
+<span class="lineNum">     630 </span>                :<span class="lineNoCov">          0 :                                 if (ret_value == -1)</span>
+<span class="lineNum">     631 </span>                :            :                                 {
+<span class="lineNum">     632 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Unable to write in &quot; &lt;&lt; gl_file &lt;&lt; &quot; : &quot; &lt;&lt; strerror(errno));</span>
+<span class="lineNum">     633 </span>                :<span class="lineNoCov">          0 :                                         return false;</span>
+<span class="lineNum">     634 </span>                :            :                                 }
+<span class="lineNum">     635 </span>                :<span class="lineNoCov">          0 :                                 ::close(fd);</span>
+<span class="lineNum">     636 </span>                :            : 
+<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :                                 return true;</span>
+<span class="lineNum">     638 </span>                :            :                         }
+<span class="lineNum">     639 </span>                :            :                         else
+<span class="lineNum">     640 </span>                :            :                         {
+<span class="lineNum">     641 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;GL Info file changed since election started. Aborting this rename process&quot;);</span>
+<span class="lineNum">     642 </span>                :            :                         }
+<span class="lineNum">     643 </span>                :            :                 }
+<span class="lineNum">     644 </span>                :            :         }
+<span class="lineNum">     645 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     646 </span>                :            : }
+<span class="lineNum">     647 </span>                :            : 
+<span class="lineNum">     648 </span>                :<span class="lineNoCov">          0 : void GLUtils::remove_GL_specific_file(std::string file_pattern)</span>
+<span class="lineNum">     649 </span>                :            : {
+<span class="lineNum">     650 </span>                :<span class="lineNoCov">          0 :         std::string dir = CONFIG_FILESYSTEM;</span>
+<span class="lineNum">     651 </span>                :<span class="lineNoCov">          0 :         std::string gl_file;</span>
+<span class="lineNum">     652 </span>                :            :         namespace fs = boost::filesystem;
+<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :         fs::path someDir(dir);</span>
+<span class="lineNum">     654 </span>                :<span class="lineNoCov">          0 :         fs::directory_iterator end_iter;</span>
+<span class="lineNum">     655 </span>                :<span class="lineNoCov">          0 :         for( fs::directory_iterator dir_iter(someDir) ; dir_iter != end_iter ; ++dir_iter)</span>
+<span class="lineNum">     656 </span>                :            :         {
+<span class="lineNum">     657 </span>                :<span class="lineNoCov">          0 :                 size_t pos = dir_iter-&gt;path().string().find(file_pattern);</span>
+<span class="lineNum">     658 </span>                :<span class="lineNoCov">          0 :                 if (fs::is_regular_file(dir_iter-&gt;path()) &amp;&amp; pos != std::string::npos)</span>
+<span class="lineNum">     659 </span>                :            :                 {
+<span class="lineNum">     660 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Deleting &quot; &lt;&lt; dir_iter-&gt;path().string());</span>
+<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 :                         int ret = ::unlink(dir_iter-&gt;path().string().c_str());</span>
+<span class="lineNum">     662 </span>                :<span class="lineNoCov">          0 :                         return;</span>
+<span class="lineNum">     663 </span>                :            :                 }
+<span class="lineNum">     664 </span>                :            :         }
+<span class="lineNum">     665 </span>                :            : 
+<span class="lineNum">     666 </span>                :            : }
+<span class="lineNum">     667 </span>                :            : 
+<span class="lineNum">     668 </span>                :            : //std::pair&lt;bool, std::string&gt; GLUtils::check_file_existense_and_rename(std::string file_pattern)
+<span class="lineNum">     669 </span>                :<span class="lineNoCov">          0 : std::pair&lt;bool, std::string&gt; GLUtils::check_file_existense_and_rename(std::string file_pattern)</span>
+<span class="lineNum">     670 </span>                :            : {
+<span class="lineNum">     671 </span>                :<span class="lineNoCov">          0 :         std::string dir;</span>
+<span class="lineNum">     672 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :         if (osd_config)</span>
+<span class="lineNum">     674 </span>                :<span class="lineNoCov">          0 :                 dir = std::string(osd_config);</span>
+<span class="lineNum">     675 </span>                :            :         else
+<span class="lineNum">     676 </span>                :<span class="lineNoCov">          0 :                 dir = CONFIG_FILESYSTEM;</span>
+<span class="lineNum">     677 </span>                :<span class="lineNoCov">          0 :         std::string gl_file;</span>
+<span class="lineNum">     678 </span>                :            :         namespace fs = boost::filesystem;
+<span class="lineNum">     679 </span>                :<span class="lineNoCov">          0 :         fs::path someDir(dir);</span>
+<span class="lineNum">     680 </span>                :<span class="lineNoCov">          0 :         fs::directory_iterator end_iter;</span>
+<span class="lineNum">     681 </span>                :<span class="lineNoCov">          0 :         for( fs::directory_iterator dir_iter(someDir) ; dir_iter != end_iter ; ++dir_iter)</span>
+<span class="lineNum">     682 </span>                :            :         {
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :                 size_t pos = dir_iter-&gt;path().string().find(file_pattern);</span>
+<span class="lineNum">     684 </span>                :<span class="lineNoCov">          0 :                 if (fs::is_regular_file(dir_iter-&gt;path()) &amp;&amp; pos != std::string::npos)</span>
+<span class="lineNum">     685 </span>                :            :                 {
+<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :                         string suffix = dir_iter-&gt;path().string().substr(pos + file_pattern.size() + 1);</span>
+<span class="lineNum">     687 </span>                :<span class="lineNoCov">          0 :                         float new_gl_version = boost::lexical_cast&lt;float&gt;(suffix) + 1.0;</span>
+<span class="lineNum">     688 </span>                :<span class="lineNoCov">          0 :                         std::string str_gl_version = boost::str(boost::format(&quot;%.1f&quot;) % new_gl_version);</span>
+<span class="lineNum">     689 </span>                :<span class="lineNoCov">          0 :                         gl_file = dir + &quot;/&quot; + file_pattern + node_name_delimiter + str_gl_version;</span>
+<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :                         int ret = ::rename(dir_iter-&gt;path().string().c_str(), gl_file.c_str());</span>
+<span class="lineNum">     691 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Renamed old status from &quot; &lt;&lt; dir_iter-&gt;path().string() &lt;&lt; &quot; to &quot; &lt;&lt; gl_file);</span>
+<span class="lineNum">     692 </span>                :<span class="lineNoCov">          0 :                         return std::make_pair(true, gl_file);</span>
+<span class="lineNum">     693 </span>                :            :                 }
+<span class="lineNum">     694 </span>                :            :         }
+<span class="lineNum">     695 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;File with pattern &quot; &lt;&lt; file_pattern &lt;&lt; &quot; doesn't exist&quot;);</span>
+<span class="lineNum">     696 </span>                :<span class="lineNoCov">          0 :         return std::make_pair(false, gl_file);</span>
+<span class="lineNum">     697 </span>                :            : }
+<span class="lineNum">     698 </span>                :            : 
+<span class="lineNum">     699 </span>                :            : /* Check GL Info or Status File existence and create/rename it */
+<span class="lineNum">     700 </span>                :<span class="lineNoCov">          0 : std::pair&lt;std::string,bool&gt; GLUtils::create_and_rename_GL_specific_file(std::string file_pattern)</span>
+<span class="lineNum">     701 </span>                :            : {
+<span class="lineNum">     702 </span>                :<span class="lineNoCov">          0 :         std::string dir;</span>
+<span class="lineNum">     703 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     704 </span>                :<span class="lineNoCov">          0 :         if (osd_config)</span>
+<span class="lineNum">     705 </span>                :<span class="lineNoCov">          0 :                 dir = std::string(osd_config);</span>
+<span class="lineNum">     706 </span>                :            :         else
+<span class="lineNum">     707 </span>                :<span class="lineNoCov">          0 :                 dir = CONFIG_FILESYSTEM;</span>
+<span class="lineNum">     708 </span>                :<span class="lineNoCov">          0 :         std::string gl_file;</span>
+<span class="lineNum">     709 </span>                :<span class="lineNoCov">          0 :         std::pair&lt;bool, std::string&gt; result = this-&gt;check_file_existense_and_rename(file_pattern);</span>
+<span class="lineNum">     710 </span>                :<span class="lineNoCov">          0 :         gl_file = result.second;</span>
+<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :         bool if_new = false;</span>
+<span class="lineNum">     712 </span>                :<span class="lineNoCov">          0 :         if(!result.first)</span>
+<span class="lineNum">     713 </span>                :            :         {
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :                 gl_file = dir + &quot;/&quot; + file_pattern + node_name_delimiter + &quot;1.0&quot;;</span>
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :                 if_new = true;</span>
+<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Creating new GL file: &quot; &lt;&lt; gl_file);</span>
+<span class="lineNum">     717 </span>                :<span class="lineNoCov">          0 :                 int fd = open(gl_file.c_str(), O_CREAT|O_EXCL, 0777);</span>
+<span class="lineNum">     718 </span>                :<span class="lineNoCov">          0 :                 ::close(fd);</span>
+<span class="lineNum">     719 </span>                :            :         }
+<span class="lineNum">     720 </span>                :<span class="lineNoCov">          0 :         return std::make_pair(gl_file, if_new);</span>
+<span class="lineNum">     721 </span>                :            : }
+<span class="lineNum">     722 </span>                :            : 
+<span class="lineNum">     723 </span>                :<span class="lineNoCov">          0 : bool GLUtils::update_gl_info_file(int32_t gl_port)</span>
+<span class="lineNum">     724 </span>                :            : {
+<span class="lineNum">     725 </span>                :<span class="lineNoCov">          0 :         std::pair&lt;std::string, bool&gt; gl_info_file_details = this-&gt;create_and_rename_GL_specific_file(GLOBAL_LEADER_INFORMATION_FILE);</span>
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :<span class="lineNoCov">          0 :         bool if_created = gl_info_file_details.second;</span>
+<span class="lineNum">     728 </span>                :<span class="lineNoCov">          0 :         std::string gl_info_file = gl_info_file_details.first;</span>
+<span class="lineNum">     729 </span>                :            :         
+<span class="lineNum">     730 </span>                :<span class="lineNoCov">          0 :         GLUtils util_obj;</span>
+<span class="lineNum">     731 </span>                :<span class="lineNoCov">          0 :         std::string node_id = util_obj.get_my_service_id(gl_port);      //eg HN0101_61014</span>
+<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :         std::string node_name = util_obj.get_my_node_id();                      //eg HN0101</span>
+<span class="lineNum">     733 </span>                :<span class="lineNoCov">          0 :         std::string node_ip = util_obj.get_node_ip(node_name);</span>
+<span class="lineNum">     734 </span>                :<span class="lineNoCov">          0 :         std::string data = node_id + &quot;\t&quot; + node_ip + &quot;\t&quot; + boost::lexical_cast&lt;std::string&gt;(gl_port);</span>
+<span class="lineNum">     735 </span>                :<span class="lineNoCov">          0 :         if(!if_created)</span>
+<span class="lineNum">     736 </span>                :            :         {
+<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :                 std::string read_cmd = &quot;cat &quot; + gl_info_file;</span>
+<span class="lineNum">     738 </span>                :<span class="lineNoCov">          0 :                 cool::ShellCommand command(read_cmd.c_str());</span>
+<span class="lineNum">     739 </span>                :<span class="lineNoCov">          0 :                 cool::Option&lt;cool::CommandResult&gt; result  = command.run();</span>
+<span class="lineNum">     740 </span>                :<span class="lineNoCov">          0 :                 std::string str = result.getRefValue().getOutputString();</span>
+<span class="lineNum">     741 </span>                :<span class="lineNoCov">          0 :                 if (str.substr(0, str.find(&quot;\t&quot;)) != this-&gt;get_my_service_id(gl_port))</span>
+<span class="lineNum">     742 </span>                :            :                 {
+<span class="lineNum">     743 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;I am not GL anymore&quot;);</span>
+<span class="lineNum">     744 </span>                :<span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">     745 </span>                :            :                 }
+<span class="lineNum">     746 </span>                :            :         }
+<span class="lineNum">     747 </span>                :<span class="lineNoCov">          0 :         int fd = ::open(gl_info_file.c_str(), O_RDWR | O_TRUNC, 0777);</span>
+<span class="lineNum">     748 </span>                :<span class="lineNoCov">          0 :         ::write(fd, data.c_str(), data.size());</span>
+<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :         ::close(fd);</span>
+<span class="lineNum">     750 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     751 </span>                :            : }
+<span class="lineNum">     752 </span>                :            : 
+<span class="lineNum">     753 </span>                :            : 
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 : std::vector&lt;std::string&gt; GLUtils::get_service_list()</span>
+<span class="lineNum">     755 </span>                :            : {
+<span class="lineNum">     756 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; service_list;</span>
+<span class="lineNum">     757 </span>                :<span class="lineNoCov">          0 :         service_list.push_back(&quot;proxy-server&quot;);</span>
+<span class="lineNum">     758 </span>                :<span class="lineNoCov">          0 :         service_list.push_back(&quot;object-server&quot;);      </span>
+<span class="lineNum">     759 </span>                :<span class="lineNoCov">          0 :         service_list.push_back(&quot;container-server&quot;);</span>
+<span class="lineNum">     760 </span>                :<span class="lineNoCov">          0 :         service_list.push_back(&quot;account-server&quot;);</span>
+<span class="lineNum">     761 </span>                :<span class="lineNoCov">          0 :         service_list.push_back(&quot;account-updater&quot;);</span>
+<span class="lineNum">     762 </span>                :<span class="lineNoCov">          0 :         return service_list;    </span>
+<span class="lineNum">     763 </span>                :            : }
+<span class="lineNum">     764 </span>                :            : 
+<span class="lineNum">     765 </span>                :<span class="lineNoCov">          0 : std::vector&lt;std::string&gt; GLUtils::create_file_system_list()</span>
+<span class="lineNum">     766 </span>                :            : {
+<span class="lineNum">     767 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; gfs_list;</span>
+<span class="lineNum">     768 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_01&quot;);</span>
+<span class="lineNum">     769 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_02&quot;);</span>
+<span class="lineNum">     770 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_03&quot;);</span>
+<span class="lineNum">     771 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_04&quot;);</span>
+<span class="lineNum">     772 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_05&quot;);</span>
+<span class="lineNum">     773 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_06&quot;);</span>
+<span class="lineNum">     774 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_07&quot;);</span>
+<span class="lineNum">     775 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_08&quot;);</span>
+<span class="lineNum">     776 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_09&quot;);</span>
+<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;OSP_10&quot;);</span>
+<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 :         gfs_list.push_back(&quot;.osd_meta_config&quot;);</span>
+<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :         return gfs_list;</span>
+<span class="lineNum">     780 </span>                :            : }
+<span class="lineNum">     781 </span>                :            : 
+<span class="lineNum">     782 </span>                :<span class="lineNoCov">          0 : std::vector&lt;std::string&gt; GLUtils::get_global_file_system_list()</span>
+<span class="lineNum">     783 </span>                :            : {
+<span class="lineNum">     784 </span>                :<span class="lineNoCov">          0 :         return this-&gt;create_file_system_list();</span>
+<span class="lineNum">     785 </span>                :            : }
+<span class="lineNum">     786 </span>                :            : 
+<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 : bool GLUtils::hfs_availability_check(std::string path)</span>
+<span class="lineNum">     788 </span>                :            : {
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 :         return this-&gt;is_mount( path);</span>
+<span class="lineNum">     790 </span>                :            : }
+<span class="lineNum">     791 </span>                :            : 
+<span class="lineNum">     792 </span>                :<span class="lineNoCov">          0 : bool GLUtils::is_mount(std::string path)</span>
+<span class="lineNum">     793 </span>                :            : {
+<span class="lineNum">     794 </span>                :            :         struct stat statbuf, statbuf1;  
+<span class="lineNum">     795 </span>                :<span class="lineNoCov">          0 :         int r = lstat( path.c_str(), &amp;statbuf);</span>
+<span class="lineNum">     796 </span>                :<span class="lineNoCov">          0 :         if( r &lt; 0)</span>
+<span class="lineNum">     797 </span>                :            :         {
+<span class="lineNum">     798 </span>                :<span class="lineNoCov">          0 :                 if( errno == ENOENT)</span>
+<span class="lineNum">     799 </span>                :<span class="lineNoCov">          0 :                         return false; </span>
+<span class="lineNum">     800 </span>                :            :         }
+<span class="lineNum">     801 </span>                :<span class="lineNoCov">          0 :         if((statbuf.st_mode &amp; S_IFMT) == S_IFLNK)</span>
+<span class="lineNum">     802 </span>                :            :         {
+<span class="lineNum">     803 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Unmount file never symbolic link&quot;);</span>
+<span class="lineNum">     804 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     805 </span>                :            :         }
+<span class="lineNum">     806 </span>                :<span class="lineNoCov">          0 :         std::string path1 = path + &quot;/&quot; + &quot;..&quot;;</span>
+<span class="lineNum">     807 </span>                :<span class="lineNoCov">          0 :         if(lstat( path1.c_str(), &amp;statbuf1) &lt; 0)</span>
+<span class="lineNum">     808 </span>                :            :         {
+<span class="lineNum">     809 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Mount failed &quot;&lt;&lt;path1);</span>
+<span class="lineNum">     810 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     811 </span>                :            :         }
+<span class="lineNum">     812 </span>                :<span class="lineNoCov">          0 :         if( statbuf.st_dev != statbuf1.st_dev )</span>
+<span class="lineNum">     813 </span>                :            :         {
+<span class="lineNum">     814 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;File system is mounted &quot;&lt;&lt;path1&lt;&lt;&quot; &quot;&lt;&lt;statbuf.st_dev&lt;&lt;&quot; &quot;&lt;&lt;statbuf1.st_dev );</span>
+<span class="lineNum">     815 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     816 </span>                :            :         }
+<span class="lineNum">     817 </span>                :<span class="lineNoCov">          0 :         if( statbuf.st_ino == statbuf1.st_ino) </span>
+<span class="lineNum">     818 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     819 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     820 </span>                :            : }
+<span class="lineNum">     821 </span>                :            : 
+<span class="lineNum">     822 </span>                :<span class="lineNoCov">          0 : boost::tuple&lt;std::string, bool&gt; GLUtils::find_file(std::string dir_path, std::string file_name)</span>
+<span class="lineNum">     823 </span>                :            : {
+<span class="lineNum">     824 </span>                :<span class="lineNoCov">          0 :         boost::filesystem::directory_iterator end_itr;</span>
+<span class="lineNum">     825 </span>                :            :         try
+<span class="lineNum">     826 </span>                :            :         {
+<span class="lineNum">     827 </span>                :<span class="lineNoCov">          0 :                 for (  boost::filesystem::directory_iterator itr( dir_path ); itr != end_itr; ++itr)</span>
+<span class="lineNum">     828 </span>                :            :                 {
+<span class="lineNum">     829 </span>                :<span class="lineNoCov">          0 :                         if (  boost::filesystem::is_directory(itr-&gt;status()) )</span>
+<span class="lineNum">     830 </span>                :<span class="lineNoCov">          0 :                                 continue;</span>
+<span class="lineNum">     831 </span>                :<span class="lineNoCov">          0 :                         else if (  boost::lexical_cast&lt;std::string&gt;(itr-&gt;path().filename()).find(file_name) != std::string::npos )</span>
+<span class="lineNum">     832 </span>                :<span class="lineNoCov">          0 :                                         return boost::make_tuple(boost::lexical_cast&lt;std::string&gt;(itr-&gt;path().filename()), true);</span>
+<span class="lineNum">     833 </span>                :            :                 }
+<span class="lineNum">     834 </span>                :            :         }
+<span class="lineNum">     835 </span>                :<span class="lineNoCov">          0 :         catch(boost::filesystem::filesystem_error &amp;ex)</span>
+<span class="lineNum">     836 </span>                :            :         {
+<span class="lineNum">     837 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;Filesystem not accessible: &quot; &lt;&lt; ex.what());</span>
+<span class="lineNum">     838 </span>                :<span class="lineNoCov">          0 :                 return boost::make_tuple(&quot;&quot;, false);</span>
+<span class="lineNum">     839 </span>                :            :         }
+<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 :         return boost::make_tuple(&quot;&quot;, false);  </span>
+<span class="lineNum">     841 </span>                :            : }
+<span class="lineNum">     842 </span>                :            : 
+<span class="lineNum">     843 </span>                :<span class="lineNoCov">          0 : time_t GLUtils::parse_file_name(std::string file_name)</span>
+<span class="lineNum">     844 </span>                :            : {
+<span class="lineNum">     845 </span>                :<span class="lineNoCov">          0 :         const char* name = NULL;</span>
+<span class="lineNum">     846 </span>                :<span class="lineNoCov">          0 :         name = file_name.c_str();</span>
+<span class="lineNum">     847 </span>                :<span class="lineNoCov">          0 :         if( !name)</span>
+<span class="lineNum">     848 </span>                :<span class="lineNoCov">          0 :                 return 0;</span>
+<span class="lineNum">     849 </span>                :<span class="lineNoCov">          0 :         name = file_name.c_str() + std::strlen(file_name.c_str()) - 1;</span>
+<span class="lineNum">     850 </span>                :<span class="lineNoCov">          0 :         while( name != file_name.c_str() &amp;&amp; *name != '_')</span>
+<span class="lineNum">     851 </span>                :<span class="lineNoCov">          0 :                 --name;</span>
+<span class="lineNum">     852 </span>                :<span class="lineNoCov">          0 :         if( name == file_name.c_str() )</span>
+<span class="lineNum">     853 </span>                :<span class="lineNoCov">          0 :                 return 0;</span>
+<span class="lineNum">     854 </span>                :<span class="lineNoCov">          0 :         return boost::lexical_cast&lt;time_t&gt;(++name);</span>
+<span class="lineNum">     855 </span>                :            : }
+<span class="lineNum">     856 </span>                :            : 
+<span class="lineNum">     857 </span>                :<span class="lineNoCov">          0 : bool GLUtils::check_environment(std::string path)</span>
+<span class="lineNum">     858 </span>                :            : {
+<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :         bool if_hfs_available = false;</span>
+<span class="lineNum">     860 </span>                :<span class="lineNoCov">          0 :         while(!if_hfs_available)</span>
+<span class="lineNum">     861 </span>                :            :         {
+<span class="lineNum">     862 </span>                :<span class="lineNoCov">          0 :                 if_hfs_available = this-&gt;hfs_availability_check(path);</span>
+<span class="lineNum">     863 </span>                :            :         }
+<span class="lineNum">     864 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;HFS is available&quot;);</span>
+<span class="lineNum">     865 </span>                :<span class="lineNoCov">          0 :         bool license = this-&gt;license_check();</span>
+<span class="lineNum">     866 </span>                :<span class="lineNoCov">          0 :         if (license)</span>
+<span class="lineNum">     867 </span>                :            :         {
+<span class="lineNum">     868 </span>                :            :                 //TODO: Start all functionality if part of cluster
+<span class="lineNum">     869 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     870 </span>                :            :         }
+<span class="lineNum">     871 </span>                :            :         else
+<span class="lineNum">     872 </span>                :            :         {
+<span class="lineNum">     873 </span>                :            :                 // Start only basic functionality
+<span class="lineNum">     874 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     875 </span>                :            :         }
+<span class="lineNum">     876 </span>                :            : }
+<span class="lineNum">     877 </span>                :            : 
+<span class="lineNum">     878 </span>                :<span class="lineNoCov">          0 : Bucket::Bucket()</span>
+<span class="lineNum">     879 </span>                :            : {
+<span class="lineNum">     880 </span>                :            : }
+<span class="lineNum">     881 </span>                :            : 
+<span class="lineNum">     882 </span>                :<span class="lineNoCov">          0 : void Bucket::set_fd_limit(int64_t limit)</span>
+<span class="lineNum">     883 </span>                :            : {
+<span class="lineNum">     884 </span>                :<span class="lineNoCov">          0 :         this-&gt;limit = limit;</span>
+<span class="lineNum">     885 </span>                :            : }
+<span class="lineNum">     886 </span>                :            : 
+<span class="lineNum">     887 </span>                :            : bool Bucket::add_fd(
+<span class="lineNum">     888 </span>                :            :         int64_t fd,
+<span class="lineNum">     889 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm
+<span class="lineNum">     890 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     891 </span>                :            : {
+<span class="lineNum">     892 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     893 </span>                :            : //      this-&gt;list_of_fds.insert(fd);
+<span class="lineNum">     894 </span>                :<span class="lineNoCov">          0 :         this-&gt;fd_comm_map.insert(std::make_pair(fd, sync_comm));</span>
+<span class="lineNum">     895 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     896 </span>                :            : }
+<span class="lineNum">     897 </span>                :            : 
+<span class="lineNum">     898 </span>                :<span class="lineNoCov">          0 : boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; Bucket::get_comm_obj(int64_t fd)</span>
+<span class="lineNum">     899 </span>                :            : {
+<span class="lineNum">     900 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm_obj;</span>
+<span class="lineNum">     901 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t, boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; &gt;::iterator it = this-&gt;fd_comm_map.find(fd);</span>
+<span class="lineNum">     902 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;fd_comm_map.end())</span>
+<span class="lineNum">     903 </span>                :<span class="lineNoCov">          0 :                 comm_obj = it-&gt;second;</span>
+<span class="lineNum">     904 </span>                :<span class="lineNoCov">          0 :         return comm_obj;</span>
+<span class="lineNum">     905 </span>                :            : }
+<span class="lineNum">     906 </span>                :            : 
+<span class="lineNum">     907 </span>                :<span class="lineNoCov">          0 : std::set&lt;int64_t&gt; Bucket::get_fd_list()</span>
+<span class="lineNum">     908 </span>                :            : {
+<span class="lineNum">     909 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     910 </span>                :<span class="lineNoCov">          0 :         std::set&lt;int64_t&gt; fd_list;</span>
+<span class="lineNum">     911 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t, boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; &gt;::iterator it = this-&gt;fd_comm_map.begin();</span>
+<span class="lineNum">     912 </span>                :<span class="lineNoCov">          0 :         for(; it != this-&gt;fd_comm_map.end(); ++it)</span>
+<span class="lineNum">     913 </span>                :            :         {
+<span class="lineNum">     914 </span>                :<span class="lineNoCov">          0 :                 fd_list.insert(it-&gt;first);</span>
+<span class="lineNum">     915 </span>                :            :         }
+<span class="lineNum">     916 </span>                :<span class="lineNoCov">          0 :         return fd_list;</span>
+<span class="lineNum">     917 </span>                :            : }
+<span class="lineNum">     918 </span>                :            : 
+<span class="lineNum">     919 </span>                :<span class="lineNoCov">          0 : void Bucket::remove_fd(int64_t fd)</span>
+<span class="lineNum">     920 </span>                :            : {
+<span class="lineNum">     921 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     922 </span>                :<span class="lineNoCov">          0 :         this-&gt;fd_comm_map.erase(fd);</span>
+<span class="lineNum">     923 </span>                :            : //      this-&gt;list_of_fds.erase(fd);
+<span class="lineNum">     924 </span>                :            : }
+<span class="lineNum">     925 </span>                :            : 
+<span class="lineNum">     926 </span>                :<span class="lineNoCov">          0 : int64_t Bucket::get_fd_limit()</span>
+<span class="lineNum">     927 </span>                :            : {
+<span class="lineNum">     928 </span>                :<span class="lineNoCov">          0 :         return this-&gt;limit;</span>
+<span class="lineNum">     929 </span>                :            : }
+<span class="lineNum">     930 </span>                :            : 
+<span class="lineNum">     931 </span>                :<span class="lineNoCov">          0 : void ServiceToRecordTypeBuilder::register_services(boost::shared_ptr&lt;ServiceToRecordTypeMapper&gt; mapper_ptr)</span>
+<span class="lineNum">     932 </span>                :            : {
+<span class="lineNum">     933 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;register_service(CONTAINER_SERVICE, osm_info_file_manager::CONTAINER_COMPONENT_INFO_FILE);</span>
+<span class="lineNum">     934 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;register_service(ACCOUNT_SERVICE, osm_info_file_manager::ACCOUNT_COMPONENT_INFO_FILE);</span>
+<span class="lineNum">     935 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;register_service(ACCOUNT_UPDATER, osm_info_file_manager::ACCOUNTUPDATER_COMPONENT_INFO_FILE);</span>
+<span class="lineNum">     936 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;register_service(OBJECT_SERVICE, osm_info_file_manager::OBJECT_COMPONENT_INFO_FILE);</span>
+<span class="lineNum">     937 </span>                :            : }
+<span class="lineNum">     938 </span>                :            : 
+<span class="lineNum">     939 </span>                :<span class="lineNoCov">          0 : void ServiceToRecordTypeBuilder::unregister_services(boost::shared_ptr&lt;ServiceToRecordTypeMapper&gt; mapper_ptr)</span>
+<span class="lineNum">     940 </span>                :            : {
+<span class="lineNum">     941 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;unregister_service(CONTAINER_SERVICE);</span>
+<span class="lineNum">     942 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;unregister_service(ACCOUNT_SERVICE);</span>
+<span class="lineNum">     943 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;unregister_service(ACCOUNT_UPDATER);</span>
+<span class="lineNum">     944 </span>                :<span class="lineNoCov">          0 :         mapper_ptr-&gt;unregister_service(OBJECT_SERVICE);</span>
+<span class="lineNum">     945 </span>                :            : }
+<span class="lineNum">     946 </span>                :            : 
+<span class="lineNum">     947 </span>                :<span class="lineNoCov">          0 : void ServiceToRecordTypeMapper::register_service(std::string service, int id)</span>
+<span class="lineNum">     948 </span>                :            : {
+<span class="lineNum">     949 </span>                :<span class="lineNoCov">          0 :         this-&gt;service_to_record_map.insert(std::make_pair(service, id));</span>
+<span class="lineNum">     950 </span>                :            : }
+<span class="lineNum">     951 </span>                :            : 
+<span class="lineNum">     952 </span>                :<span class="lineNoCov">          0 : void ServiceToRecordTypeMapper::unregister_service(std::string service)</span>
+<span class="lineNum">     953 </span>                :            : {
+<span class="lineNum">     954 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, int&gt;::iterator it = this-&gt;service_to_record_map.find(service);</span>
+<span class="lineNum">     955 </span>                :<span class="lineNoCov">          0 :         if ( it != this-&gt;service_to_record_map.end() )</span>
+<span class="lineNum">     956 </span>                :<span class="lineNoCov">          0 :                 this-&gt;service_to_record_map.erase(it);</span>
+<span class="lineNum">     957 </span>                :            : }
+<span class="lineNum">     958 </span>                :            : 
+<span class="lineNum">     959 </span>                :<span class="lineNoCov">          0 : std::string ServiceToRecordTypeMapper::get_name_for_type(int type)</span>
+<span class="lineNum">     960 </span>                :            : {
+<span class="lineNum">     961 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, int&gt;::iterator it = this-&gt;service_to_record_map.begin();</span>
+<span class="lineNum">     962 </span>                :<span class="lineNoCov">          0 :         for(; it != this-&gt;service_to_record_map.end(); ++it)</span>
+<span class="lineNum">     963 </span>                :            :         {
+<span class="lineNum">     964 </span>                :<span class="lineNoCov">          0 :                 if(it-&gt;second == type)</span>
+<span class="lineNum">     965 </span>                :<span class="lineNoCov">          0 :                         return it-&gt;first;</span>
+<span class="lineNum">     966 </span>                :            :         }
+<span class="lineNum">     967 </span>                :<span class="lineNoCov">          0 :         return &quot;ERROR&quot;;</span>
+<span class="lineNum">     968 </span>                :            : }
+<span class="lineNum">     969 </span>                :            : 
+<span class="lineNum">     970 </span>                :<span class="lineNoCov">          0 : int ServiceToRecordTypeMapper::get_type_for_service(std::string service)</span>
+<span class="lineNum">     971 </span>                :            : {
+<span class="lineNum">     972 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, int&gt;::iterator it = this-&gt;service_to_record_map.find(service);</span>
+<span class="lineNum">     973 </span>                :<span class="lineNoCov">          0 :         if ( it != this-&gt;service_to_record_map.end() )</span>
+<span class="lineNum">     974 </span>                :<span class="lineNoCov">          0 :                 return it-&gt;second;</span>
+<span class="lineNum">     975 </span>                :<span class="lineNoCov">          0 :         return -1;</span>
+<span class="lineNum">     976 </span>                :            : }
+<span class="lineNum">     977 </span>                :            : 
+<span class="lineNum">     978 </span>                :<span class="lineNoCov">          0 : std::vector&lt;std::string&gt; OsmUtils::list_files_in_creation_order(std::string path, std::string fileStartWith)</span>
+<span class="lineNum">     979 </span>                :            : {
+<span class="lineNum">     980 </span>                :<span class="lineNoCov">          0 :         std::string cmd = &quot;ls -tr &quot; + path + &quot; | grep &quot; + fileStartWith;</span>
+<span class="lineNum">     981 </span>                :<span class="lineNoCov">          0 :         cool::ShellCommand command(cmd);</span>
+<span class="lineNum">     982 </span>                :<span class="lineNoCov">          0 :         cool::Option&lt;cool::CommandResult&gt; result  = command.run();</span>
+<span class="lineNum">     983 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; str = result.getRefValue().getOutputLines();</span>
+<span class="lineNum">     984 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt;::iterator it = str.begin();</span>
+<span class="lineNum">     985 </span>                :<span class="lineNoCov">          0 :         for(; it != str.end(); ++it)</span>
+<span class="lineNum">     986 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Listed file include: &quot; &lt;&lt; *it);</span>
+<span class="lineNum">     987 </span>                :<span class="lineNoCov">          0 :         return str;</span>
+<span class="lineNum">     988 </span>                :            : }
+<span class="lineNum">     989 </span>                :            : 
+<span class="lineNum">     990 </span>                :<span class="lineNoCov">          0 : std::list&lt;std::string&gt; OsmUtils::list_files( const char* path, const char* fileStartWith)</span>
+<span class="lineNum">     991 </span>                :            : {
+<span class="lineNum">     992 </span>                :<span class="lineNoCov">          0 :         DIR* dirFile = opendir( path );</span>
+<span class="lineNum">     993 </span>                :<span class="lineNoCov">          0 :         std::list&lt;std::string&gt; files;</span>
+<span class="lineNum">     994 </span>                :<span class="lineNoCov">          0 :         if (dirFile)</span>
+<span class="lineNum">     995 </span>                :            :         {
+<span class="lineNum">     996 </span>                :            :                 struct dirent* hFile;
+<span class="lineNum">     997 </span>                :<span class="lineNoCov">          0 :                 while ((hFile = readdir(dirFile)) != NULL )</span>
+<span class="lineNum">     998 </span>                :            :                 {
+<span class="lineNum">     999 </span>                :            :                         //Ignore to current &amp; parrent directories.
+<span class="lineNum">    1000 </span>                :<span class="lineNoCov">          0 :                         if(!strcmp( hFile-&gt;d_name, &quot;.&quot;  )) continue;</span>
+<span class="lineNum">    1001 </span>                :<span class="lineNoCov">          0 :                         if(!strcmp( hFile-&gt;d_name, &quot;..&quot; )) continue;</span>
+<span class="lineNum">    1002 </span>                :            : 
+<span class="lineNum">    1003 </span>                :            :                         // Hidden files ko bhi ignore maar...
+<span class="lineNum">    1004 </span>                :<span class="lineNoCov">          0 :                         if(hFile-&gt;d_name[0] == '.') continue;</span>
+<span class="lineNum">    1005 </span>                :            : 
+<span class="lineNum">    1006 </span>                :<span class="lineNoCov">          0 :                         if (strstr(hFile-&gt;d_name, fileStartWith))</span>
+<span class="lineNum">    1007 </span>                :<span class="lineNoCov">          0 :                                 files.push_back(hFile-&gt;d_name);</span>
+<span class="lineNum">    1008 </span>                :            :                 }
+<span class="lineNum">    1009 </span>                :<span class="lineNoCov">          0 :                 closedir( dirFile );</span>
+<span class="lineNum">    1010 </span>                :            :         }
+<span class="lineNum">    1011 </span>                :<span class="lineNoCov">          0 :         return files;</span>
+<span class="lineNum">    1012 </span>                :            : }
+<span class="lineNum">    1013 </span>                :            : 
+<span class="lineNum">    1014 </span>                :<span class="lineNoCov">          0 : int OsmUtils::createFile(const char* path, int mode)</span>
+<span class="lineNum">    1015 </span>                :            : {
+<span class="lineNum">    1016 </span>                :<span class="lineNoCov">          0 :         return creat(path, mode);</span>
+<span class="lineNum">    1017 </span>                :            : 
+<span class="lineNum">    1018 </span>                :            : }
+<span class="lineNum">    1019 </span>                :            : 
+<span class="lineNum">    1020 </span>                :<span class="lineNoCov">          0 : std::string OsmUtils::ItoStr(int x)</span>
+<span class="lineNum">    1021 </span>                :            : {
+<span class="lineNum">    1022 </span>                :<span class="lineNoCov">          0 :         stringstream ss;</span>
+<span class="lineNum">    1023 </span>                :<span class="lineNoCov">          0 :         ss &lt;&lt; x;</span>
+<span class="lineNum">    1024 </span>                :<span class="lineNoCov">          0 :         return ss.str();</span>
+<span class="lineNum">    1025 </span>                :            : }
+<span class="lineNum">    1026 </span>                :            : 
+<span class="lineNum">    1027 </span>                :            : 
+<span class="lineNum">    1028 </span>                :            : 
+<span class="lineNum">    1029 </span>                :<span class="lineNoCov">          0 : string OsmUtils::split(const std::string&amp; s, std::string c) //split a string on the basis of a delimiter c.</span>
+<span class="lineNum">    1030 </span>                :            : {
+<span class="lineNum">    1031 </span>                :            : /*      vector&lt;string&gt; v;
+<span class="lineNum">    1032 </span>                :            :         string::size_type i = 0;
+<span class="lineNum">    1033 </span>                :            :         string::size_type j = s.find(c);
+<span class="lineNum">    1034 </span>                :            : 
+<span class="lineNum">    1035 </span>                :            :         while (j != string::npos)
+<span class="lineNum">    1036 </span>                :            :         {
+<span class="lineNum">    1037 </span>                :            :                 v.push_back(s.substr(i, j-i));
+<span class="lineNum">    1038 </span>                :            :                 i = ++j;
+<span class="lineNum">    1039 </span>                :            :                 j = s.find(c, j);
+<span class="lineNum">    1040 </span>                :            : 
+<span class="lineNum">    1041 </span>                :            :                 if (j == string::npos)
+<span class="lineNum">    1042 </span>                :            :                         v.push_back(s.substr(i, s.length()));
+<span class="lineNum">    1043 </span>                :            :         }
+<span class="lineNum">    1044 </span>                :            :         return v;
+<span class="lineNum">    1045 </span>                :            : */
+<span class="lineNum">    1046 </span>                :<span class="lineNoCov">          0 :         return s.substr(s.find(c)+c.size(), s.size());</span>
+<span class="lineNum">    1047 </span>                :            : }
+<span class="lineNum">    1048 </span>                :            : 
+<span class="lineNum">    1049 </span>                :<span class="lineNoCov">          0 : int OsmUtils::find_index(std::list&lt;std::string&gt; data_list, std::string data)</span>
+<span class="lineNum">    1050 </span>                :            : {
+<span class="lineNum">    1051 </span>                :<span class="lineNoCov">          0 :         bool flag = false;</span>
+<span class="lineNum">    1052 </span>                :<span class="lineNoCov">          0 :         int i = 0;</span>
+<span class="lineNum">    1053 </span>                :<span class="lineNoCov">          0 :         std::list&lt;std::string&gt;::iterator it = data_list.begin();</span>
+<span class="lineNum">    1054 </span>                :<span class="lineNoCov">          0 :         for ( ; it != data_list.end(); ++it)</span>
+<span class="lineNum">    1055 </span>                :            :         {
+<span class="lineNum">    1056 </span>                :<span class="lineNoCov">          0 :                 if (*it == data)</span>
+<span class="lineNum">    1057 </span>                :            :                 {
+<span class="lineNum">    1058 </span>                :<span class="lineNoCov">          0 :                         flag = true;</span>
+<span class="lineNum">    1059 </span>                :<span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">    1060 </span>                :            :                 }
+<span class="lineNum">    1061 </span>                :<span class="lineNoCov">          0 :                 i++;</span>
+<span class="lineNum">    1062 </span>                :            :         }
+<span class="lineNum">    1063 </span>                :<span class="lineNoCov">          0 :         if(!flag)</span>
+<span class="lineNum">    1064 </span>                :<span class="lineNoCov">          0 :         {return -1;}</span>
+<span class="lineNum">    1065 </span>                :<span class="lineNoCov">          0 :         return i;</span>
+<span class="lineNum">    1066 </span>                :            : 
+<span class="lineNum">    1067 </span>                :            : }
+<span class="lineNum">    1068 </span>                :            : 
+<span class="lineNum">    1069 </span>                :<span class="lineNoCov">          0 : boost::tuple&lt;std::string, uint32_t&gt; OsmUtils::get_ip_and_port_of_gl()</span>
+<span class="lineNum">    1070 </span>                :            : {
+<span class="lineNum">    1071 </span>                :            : 
+<span class="lineNum">    1072 </span>                :<span class="lineNoCov">          0 :         GLUtils utils;  </span>
+<span class="lineNum">    1073 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; v;</span>
+<span class="lineNum">    1074 </span>                :            : /*      std::string token;
+<span class="lineNum">    1075 </span>                :            :         std::string delimeter = &quot;\t&quot;;
+<span class="lineNum">    1076 </span>                :            :         std::size_t pos = 0;
+<span class="lineNum">    1077 </span>                :            :         std::string str = utils.read_GL_file();
+<span class="lineNum">    1078 </span>                :            :         while ((pos = str.find(delimeter)) != std::string::npos) 
+<span class="lineNum">    1079 </span>                :            :         {
+<span class="lineNum">    1080 </span>                :            :                 token = str.substr(0, pos);
+<span class="lineNum">    1081 </span>                :            :                 v.push_back(token);
+<span class="lineNum">    1082 </span>                :            :                 str.erase(0, pos + delimeter.length());
+<span class="lineNum">    1083 </span>                :            :         }
+<span class="lineNum">    1084 </span>                :            :         */
+<span class="lineNum">    1085 </span>                :<span class="lineNoCov">          0 :         int retry_count = 0;</span>
+<span class="lineNum">    1086 </span>                :<span class="lineNoCov">          0 :         uint32_t port = 0;</span>
+<span class="lineNum">    1087 </span>                :            : 
+<span class="lineNum">    1088 </span>                :<span class="lineNoCov">          0 :         while(1) {</span>
+<span class="lineNum">    1089 </span>                :<span class="lineNoCov">          0 :                 std::string str = utils.read_GL_file();</span>
+<span class="lineNum">    1090 </span>                :<span class="lineNoCov">          0 :                 if(str.size() == 0) {</span>
+<span class="lineNum">    1091 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;Unable to read gl info file in retry attempt &quot; &lt;&lt; retry_count);</span>
+<span class="lineNum">    1092 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::sleep(boost::posix_time::seconds(30));</span>
+<span class="lineNum">    1093 </span>                :<span class="lineNoCov">          0 :                         retry_count++;</span>
+<span class="lineNum">    1094 </span>                :<span class="lineNoCov">          0 :                         if(retry_count == 10) {</span>
+<span class="lineNum">    1095 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(ERROR, &quot;Failed to read GL info file in 10 attempts&quot;);</span>
+<span class="lineNum">    1096 </span>                :<span class="lineNoCov">          0 :                                 return boost::make_tuple(std::string(&quot;&quot;), uint32_t(6));</span>
+<span class="lineNum">    1097 </span>                :            :                         }
+<span class="lineNum">    1098 </span>                :            :                         continue;
+<span class="lineNum">    1099 </span>                :            :                 }else {
+<span class="lineNum">    1100 </span>                :<span class="lineNoCov">          0 :                         boost::split(v, str, boost::is_any_of(&quot;\t &quot;));</span>
+<span class="lineNum">    1101 </span>                :            :                         try {
+<span class="lineNum">    1102 </span>                :<span class="lineNoCov">          0 :                                 port = boost::lexical_cast&lt;uint32_t&gt;(v[2]);</span>
+<span class="lineNum">    1103 </span>                :<span class="lineNoCov">          0 :                         }catch(const boost::bad_lexical_cast&amp; e) {</span>
+<span class="lineNum">    1104 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(ERROR, &quot;CORRUPTED ENTRIES IN GL INFO FILE&quot;);</span>
+<span class="lineNum">    1105 </span>                :<span class="lineNoCov">          0 :                                 return boost::make_tuple(std::string(&quot;&quot;), uint32_t(0)); </span>
+<span class="lineNum">    1106 </span>                :            :                         }
+<span class="lineNum">    1107 </span>                :<span class="lineNoCov">          0 :                         return boost::make_tuple(v[1], port);</span>
+<span class="lineNum">    1108 </span>                :            :                 }       
+<span class="lineNum">    1109 </span>                :            :         }
+<span class="lineNum">    1110 </span>                :            :         
+<span class="lineNum">    1111 </span>                :            :         OSDLOG(ERROR, &quot;FAILED TO READ GL INFO FILE IN 3 RETRY ATTEMPTS&quot;);
+<span class="lineNum">    1112 </span>                :<span class="lineNoCov">          0 :         return boost::make_tuple(std::string(&quot;&quot;), uint32_t(0));       </span>
+<span class="lineNum">    1113 </span>                :            : }
+<span class="lineNum">    1114 </span>                :            : 
+<span class="lineNum">    1115 </span>                :<span class="lineNoCov">          0 : int CommandExecutor::execute_command_in_bg(std::string command)</span>
+<span class="lineNum">    1116 </span>                :            : {
+<span class="lineNum">    1117 </span>                :<span class="lineNoCov">          0 :         FILE *proc = ::popen(command.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">    1118 </span>                :<span class="lineNoCov">          0 :         if(proc == NULL)</span>
+<span class="lineNum">    1119 </span>                :<span class="lineNoCov">          0 :                 return -1;      //failure</span>
+<span class="lineNum">    1120 </span>                :<span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">    1121 </span>                :            : }
+<span class="lineNum">    1122 </span>                :            : 
+<span class="lineNum">    1123 </span>                :<span class="lineNoCov">          0 : void signal_callback_handler(int i)</span>
+<span class="lineNum">    1124 </span>                :            : {
+<span class="lineNum">    1125 </span>                :            :         return;
+<span class="lineNum">    1126 </span>                :            : }
+<span class="lineNum">    1127 </span>                :            : 
+<span class="lineNum">    1128 </span>                :<span class="lineNoCov">          0 : int CommandExecutor::get_status() const</span>
+<span class="lineNum">    1129 </span>                :            : {
+<span class="lineNum">    1130 </span>                :<span class="lineNoCov">          0 :         return this-&gt;status;</span>
+<span class="lineNum">    1131 </span>                :            : }
+<span class="lineNum">    1132 </span>                :            : 
+<span class="lineNum">    1133 </span>                :<span class="lineNoCov">          0 : int CommandExecutor::execute_command(std::string command)</span>
+<span class="lineNum">    1134 </span>                :            : {
+<span class="lineNum">    1135 </span>                :<span class="lineNoCov">          0 :         this-&gt;status = -1;</span>
+<span class="lineNum">    1136 </span>                :<span class="lineNoCov">          0 :         signal(SIGUSR1, signal_callback_handler);</span>
+<span class="lineNum">    1137 </span>                :<span class="lineNoCov">          0 :         FILE *proc = ::popen(command.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">    1138 </span>                :<span class="lineNoCov">          0 :         if(proc == NULL)</span>
+<span class="lineNum">    1139 </span>                :<span class="lineNoCov">          0 :                 return -1;      //failure</span>
+<span class="lineNum">    1140 </span>                :            :         char buf[50];
+<span class="lineNum">    1141 </span>                :<span class="lineNoCov">          0 :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) );</span>
+<span class="lineNum">    1142 </span>                :<span class="lineNoCov">          0 :         int i = ::pclose(proc);</span>
+<span class="lineNum">    1143 </span>                :<span class="lineNoCov">          0 :         this-&gt;status = i&gt;&gt;8;</span>
+<span class="lineNum">    1144 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Return value after executing command is &quot; &lt;&lt; this-&gt;status);</span>
+<span class="lineNum">    1145 </span>                :<span class="lineNoCov">          0 :         this-&gt;cond.notify_all();</span>
+<span class="lineNum">    1146 </span>                :<span class="lineNoCov">          0 :         return this-&gt;status;         //success</span>
+<span class="lineNum">    1147 </span>                :            : }
+<span class="lineNum">    1148 </span>                :            : /*
+<span class="lineNum">    1149 </span>                :            : int CommandExecutor::execute_command_with_condition(std::string command, boost::condition_variable &amp;cond)
+<span class="lineNum">    1150 </span>                :            : {
+<span class="lineNum">    1151 </span>                :            :         signal(SIGUSR1, signal_callback_handler);
+<span class="lineNum">    1152 </span>                :            :         FILE *proc = ::popen(command.c_str(),&quot;r&quot;);
+<span class="lineNum">    1153 </span>                :            :         if(proc == NULL)
+<span class="lineNum">    1154 </span>                :            :                 return -1;      //failure
+<span class="lineNum">    1155 </span>                :            :         char buf[50];
+<span class="lineNum">    1156 </span>                :            :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) );
+<span class="lineNum">    1157 </span>                :            :         int i = ::pclose(proc);
+<span class="lineNum">    1158 </span>                :            :         this-&gt;status = i&gt;&gt;8;
+<span class="lineNum">    1159 </span>                :            :         OSDLOG(INFO, &quot;Return value after executing command is &quot; &lt;&lt; this-&gt;status);
+<span class="lineNum">    1160 </span>                :            :         cond.notify_all();
+<span class="lineNum">    1161 </span>                :            :         return this-&gt;status;         //success
+<span class="lineNum">    1162 </span>                :            : }*/
+<span class="lineNum">    1163 </span>                :            : 
+<span class="lineNum">    1164 </span>                :<span class="lineNoCov">          0 : int CommandExecutor::execute_cmd_in_thread(std::string command, boost::system_time const timeout)</span>
+<span class="lineNum">    1165 </span>                :            : {
+<span class="lineNum">    1166 </span>                :<span class="lineNoCov">          0 :         boost::mutex mtx;</span>
+<span class="lineNum">    1167 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(mtx);</span>
+<span class="lineNum">    1168 </span>                :<span class="lineNoCov">          0 :         boost::thread helper_thread(boost::bind(&amp;CommandExecutor::execute_command, this, command));</span>
+<span class="lineNum">    1169 </span>                :<span class="lineNoCov">          0 :         if(!this-&gt;cond.timed_wait(lock, timeout))</span>
+<span class="lineNum">    1170 </span>                :            :         {
+<span class="lineNum">    1171 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;Could not complete operation within timeout limit, killing thread and exiting&quot;);</span>
+<span class="lineNum">    1172 </span>                :<span class="lineNoCov">          0 :                 pthread_kill(helper_thread.native_handle(), SIGUSR1);</span>
+<span class="lineNum">    1173 </span>                :            :         }
+<span class="lineNum">    1174 </span>                :<span class="lineNoCov">          0 :         helper_thread.join();</span>
+<span class="lineNum">    1175 </span>                :<span class="lineNoCov">          0 :         return this-&gt;status;</span>
+<span class="lineNum">    1176 </span>                :            : 
+<span class="lineNum">    1177 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

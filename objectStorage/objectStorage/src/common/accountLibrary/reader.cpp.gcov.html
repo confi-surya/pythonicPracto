@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/accountLibrary/reader.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/accountLibrary</a> - reader.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">35</td>
+            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntryHi">92.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;accountLibrary/reader.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &quot;libraryUtils/object_storage_exception.h&quot;
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : namespace accountInfoFile
+<span class="lineNum">       5 </span>                :            : {
+<span class="lineNum">       6 </span>                :            : Reader::Reader(boost::shared_ptr&lt;FileHandler&gt;  file,
+<span class="lineNum">       7 </span>                :            :                 boost::shared_ptr&lt;StaticDataBlockBuilder&gt; static_data_block_reader,
+<span class="lineNum">       8 </span>                :            :                 boost::shared_ptr&lt;NonStaticDataBlockBuilder&gt; non_static_data_block_reader,
+<span class="lineNum">       9 </span>                :<span class="lineCov">        376 :                 boost::shared_ptr&lt;TrailerStatBlockBuilder&gt; trailer_stat_block_reader):</span>
+<span class="lineNum">      10 </span>                :            :                 file(file),
+<span class="lineNum">      11 </span>                :            :                 static_data_block_reader(static_data_block_reader),
+<span class="lineNum">      12 </span>                :            :                 non_static_data_block_reader(non_static_data_block_reader),
+<span class="lineNum">      13 </span>                :<span class="lineCov">        376 :                 trailer_stat_block_reader(trailer_stat_block_reader)</span>
+<span class="lineNum">      14 </span>                :            : {
+<span class="lineNum">      15 </span>                :            :         ;
+<span class="lineNum">      16 </span>                :            : }
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : boost::tuple&lt;boost::shared_ptr&lt;recordStructure::AccountStat&gt;, 
+<span class="lineNum">      19 </span>                :<span class="lineCov">        304 :                                                 boost::shared_ptr&lt;TrailerBlock&gt; &gt; Reader::read_stat_trailer_block()</span>
+<span class="lineNum">      20 </span>                :            : {
+<span class="lineNum">      21 </span>                :<span class="lineCov">        304 :         uint64_t buffer_size = sizeof(TrailerStatBlockBuilder::StatBlock_) + sizeof(TrailerStatBlockBuilder::TrailerBlock_);</span>
+<span class="lineNum">      22 </span>                :<span class="lineCov">        304 :         std::vector&lt;char&gt; buffer(buffer_size);</span>
+<span class="lineNum">      23 </span>                :<span class="lineCov">        608 :         this-&gt;file-&gt;read_end(&amp;buffer[0], buffer_size, buffer_size);</span>
+<span class="lineNum">      24 </span>                :            :         boost::tuple&lt;boost::shared_ptr&lt;recordStructure::AccountStat&gt;, 
+<span class="lineNum">      25 </span>                :            :                                                 boost::shared_ptr&lt;TrailerBlock&gt; &gt; block_tuple =
+<span class="lineNum">      26 </span>                :<span class="lineCov">        303 :                                                 this-&gt;trailer_stat_block_reader-&gt;create_trailer_and_stat(&amp;buffer[0]);</span>
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :<span class="lineCov">        303 :         this-&gt;trailer = block_tuple.get&lt;1&gt;();</span>
+<span class="lineNum">      29 </span>                :<span class="lineCov">        303 :         return block_tuple;</span>
+<span class="lineNum">      30 </span>                :            : }
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :<span class="lineCov">        199 : boost::shared_ptr&lt;TrailerBlock&gt; Reader::get_trailer()</span>
+<span class="lineNum">      33 </span>                :            : {
+<span class="lineNum">      34 </span>        [<span class="branchCov" title="Branch 1 was taken 173 times"> + </span><span class="branchCov" title="Branch 2 was taken 26 times"> + </span>]:<span class="lineCov">        199 :         if (this-&gt;trailer)</span>
+<span class="lineNum">      35 </span>                :            :         {
+<span class="lineNum">      36 </span>                :<span class="lineCov">        173 :                 return this-&gt;trailer;</span>
+<span class="lineNum">      37 </span>                :            :         }
+<span class="lineNum">      38 </span>                :<span class="lineCov">         26 :         this-&gt;read_stat_trailer_block();</span>
+<span class="lineNum">      39 </span>                :<span class="lineCov">         26 :         return this-&gt;trailer;</span>
+<span class="lineNum">      40 </span>                :            : }
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :<span class="lineCov">         26 : void Reader::read_static_data_block(void *buffer, uint64_t start, uint64_t count)</span>
+<span class="lineNum">      43 </span>                :            : {
+<span class="lineNum">      44 </span>                :<span class="lineCov">         26 :         OSDLOG(DEBUG, &quot;calling Reader::read_static_data_block for file &quot;&lt;&lt;this-&gt;file &lt;&lt;&quot; start : &quot;&lt;&lt;start&lt;&lt;&quot; count : &quot;&lt;&lt;count);</span>
+<span class="lineNum">      45 </span>                :<span class="lineCov">         26 :         boost::shared_ptr&lt;TrailerBlock&gt; trailer = this-&gt;get_trailer();</span>
+<span class="lineNum">      46 </span>                :<span class="lineCov">         26 :         uint64_t size = sizeof(StaticDataBlockBuilder::StaticBlock_) * count;</span>
+<span class="lineNum">      47 </span>                :<span class="lineCov">         26 :         uint64_t offset = trailer-&gt;static_data_block_offset + sizeof(StaticDataBlockBuilder::StaticBlock_) * start;</span>
+<span class="lineNum">      48 </span>                :<span class="lineCov">         26 :         this-&gt;file-&gt;read(reinterpret_cast&lt;char *&gt;(buffer), size, offset);</span>
+<span class="lineNum">      49 </span>                :            : }
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :<span class="lineCov">         26 : void Reader::read_unsorted_static_data_block(std::vector&lt;StaticDataBlockBuilder::StaticBlock_&gt; &amp; buffer)</span>
+<span class="lineNum">      52 </span>                :            : {
+<span class="lineNum">      53 </span>                :<span class="lineCov">         26 :         OSDLOG(DEBUG, &quot;calling Reader::read_unsorted_static_data_block for file &quot;&lt;&lt;this-&gt;file);</span>
+<span class="lineNum">      54 </span>                :<span class="lineCov">         26 :         boost::shared_ptr&lt;TrailerBlock&gt; trailer = this-&gt;get_trailer();</span>
+<span class="lineNum">      55 </span>                :<span class="lineCov">         26 :         buffer.resize(trailer-&gt;unsorted_record);</span>
+<span class="lineNum">      56 </span>                :<span class="lineCov">         26 :         this-&gt;read_static_data_block(&amp;buffer[0], trailer-&gt;sorted_record, trailer-&gt;unsorted_record);</span>
+<span class="lineNum">      57 </span>                :            :         //for(std::vector&lt;StaticDataBlockBuilder::StaticBlock_&gt;::iterator it = buffer.begin(); it != buffer.end(); it++)
+<span class="lineNum">      58 </span>                :            :           //      std::cout&lt;&lt;&quot;ni traile static &quot;&lt;&lt;it-&gt;ROWID&lt;&lt;&quot; &quot;&lt;&lt;it-&gt;name&lt;&lt;std::endl;
+<span class="lineNum">      59 </span>                :            : }
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :<span class="lineCov">         95 : void Reader::read_non_static_data_block(void *buffer, uint64_t start, uint64_t count)</span>
+<span class="lineNum">      62 </span>                :            : {
+<span class="lineNum">      63 </span>                :<span class="lineCov">         95 :         OSDLOG(DEBUG, &quot;calling Reader::read_non_static_data_block for file &quot;&lt;&lt;this-&gt;file &lt;&lt;&quot; start : &quot;&lt;&lt;start&lt;&lt;&quot; count : &quot;&lt;&lt;count);</span>
+<span class="lineNum">      64 </span>                :<span class="lineCov">         95 :         boost::shared_ptr&lt;TrailerBlock&gt; trailer = this-&gt;get_trailer();</span>
+<span class="lineNum">      65 </span>                :<span class="lineCov">         95 :         uint64_t size = sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * count;</span>
+<span class="lineNum">      66 </span>                :<span class="lineCov">         95 :         uint64_t offset = trailer-&gt;non_static_data_block_offset + sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * start;</span>
+<span class="lineNum">      67 </span>                :<span class="lineCov">         95 :         this-&gt;file-&gt;read(reinterpret_cast&lt;char *&gt;(buffer), size, offset);</span>
+<span class="lineNum">      68 </span>                :            : }
+<span class="lineNum">      69 </span>                :            : //UNCOVERED_CODE_BEGIN:
+<span class="lineNum">      70 </span>                :            : boost::shared_ptr&lt;NonStaticDataBlock&gt; Reader::read_non_static_data_block(uint64_t start, uint64_t count)
+<span class="lineNum">      71 </span>                :            : {
+<span class="lineNum">      72 </span>                :            :         boost::shared_ptr&lt;TrailerBlock&gt; trailer = this-&gt;get_trailer();
+<span class="lineNum">      73 </span>                :            :         uint64_t size = sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * count;
+<span class="lineNum">      74 </span>                :            :         char *buffer = new char[size];
+<span class="lineNum">      75 </span>                :            :         uint64_t offset = trailer-&gt;non_static_data_block_offset + sizeof(NonStaticDataBlockBuilder::NonStaticBlock_) * start;
+<span class="lineNum">      76 </span>                :            :         try
+<span class="lineNum">      77 </span>                :            :         {
+<span class="lineNum">      78 </span>                :            :                 this-&gt;file-&gt;read(buffer, size, offset);
+<span class="lineNum">      79 </span>                :            :         }
+<span class="lineNum">      80 </span>                :            :         catch(OSDException::ReadFileException e)
+<span class="lineNum">      81 </span>                :            :         {
+<span class="lineNum">      82 </span>                :            :                 delete[] buffer;
+<span class="lineNum">      83 </span>                :            :                 throw e;
+<span class="lineNum">      84 </span>                :            :         }
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :            :         boost::shared_ptr&lt;NonStaticDataBlock&gt; non_static_block = 
+<span class="lineNum">      87 </span>                :            :                         this-&gt;non_static_data_block_reader-&gt;create_block_from_memory(buffer, count);
+<span class="lineNum">      88 </span>                :            :         delete[] buffer;
+<span class="lineNum">      89 </span>                :            :         return non_static_block;
+<span class="lineNum">      90 </span>                :            : }
+<span class="lineNum">      91 </span>                :            : //UNCOVERED_CODE_END
+<span class="lineNum">      92 </span>                :<span class="lineCov">         26 : void Reader::read_unsorted_non_static_data_block(std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt; &amp; buffer)</span>
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>                :<span class="lineCov">         26 :         boost::shared_ptr&lt;TrailerBlock&gt; trailer = this-&gt;get_trailer();</span>
+<span class="lineNum">      95 </span>                :<span class="lineCov">         26 :         buffer.resize(trailer-&gt;unsorted_record);</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">         26 :         this-&gt;read_non_static_data_block(&amp;buffer[0], trailer-&gt;sorted_record, trailer-&gt;unsorted_record);</span>
+<span class="lineNum">      97 </span>                :            : //      for(std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt;::iterator it = buffer.begin(); it != buffer.end(); it++)
+<span class="lineNum">      98 </span>                :            : //              std::cout&lt;&lt;&quot;ni traile &quot;&lt;&lt;it-&gt;hash&lt;&lt;&quot; &quot;&lt;&lt;it-&gt;put_timestamp&lt;&lt;&quot; &quot;&lt;&lt;it-&gt;deleted&lt;&lt;std::endl;
+<span class="lineNum">      99 </span>                :            : }
+<span class="lineNum">     100 </span>                :            : 
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 : void Reader::reopen()</span>
+<span class="lineNum">     102 </span>                :            : {
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :                 this-&gt;file-&gt;reopen();</span>
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :                 this-&gt;trailer.reset();</span>
+<span class="lineNum">     105 </span>                :            : }
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

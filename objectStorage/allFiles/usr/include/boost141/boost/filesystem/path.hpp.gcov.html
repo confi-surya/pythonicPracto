@@ -1,0 +1,1629 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/filesystem/path.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/filesystem</a> - path.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntry">94</td>
+            <td class="headerCovTableEntryLo">42.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">35</td>
+            <td class="headerCovTableEntry">94</td>
+            <td class="headerCovTableEntryLo">37.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //  boost/filesystem/path.hpp  -----------------------------------------------//
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : //  Copyright Beman Dawes 2002-2005
+<span class="lineNum">       4 </span>                :            : //  Copyright Vladimir Prus 2002
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : //  Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       7 </span>                :            : //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : //  See library home page at http://www.boost.org/libs/filesystem
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : //  basic_path's stem(), extension(), and replace_extension() are based on
+<span class="lineNum">      12 </span>                :            : //  basename(), extension(), and change_extension() from the original
+<span class="lineNum">      13 </span>                :            : //  filesystem/convenience.hpp header by Vladimir Prus.
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : //----------------------------------------------------------------------------// 
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #ifndef BOOST_FILESYSTEM_PATH_HPP
+<span class="lineNum">      18 </span>                :            : #define BOOST_FILESYSTEM_PATH_HPP
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;boost/filesystem/config.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/system/system_error.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/iterator/iterator_facade.hpp&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/throw_exception.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      29 </span>                :            : #include &lt;algorithm&gt; // for lexicographical_compare
+<span class="lineNum">      30 </span>                :            : #include &lt;iosfwd&gt;    // needed by basic_path inserter and extractor
+<span class="lineNum">      31 </span>                :            : #include &lt;stdexcept&gt;
+<span class="lineNum">      32 </span>                :            : #include &lt;cassert&gt;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">      35 </span>                :            : #   include &lt;locale&gt;
+<span class="lineNum">      36 </span>                :            : # endif
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : #include &lt;boost/config/abi_prefix.hpp&gt; // must be the last #include
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : //----------------------------------------------------------------------------//
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            : namespace boost
+<span class="lineNum">      43 </span>                :            : {
+<span class="lineNum">      44 </span>                :            :   namespace BOOST_FILESYSTEM_NAMESPACE
+<span class="lineNum">      45 </span>                :            :   {
+<span class="lineNum">      46 </span>                :<span class="lineCov">          2 :     template&lt;class String, class Traits&gt; class basic_path;</span>
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :            :     struct path_traits;
+<span class="lineNum">      49 </span>                :            :     typedef basic_path&lt; std::string, path_traits &gt; path;
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :     struct path_traits
+<span class="lineNum">      52 </span>                :            :     {
+<span class="lineNum">      53 </span>                :            :       typedef std::string internal_string_type;
+<span class="lineNum">      54 </span>                :            :       typedef std::string external_string_type;
+<span class="lineNum">      55 </span>                :            :       static external_string_type to_external( const path &amp;,
+<span class="lineNum">      56 </span>                :<span class="lineCov">       1981 :         const internal_string_type &amp; src ) { return src; }</span>
+<span class="lineNum">      57 </span>                :            :       static internal_string_type to_internal(
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :         const external_string_type &amp; src ) { return src; }</span>
+<span class="lineNum">      59 </span>                :            :     };
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            :     struct BOOST_FILESYSTEM_DECL wpath_traits;
+<span class="lineNum">      64 </span>                :            :     
+<span class="lineNum">      65 </span>                :            :     typedef basic_path&lt; std::wstring, wpath_traits &gt; wpath;
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            :     struct BOOST_FILESYSTEM_DECL wpath_traits
+<span class="lineNum">      68 </span>                :            :     {
+<span class="lineNum">      69 </span>                :            :       typedef std::wstring internal_string_type;
+<span class="lineNum">      70 </span>                :            : # ifdef BOOST_WINDOWS_API
+<span class="lineNum">      71 </span>                :            :       typedef std::wstring external_string_type;
+<span class="lineNum">      72 </span>                :            :       static external_string_type to_external( const wpath &amp;,
+<span class="lineNum">      73 </span>                :            :         const internal_string_type &amp; src ) { return src; }
+<span class="lineNum">      74 </span>                :            :       static internal_string_type to_internal(
+<span class="lineNum">      75 </span>                :            :         const external_string_type &amp; src ) { return src; }
+<span class="lineNum">      76 </span>                :            : # else
+<span class="lineNum">      77 </span>                :            :       typedef std::string external_string_type;
+<span class="lineNum">      78 </span>                :            :       static external_string_type to_external( const wpath &amp; ph,
+<span class="lineNum">      79 </span>                :            :         const internal_string_type &amp; src );
+<span class="lineNum">      80 </span>                :            :       static internal_string_type to_internal(
+<span class="lineNum">      81 </span>                :            :         const external_string_type &amp; src );
+<span class="lineNum">      82 </span>                :            : # endif
+<span class="lineNum">      83 </span>                :            :       static void imbue( const std::locale &amp; loc );
+<span class="lineNum">      84 </span>                :            :       static bool imbue( const std::locale &amp; loc, const std::nothrow_t &amp; );
+<span class="lineNum">      85 </span>                :            :     };
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            : # endif // ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :            :     //  path traits  ---------------------------------------------------------//
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            :     template&lt;class Path&gt; struct is_basic_path
+<span class="lineNum">      92 </span>                :            :       { BOOST_STATIC_CONSTANT( bool, value = false ); };
+<span class="lineNum">      93 </span>                :            :     template&lt;&gt; struct is_basic_path&lt;path&gt;
+<span class="lineNum">      94 </span>                :            :       { BOOST_STATIC_CONSTANT( bool, value = true ); };
+<span class="lineNum">      95 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">      96 </span>                :            :     template&lt;&gt; struct is_basic_path&lt;wpath&gt;
+<span class="lineNum">      97 </span>                :            :       { BOOST_STATIC_CONSTANT( bool, value = true ); };
+<span class="lineNum">      98 </span>                :            : # endif
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            :     // These only have to be specialized if Path::string_type::value_type
+<span class="lineNum">     101 </span>                :            :     // is not convertible from char, although specializations may eliminate
+<span class="lineNum">     102 </span>                :            :     // compiler warnings. See ticket 2543.
+<span class="lineNum">     103 </span>                :            :     template&lt;class Path&gt; struct slash
+<span class="lineNum">     104 </span>                :            :       { BOOST_STATIC_CONSTANT( char, value = '/' ); };
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            :     template&lt;class Path&gt; struct dot
+<span class="lineNum">     107 </span>                :            :       { BOOST_STATIC_CONSTANT( char, value = '.' ); };
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :            :     template&lt;class Path&gt; struct colon
+<span class="lineNum">     110 </span>                :            :       { BOOST_STATIC_CONSTANT( char, value = ':' ); };
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">     113 </span>                :            :     template&lt;&gt; struct slash&lt;wpath&gt;
+<span class="lineNum">     114 </span>                :            :       { BOOST_STATIC_CONSTANT( wchar_t, value = L'/' ); };
+<span class="lineNum">     115 </span>                :            :     template&lt;&gt; struct dot&lt;wpath&gt;
+<span class="lineNum">     116 </span>                :            :       { BOOST_STATIC_CONSTANT( wchar_t, value = L'.' ); };
+<span class="lineNum">     117 </span>                :            :     template&lt;&gt; struct colon&lt;wpath&gt;
+<span class="lineNum">     118 </span>                :            :       { BOOST_STATIC_CONSTANT( wchar_t, value = L':' ); };
+<span class="lineNum">     119 </span>                :            : # endif
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :            : # ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     122 </span>                :            :     template&lt;class Path&gt; struct path_alt_separator
+<span class="lineNum">     123 </span>                :            :       { BOOST_STATIC_CONSTANT( char, value = '\\' ); };
+<span class="lineNum">     124 </span>                :            : #   ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">     125 </span>                :            :     template&lt;&gt; struct path_alt_separator&lt;wpath&gt;
+<span class="lineNum">     126 </span>                :            :       { BOOST_STATIC_CONSTANT( wchar_t, value = L'\\' ); };
+<span class="lineNum">     127 </span>                :            : #   endif
+<span class="lineNum">     128 </span>                :            : # endif
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :     //  workaround for VC++ 7.0 and earlier issues with nested classes
+<span class="lineNum">     131 </span>                :            :     namespace detail
+<span class="lineNum">     132 </span>                :            :     {
+<span class="lineNum">     133 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     134 </span>                :            :       class iterator_helper
+<span class="lineNum">     135 </span>                :            :       {
+<span class="lineNum">     136 </span>                :            :       public:
+<span class="lineNum">     137 </span>                :            :         typedef typename Path::iterator iterator;
+<span class="lineNum">     138 </span>                :            :         static void do_increment( iterator &amp; ph );
+<span class="lineNum">     139 </span>                :            :         static void do_decrement( iterator &amp; ph );
+<span class="lineNum">     140 </span>                :            :       };
+<span class="lineNum">     141 </span>                :            :     }
+<span class="lineNum">     142 </span>                :            : 
+<span class="lineNum">     143 </span>                :            :     //  basic_path  ----------------------------------------------------------//
+<span class="lineNum">     144 </span>                :            :   
+<span class="lineNum">     145 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">     146 </span>                :            :     class basic_path
+<span class="lineNum">     147 </span>                :            :     {
+<span class="lineNum">     148 </span>                :            :     // invariant: m_path valid according to the portable generic path grammar
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :       // validate template arguments
+<span class="lineNum">     151 </span>                :            : // TODO: get these working
+<span class="lineNum">     152 </span>                :            : //      BOOST_STATIC_ASSERT( ::boost::is_same&lt;String,typename Traits::internal_string_type&gt;::value );
+<span class="lineNum">     153 </span>                :            : //      BOOST_STATIC_ASSERT( ::boost::is_same&lt;typename Traits::external_string_type,std::string&gt;::value || ::boost::is_same&lt;typename Traits::external_string_type,std::wstring&gt;::value );
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            :     public:
+<span class="lineNum">     156 </span>                :            :       // compiler generates copy constructor and copy assignment
+<span class="lineNum">     157 </span>                :            : 
+<span class="lineNum">     158 </span>                :            :       typedef basic_path&lt;String, Traits&gt; path_type;
+<span class="lineNum">     159 </span>                :            :       typedef String string_type;
+<span class="lineNum">     160 </span>                :            :       typedef typename String::value_type value_type;
+<span class="lineNum">     161 </span>                :            :       typedef Traits traits_type;
+<span class="lineNum">     162 </span>                :            :       typedef typename Traits::external_string_type external_string_type; 
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :       // constructors/destructor
+<span class="lineNum">     165 </span>                :<span class="lineCov">          4 :       basic_path() {}</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">       1352 :       basic_path( const string_type &amp; s ) { operator/=( s ); }</span>
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :       basic_path( const value_type * s )  { operator/=( s ); }</span>
+<span class="lineNum">     168 </span>                :            : #     ifndef BOOST_NO_MEMBER_TEMPLATES
+<span class="lineNum">     169 </span>                :            :         template &lt;class InputIterator&gt;
+<span class="lineNum">     170 </span>                :            :           basic_path( InputIterator first, InputIterator last )
+<span class="lineNum">     171 </span>                :            :             { append( first, last ); }
+<span class="lineNum">     172 </span>                :            : #     endif
+<span class="lineNum">     173 </span>                :<span class="lineCov">       1356 :      ~basic_path() {}</span>
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :            :       // assignments
+<span class="lineNum">     176 </span>                :            :       basic_path &amp; operator=( const string_type &amp; s )
+<span class="lineNum">     177 </span>                :            :       {
+<span class="lineNum">     178 </span>                :            : #     if BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, &gt;= 310)
+<span class="lineNum">     179 </span>                :            :         m_path.clear();
+<span class="lineNum">     180 </span>                :            : #     else
+<span class="lineNum">     181 </span>                :            :         m_path.erase( m_path.begin(), m_path.end() );
+<span class="lineNum">     182 </span>                :            : #     endif
+<span class="lineNum">     183 </span>                :            :         operator/=( s ); 
+<span class="lineNum">     184 </span>                :            :         return *this;
+<span class="lineNum">     185 </span>                :            :       }
+<span class="lineNum">     186 </span>                :            :       basic_path &amp; operator=( const value_type * s )
+<span class="lineNum">     187 </span>                :            :       { 
+<span class="lineNum">     188 </span>                :            : #     if BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, &gt;= 310)
+<span class="lineNum">     189 </span>                :            :         m_path.clear();
+<span class="lineNum">     190 </span>                :            : #     else
+<span class="lineNum">     191 </span>                :            :         m_path.erase( m_path.begin(), m_path.end() );
+<span class="lineNum">     192 </span>                :            : #     endif
+<span class="lineNum">     193 </span>                :            :         operator/=( s ); 
+<span class="lineNum">     194 </span>                :            :         return *this;
+<span class="lineNum">     195 </span>                :            :       }
+<span class="lineNum">     196 </span>                :            : #     ifndef BOOST_NO_MEMBER_TEMPLATES
+<span class="lineNum">     197 </span>                :            :         template &lt;class InputIterator&gt;
+<span class="lineNum">     198 </span>                :            :           basic_path &amp; assign( InputIterator first, InputIterator last )
+<span class="lineNum">     199 </span>                :            :             { m_path.clear(); append( first, last ); return *this; }
+<span class="lineNum">     200 </span>                :            : #     endif
+<span class="lineNum">     201 </span>                :            : 
+<span class="lineNum">     202 </span>                :            :       // modifiers
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :       basic_path &amp; operator/=( const basic_path &amp; rhs )  { return operator /=( rhs.string().c_str() ); }</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">       1352 :       basic_path &amp; operator/=( const string_type &amp; rhs ) { return operator /=( rhs.c_str() ); }</span>
+<span class="lineNum">     205 </span>                :<span class="lineCov">       1352 :       basic_path &amp; operator/=( const value_type * s );</span>
+<span class="lineNum">     206 </span>                :            : #     ifndef BOOST_NO_MEMBER_TEMPLATES
+<span class="lineNum">     207 </span>                :            :         template &lt;class InputIterator&gt;
+<span class="lineNum">     208 </span>                :            :           basic_path &amp; append( InputIterator first, InputIterator last );
+<span class="lineNum">     209 </span>                :            : #     endif
+<span class="lineNum">     210 </span>                :            :       
+<span class="lineNum">     211 </span>                :            :       void clear()
+<span class="lineNum">     212 </span>                :            :       { 
+<span class="lineNum">     213 </span>                :            : #     if BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, &gt;= 310)
+<span class="lineNum">     214 </span>                :            :         m_path.clear();
+<span class="lineNum">     215 </span>                :            : #     else
+<span class="lineNum">     216 </span>                :            :         m_path.erase( m_path.begin(), m_path.end() );
+<span class="lineNum">     217 </span>                :            : #     endif
+<span class="lineNum">     218 </span>                :            :       }
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :            :       void swap( basic_path &amp; rhs )
+<span class="lineNum">     221 </span>                :            :       {
+<span class="lineNum">     222 </span>                :            :         m_path.swap( rhs.m_path );
+<span class="lineNum">     223 </span>                :            : #       ifdef BOOST_CYGWIN_PATH
+<span class="lineNum">     224 </span>                :            :           std::swap( m_cygwin_root, rhs.m_cygwin_root );
+<span class="lineNum">     225 </span>                :            : #       endif
+<span class="lineNum">     226 </span>                :            :       }
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :       basic_path &amp; remove_filename();</span>
+<span class="lineNum">     229 </span>                :            :       basic_path &amp; replace_extension( const string_type &amp; new_extension = string_type() );
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     232 </span>                :            :       basic_path &amp; remove_leaf() { return remove_filename(); }
+<span class="lineNum">     233 </span>                :            : # endif
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            :       // observers
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :       const string_type &amp; string() const         { return m_path; }</span>
+<span class="lineNum">     237 </span>                :<span class="lineCov">       1981 :       const string_type file_string() const;</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">        597 :       const string_type directory_string() const { return file_string(); }</span>
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :<span class="lineCov">       1384 :       const external_string_type external_file_string() const { return Traits::to_external( *this, file_string() ); }</span>
+<span class="lineNum">     241 </span>                :<span class="lineCov">        597 :       const external_string_type external_directory_string() const { return Traits::to_external( *this, directory_string() ); }</span>
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            :       basic_path   root_path() const;
+<span class="lineNum">     244 </span>                :            :       string_type  root_name() const;
+<span class="lineNum">     245 </span>                :            :       string_type  root_directory() const;
+<span class="lineNum">     246 </span>                :            :       basic_path   relative_path() const;
+<span class="lineNum">     247 </span>                :<span class="lineCov">        337 :       basic_path   parent_path() const;</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :       string_type  filename() const;</span>
+<span class="lineNum">     249 </span>                :            :       string_type  stem() const;
+<span class="lineNum">     250 </span>                :            :       string_type  extension() const;
+<span class="lineNum">     251 </span>                :            : 
+<span class="lineNum">     252 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     253 </span>                :            :       string_type  leaf() const            { return filename(); }
+<span class="lineNum">     254 </span>                :            :       basic_path   branch_path() const     { return parent_path(); }
+<span class="lineNum">     255 </span>                :            :       bool         has_leaf() const        { return !m_path.empty(); }
+<span class="lineNum">     256 </span>                :            :       bool         has_branch_path() const { return !parent_path().empty(); }
+<span class="lineNum">     257 </span>                :            : # endif
+<span class="lineNum">     258 </span>                :            : 
+<span class="lineNum">     259 </span>                :<span class="lineCov">       1981 :       bool empty() const               { return m_path.empty(); } // name consistent with std containers</span>
+<span class="lineNum">     260 </span>                :            :       bool is_complete() const;
+<span class="lineNum">     261 </span>                :            :       bool has_root_path() const;
+<span class="lineNum">     262 </span>                :            :       bool has_root_name() const;
+<span class="lineNum">     263 </span>                :            :       bool has_root_directory() const;
+<span class="lineNum">     264 </span>                :            :       bool has_relative_path() const   { return !relative_path().empty(); }
+<span class="lineNum">     265 </span>                :            :       bool has_filename() const        { return !m_path.empty(); }
+<span class="lineNum">     266 </span>                :            :       bool has_parent_path() const     { return !parent_path().empty(); }
+<span class="lineNum">     267 </span>                :            : 
+<span class="lineNum">     268 </span>                :            :       // iterators
+<span class="lineNum">     269 </span>                :            :       class iterator : public boost::iterator_facade&lt;
+<span class="lineNum">     270 </span>                :            :         iterator,
+<span class="lineNum">     271 </span>                :            :         string_type const,
+<span class="lineNum">     272 </span>                :            :         boost::bidirectional_traversal_tag &gt;
+<span class="lineNum">     273 </span>                :            :       {
+<span class="lineNum">     274 </span>                :            :       private:
+<span class="lineNum">     275 </span>                :            :         friend class boost::iterator_core_access;
+<span class="lineNum">     276 </span>                :            :         friend class boost::BOOST_FILESYSTEM_NAMESPACE::basic_path&lt;String, Traits&gt;;
+<span class="lineNum">     277 </span>                :            : 
+<span class="lineNum">     278 </span>                :            :         const string_type &amp; dereference() const
+<span class="lineNum">     279 </span>                :            :           { return m_name; }
+<span class="lineNum">     280 </span>                :            :         bool equal( const iterator &amp; rhs ) const
+<span class="lineNum">     281 </span>                :            :           { return m_path_ptr == rhs.m_path_ptr &amp;&amp; m_pos == rhs.m_pos; }
+<span class="lineNum">     282 </span>                :            : 
+<span class="lineNum">     283 </span>                :            :         friend class boost::BOOST_FILESYSTEM_NAMESPACE::detail::iterator_helper&lt;path_type&gt;;
+<span class="lineNum">     284 </span>                :            : 
+<span class="lineNum">     285 </span>                :            :         void increment()
+<span class="lineNum">     286 </span>                :            :         { 
+<span class="lineNum">     287 </span>                :            :           boost::BOOST_FILESYSTEM_NAMESPACE::detail::iterator_helper&lt;path_type&gt;::do_increment(
+<span class="lineNum">     288 </span>                :            :             *this );
+<span class="lineNum">     289 </span>                :            :         }
+<span class="lineNum">     290 </span>                :            :         void decrement()
+<span class="lineNum">     291 </span>                :            :         { 
+<span class="lineNum">     292 </span>                :            :           boost::BOOST_FILESYSTEM_NAMESPACE::detail::iterator_helper&lt;path_type&gt;::do_decrement(
+<span class="lineNum">     293 </span>                :            :             *this );
+<span class="lineNum">     294 </span>                :            :         }
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :         string_type             m_name;     // current element
+<span class="lineNum">     297 </span>                :            :         const basic_path *      m_path_ptr; // path being iterated over
+<span class="lineNum">     298 </span>                :            :         typename string_type::size_type  m_pos;  // position of name in
+<span class="lineNum">     299 </span>                :            :                                             // path_ptr-&gt;string(). The
+<span class="lineNum">     300 </span>                :            :                                             // end() iterator is indicated by 
+<span class="lineNum">     301 </span>                :            :                                             // pos == path_ptr-&gt;m_path.size()
+<span class="lineNum">     302 </span>                :            :       }; // iterator
+<span class="lineNum">     303 </span>                :            : 
+<span class="lineNum">     304 </span>                :            :       typedef iterator const_iterator;
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :       iterator begin() const;
+<span class="lineNum">     307 </span>                :            :       iterator end() const;
+<span class="lineNum">     308 </span>                :            : 
+<span class="lineNum">     309 </span>                :            :     private:
+<span class="lineNum">     310 </span>                :            :       // Note: This is an implementation for POSIX and Windows, where there
+<span class="lineNum">     311 </span>                :            :       // are only minor differences between generic and native path grammars.
+<span class="lineNum">     312 </span>                :            :       // Private members might be quite different in other implementations,
+<span class="lineNum">     313 </span>                :            :       // particularly where there were wide differences between portable and
+<span class="lineNum">     314 </span>                :            :       // native path formats, or between file_string() and
+<span class="lineNum">     315 </span>                :            :       // directory_string() formats, or simply that the implementation
+<span class="lineNum">     316 </span>                :            :       // was willing expend additional memory to achieve greater speed for
+<span class="lineNum">     317 </span>                :            :       // some operations at the expense of other operations.
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :            :       string_type  m_path; // invariant: portable path grammar
+<span class="lineNum">     320 </span>                :            :                            // on Windows, backslashes converted to slashes
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            : #   ifdef BOOST_CYGWIN_PATH
+<span class="lineNum">     323 </span>                :            :       bool m_cygwin_root; // if present, m_path[0] was slash. note: initialization
+<span class="lineNum">     324 </span>                :            :                           // done by append
+<span class="lineNum">     325 </span>                :            : #   endif  
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :       void m_append_separator_if_needed();</span>
+<span class="lineNum">     328 </span>                :<span class="lineCov">     135461 :       void m_append( value_type value ); // converts Windows alt_separator</span>
+<span class="lineNum">     329 </span>                :            : 
+<span class="lineNum">     330 </span>                :            :       // Was qualified; como433beta8 reports:
+<span class="lineNum">     331 </span>                :            :       //    warning #427-D: qualified name is not allowed in member declaration 
+<span class="lineNum">     332 </span>                :            :       friend class iterator;
+<span class="lineNum">     333 </span>                :            :       friend class boost::BOOST_FILESYSTEM_NAMESPACE::detail::iterator_helper&lt;path_type&gt;;
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>                :            :       // Deprecated features ease transition for existing code. Don't use these
+<span class="lineNum">     336 </span>                :            :       // in new code.
+<span class="lineNum">     337 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     338 </span>                :            :     public:
+<span class="lineNum">     339 </span>                :            :       typedef bool (*name_check)( const std::string &amp; name );
+<span class="lineNum">     340 </span>                :            :       basic_path( const string_type &amp; str, name_check ) { operator/=( str ); }
+<span class="lineNum">     341 </span>                :            :       basic_path( const typename string_type::value_type * s, name_check )
+<span class="lineNum">     342 </span>                :            :         { operator/=( s );}
+<span class="lineNum">     343 </span>                :            :       string_type native_file_string() const { return file_string(); }
+<span class="lineNum">     344 </span>                :            :       string_type native_directory_string() const { return directory_string(); }
+<span class="lineNum">     345 </span>                :            :       static bool default_name_check_writable() { return false; } 
+<span class="lineNum">     346 </span>                :            :       static void default_name_check( name_check ) {}
+<span class="lineNum">     347 </span>                :            :       static name_check default_name_check() { return 0; }
+<span class="lineNum">     348 </span>                :            :       basic_path &amp; canonize();
+<span class="lineNum">     349 </span>                :            :       basic_path &amp; normalize();
+<span class="lineNum">     350 </span>                :            : # endif
+<span class="lineNum">     351 </span>                :            :     };
+<span class="lineNum">     352 </span>                :            : 
+<span class="lineNum">     353 </span>                :            :   //  basic_path non-member functions  ---------------------------------------//
+<span class="lineNum">     354 </span>                :            : 
+<span class="lineNum">     355 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     356 </span>                :            :     inline void swap( basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     357 </span>                :            :                basic_path&lt;String, Traits&gt; &amp; rhs ) { lhs.swap( rhs ); }
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     360 </span>                :            :     bool operator&lt;( const basic_path&lt;String, Traits&gt; &amp; lhs, const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     361 </span>                :            :     {
+<span class="lineNum">     362 </span>                :            :       return std::lexicographical_compare(
+<span class="lineNum">     363 </span>                :            :         lhs.begin(), lhs.end(), rhs.begin(), rhs.end() );
+<span class="lineNum">     364 </span>                :            :     }
+<span class="lineNum">     365 </span>                :            : 
+<span class="lineNum">     366 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     367 </span>                :            :     bool operator&lt;( const typename basic_path&lt;String, Traits&gt;::string_type::value_type * lhs,
+<span class="lineNum">     368 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     369 </span>                :            :     {
+<span class="lineNum">     370 </span>                :            :       basic_path&lt;String, Traits&gt; tmp( lhs );
+<span class="lineNum">     371 </span>                :            :       return std::lexicographical_compare(
+<span class="lineNum">     372 </span>                :            :         tmp.begin(), tmp.end(), rhs.begin(), rhs.end() );
+<span class="lineNum">     373 </span>                :            :     }
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     376 </span>                :            :     bool operator&lt;( const typename basic_path&lt;String, Traits&gt;::string_type &amp; lhs,
+<span class="lineNum">     377 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     378 </span>                :            :     {
+<span class="lineNum">     379 </span>                :            :       basic_path&lt;String, Traits&gt; tmp( lhs );
+<span class="lineNum">     380 </span>                :            :       return std::lexicographical_compare(
+<span class="lineNum">     381 </span>                :            :         tmp.begin(), tmp.end(), rhs.begin(), rhs.end() );
+<span class="lineNum">     382 </span>                :            :     }
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     385 </span>                :            :     bool operator&lt;( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     386 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type::value_type * rhs )
+<span class="lineNum">     387 </span>                :            :     {
+<span class="lineNum">     388 </span>                :            :       basic_path&lt;String, Traits&gt; tmp( rhs );
+<span class="lineNum">     389 </span>                :            :       return std::lexicographical_compare(
+<span class="lineNum">     390 </span>                :            :         lhs.begin(), lhs.end(), tmp.begin(), tmp.end() );
+<span class="lineNum">     391 </span>                :            :     }
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     394 </span>                :            :     bool operator&lt;( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     395 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type &amp; rhs )
+<span class="lineNum">     396 </span>                :            :     {
+<span class="lineNum">     397 </span>                :            :       basic_path&lt;String, Traits&gt; tmp( rhs );
+<span class="lineNum">     398 </span>                :            :       return std::lexicographical_compare(
+<span class="lineNum">     399 </span>                :            :         lhs.begin(), lhs.end(), tmp.begin(), tmp.end() );
+<span class="lineNum">     400 </span>                :            :     }
+<span class="lineNum">     401 </span>                :            : 
+<span class="lineNum">     402 </span>                :            :     //  operator == uses hand-written compare rather than !(lhs &lt; rhs) &amp;&amp; !(rhs &lt; lhs)
+<span class="lineNum">     403 </span>                :            :     //  because the result is the same yet the direct compare is much more efficient
+<span class="lineNum">     404 </span>                :            :     //  than lexicographical_compare, which would also be called twice.
+<span class="lineNum">     405 </span>                :            : 
+<span class="lineNum">     406 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     407 </span>                :            :     inline bool operator==( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     408 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type::value_type * rhs )
+<span class="lineNum">     409 </span>                :            :     {
+<span class="lineNum">     410 </span>                :            :       typedef typename
+<span class="lineNum">     411 </span>                :            :         boost::BOOST_FILESYSTEM_NAMESPACE::basic_path&lt;String, Traits&gt; path_type;
+<span class="lineNum">     412 </span>                :            :       const typename path_type::string_type::value_type * l (lhs.string().c_str());
+<span class="lineNum">     413 </span>                :            :       while ( (*l == *rhs
+<span class="lineNum">     414 </span>                :            : #      ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     415 </span>                :            :         || (*l == path_alt_separator&lt;path_type&gt;::value &amp;&amp; *rhs == slash&lt;path_type&gt;::value) 
+<span class="lineNum">     416 </span>                :            :             || (*l == slash&lt;path_type&gt;::value &amp;&amp; *rhs == path_alt_separator&lt;path_type&gt;::value)
+<span class="lineNum">     417 </span>                :            : #      endif
+<span class="lineNum">     418 </span>                :            :         ) &amp;&amp; *l ) { ++l; ++rhs; }
+<span class="lineNum">     419 </span>                :            :       return *l == *rhs
+<span class="lineNum">     420 </span>                :            : #      ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     421 </span>                :            :         || (*l == path_alt_separator&lt;path_type&gt;::value &amp;&amp; *rhs == slash&lt;path_type&gt;::value) 
+<span class="lineNum">     422 </span>                :            :           || (*l == slash&lt;path_type&gt;::value &amp;&amp; *rhs == path_alt_separator&lt;path_type&gt;::value)
+<span class="lineNum">     423 </span>                :            : #      endif
+<span class="lineNum">     424 </span>                :            :         ;  
+<span class="lineNum">     425 </span>                :            :     }
+<span class="lineNum">     426 </span>                :            : 
+<span class="lineNum">     427 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     428 </span>                :            :     inline bool operator==( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     429 </span>                :            :                             const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     430 </span>                :            :     { 
+<span class="lineNum">     431 </span>                :            :       return lhs == rhs.string().c_str();
+<span class="lineNum">     432 </span>                :            :     }
+<span class="lineNum">     433 </span>                :            : 
+<span class="lineNum">     434 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     435 </span>                :            :     inline bool operator==( const typename basic_path&lt;String, Traits&gt;::string_type::value_type * lhs,
+<span class="lineNum">     436 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     437 </span>                :            :     {
+<span class="lineNum">     438 </span>                :            :       return rhs == lhs;
+<span class="lineNum">     439 </span>                :            :     }
+<span class="lineNum">     440 </span>                :            : 
+<span class="lineNum">     441 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     442 </span>                :            :     inline bool operator==( const typename basic_path&lt;String, Traits&gt;::string_type &amp; lhs,
+<span class="lineNum">     443 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     444 </span>                :            :     {
+<span class="lineNum">     445 </span>                :            :       return rhs == lhs.c_str();
+<span class="lineNum">     446 </span>                :            :     }
+<span class="lineNum">     447 </span>                :            : 
+<span class="lineNum">     448 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     449 </span>                :            :     inline bool operator==( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     450 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type &amp; rhs )
+<span class="lineNum">     451 </span>                :            :     {
+<span class="lineNum">     452 </span>                :            :       return lhs == rhs.c_str();
+<span class="lineNum">     453 </span>                :            :     }
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     456 </span>                :            :     inline bool operator!=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     457 </span>                :            :       const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     458 </span>                :            :         { return !(lhs == rhs); }
+<span class="lineNum">     459 </span>                :            :     
+<span class="lineNum">     460 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     461 </span>                :            :     inline bool operator!=( const typename basic_path&lt;String,
+<span class="lineNum">     462 </span>                :            :       Traits&gt;::string_type::value_type * lhs,
+<span class="lineNum">     463 </span>                :            :         const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     464 </span>                :            :         { return !(lhs == rhs); }
+<span class="lineNum">     465 </span>                :            : 
+<span class="lineNum">     466 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     467 </span>                :            :     inline bool operator!=( const typename basic_path&lt;String, Traits&gt;::string_type &amp; lhs,
+<span class="lineNum">     468 </span>                :            :       const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     469 </span>                :            :         { return !(lhs == rhs); }
+<span class="lineNum">     470 </span>                :            : 
+<span class="lineNum">     471 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     472 </span>                :            :     inline bool operator!=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     473 </span>                :            :       const typename basic_path&lt;String, Traits&gt;::string_type::value_type * rhs )
+<span class="lineNum">     474 </span>                :            :         { return !(lhs == rhs); }
+<span class="lineNum">     475 </span>                :            : 
+<span class="lineNum">     476 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     477 </span>                :            :     inline bool operator!=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     478 </span>                :            :       const typename basic_path&lt;String, Traits&gt;::string_type &amp; rhs )
+<span class="lineNum">     479 </span>                :            :         { return !(lhs == rhs); }
+<span class="lineNum">     480 </span>                :            : 
+<span class="lineNum">     481 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     482 </span>                :            :     inline bool operator&gt;( const basic_path&lt;String, Traits&gt; &amp; lhs, const basic_path&lt;String, Traits&gt; &amp; rhs ) { return rhs &lt; lhs; }
+<span class="lineNum">     483 </span>                :            :     
+<span class="lineNum">     484 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     485 </span>                :            :     inline bool operator&gt;( const typename basic_path&lt;String, Traits&gt;::string_type::value_type * lhs,
+<span class="lineNum">     486 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs ) { return rhs &lt; basic_path&lt;String, Traits&gt;(lhs); }
+<span class="lineNum">     487 </span>                :            : 
+<span class="lineNum">     488 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     489 </span>                :            :     inline bool operator&gt;( const typename basic_path&lt;String, Traits&gt;::string_type &amp; lhs,
+<span class="lineNum">     490 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs ) { return rhs &lt; basic_path&lt;String, Traits&gt;(lhs); }
+<span class="lineNum">     491 </span>                :            : 
+<span class="lineNum">     492 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     493 </span>                :            :     inline bool operator&gt;( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     494 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type::value_type * rhs )
+<span class="lineNum">     495 </span>                :            :                     { return basic_path&lt;String, Traits&gt;(rhs) &lt; lhs; }
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     498 </span>                :            :     inline bool operator&gt;( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     499 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type &amp; rhs )
+<span class="lineNum">     500 </span>                :            :                     { return basic_path&lt;String, Traits&gt;(rhs) &lt; lhs; }
+<span class="lineNum">     501 </span>                :            : 
+<span class="lineNum">     502 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     503 </span>                :            :     inline bool operator&lt;=( const basic_path&lt;String, Traits&gt; &amp; lhs, const basic_path&lt;String, Traits&gt; &amp; rhs ) { return !(rhs &lt; lhs); }
+<span class="lineNum">     504 </span>                :            :     
+<span class="lineNum">     505 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     506 </span>                :            :     inline bool operator&lt;=( const typename basic_path&lt;String, Traits&gt;::string_type::value_type * lhs,
+<span class="lineNum">     507 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs ) { return !(rhs &lt; basic_path&lt;String, Traits&gt;(lhs)); }
+<span class="lineNum">     508 </span>                :            : 
+<span class="lineNum">     509 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     510 </span>                :            :     inline bool operator&lt;=( const typename basic_path&lt;String, Traits&gt;::string_type &amp; lhs,
+<span class="lineNum">     511 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs ) { return !(rhs &lt; basic_path&lt;String, Traits&gt;(lhs)); }
+<span class="lineNum">     512 </span>                :            : 
+<span class="lineNum">     513 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     514 </span>                :            :     inline bool operator&lt;=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     515 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type::value_type * rhs )
+<span class="lineNum">     516 </span>                :            :                     { return !(basic_path&lt;String, Traits&gt;(rhs) &lt; lhs); }
+<span class="lineNum">     517 </span>                :            : 
+<span class="lineNum">     518 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     519 </span>                :            :     inline bool operator&lt;=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     520 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type &amp; rhs )
+<span class="lineNum">     521 </span>                :            :                     { return !(basic_path&lt;String, Traits&gt;(rhs) &lt; lhs); }
+<span class="lineNum">     522 </span>                :            : 
+<span class="lineNum">     523 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     524 </span>                :            :     inline bool operator&gt;=( const basic_path&lt;String, Traits&gt; &amp; lhs, const basic_path&lt;String, Traits&gt; &amp; rhs ) { return !(lhs &lt; rhs); }
+<span class="lineNum">     525 </span>                :            :     
+<span class="lineNum">     526 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     527 </span>                :            :     inline bool operator&gt;=( const typename basic_path&lt;String, Traits&gt;::string_type::value_type * lhs,
+<span class="lineNum">     528 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs ) { return !(lhs &lt; basic_path&lt;String, Traits&gt;(rhs)); }
+<span class="lineNum">     529 </span>                :            : 
+<span class="lineNum">     530 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     531 </span>                :            :     inline bool operator&gt;=( const typename basic_path&lt;String, Traits&gt;::string_type &amp; lhs,
+<span class="lineNum">     532 </span>                :            :                     const basic_path&lt;String, Traits&gt; &amp; rhs ) { return !(lhs &lt; basic_path&lt;String, Traits&gt;(rhs)); }
+<span class="lineNum">     533 </span>                :            : 
+<span class="lineNum">     534 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     535 </span>                :            :     inline bool operator&gt;=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     536 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type::value_type * rhs )
+<span class="lineNum">     537 </span>                :            :                     { return !(basic_path&lt;String, Traits&gt;(lhs) &lt; rhs); }
+<span class="lineNum">     538 </span>                :            : 
+<span class="lineNum">     539 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     540 </span>                :            :     inline bool operator&gt;=( const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     541 </span>                :            :                     const typename basic_path&lt;String, Traits&gt;::string_type &amp; rhs )
+<span class="lineNum">     542 </span>                :            :                     { return !(basic_path&lt;String, Traits&gt;(lhs) &lt; rhs); }
+<span class="lineNum">     543 </span>                :            : 
+<span class="lineNum">     544 </span>                :            :     // operator /
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     547 </span>                :            :     inline basic_path&lt;String, Traits&gt; operator/( 
+<span class="lineNum">     548 </span>                :            :       const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     549 </span>                :            :       const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     550 </span>                :            :       { return basic_path&lt;String, Traits&gt;( lhs ) /= rhs; }
+<span class="lineNum">     551 </span>                :            : 
+<span class="lineNum">     552 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     553 </span>                :            :     inline basic_path&lt;String, Traits&gt; operator/( 
+<span class="lineNum">     554 </span>                :            :       const basic_path&lt;String, Traits&gt; &amp; lhs,
+<span class="lineNum">     555 </span>                :            :       const typename String::value_type * rhs )
+<span class="lineNum">     556 </span>                :            :       { return basic_path&lt;String, Traits&gt;( lhs ) /=
+<span class="lineNum">     557 </span>                :            :           basic_path&lt;String, Traits&gt;( rhs ); }
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     560 </span>                :            :     inline basic_path&lt;String, Traits&gt; operator/( 
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :       const basic_path&lt;String, Traits&gt; &amp; lhs, const String &amp; rhs )</span>
+<span class="lineNum">     562 </span>                :            :       { return basic_path&lt;String, Traits&gt;( lhs ) /=
+<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :           basic_path&lt;String, Traits&gt;( rhs ); }</span>
+<span class="lineNum">     564 </span>                :            : 
+<span class="lineNum">     565 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     566 </span>                :            :     inline basic_path&lt;String, Traits&gt; operator/( 
+<span class="lineNum">     567 </span>                :            :       const typename String::value_type * lhs,
+<span class="lineNum">     568 </span>                :            :       const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     569 </span>                :            :       { return basic_path&lt;String, Traits&gt;( lhs ) /= rhs; }
+<span class="lineNum">     570 </span>                :            : 
+<span class="lineNum">     571 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     572 </span>                :            :     inline basic_path&lt;String, Traits&gt; operator/(
+<span class="lineNum">     573 </span>                :            :       const String &amp; lhs, const basic_path&lt;String, Traits&gt; &amp; rhs )
+<span class="lineNum">     574 </span>                :            :       { return basic_path&lt;String, Traits&gt;( lhs ) /= rhs; }
+<span class="lineNum">     575 </span>                :            :    
+<span class="lineNum">     576 </span>                :            :     //  inserters and extractors  --------------------------------------------//
+<span class="lineNum">     577 </span>                :            : 
+<span class="lineNum">     578 </span>                :            : // bypass VC++ 7.0 and earlier, and broken Borland compilers
+<span class="lineNum">     579 </span>                :            : # if !BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300) &amp;&amp; !BOOST_WORKAROUND(__BORLANDC__, &lt; 0x610)
+<span class="lineNum">     580 </span>                :            :     template&lt; class Path &gt;
+<span class="lineNum">     581 </span>                :            :     std::basic_ostream&lt; typename Path::string_type::value_type,
+<span class="lineNum">     582 </span>                :            :       typename Path::string_type::traits_type &gt; &amp;
+<span class="lineNum">     583 </span>                :            :       operator&lt;&lt;
+<span class="lineNum">     584 </span>                :            :       ( std::basic_ostream&lt; typename Path::string_type::value_type,
+<span class="lineNum">     585 </span>                :            :       typename Path::string_type::traits_type &gt;&amp; os, const Path &amp; ph )
+<span class="lineNum">     586 </span>                :            :     {
+<span class="lineNum">     587 </span>                :            :       os &lt;&lt; ph.string();
+<span class="lineNum">     588 </span>                :            :       return os;
+<span class="lineNum">     589 </span>                :            :     }
+<span class="lineNum">     590 </span>                :            : 
+<span class="lineNum">     591 </span>                :            :     template&lt; class Path &gt;
+<span class="lineNum">     592 </span>                :            :     std::basic_istream&lt; typename Path::string_type::value_type,
+<span class="lineNum">     593 </span>                :            :       typename Path::string_type::traits_type &gt; &amp;
+<span class="lineNum">     594 </span>                :            :       operator&gt;&gt;
+<span class="lineNum">     595 </span>                :            :       ( std::basic_istream&lt; typename Path::string_type::value_type,
+<span class="lineNum">     596 </span>                :            :       typename Path::string_type::traits_type &gt;&amp; is, Path &amp; ph )
+<span class="lineNum">     597 </span>                :            :     {
+<span class="lineNum">     598 </span>                :            :       typename Path::string_type str;
+<span class="lineNum">     599 </span>                :            :       is &gt;&gt; str;
+<span class="lineNum">     600 </span>                :            :       ph = str;
+<span class="lineNum">     601 </span>                :            :       return is;
+<span class="lineNum">     602 </span>                :            :     }
+<span class="lineNum">     603 </span>                :            : # elif BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+<span class="lineNum">     604 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     605 </span>                :            :     std::basic_ostream&lt; BOOST_DEDUCED_TYPENAME String::value_type,
+<span class="lineNum">     606 </span>                :            :       BOOST_DEDUCED_TYPENAME String::traits_type &gt; &amp;
+<span class="lineNum">     607 </span>                :            :       operator&lt;&lt;
+<span class="lineNum">     608 </span>                :            :       ( std::basic_ostream&lt; BOOST_DEDUCED_TYPENAME String::value_type,
+<span class="lineNum">     609 </span>                :            :           BOOST_DEDUCED_TYPENAME String::traits_type &gt;&amp; os, 
+<span class="lineNum">     610 </span>                :            :         const basic_path&lt; String, Traits &gt; &amp; ph )
+<span class="lineNum">     611 </span>                :            :     {
+<span class="lineNum">     612 </span>                :            :       os &lt;&lt; ph.string();
+<span class="lineNum">     613 </span>                :            :       return os;
+<span class="lineNum">     614 </span>                :            :     }
+<span class="lineNum">     615 </span>                :            : 
+<span class="lineNum">     616 </span>                :            :     template&lt; class String, class Traits &gt;
+<span class="lineNum">     617 </span>                :            :     std::basic_istream&lt; BOOST_DEDUCED_TYPENAME String::value_type, 
+<span class="lineNum">     618 </span>                :            :       BOOST_DEDUCED_TYPENAME String::traits_type &gt; &amp;
+<span class="lineNum">     619 </span>                :            :       operator&gt;&gt;
+<span class="lineNum">     620 </span>                :            :       ( std::basic_istream&lt; BOOST_DEDUCED_TYPENAME String::value_type,
+<span class="lineNum">     621 </span>                :            :           BOOST_DEDUCED_TYPENAME String::traits_type&gt; &amp; is,
+<span class="lineNum">     622 </span>                :            :         basic_path&lt; String, Traits &gt; &amp; ph )
+<span class="lineNum">     623 </span>                :            :     {
+<span class="lineNum">     624 </span>                :            :       String str;
+<span class="lineNum">     625 </span>                :            :       is &gt;&gt; str;
+<span class="lineNum">     626 </span>                :            :       ph = str;
+<span class="lineNum">     627 </span>                :            :       return is;
+<span class="lineNum">     628 </span>                :            :     }
+<span class="lineNum">     629 </span>                :            : # endif
+<span class="lineNum">     630 </span>                :            : 
+<span class="lineNum">     631 </span>                :            :     //  basic_filesystem_error helpers  --------------------------------------//
+<span class="lineNum">     632 </span>                :            : 
+<span class="lineNum">     633 </span>                :            :     //  Originally choice of implementation was done via specialization of
+<span class="lineNum">     634 </span>                :            :     //  basic_filesystem_error::what(). Several compilers (GCC, aCC, etc.)
+<span class="lineNum">     635 </span>                :            :     //  couldn't handle that, so the choice is now accomplished by overloading.
+<span class="lineNum">     636 </span>                :            : 
+<span class="lineNum">     637 </span>                :            :     namespace detail
+<span class="lineNum">     638 </span>                :            :     {
+<span class="lineNum">     639 </span>                :            :       // BOOST_FILESYSTEM_DECL version works for VC++ but not GCC. Go figure!
+<span class="lineNum">     640 </span>                :            :       inline
+<span class="lineNum">     641 </span>                :            :       const char * what( const char * sys_err_what,
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :         const path &amp; path1_arg, const path &amp; path2_arg, std::string &amp; target )</span>
+<span class="lineNum">     643 </span>                :            :       {
+<span class="lineNum">     644 </span>                :            :         try
+<span class="lineNum">     645 </span>                :            :         {
+<span class="lineNum">     646 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :           if ( target.empty() )</span>
+<span class="lineNum">     647 </span>                :            :           {
+<span class="lineNum">     648 </span>                :<span class="lineNoCov">          0 :             target = sys_err_what;</span>
+<span class="lineNum">     649 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :             if ( !path1_arg.empty() )</span>
+<span class="lineNum">     650 </span>                :            :             {
+<span class="lineNum">     651 </span>                :<span class="lineNoCov">          0 :               target += &quot;: \&quot;&quot;;</span>
+<span class="lineNum">     652 </span>                :<span class="lineNoCov">          0 :               target += path1_arg.file_string();</span>
+<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :               target += &quot;\&quot;&quot;;</span>
+<span class="lineNum">     654 </span>                :            :             }
+<span class="lineNum">     655 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :             if ( !path2_arg.empty() )</span>
+<span class="lineNum">     656 </span>                :            :             {
+<span class="lineNum">     657 </span>                :<span class="lineNoCov">          0 :               target += &quot;, \&quot;&quot;;</span>
+<span class="lineNum">     658 </span>                :<span class="lineNoCov">          0 :               target += path2_arg.file_string();</span>
+<span class="lineNum">     659 </span>                :<span class="lineNoCov">          0 :               target += &quot;\&quot;&quot;;</span>
+<span class="lineNum">     660 </span>                :            :             }
+<span class="lineNum">     661 </span>                :            :           }
+<span class="lineNum">     662 </span>                :<span class="lineNoCov">          0 :           return target.c_str();</span>
+<span class="lineNum">     663 </span>                :            :         }
+<span class="lineNum">     664 </span>                :<span class="lineNoCov">          0 :         catch (...)</span>
+<span class="lineNum">     665 </span>                :            :         {
+<span class="lineNum">     666 </span>                :<span class="lineNoCov">          0 :           return sys_err_what;</span>
+<span class="lineNum">     667 </span>                :            :         }
+<span class="lineNum">     668 </span>                :            :       }
+<span class="lineNum">     669 </span>                :            : 
+<span class="lineNum">     670 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     671 </span>                :            :       const char * what( const char * sys_err_what,
+<span class="lineNum">     672 </span>                :            :         const Path &amp; /*path1_arg*/, const Path &amp; /*path2_arg*/, std::string &amp; /*target*/ )
+<span class="lineNum">     673 </span>                :            :       {
+<span class="lineNum">     674 </span>                :            :         return sys_err_what;
+<span class="lineNum">     675 </span>                :            :       }
+<span class="lineNum">     676 </span>                :            :     }
+<span class="lineNum">     677 </span>                :            : 
+<span class="lineNum">     678 </span>                :            :     //  basic_filesystem_error  ----------------------------------------------//
+<span class="lineNum">     679 </span>                :            : 
+<span class="lineNum">     680 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">     681 </span>                :            :     class basic_filesystem_error : public system::system_error
+<span class="lineNum">     682 </span>                :            :     {
+<span class="lineNum">     683 </span>                :            :     // see http://www.boost.org/more/error_handling.html for design rationale
+<span class="lineNum">     684 </span>                :            :     public:
+<span class="lineNum">     685 </span>                :            :       // compiler generates copy constructor and copy assignment
+<span class="lineNum">     686 </span>                :            : 
+<span class="lineNum">     687 </span>                :            :       typedef Path path_type;
+<span class="lineNum">     688 </span>                :            : 
+<span class="lineNum">     689 </span>                :            :       basic_filesystem_error( const std::string &amp; what_arg,
+<span class="lineNum">     690 </span>                :            :         system::error_code ec );
+<span class="lineNum">     691 </span>                :            : 
+<span class="lineNum">     692 </span>                :            :       basic_filesystem_error( const std::string &amp; what_arg,
+<span class="lineNum">     693 </span>                :            :         const path_type &amp; path1_arg, system::error_code ec );
+<span class="lineNum">     694 </span>                :            : 
+<span class="lineNum">     695 </span>                :            :       basic_filesystem_error( const std::string &amp; what_arg, const path_type &amp; path1_arg,
+<span class="lineNum">     696 </span>                :            :         const path_type &amp; path2_arg, system::error_code ec );
+<span class="lineNum">     697 </span>                :            : 
+<span class="lineNum">     698 </span>                :<span class="lineCov">          6 :       ~basic_filesystem_error() throw() {}</span>
+<span class="lineNum">     699 </span>                :            : 
+<span class="lineNum">     700 </span>                :            :       const path_type &amp; path1() const
+<span class="lineNum">     701 </span>                :            :       {
+<span class="lineNum">     702 </span>                :            :         static const path_type empty_path;
+<span class="lineNum">     703 </span>                :            :         return m_imp_ptr.get() ? m_imp_ptr-&gt;m_path1 : empty_path ;
+<span class="lineNum">     704 </span>                :            :       }
+<span class="lineNum">     705 </span>                :            :       const path_type &amp; path2() const
+<span class="lineNum">     706 </span>                :            :       {
+<span class="lineNum">     707 </span>                :            :         static const path_type empty_path;
+<span class="lineNum">     708 </span>                :            :         return m_imp_ptr.get() ? m_imp_ptr-&gt;m_path2 : empty_path ;
+<span class="lineNum">     709 </span>                :            :       }
+<span class="lineNum">     710 </span>                :            : 
+<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :       const char * what() const throw()</span>
+<span class="lineNum">     712 </span>                :            :       { 
+<span class="lineNum">     713 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if ( !m_imp_ptr.get() )</span>
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :           return system::system_error::what();</span>
+<span class="lineNum">     715 </span>                :            :         return detail::what( system::system_error::what(), m_imp_ptr-&gt;m_path1,
+<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :           m_imp_ptr-&gt;m_path2, m_imp_ptr-&gt;m_what );  </span>
+<span class="lineNum">     717 </span>                :            :       }
+<span class="lineNum">     718 </span>                :            : 
+<span class="lineNum">     719 </span>                :            :     private:
+<span class="lineNum">     720 </span>                :            :       struct m_imp
+<span class="lineNum">     721 </span>                :            :       {
+<span class="lineNum">     722 </span>                :            :         path_type                 m_path1; // may be empty()
+<span class="lineNum">     723 </span>                :            :         path_type                 m_path2; // may be empty()
+<span class="lineNum">     724 </span>                :            :         std::string               m_what;  // not built until needed
+<span class="lineNum">     725 </span>                :            :       };
+<span class="lineNum">     726 </span>                :            :       boost::shared_ptr&lt;m_imp&gt; m_imp_ptr;
+<span class="lineNum">     727 </span>                :            :     };
+<span class="lineNum">     728 </span>                :            : 
+<span class="lineNum">     729 </span>                :            :     typedef basic_filesystem_error&lt;path&gt; filesystem_error;
+<span class="lineNum">     730 </span>                :            : 
+<span class="lineNum">     731 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">     732 </span>                :            :     typedef basic_filesystem_error&lt;wpath&gt; wfilesystem_error;
+<span class="lineNum">     733 </span>                :            : # endif
+<span class="lineNum">     734 </span>                :            : 
+<span class="lineNum">     735 </span>                :            :   //  path::name_checks  -----------------------------------------------------//
+<span class="lineNum">     736 </span>                :            : 
+<span class="lineNum">     737 </span>                :            :     BOOST_FILESYSTEM_DECL bool portable_posix_name( const std::string &amp; name );
+<span class="lineNum">     738 </span>                :            :     BOOST_FILESYSTEM_DECL bool windows_name( const std::string &amp; name );
+<span class="lineNum">     739 </span>                :            :     BOOST_FILESYSTEM_DECL bool portable_name( const std::string &amp; name );
+<span class="lineNum">     740 </span>                :            :     BOOST_FILESYSTEM_DECL bool portable_directory_name( const std::string &amp; name );
+<span class="lineNum">     741 </span>                :            :     BOOST_FILESYSTEM_DECL bool portable_file_name( const std::string &amp; name );
+<span class="lineNum">     742 </span>                :            :     BOOST_FILESYSTEM_DECL bool native( const std::string &amp; name );
+<span class="lineNum">     743 </span>                :            :     inline bool no_check( const std::string &amp; )
+<span class="lineNum">     744 </span>                :            :       { return true; }
+<span class="lineNum">     745 </span>                :            : 
+<span class="lineNum">     746 </span>                :            : // implementation  -----------------------------------------------------------//
+<span class="lineNum">     747 </span>                :            : 
+<span class="lineNum">     748 </span>                :            :     namespace detail
+<span class="lineNum">     749 </span>                :            :     {
+<span class="lineNum">     750 </span>                :            : 
+<span class="lineNum">     751 </span>                :            :       //  is_separator helper ------------------------------------------------//
+<span class="lineNum">     752 </span>                :            : 
+<span class="lineNum">     753 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 :       inline  bool is_separator( typename Path::string_type::value_type c )</span>
+<span class="lineNum">     755 </span>                :            :       {
+<span class="lineNum">     756 </span>                :<span class="lineNoCov">          0 :         return c == slash&lt;Path&gt;::value</span>
+<span class="lineNum">     757 </span>                :            : #     ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     758 </span>                :            :           || c == path_alt_separator&lt;Path&gt;::value
+<span class="lineNum">     759 </span>                :            : #     endif
+<span class="lineNum">     760 </span>                :            :           ;
+<span class="lineNum">     761 </span>                :            :       }
+<span class="lineNum">     762 </span>                :            : 
+<span class="lineNum">     763 </span>                :            :       // filename_pos helper  ----------------------------------------------------//
+<span class="lineNum">     764 </span>                :            : 
+<span class="lineNum">     765 </span>                :            :       template&lt;class String, class Traits&gt;
+<span class="lineNum">     766 </span>                :            :       typename String::size_type filename_pos(
+<span class="lineNum">     767 </span>                :            :         const String &amp; str, // precondition: portable generic path grammar
+<span class="lineNum">     768 </span>                :<span class="lineCov">        337 :         typename String::size_type end_pos ) // end_pos is past-the-end position</span>
+<span class="lineNum">     769 </span>                :            :       // return 0 if str itself is filename (or empty)
+<span class="lineNum">     770 </span>                :            :       {
+<span class="lineNum">     771 </span>                :            :         typedef typename
+<span class="lineNum">     772 </span>                :            :           boost::BOOST_FILESYSTEM_NAMESPACE::basic_path&lt;String, Traits&gt; path_type;
+<span class="lineNum">     773 </span>                :            : 
+<span class="lineNum">     774 </span>                :            :         // case: &quot;//&quot;
+<span class="lineNum">     775 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 337 times"> + </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span>:<span class="lineCov">        337 :         if ( end_pos == 2 </span>
+<span class="lineNum">         </span>      <span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 337 times"> + </span>]
+<span class="lineNum">     776 </span>                :            :           &amp;&amp; str[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :           &amp;&amp; str[1] == slash&lt;path_type&gt;::value ) return 0;</span>
+<span class="lineNum">     778 </span>                :            : 
+<span class="lineNum">     779 </span>                :            :         // case: ends in &quot;/&quot;
+<span class="lineNum">     780 </span>[<span class="branchCov" title="Branch 0 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 124 times"> + </span><span class="branchCov" title="Branch 4 was taken 213 times"> + </span><span class="branchCov" title="Branch 5 was taken 124 times"> + </span>:<span class="lineCov">        337 :         if ( end_pos &amp;&amp; str[end_pos-1] == slash&lt;path_type&gt;::value )</span>
+<span class="lineNum">         </span>            <span class="branchCov" title="Branch 6 was taken 213 times"> + </span>]
+<span class="lineNum">     781 </span>                :<span class="lineCov">        124 :           return end_pos-1;</span>
+<span class="lineNum">     782 </span>                :            :         
+<span class="lineNum">     783 </span>                :            :         // set pos to start of last element
+<span class="lineNum">     784 </span>                :            :         typename String::size_type pos(
+<span class="lineNum">     785 </span>                :<span class="lineCov">        213 :           str.find_last_of( slash&lt;path_type&gt;::value, end_pos-1 ) );</span>
+<span class="lineNum">     786 </span>                :            : #       ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     787 </span>                :            :         if ( pos == String::npos )
+<span class="lineNum">     788 </span>                :            :           pos = str.find_last_of( path_alt_separator&lt;path_type&gt;::value, end_pos-1 );
+<span class="lineNum">     789 </span>                :            :         if ( pos == String::npos )
+<span class="lineNum">     790 </span>                :            :           pos = str.find_last_of( colon&lt;path_type&gt;::value, end_pos-2 );
+<span class="lineNum">     791 </span>                :            : #       endif
+<span class="lineNum">     792 </span>                :            : 
+<span class="lineNum">     793 </span>                :            :         return ( pos == String::npos // path itself must be a filename (or empty)
+<span class="lineNum">     794 </span>                :            :           || (pos == 1 &amp;&amp; str[0] == slash&lt;path_type&gt;::value) ) // or net
+<span class="lineNum">     795 </span>                :            :             ? 0 // so filename is entire string
+<span class="lineNum">     796 </span>[<span class="branchCov" title="Branch 0 was taken 213 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 213 times"> + </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>:<span class="lineCov">        213 :             : pos + 1; // or starts after delimiter</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span>]
+<span class="lineNum">     797 </span>                :            :       }
+<span class="lineNum">     798 </span>                :            : 
+<span class="lineNum">     799 </span>                :            :       // first_element helper  -----------------------------------------------//
+<span class="lineNum">     800 </span>                :            :       //   sets pos and len of first element, excluding extra separators
+<span class="lineNum">     801 </span>                :            :       //   if src.empty(), sets pos,len, to 0,0.
+<span class="lineNum">     802 </span>                :            : 
+<span class="lineNum">     803 </span>                :            :       template&lt;class String, class Traits&gt;
+<span class="lineNum">     804 </span>                :            :         void first_element(
+<span class="lineNum">     805 </span>                :            :           const String &amp; src, // precondition: portable generic path grammar
+<span class="lineNum">     806 </span>                :            :           typename String::size_type &amp; element_pos,
+<span class="lineNum">     807 </span>                :            :           typename String::size_type &amp; element_size,
+<span class="lineNum">     808 </span>                :            : #       if !BOOST_WORKAROUND( BOOST_MSVC, &lt;= 1310 ) // VC++ 7.1
+<span class="lineNum">     809 </span>                :            :           typename String::size_type size = String::npos
+<span class="lineNum">     810 </span>                :            : #       else
+<span class="lineNum">     811 </span>                :            :           typename String::size_type size = -1
+<span class="lineNum">     812 </span>                :            : #       endif
+<span class="lineNum">     813 </span>                :            :           )
+<span class="lineNum">     814 </span>                :            :       {
+<span class="lineNum">     815 </span>                :            :         if ( size == String::npos ) size = src.size();
+<span class="lineNum">     816 </span>                :            :         element_pos = 0;
+<span class="lineNum">     817 </span>                :            :         element_size = 0;
+<span class="lineNum">     818 </span>                :            :         if ( src.empty() ) return;
+<span class="lineNum">     819 </span>                :            : 
+<span class="lineNum">     820 </span>                :            :         typedef typename boost::BOOST_FILESYSTEM_NAMESPACE::basic_path&lt;String, Traits&gt; path_type;
+<span class="lineNum">     821 </span>                :            : 
+<span class="lineNum">     822 </span>                :            :         typename String::size_type cur(0);
+<span class="lineNum">     823 </span>                :            :         
+<span class="lineNum">     824 </span>                :            :         // deal with // [network]
+<span class="lineNum">     825 </span>                :            :         if ( size &gt;= 2 &amp;&amp; src[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">     826 </span>                :            :           &amp;&amp; src[1] == slash&lt;path_type&gt;::value
+<span class="lineNum">     827 </span>                :            :           &amp;&amp; (size == 2
+<span class="lineNum">     828 </span>                :            :             || src[2] != slash&lt;path_type&gt;::value) )
+<span class="lineNum">     829 </span>                :            :         { 
+<span class="lineNum">     830 </span>                :            :           cur += 2;
+<span class="lineNum">     831 </span>                :            :           element_size += 2;
+<span class="lineNum">     832 </span>                :            :         }
+<span class="lineNum">     833 </span>                :            : 
+<span class="lineNum">     834 </span>                :            :         // leading (not non-network) separator
+<span class="lineNum">     835 </span>                :            :         else if ( src[0] == slash&lt;path_type&gt;::value )
+<span class="lineNum">     836 </span>                :            :         {
+<span class="lineNum">     837 </span>                :            :           ++element_size;
+<span class="lineNum">     838 </span>                :            :           // bypass extra leading separators
+<span class="lineNum">     839 </span>                :            :           while ( cur+1 &lt; size
+<span class="lineNum">     840 </span>                :            :             &amp;&amp; src[cur+1] == slash&lt;path_type&gt;::value )
+<span class="lineNum">     841 </span>                :            :           {
+<span class="lineNum">     842 </span>                :            :             ++cur;
+<span class="lineNum">     843 </span>                :            :             ++element_pos;
+<span class="lineNum">     844 </span>                :            :           }
+<span class="lineNum">     845 </span>                :            :           return;
+<span class="lineNum">     846 </span>                :            :         }
+<span class="lineNum">     847 </span>                :            : 
+<span class="lineNum">     848 </span>                :            :         // at this point, we have either a plain name, a network name,
+<span class="lineNum">     849 </span>                :            :         // or (on Windows only) a device name
+<span class="lineNum">     850 </span>                :            : 
+<span class="lineNum">     851 </span>                :            :         // find the end
+<span class="lineNum">     852 </span>                :            :         while ( cur &lt; size
+<span class="lineNum">     853 </span>                :            : #         ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     854 </span>                :            :           &amp;&amp; src[cur] != colon&lt;path_type&gt;::value
+<span class="lineNum">     855 </span>                :            : #         endif
+<span class="lineNum">     856 </span>                :            :           &amp;&amp; src[cur] != slash&lt;path_type&gt;::value )
+<span class="lineNum">     857 </span>                :            :         {
+<span class="lineNum">     858 </span>                :            :           ++cur;
+<span class="lineNum">     859 </span>                :            :           ++element_size;
+<span class="lineNum">     860 </span>                :            :         }
+<span class="lineNum">     861 </span>                :            : 
+<span class="lineNum">     862 </span>                :            : #       ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     863 </span>                :            :         if ( cur == size ) return;
+<span class="lineNum">     864 </span>                :            :         // include device delimiter
+<span class="lineNum">     865 </span>                :            :         if ( src[cur] == colon&lt;path_type&gt;::value )
+<span class="lineNum">     866 </span>                :            :           { ++element_size; }
+<span class="lineNum">     867 </span>                :            : #       endif
+<span class="lineNum">     868 </span>                :            : 
+<span class="lineNum">     869 </span>                :            :         return;
+<span class="lineNum">     870 </span>                :            :       }
+<span class="lineNum">     871 </span>                :            : 
+<span class="lineNum">     872 </span>                :            :       // root_directory_start helper  ----------------------------------------//
+<span class="lineNum">     873 </span>                :            : 
+<span class="lineNum">     874 </span>                :            :       template&lt;class String, class Traits&gt;
+<span class="lineNum">     875 </span>                :            :       typename String::size_type root_directory_start(
+<span class="lineNum">     876 </span>                :            :         const String &amp; s, // precondition: portable generic path grammar
+<span class="lineNum">     877 </span>                :<span class="lineCov">        337 :         typename String::size_type size )</span>
+<span class="lineNum">     878 </span>                :            :       // return npos if no root_directory found
+<span class="lineNum">     879 </span>                :            :       {
+<span class="lineNum">     880 </span>                :            :         typedef typename boost::BOOST_FILESYSTEM_NAMESPACE::basic_path&lt;String, Traits&gt; path_type;
+<span class="lineNum">     881 </span>                :            : 
+<span class="lineNum">     882 </span>                :            : #     ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     883 </span>                :            :         // case &quot;c:/&quot;
+<span class="lineNum">     884 </span>                :            :         if ( size &gt; 2
+<span class="lineNum">     885 </span>                :            :           &amp;&amp; s[1] == colon&lt;path_type&gt;::value
+<span class="lineNum">     886 </span>                :            :           &amp;&amp; s[2] == slash&lt;path_type&gt;::value ) return 2;
+<span class="lineNum">     887 </span>                :            : #     endif
+<span class="lineNum">     888 </span>                :            : 
+<span class="lineNum">     889 </span>                :            :         // case &quot;//&quot;
+<span class="lineNum">     890 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 337 times"> + </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span>:<span class="lineCov">        337 :         if ( size == 2</span>
+<span class="lineNum">         </span>      <span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 337 times"> + </span>]
+<span class="lineNum">     891 </span>                :            :           &amp;&amp; s[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">     892 </span>                :<span class="lineNoCov">          0 :           &amp;&amp; s[1] == slash&lt;path_type&gt;::value ) return String::npos;</span>
+<span class="lineNum">     893 </span>                :            : 
+<span class="lineNum">     894 </span>                :            :         // case &quot;//net {/}&quot;
+<span class="lineNum">     895 </span>[<span class="branchCov" title="Branch 0 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>:<span class="lineCov">        337 :         if ( size &gt; 3</span>
+<span class="lineNum">         </span><span class="branchCov" title="Branch 7 was taken 337 times"> + </span><span class="branchNoExec" title="Block containing branch 9 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span><span class="branchCov" title="Branch 12 was taken 337 times"> + </span>]
+<span class="lineNum">     896 </span>                :            :           &amp;&amp; s[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">     897 </span>                :            :           &amp;&amp; s[1] == slash&lt;path_type&gt;::value
+<span class="lineNum">     898 </span>                :            :           &amp;&amp; s[2] != slash&lt;path_type&gt;::value )
+<span class="lineNum">     899 </span>                :            :         {
+<span class="lineNum">     900 </span>                :            :           typename String::size_type pos(
+<span class="lineNum">     901 </span>                :<span class="lineNoCov">          0 :             s.find( slash&lt;path_type&gt;::value, 2 ) );</span>
+<span class="lineNum">     902 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :           return pos &lt; size ? pos : String::npos;</span>
+<span class="lineNum">     903 </span>                :            :         }
+<span class="lineNum">     904 </span>                :            :         
+<span class="lineNum">     905 </span>                :            :         // case &quot;/&quot;
+<span class="lineNum">     906 </span>[<span class="branchCov" title="Branch 0 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 337 times"> + </span>:<span class="lineCov">        337 :         if ( size &gt; 0 &amp;&amp; s[0] == slash&lt;path_type&gt;::value ) return 0;</span>
+<span class="lineNum">         </span>            <span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     907 </span>                :            : 
+<span class="lineNum">     908 </span>                :<span class="lineNoCov">          0 :         return String::npos;</span>
+<span class="lineNum">     909 </span>                :            :       }
+<span class="lineNum">     910 </span>                :            : 
+<span class="lineNum">     911 </span>                :            :       // is_non_root_slash helper  -------------------------------------------//
+<span class="lineNum">     912 </span>                :            : 
+<span class="lineNum">     913 </span>                :            :       template&lt;class String, class Traits&gt;
+<span class="lineNum">     914 </span>                :            :       bool is_non_root_slash( const String &amp; str,
+<span class="lineNum">     915 </span>                :<span class="lineNoCov">          0 :         typename String::size_type pos ) // pos is position of the slash</span>
+<span class="lineNum">     916 </span>                :            :       {
+<span class="lineNum">     917 </span>                :            :         typedef typename
+<span class="lineNum">     918 </span>                :            :           boost::BOOST_FILESYSTEM_NAMESPACE::basic_path&lt;String, Traits&gt;
+<span class="lineNum">     919 </span>                :            :             path_type;
+<span class="lineNum">     920 </span>                :            : 
+<span class="lineNum">     921 </span>                :<span class="lineNoCov">          0 :         assert( !str.empty() &amp;&amp; str[pos] == slash&lt;path_type&gt;::value</span>
+<span class="lineNum">     922 </span>                :            :           &amp;&amp; &quot;precondition violation&quot; );
+<span class="lineNum">     923 </span>                :            : 
+<span class="lineNum">     924 </span>                :            :         // subsequent logic expects pos to be for leftmost slash of a set
+<span class="lineNum">     925 </span>                :<span class="lineNoCov">          0 :         while ( pos &gt; 0 &amp;&amp; str[pos-1] == slash&lt;path_type&gt;::value )</span>
+<span class="lineNum">     926 </span>                :<span class="lineNoCov">          0 :           --pos;</span>
+<span class="lineNum">     927 </span>                :            : 
+<span class="lineNum">     928 </span>                :            :         return  pos != 0
+<span class="lineNum">     929 </span>                :            :           &amp;&amp; (pos &lt;= 2 || str[1] != slash&lt;path_type&gt;::value
+<span class="lineNum">     930 </span>                :<span class="lineNoCov">          0 :             || str.find( slash&lt;path_type&gt;::value, 2 ) != pos)</span>
+<span class="lineNum">     931 </span>                :            : #       ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     932 </span>                :            :           &amp;&amp; (pos !=2 || str[1] != colon&lt;path_type&gt;::value)
+<span class="lineNum">     933 </span>                :            : #       endif
+<span class="lineNum">     934 </span>                :            :             ;
+<span class="lineNum">     935 </span>                :            :       }
+<span class="lineNum">     936 </span>                :            :     } // namespace detail
+<span class="lineNum">     937 </span>                :            : 
+<span class="lineNum">     938 </span>                :            :     // decomposition functions  ----------------------------------------------//
+<span class="lineNum">     939 </span>                :            : 
+<span class="lineNum">     940 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">     941 </span>                :            :     String basic_path&lt;String, Traits&gt;::filename() const
+<span class="lineNum">     942 </span>                :            :     {
+<span class="lineNum">     943 </span>                :            :       typename String::size_type end_pos(
+<span class="lineNum">     944 </span>                :<span class="lineNoCov">          0 :         detail::filename_pos&lt;String, Traits&gt;( m_path, m_path.size() ) );</span>
+<span class="lineNum">     945 </span>                :            :       return (m_path.size()
+<span class="lineNum">     946 </span>                :            :                 &amp;&amp; end_pos
+<span class="lineNum">     947 </span>                :            :                 &amp;&amp; m_path[end_pos] == slash&lt;path_type&gt;::value
+<span class="lineNum">     948 </span>                :            :                 &amp;&amp; detail::is_non_root_slash&lt; String, Traits &gt;(m_path, end_pos))
+<span class="lineNum">     949 </span>                :            :         ? String( 1, dot&lt;path_type&gt;::value )
+<span class="lineNum">     950 </span>                :<span class="lineNoCov">          0 :         : m_path.substr( end_pos );</span>
+<span class="lineNum">     951 </span>                :            :     }
+<span class="lineNum">     952 </span>                :            : 
+<span class="lineNum">     953 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">     954 </span>                :            :     String basic_path&lt;String, Traits&gt;::stem() const
+<span class="lineNum">     955 </span>                :            :     {
+<span class="lineNum">     956 </span>                :            :       string_type name = filename();
+<span class="lineNum">     957 </span>                :            :       typename string_type::size_type n = name.rfind(dot&lt;path_type&gt;::value);
+<span class="lineNum">     958 </span>                :            :       return name.substr(0, n);
+<span class="lineNum">     959 </span>                :            :     }
+<span class="lineNum">     960 </span>                :            : 
+<span class="lineNum">     961 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">     962 </span>                :            :     String basic_path&lt;String, Traits&gt;::extension() const
+<span class="lineNum">     963 </span>                :            :     {
+<span class="lineNum">     964 </span>                :            :       string_type name = filename();
+<span class="lineNum">     965 </span>                :            :       typename string_type::size_type n = name.rfind(dot&lt;path_type&gt;::value);
+<span class="lineNum">     966 </span>                :            :       if (n != string_type::npos)
+<span class="lineNum">     967 </span>                :            :         return name.substr(n);
+<span class="lineNum">     968 </span>                :            :       else
+<span class="lineNum">     969 </span>                :            :         return string_type();
+<span class="lineNum">     970 </span>                :            :     }
+<span class="lineNum">     971 </span>                :            : 
+<span class="lineNum">     972 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">     973 </span>                :            :     basic_path&lt;String, Traits&gt; basic_path&lt;String, Traits&gt;::parent_path() const
+<span class="lineNum">     974 </span>                :            :     {
+<span class="lineNum">     975 </span>                :            :       typename String::size_type end_pos(
+<span class="lineNum">     976 </span>                :<span class="lineCov">        337 :         detail::filename_pos&lt;String, Traits&gt;( m_path, m_path.size() ) );</span>
+<span class="lineNum">     977 </span>                :            : 
+<span class="lineNum">     978 </span>                :            :       bool filename_was_separator( m_path.size()
+<span class="lineNum">     979 </span>  [<span class="branchCov" title="Branch 1 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 124 times"> + </span><span class="branchCov" title="Branch 5 was taken 213 times"> + </span>]:<span class="lineCov">        337 :         &amp;&amp; m_path[end_pos] == slash&lt;path_type&gt;::value );</span>
+<span class="lineNum">     980 </span>                :            : 
+<span class="lineNum">     981 </span>                :            :       // skip separators unless root directory
+<span class="lineNum">     982 </span>                :            :       typename string_type::size_type root_dir_pos( detail::root_directory_start
+<span class="lineNum">     983 </span>                :<span class="lineCov">        337 :         &lt;string_type, traits_type&gt;( m_path, end_pos ) );</span>
+<span class="lineNum">     984 </span>[<span class="branchCov" title="Branch 0 was taken 550 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 550 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 213 times"> + </span>:<span class="lineCov">        337 :       for ( ; </span>
+<span class="lineNum">         </span>      <span class="branchCov" title="Branch 6 was taken 337 times"> + </span><span class="branchCov" title="Branch 7 was taken 213 times"> + </span><span class="branchCov" title="Branch 8 was taken 337 times"> + </span>]
+<span class="lineNum">     985 </span>                :            :         end_pos &gt; 0
+<span class="lineNum">     986 </span>                :            :         &amp;&amp; (end_pos-1) != root_dir_pos
+<span class="lineNum">     987 </span>                :            :         &amp;&amp; m_path[end_pos-1] == slash&lt;path_type&gt;::value
+<span class="lineNum">     988 </span>                :            :         ;
+<span class="lineNum">     989 </span>                :            :         --end_pos ) {}
+<span class="lineNum">     990 </span>                :            : 
+<span class="lineNum">     991 </span>                :            :      return (end_pos == 1 &amp;&amp; root_dir_pos == 0 &amp;&amp; filename_was_separator)
+<span class="lineNum">     992 </span>                :            :        ? path_type()
+<span class="lineNum">     993 </span>[<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 337 times"> + </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>:<span class="lineCov">        337 :        : path_type( m_path.substr( 0, end_pos ) );</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchCov" title="Branch 9 was taken 337 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span><span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span>]
+<span class="lineNum">     994 </span>                :            :     }
+<span class="lineNum">     995 </span>                :            : 
+<span class="lineNum">     996 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">     997 </span>                :            :     basic_path&lt;String, Traits&gt; basic_path&lt;String, Traits&gt;::relative_path() const
+<span class="lineNum">     998 </span>                :            :     {
+<span class="lineNum">     999 </span>                :            :       iterator itr( begin() );
+<span class="lineNum">    1000 </span>                :            :       for ( ; itr.m_pos != m_path.size()
+<span class="lineNum">    1001 </span>                :            :           &amp;&amp; (itr.m_name[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">    1002 </span>                :            : #     ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1003 </span>                :            :           || itr.m_name[itr.m_name.size()-1]
+<span class="lineNum">    1004 </span>                :            :             == colon&lt;path_type&gt;::value
+<span class="lineNum">    1005 </span>                :            : #     endif
+<span class="lineNum">    1006 </span>                :            :              ); ++itr ) {}
+<span class="lineNum">    1007 </span>                :            : 
+<span class="lineNum">    1008 </span>                :            :       return basic_path&lt;String, Traits&gt;( m_path.substr( itr.m_pos ) );
+<span class="lineNum">    1009 </span>                :            :     }
+<span class="lineNum">    1010 </span>                :            : 
+<span class="lineNum">    1011 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1012 </span>                :            :     String basic_path&lt;String, Traits&gt;::root_name() const
+<span class="lineNum">    1013 </span>                :            :     {
+<span class="lineNum">    1014 </span>                :            :       iterator itr( begin() );
+<span class="lineNum">    1015 </span>                :            : 
+<span class="lineNum">    1016 </span>                :            :       return ( itr.m_pos != m_path.size()
+<span class="lineNum">    1017 </span>                :            :         &amp;&amp; (
+<span class="lineNum">    1018 </span>                :            :             ( itr.m_name.size() &gt; 1
+<span class="lineNum">    1019 </span>                :            :               &amp;&amp; itr.m_name[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">    1020 </span>                :            :               &amp;&amp; itr.m_name[1] == slash&lt;path_type&gt;::value
+<span class="lineNum">    1021 </span>                :            :             )
+<span class="lineNum">    1022 </span>                :            : #     ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1023 </span>                :            :           || itr.m_name[itr.m_name.size()-1]
+<span class="lineNum">    1024 </span>                :            :             == colon&lt;path_type&gt;::value
+<span class="lineNum">    1025 </span>                :            : #     endif
+<span class="lineNum">    1026 </span>                :            :            ) )
+<span class="lineNum">    1027 </span>                :            :         ? *itr
+<span class="lineNum">    1028 </span>                :            :         : String();
+<span class="lineNum">    1029 </span>                :            :     }
+<span class="lineNum">    1030 </span>                :            : 
+<span class="lineNum">    1031 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1032 </span>                :            :     String basic_path&lt;String, Traits&gt;::root_directory() const
+<span class="lineNum">    1033 </span>                :            :     {
+<span class="lineNum">    1034 </span>                :            :       typename string_type::size_type start(
+<span class="lineNum">    1035 </span>                :            :         detail::root_directory_start&lt;String, Traits&gt;( m_path, m_path.size() ) );
+<span class="lineNum">    1036 </span>                :            : 
+<span class="lineNum">    1037 </span>                :            :       return start == string_type::npos
+<span class="lineNum">    1038 </span>                :            :         ? string_type()
+<span class="lineNum">    1039 </span>                :            :         : m_path.substr( start, 1 );
+<span class="lineNum">    1040 </span>                :            :     }
+<span class="lineNum">    1041 </span>                :            : 
+<span class="lineNum">    1042 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1043 </span>                :            :     basic_path&lt;String, Traits&gt; basic_path&lt;String, Traits&gt;::root_path() const
+<span class="lineNum">    1044 </span>                :            :     {
+<span class="lineNum">    1045 </span>                :            :       // even on POSIX, root_name() is non-empty() on network paths
+<span class="lineNum">    1046 </span>                :            :       return basic_path&lt;String, Traits&gt;( root_name() ) /= root_directory();
+<span class="lineNum">    1047 </span>                :            :     }
+<span class="lineNum">    1048 </span>                :            : 
+<span class="lineNum">    1049 </span>                :            :     // path query functions  -------------------------------------------------//
+<span class="lineNum">    1050 </span>                :            : 
+<span class="lineNum">    1051 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1052 </span>                :            :     inline bool basic_path&lt;String, Traits&gt;::is_complete() const
+<span class="lineNum">    1053 </span>                :            :     {
+<span class="lineNum">    1054 </span>                :            : #   ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1055 </span>                :            :       return has_root_name() &amp;&amp; has_root_directory();
+<span class="lineNum">    1056 </span>                :            : #   else
+<span class="lineNum">    1057 </span>                :            :       return has_root_directory();
+<span class="lineNum">    1058 </span>                :            : #   endif
+<span class="lineNum">    1059 </span>                :            :     }
+<span class="lineNum">    1060 </span>                :            : 
+<span class="lineNum">    1061 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1062 </span>                :            :     inline bool basic_path&lt;String, Traits&gt;::has_root_path() const
+<span class="lineNum">    1063 </span>                :            :     {
+<span class="lineNum">    1064 </span>                :            :       return !root_path().empty();
+<span class="lineNum">    1065 </span>                :            :     }
+<span class="lineNum">    1066 </span>                :            : 
+<span class="lineNum">    1067 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1068 </span>                :            :     inline bool basic_path&lt;String, Traits&gt;::has_root_name() const
+<span class="lineNum">    1069 </span>                :            :     {
+<span class="lineNum">    1070 </span>                :            :       return !root_name().empty();
+<span class="lineNum">    1071 </span>                :            :     }
+<span class="lineNum">    1072 </span>                :            : 
+<span class="lineNum">    1073 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1074 </span>                :            :     inline bool basic_path&lt;String, Traits&gt;::has_root_directory() const
+<span class="lineNum">    1075 </span>                :            :     {
+<span class="lineNum">    1076 </span>                :            :       return !root_directory().empty();
+<span class="lineNum">    1077 </span>                :            :     }
+<span class="lineNum">    1078 </span>                :            : 
+<span class="lineNum">    1079 </span>                :            :     // append  ---------------------------------------------------------------//
+<span class="lineNum">    1080 </span>                :            : 
+<span class="lineNum">    1081 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1082 </span>                :            :     void basic_path&lt;String, Traits&gt;::m_append_separator_if_needed()
+<span class="lineNum">    1083 </span>                :            :     // requires: !empty()
+<span class="lineNum">    1084 </span>                :            :     {
+<span class="lineNum">    1085 </span>        [<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if (</span>
+<span class="lineNum">    1086 </span>                :            : #       ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1087 </span>                :            :         *(m_path.end()-1) != colon&lt;path_type&gt;::value &amp;&amp; 
+<span class="lineNum">    1088 </span>                :            : #       endif
+<span class="lineNum">    1089 </span>                :            :         *(m_path.end()-1) != slash&lt;path_type&gt;::value )
+<span class="lineNum">    1090 </span>                :            :       {
+<span class="lineNum">    1091 </span>                :<span class="lineNoCov">          0 :         m_path += slash&lt;path_type&gt;::value;</span>
+<span class="lineNum">    1092 </span>                :            :       }
+<span class="lineNum">    1093 </span>                :            :     }
+<span class="lineNum">    1094 </span>                :            :       
+<span class="lineNum">    1095 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1096 </span>                :            :     void basic_path&lt;String, Traits&gt;::m_append( value_type value )
+<span class="lineNum">    1097 </span>                :            :     {
+<span class="lineNum">    1098 </span>                :            : #   ifdef BOOST_CYGWIN_PATH
+<span class="lineNum">    1099 </span>                :            :       if ( m_path.empty() ) m_cygwin_root = (value == slash&lt;path_type&gt;::value);
+<span class="lineNum">    1100 </span>                :            : #   endif
+<span class="lineNum">    1101 </span>                :            : 
+<span class="lineNum">    1102 </span>                :            : #   ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1103 </span>                :            :       // for BOOST_WINDOWS_PATH, convert alt_separator ('\') to separator ('/')
+<span class="lineNum">    1104 </span>                :            :       m_path += ( value == path_alt_separator&lt;path_type&gt;::value
+<span class="lineNum">    1105 </span>                :            :         ? slash&lt;path_type&gt;::value
+<span class="lineNum">    1106 </span>                :            :         : value );
+<span class="lineNum">    1107 </span>                :            : #   else
+<span class="lineNum">    1108 </span>                :<span class="lineCov">     135461 :       m_path += value;</span>
+<span class="lineNum">    1109 </span>                :            : #   endif
+<span class="lineNum">    1110 </span>                :            :     }
+<span class="lineNum">    1111 </span>                :            :     
+<span class="lineNum">    1112 </span>                :            :     // except that it wouldn't work for BOOST_NO_MEMBER_TEMPLATES compilers,
+<span class="lineNum">    1113 </span>                :            :     // the append() member template could replace this code.
+<span class="lineNum">    1114 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1115 </span>                :            :     basic_path&lt;String, Traits&gt; &amp; basic_path&lt;String, Traits&gt;::operator /=
+<span class="lineNum">    1116 </span>                :            :       ( const value_type * next_p )
+<span class="lineNum">    1117 </span>                :            :     {
+<span class="lineNum">    1118 </span>                :            :       // ignore escape sequence on POSIX or Windows
+<span class="lineNum">    1119 </span>[<span class="branchCov" title="Branch 0 was taken 1352 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 1352 times"> + </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>:<span class="lineCov">       1352 :       if ( *next_p == slash&lt;path_type&gt;::value</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]
+<span class="lineNum">    1120 </span>                :            :         &amp;&amp; *(next_p+1) == slash&lt;path_type&gt;::value
+<span class="lineNum">    1121 </span>                :<span class="lineNoCov">          0 :         &amp;&amp; *(next_p+2) == colon&lt;path_type&gt;::value ) next_p += 3;</span>
+<span class="lineNum">    1122 </span>                :            :       
+<span class="lineNum">    1123 </span>                :            :       // append slash&lt;path_type&gt;::value if needed
+<span class="lineNum">    1124 </span>[<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1352 times"> + </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span>:<span class="lineCov">       1352 :       if ( !empty() &amp;&amp; *next_p != 0</span>
+<span class="lineNum">         </span>      <span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 1352 times"> + </span>]
+<span class="lineNum">    1125 </span>                :            :         &amp;&amp; !detail::is_separator&lt;path_type&gt;( *next_p ) )
+<span class="lineNum">    1126 </span>                :<span class="lineNoCov">          0 :       { m_append_separator_if_needed(); }</span>
+<span class="lineNum">    1127 </span>                :            : 
+<span class="lineNum">    1128 </span>        [<span class="branchCov" title="Branch 1 was taken 135461 times"> + </span><span class="branchCov" title="Branch 2 was taken 1352 times"> + </span>]:<span class="lineCov">       1352 :       for ( ; *next_p != 0; ++next_p ) m_append( *next_p );</span>
+<span class="lineNum">    1129 </span>                :<span class="lineCov">       1352 :       return *this;</span>
+<span class="lineNum">    1130 </span>                :            :     }
+<span class="lineNum">    1131 </span>                :            : 
+<span class="lineNum">    1132 </span>                :            : # ifndef BOOST_NO_MEMBER_TEMPLATES
+<span class="lineNum">    1133 </span>                :            :     template&lt;class String, class Traits&gt; template &lt;class InputIterator&gt;
+<span class="lineNum">    1134 </span>                :            :       basic_path&lt;String, Traits&gt; &amp; basic_path&lt;String, Traits&gt;::append(
+<span class="lineNum">    1135 </span>                :            :         InputIterator first, InputIterator last )
+<span class="lineNum">    1136 </span>                :            :     {
+<span class="lineNum">    1137 </span>                :            :       // append slash&lt;path_type&gt;::value if needed
+<span class="lineNum">    1138 </span>                :            :       if ( !empty() &amp;&amp; first != last
+<span class="lineNum">    1139 </span>                :            :         &amp;&amp; !detail::is_separator&lt;path_type&gt;( *first ) )
+<span class="lineNum">    1140 </span>                :            :       { m_append_separator_if_needed(); }
+<span class="lineNum">    1141 </span>                :            : 
+<span class="lineNum">    1142 </span>                :            :       // song-and-dance to avoid violating InputIterator requirements
+<span class="lineNum">    1143 </span>                :            :       // (which prohibit lookahead) in detecting a possible escape sequence
+<span class="lineNum">    1144 </span>                :            :       // (escape sequences are simply ignored on POSIX and Windows)
+<span class="lineNum">    1145 </span>                :            :       bool was_escape_sequence(true);
+<span class="lineNum">    1146 </span>                :            :       std::size_t append_count(0);
+<span class="lineNum">    1147 </span>                :            :       typename String::size_type initial_pos( m_path.size() );
+<span class="lineNum">    1148 </span>                :            : 
+<span class="lineNum">    1149 </span>                :            :       for ( ; first != last &amp;&amp; *first; ++first )
+<span class="lineNum">    1150 </span>                :            :       {
+<span class="lineNum">    1151 </span>                :            :         if ( append_count == 0 &amp;&amp; *first != slash&lt;path_type&gt;::value )
+<span class="lineNum">    1152 </span>                :            :           was_escape_sequence = false;
+<span class="lineNum">    1153 </span>                :            :         if ( append_count == 1 &amp;&amp; *first != slash&lt;path_type&gt;::value )
+<span class="lineNum">    1154 </span>                :            :           was_escape_sequence = false;
+<span class="lineNum">    1155 </span>                :            :         if ( append_count == 2 &amp;&amp; *first != colon&lt;path_type&gt;::value )
+<span class="lineNum">    1156 </span>                :            :           was_escape_sequence = false;
+<span class="lineNum">    1157 </span>                :            :         m_append( *first );
+<span class="lineNum">    1158 </span>                :            :         ++append_count;
+<span class="lineNum">    1159 </span>                :            :       }
+<span class="lineNum">    1160 </span>                :            : 
+<span class="lineNum">    1161 </span>                :            :       // erase escape sequence if any
+<span class="lineNum">    1162 </span>                :            :       if ( was_escape_sequence &amp;&amp; append_count &gt;= 3 )
+<span class="lineNum">    1163 </span>                :            :         m_path.erase( initial_pos, 3 );
+<span class="lineNum">    1164 </span>                :            : 
+<span class="lineNum">    1165 </span>                :            :       return *this;
+<span class="lineNum">    1166 </span>                :            :     }
+<span class="lineNum">    1167 </span>                :            : # endif
+<span class="lineNum">    1168 </span>                :            : 
+<span class="lineNum">    1169 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">    1170 </span>                :            : 
+<span class="lineNum">    1171 </span>                :            :     // canonize  ------------------------------------------------------------//
+<span class="lineNum">    1172 </span>                :            : 
+<span class="lineNum">    1173 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1174 </span>                :            :     basic_path&lt;String, Traits&gt; &amp; basic_path&lt;String, Traits&gt;::canonize()
+<span class="lineNum">    1175 </span>                :            :     {
+<span class="lineNum">    1176 </span>                :            :       static const typename string_type::value_type dot_str[]
+<span class="lineNum">    1177 </span>                :            :         = { dot&lt;path_type&gt;::value, 0 };
+<span class="lineNum">    1178 </span>                :            : 
+<span class="lineNum">    1179 </span>                :            :       if ( m_path.empty() ) return *this;
+<span class="lineNum">    1180 </span>                :            :         
+<span class="lineNum">    1181 </span>                :            :       path_type temp;
+<span class="lineNum">    1182 </span>                :            : 
+<span class="lineNum">    1183 </span>                :            :       for ( iterator itr( begin() ); itr != end(); ++itr )
+<span class="lineNum">    1184 </span>                :            :       {
+<span class="lineNum">    1185 </span>                :            :         temp /= *itr;
+<span class="lineNum">    1186 </span>                :            :       };
+<span class="lineNum">    1187 </span>                :            : 
+<span class="lineNum">    1188 </span>                :            :       if ( temp.empty() ) temp /= dot_str;
+<span class="lineNum">    1189 </span>                :            :       m_path = temp.m_path;
+<span class="lineNum">    1190 </span>                :            :       return *this;
+<span class="lineNum">    1191 </span>                :            :     }
+<span class="lineNum">    1192 </span>                :            : 
+<span class="lineNum">    1193 </span>                :            :     // normalize  ------------------------------------------------------------//
+<span class="lineNum">    1194 </span>                :            : 
+<span class="lineNum">    1195 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1196 </span>                :            :     basic_path&lt;String, Traits&gt; &amp; basic_path&lt;String, Traits&gt;::normalize()
+<span class="lineNum">    1197 </span>                :            :     {
+<span class="lineNum">    1198 </span>                :            :       static const typename string_type::value_type dot_str[]
+<span class="lineNum">    1199 </span>                :            :         = { dot&lt;path_type&gt;::value, 0 };
+<span class="lineNum">    1200 </span>                :            : 
+<span class="lineNum">    1201 </span>                :            :       if ( m_path.empty() ) return *this;
+<span class="lineNum">    1202 </span>                :            :         
+<span class="lineNum">    1203 </span>                :            :       path_type temp;
+<span class="lineNum">    1204 </span>                :            :       iterator start( begin() );
+<span class="lineNum">    1205 </span>                :            :       iterator last( end() );
+<span class="lineNum">    1206 </span>                :            :       iterator stop( last-- );
+<span class="lineNum">    1207 </span>                :            :       for ( iterator itr( start ); itr != stop; ++itr )
+<span class="lineNum">    1208 </span>                :            :       {
+<span class="lineNum">    1209 </span>                :            :         // ignore &quot;.&quot; except at start and last
+<span class="lineNum">    1210 </span>                :            :         if ( itr-&gt;size() == 1
+<span class="lineNum">    1211 </span>                :            :           &amp;&amp; (*itr)[0] == dot&lt;path_type&gt;::value
+<span class="lineNum">    1212 </span>                :            :           &amp;&amp; itr != start
+<span class="lineNum">    1213 </span>                :            :           &amp;&amp; itr != last ) continue;
+<span class="lineNum">    1214 </span>                :            : 
+<span class="lineNum">    1215 </span>                :            :         // ignore a name and following &quot;..&quot;
+<span class="lineNum">    1216 </span>                :            :         if ( !temp.empty()
+<span class="lineNum">    1217 </span>                :            :           &amp;&amp; itr-&gt;size() == 2
+<span class="lineNum">    1218 </span>                :            :           &amp;&amp; (*itr)[0] == dot&lt;path_type&gt;::value
+<span class="lineNum">    1219 </span>                :            :           &amp;&amp; (*itr)[1] == dot&lt;path_type&gt;::value ) // dot dot
+<span class="lineNum">    1220 </span>                :            :         {
+<span class="lineNum">    1221 </span>                :            :           string_type lf( temp.filename() );  
+<span class="lineNum">    1222 </span>                :            :           if ( lf.size() &gt; 0  
+<span class="lineNum">    1223 </span>                :            :             &amp;&amp; (lf.size() != 1
+<span class="lineNum">    1224 </span>                :            :               || (lf[0] != dot&lt;path_type&gt;::value
+<span class="lineNum">    1225 </span>                :            :                 &amp;&amp; lf[0] != slash&lt;path_type&gt;::value))
+<span class="lineNum">    1226 </span>                :            :             &amp;&amp; (lf.size() != 2 
+<span class="lineNum">    1227 </span>                :            :               || (lf[0] != dot&lt;path_type&gt;::value
+<span class="lineNum">    1228 </span>                :            :                 &amp;&amp; lf[1] != dot&lt;path_type&gt;::value
+<span class="lineNum">    1229 </span>                :            : #             ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1230 </span>                :            :                 &amp;&amp; lf[1] != colon&lt;path_type&gt;::value
+<span class="lineNum">    1231 </span>                :            : #             endif
+<span class="lineNum">    1232 </span>                :            :                  )
+<span class="lineNum">    1233 </span>                :            :                )
+<span class="lineNum">    1234 </span>                :            :             )
+<span class="lineNum">    1235 </span>                :            :           {
+<span class="lineNum">    1236 </span>                :            :             temp.remove_filename();
+<span class="lineNum">    1237 </span>                :            :             // if not root directory, must also remove &quot;/&quot; if any
+<span class="lineNum">    1238 </span>                :            :             if ( temp.m_path.size() &gt; 0
+<span class="lineNum">    1239 </span>                :            :               &amp;&amp; temp.m_path[temp.m_path.size()-1]
+<span class="lineNum">    1240 </span>                :            :                 == slash&lt;path_type&gt;::value )
+<span class="lineNum">    1241 </span>                :            :             {
+<span class="lineNum">    1242 </span>                :            :               typename string_type::size_type rds(
+<span class="lineNum">    1243 </span>                :            :                 detail::root_directory_start&lt;String,Traits&gt;( temp.m_path,
+<span class="lineNum">    1244 </span>                :            :                   temp.m_path.size() ) );
+<span class="lineNum">    1245 </span>                :            :               if ( rds == string_type::npos
+<span class="lineNum">    1246 </span>                :            :                 || rds != temp.m_path.size()-1 ) 
+<span class="lineNum">    1247 </span>                :            :                 { temp.m_path.erase( temp.m_path.size()-1 ); }
+<span class="lineNum">    1248 </span>                :            :             }
+<span class="lineNum">    1249 </span>                :            : 
+<span class="lineNum">    1250 </span>                :            :             iterator next( itr );
+<span class="lineNum">    1251 </span>                :            :             if ( temp.empty() &amp;&amp; ++next != stop
+<span class="lineNum">    1252 </span>                :            :               &amp;&amp; next == last &amp;&amp; *last == dot_str ) temp /= dot_str;
+<span class="lineNum">    1253 </span>                :            :             continue;
+<span class="lineNum">    1254 </span>                :            :           }
+<span class="lineNum">    1255 </span>                :            :         }
+<span class="lineNum">    1256 </span>                :            : 
+<span class="lineNum">    1257 </span>                :            :         temp /= *itr;
+<span class="lineNum">    1258 </span>                :            :       };
+<span class="lineNum">    1259 </span>                :            : 
+<span class="lineNum">    1260 </span>                :            :       if ( temp.empty() ) temp /= dot_str;
+<span class="lineNum">    1261 </span>                :            :       m_path = temp.m_path;
+<span class="lineNum">    1262 </span>                :            :       return *this;
+<span class="lineNum">    1263 </span>                :            :     }
+<span class="lineNum">    1264 </span>                :            : 
+<span class="lineNum">    1265 </span>                :            : # endif
+<span class="lineNum">    1266 </span>                :            : 
+<span class="lineNum">    1267 </span>                :            :     // modifiers  ------------------------------------------------------------//
+<span class="lineNum">    1268 </span>                :            : 
+<span class="lineNum">    1269 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1270 </span>                :            :     basic_path&lt;String, Traits&gt; &amp; basic_path&lt;String, Traits&gt;::remove_filename()
+<span class="lineNum">    1271 </span>                :            :     {
+<span class="lineNum">    1272 </span>                :<span class="lineNoCov">          0 :       m_path.erase(</span>
+<span class="lineNum">    1273 </span>                :            :         detail::filename_pos&lt;String, Traits&gt;( m_path, m_path.size() ) );
+<span class="lineNum">    1274 </span>                :<span class="lineNoCov">          0 :       return *this;</span>
+<span class="lineNum">    1275 </span>                :            :     }
+<span class="lineNum">    1276 </span>                :            : 
+<span class="lineNum">    1277 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1278 </span>                :            :     basic_path&lt;String, Traits&gt; &amp;
+<span class="lineNum">    1279 </span>                :            :     basic_path&lt;String, Traits&gt;::replace_extension( const string_type &amp; new_ext )
+<span class="lineNum">    1280 </span>                :            :     {
+<span class="lineNum">    1281 </span>                :            :       // erase existing extension if any
+<span class="lineNum">    1282 </span>                :            :       string_type old_ext = extension();
+<span class="lineNum">    1283 </span>                :            :       if ( !old_ext.empty() )
+<span class="lineNum">    1284 </span>                :            :         m_path.erase( m_path.size() - old_ext.size() );
+<span class="lineNum">    1285 </span>                :            : 
+<span class="lineNum">    1286 </span>                :            :       if ( !new_ext.empty() &amp;&amp; new_ext[0] != dot&lt;path_type&gt;::value )
+<span class="lineNum">    1287 </span>                :            :         m_path += dot&lt;path_type&gt;::value;
+<span class="lineNum">    1288 </span>                :            : 
+<span class="lineNum">    1289 </span>                :            :       m_path += new_ext;
+<span class="lineNum">    1290 </span>                :            : 
+<span class="lineNum">    1291 </span>                :            :       return *this;
+<span class="lineNum">    1292 </span>                :            :     }
+<span class="lineNum">    1293 </span>                :            : 
+<span class="lineNum">    1294 </span>                :            : 
+<span class="lineNum">    1295 </span>                :            :     // path conversion functions  --------------------------------------------//
+<span class="lineNum">    1296 </span>                :            : 
+<span class="lineNum">    1297 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1298 </span>                :            :     const String
+<span class="lineNum">    1299 </span>                :            :     basic_path&lt;String, Traits&gt;::file_string() const
+<span class="lineNum">    1300 </span>                :            :     {
+<span class="lineNum">    1301 </span>                :            : #   ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1302 </span>                :            :       // for Windows, use the alternate separator, and bypass extra 
+<span class="lineNum">    1303 </span>                :            :       // root separators
+<span class="lineNum">    1304 </span>                :            : 
+<span class="lineNum">    1305 </span>                :            :       typename string_type::size_type root_dir_start(
+<span class="lineNum">    1306 </span>                :            :         detail::root_directory_start&lt;String, Traits&gt;( m_path, m_path.size() ) );
+<span class="lineNum">    1307 </span>                :            :       bool in_root( root_dir_start != string_type::npos );
+<span class="lineNum">    1308 </span>                :            :       String s;
+<span class="lineNum">    1309 </span>                :            :       for ( typename string_type::size_type pos( 0 );
+<span class="lineNum">    1310 </span>                :            :         pos != m_path.size(); ++pos )
+<span class="lineNum">    1311 </span>                :            :       {
+<span class="lineNum">    1312 </span>                :            :         // special case // [net]
+<span class="lineNum">    1313 </span>                :            :         if ( pos == 0 &amp;&amp; m_path.size() &gt; 1
+<span class="lineNum">    1314 </span>                :            :           &amp;&amp; m_path[0] == slash&lt;path_type&gt;::value
+<span class="lineNum">    1315 </span>                :            :           &amp;&amp; m_path[1] == slash&lt;path_type&gt;::value
+<span class="lineNum">    1316 </span>                :            :           &amp;&amp; ( m_path.size() == 2 
+<span class="lineNum">    1317 </span>                :            :             || !detail::is_separator&lt;path_type&gt;( m_path[2] )
+<span class="lineNum">    1318 </span>                :            :              ) )
+<span class="lineNum">    1319 </span>                :            :         {
+<span class="lineNum">    1320 </span>                :            :           ++pos;
+<span class="lineNum">    1321 </span>                :            :           s += path_alt_separator&lt;path_type&gt;::value;
+<span class="lineNum">    1322 </span>                :            :           s += path_alt_separator&lt;path_type&gt;::value;
+<span class="lineNum">    1323 </span>                :            :           continue;
+<span class="lineNum">    1324 </span>                :            :         }   
+<span class="lineNum">    1325 </span>                :            : 
+<span class="lineNum">    1326 </span>                :            :         // bypass extra root separators
+<span class="lineNum">    1327 </span>                :            :         if ( in_root )
+<span class="lineNum">    1328 </span>                :            :         { 
+<span class="lineNum">    1329 </span>                :            :           if ( s.size() &gt; 0
+<span class="lineNum">    1330 </span>                :            :             &amp;&amp; s[s.size()-1] == path_alt_separator&lt;path_type&gt;::value
+<span class="lineNum">    1331 </span>                :            :             &amp;&amp; m_path[pos] == slash&lt;path_type&gt;::value
+<span class="lineNum">    1332 </span>                :            :             ) continue;
+<span class="lineNum">    1333 </span>                :            :         }
+<span class="lineNum">    1334 </span>                :            : 
+<span class="lineNum">    1335 </span>                :            :         if ( m_path[pos] == slash&lt;path_type&gt;::value )
+<span class="lineNum">    1336 </span>                :            :           s += path_alt_separator&lt;path_type&gt;::value;
+<span class="lineNum">    1337 </span>                :            :         else
+<span class="lineNum">    1338 </span>                :            :           s += m_path[pos];
+<span class="lineNum">    1339 </span>                :            : 
+<span class="lineNum">    1340 </span>                :            :         if ( pos &gt; root_dir_start
+<span class="lineNum">    1341 </span>                :            :           &amp;&amp; m_path[pos] == slash&lt;path_type&gt;::value )
+<span class="lineNum">    1342 </span>                :            :           { in_root = false; }
+<span class="lineNum">    1343 </span>                :            :       }
+<span class="lineNum">    1344 </span>                :            : #   ifdef BOOST_CYGWIN_PATH
+<span class="lineNum">    1345 </span>                :            :       if ( m_cygwin_root ) s[0] = slash&lt;path_type&gt;::value;
+<span class="lineNum">    1346 </span>                :            : #   endif
+<span class="lineNum">    1347 </span>                :            :       return s;
+<span class="lineNum">    1348 </span>                :            : #   else
+<span class="lineNum">    1349 </span>                :<span class="lineCov">       1981 :       return m_path;</span>
+<span class="lineNum">    1350 </span>                :            : #   endif
+<span class="lineNum">    1351 </span>                :            :     }
+<span class="lineNum">    1352 </span>                :            : 
+<span class="lineNum">    1353 </span>                :            :     // iterator functions  ---------------------------------------------------//
+<span class="lineNum">    1354 </span>                :            : 
+<span class="lineNum">    1355 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1356 </span>                :            :     typename basic_path&lt;String, Traits&gt;::iterator basic_path&lt;String, Traits&gt;::begin() const
+<span class="lineNum">    1357 </span>                :            :     {
+<span class="lineNum">    1358 </span>                :            :       iterator itr;
+<span class="lineNum">    1359 </span>                :            :       itr.m_path_ptr = this;
+<span class="lineNum">    1360 </span>                :            :       typename string_type::size_type element_size;
+<span class="lineNum">    1361 </span>                :            :       detail::first_element&lt;String, Traits&gt;( m_path, itr.m_pos, element_size );
+<span class="lineNum">    1362 </span>                :            :       itr.m_name = m_path.substr( itr.m_pos, element_size );
+<span class="lineNum">    1363 </span>                :            :       return itr;
+<span class="lineNum">    1364 </span>                :            :     }
+<span class="lineNum">    1365 </span>                :            : 
+<span class="lineNum">    1366 </span>                :            :     template&lt;class String, class Traits&gt;
+<span class="lineNum">    1367 </span>                :            :     typename basic_path&lt;String, Traits&gt;::iterator basic_path&lt;String, Traits&gt;::end() const
+<span class="lineNum">    1368 </span>                :            :       {
+<span class="lineNum">    1369 </span>                :            :         iterator itr;
+<span class="lineNum">    1370 </span>                :            :         itr.m_path_ptr = this;
+<span class="lineNum">    1371 </span>                :            :         itr.m_pos = m_path.size();
+<span class="lineNum">    1372 </span>                :            :         return itr;
+<span class="lineNum">    1373 </span>                :            :       }
+<span class="lineNum">    1374 </span>                :            : 
+<span class="lineNum">    1375 </span>                :            :     namespace detail
+<span class="lineNum">    1376 </span>                :            :     {
+<span class="lineNum">    1377 </span>                :            :       //  do_increment  ------------------------------------------------------//
+<span class="lineNum">    1378 </span>                :            : 
+<span class="lineNum">    1379 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">    1380 </span>                :            :       void iterator_helper&lt;Path&gt;::do_increment( iterator &amp; itr )
+<span class="lineNum">    1381 </span>                :            :       {
+<span class="lineNum">    1382 </span>                :            :         typedef typename Path::string_type string_type;
+<span class="lineNum">    1383 </span>                :            :         typedef typename Path::traits_type traits_type;
+<span class="lineNum">    1384 </span>                :            : 
+<span class="lineNum">    1385 </span>                :            :         assert( itr.m_pos &lt; itr.m_path_ptr-&gt;m_path.size() &amp;&amp; &quot;basic_path::iterator increment past end()&quot; );
+<span class="lineNum">    1386 </span>                :            : 
+<span class="lineNum">    1387 </span>                :            :         bool was_net( itr.m_name.size() &gt; 2
+<span class="lineNum">    1388 </span>                :            :           &amp;&amp; itr.m_name[0] == slash&lt;Path&gt;::value
+<span class="lineNum">    1389 </span>                :            :           &amp;&amp; itr.m_name[1] == slash&lt;Path&gt;::value
+<span class="lineNum">    1390 </span>                :            :           &amp;&amp; itr.m_name[2] != slash&lt;Path&gt;::value );
+<span class="lineNum">    1391 </span>                :            : 
+<span class="lineNum">    1392 </span>                :            :         // increment to position past current element
+<span class="lineNum">    1393 </span>                :            :         itr.m_pos += itr.m_name.size();
+<span class="lineNum">    1394 </span>                :            : 
+<span class="lineNum">    1395 </span>                :            :         // if end reached, create end iterator
+<span class="lineNum">    1396 </span>                :            :         if ( itr.m_pos == itr.m_path_ptr-&gt;m_path.size() )
+<span class="lineNum">    1397 </span>                :            :         {
+<span class="lineNum">    1398 </span>                :            :           itr.m_name.erase( itr.m_name.begin(), itr.m_name.end() ); // VC++ 6.0 lib didn't supply clear() 
+<span class="lineNum">    1399 </span>                :            :           return;
+<span class="lineNum">    1400 </span>                :            :         }
+<span class="lineNum">    1401 </span>                :            : 
+<span class="lineNum">    1402 </span>                :            :         // process separator (Windows drive spec is only case not a separator)
+<span class="lineNum">    1403 </span>                :            :         if ( itr.m_path_ptr-&gt;m_path[itr.m_pos] == slash&lt;Path&gt;::value )
+<span class="lineNum">    1404 </span>                :            :         {
+<span class="lineNum">    1405 </span>                :            :           // detect root directory
+<span class="lineNum">    1406 </span>                :            :           if ( was_net
+<span class="lineNum">    1407 </span>                :            :   #       ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">    1408 </span>                :            :             // case &quot;c:/&quot;
+<span class="lineNum">    1409 </span>                :            :             || itr.m_name[itr.m_name.size()-1] == colon&lt;Path&gt;::value
+<span class="lineNum">    1410 </span>                :            :   #       endif
+<span class="lineNum">    1411 </span>                :            :              )
+<span class="lineNum">    1412 </span>                :            :           {
+<span class="lineNum">    1413 </span>                :            :             itr.m_name = slash&lt;Path&gt;::value;
+<span class="lineNum">    1414 </span>                :            :             return;
+<span class="lineNum">    1415 </span>                :            :           }
+<span class="lineNum">    1416 </span>                :            : 
+<span class="lineNum">    1417 </span>                :            :           // bypass separators
+<span class="lineNum">    1418 </span>                :            :           while ( itr.m_pos != itr.m_path_ptr-&gt;m_path.size()
+<span class="lineNum">    1419 </span>                :            :             &amp;&amp; itr.m_path_ptr-&gt;m_path[itr.m_pos] == slash&lt;Path&gt;::value )
+<span class="lineNum">    1420 </span>                :            :             { ++itr.m_pos; }
+<span class="lineNum">    1421 </span>                :            : 
+<span class="lineNum">    1422 </span>                :            :           // detect trailing separator, and treat it as &quot;.&quot;, per POSIX spec
+<span class="lineNum">    1423 </span>                :            :           if ( itr.m_pos == itr.m_path_ptr-&gt;m_path.size()
+<span class="lineNum">    1424 </span>                :            :             &amp;&amp; detail::is_non_root_slash&lt; string_type, traits_type &gt;(
+<span class="lineNum">    1425 </span>                :            :                 itr.m_path_ptr-&gt;m_path, itr.m_pos-1 ) ) 
+<span class="lineNum">    1426 </span>                :            :           {
+<span class="lineNum">    1427 </span>                :            :             --itr.m_pos;
+<span class="lineNum">    1428 </span>                :            :             itr.m_name = dot&lt;Path&gt;::value;
+<span class="lineNum">    1429 </span>                :            :             return;
+<span class="lineNum">    1430 </span>                :            :           }
+<span class="lineNum">    1431 </span>                :            :         }
+<span class="lineNum">    1432 </span>                :            : 
+<span class="lineNum">    1433 </span>                :            :         // get next element
+<span class="lineNum">    1434 </span>                :            :         typename string_type::size_type end_pos(
+<span class="lineNum">    1435 </span>                :            :           itr.m_path_ptr-&gt;m_path.find( slash&lt;Path&gt;::value, itr.m_pos ) );
+<span class="lineNum">    1436 </span>                :            :         itr.m_name = itr.m_path_ptr-&gt;m_path.substr( itr.m_pos, end_pos - itr.m_pos );
+<span class="lineNum">    1437 </span>                :            :       } 
+<span class="lineNum">    1438 </span>                :            : 
+<span class="lineNum">    1439 </span>                :            :       //  do_decrement  ------------------------------------------------------//
+<span class="lineNum">    1440 </span>                :            : 
+<span class="lineNum">    1441 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">    1442 </span>                :            :       void iterator_helper&lt;Path&gt;::do_decrement( iterator &amp; itr )
+<span class="lineNum">    1443 </span>                :            :       {                                                                                
+<span class="lineNum">    1444 </span>                :            :         assert( itr.m_pos &amp;&amp; &quot;basic_path::iterator decrement past begin()&quot;  );
+<span class="lineNum">    1445 </span>                :            : 
+<span class="lineNum">    1446 </span>                :            :         typedef typename Path::string_type string_type;
+<span class="lineNum">    1447 </span>                :            :         typedef typename Path::traits_type traits_type;
+<span class="lineNum">    1448 </span>                :            : 
+<span class="lineNum">    1449 </span>                :            :         typename string_type::size_type end_pos( itr.m_pos );
+<span class="lineNum">    1450 </span>                :            : 
+<span class="lineNum">    1451 </span>                :            :         typename string_type::size_type root_dir_pos(
+<span class="lineNum">    1452 </span>                :            :           detail::root_directory_start&lt;string_type, traits_type&gt;(
+<span class="lineNum">    1453 </span>                :            :             itr.m_path_ptr-&gt;m_path, end_pos ) );
+<span class="lineNum">    1454 </span>                :            : 
+<span class="lineNum">    1455 </span>                :            :         // if at end and there was a trailing non-root '/', return &quot;.&quot;
+<span class="lineNum">    1456 </span>                :            :         if ( itr.m_pos == itr.m_path_ptr-&gt;m_path.size()
+<span class="lineNum">    1457 </span>                :            :           &amp;&amp; itr.m_path_ptr-&gt;m_path.size() &gt; 1
+<span class="lineNum">    1458 </span>                :            :           &amp;&amp; itr.m_path_ptr-&gt;m_path[itr.m_pos-1] == slash&lt;Path&gt;::value
+<span class="lineNum">    1459 </span>                :            :           &amp;&amp; detail::is_non_root_slash&lt; string_type, traits_type &gt;(
+<span class="lineNum">    1460 </span>                :            :                itr.m_path_ptr-&gt;m_path, itr.m_pos-1 ) 
+<span class="lineNum">    1461 </span>                :            :            )
+<span class="lineNum">    1462 </span>                :            :         {
+<span class="lineNum">    1463 </span>                :            :           --itr.m_pos;
+<span class="lineNum">    1464 </span>                :            :             itr.m_name = dot&lt;Path&gt;::value;
+<span class="lineNum">    1465 </span>                :            :             return;
+<span class="lineNum">    1466 </span>                :            :         }
+<span class="lineNum">    1467 </span>                :            : 
+<span class="lineNum">    1468 </span>                :            :         // skip separators unless root directory
+<span class="lineNum">    1469 </span>                :            :         for ( 
+<span class="lineNum">    1470 </span>                :            :           ; 
+<span class="lineNum">    1471 </span>                :            :           end_pos &gt; 0
+<span class="lineNum">    1472 </span>                :            :           &amp;&amp; (end_pos-1) != root_dir_pos
+<span class="lineNum">    1473 </span>                :            :           &amp;&amp; itr.m_path_ptr-&gt;m_path[end_pos-1] == slash&lt;Path&gt;::value
+<span class="lineNum">    1474 </span>                :            :           ;
+<span class="lineNum">    1475 </span>                :            :           --end_pos ) {}
+<span class="lineNum">    1476 </span>                :            : 
+<span class="lineNum">    1477 </span>                :            :         itr.m_pos = detail::filename_pos&lt;string_type, traits_type&gt;
+<span class="lineNum">    1478 </span>                :            :             ( itr.m_path_ptr-&gt;m_path, end_pos );
+<span class="lineNum">    1479 </span>                :            :         itr.m_name = itr.m_path_ptr-&gt;m_path.substr( itr.m_pos, end_pos - itr.m_pos );
+<span class="lineNum">    1480 </span>                :            :       }
+<span class="lineNum">    1481 </span>                :            :     } // namespace detail
+<span class="lineNum">    1482 </span>                :            : 
+<span class="lineNum">    1483 </span>                :            :     //  basic_filesystem_error implementation --------------------------------//
+<span class="lineNum">    1484 </span>                :            : 
+<span class="lineNum">    1485 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1486 </span>                :            :     basic_filesystem_error&lt;Path&gt;::basic_filesystem_error(
+<span class="lineNum">    1487 </span>                :            :       const std::string &amp; what_arg, system::error_code ec )
+<span class="lineNum">    1488 </span>                :            :       : system::system_error(ec, what_arg)
+<span class="lineNum">    1489 </span>                :            :     {
+<span class="lineNum">    1490 </span>                :            :       try
+<span class="lineNum">    1491 </span>                :            :       {
+<span class="lineNum">    1492 </span>                :            :         m_imp_ptr.reset( new m_imp );
+<span class="lineNum">    1493 </span>                :            :       }
+<span class="lineNum">    1494 </span>                :            :       catch (...) { m_imp_ptr.reset(); }
+<span class="lineNum">    1495 </span>                :            :     }
+<span class="lineNum">    1496 </span>                :            : 
+<span class="lineNum">    1497 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1498 </span>                :            :     basic_filesystem_error&lt;Path&gt;::basic_filesystem_error(
+<span class="lineNum">    1499 </span>                :            :       const std::string &amp; what_arg, const path_type &amp; path1_arg,
+<span class="lineNum">    1500 </span>                :<span class="lineCov">          2 :       system::error_code ec )</span>
+<span class="lineNum">    1501 </span>                :<span class="lineCov">          2 :       : system::system_error(ec, what_arg)</span>
+<span class="lineNum">    1502 </span>                :            :     {
+<span class="lineNum">    1503 </span>                :            :       try
+<span class="lineNum">    1504 </span>                :            :       {
+<span class="lineNum">    1505 </span>                :<span class="lineCov">          2 :         m_imp_ptr.reset( new m_imp );</span>
+<span class="lineNum">    1506 </span>                :<span class="lineCov">          2 :         m_imp_ptr-&gt;m_path1 = path1_arg;</span>
+<span class="lineNum">    1507 </span>                :            :       }
+<span class="lineNum">    1508 </span>                :<span class="lineNoCov">          0 :       catch (...) { m_imp_ptr.reset(); }</span>
+<span class="lineNum">    1509 </span>                :            :     }
+<span class="lineNum">    1510 </span>                :            : 
+<span class="lineNum">    1511 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1512 </span>                :            :     basic_filesystem_error&lt;Path&gt;::basic_filesystem_error(
+<span class="lineNum">    1513 </span>                :            :       const std::string &amp; what_arg, const path_type &amp; path1_arg,
+<span class="lineNum">    1514 </span>                :<span class="lineNoCov">          0 :       const path_type &amp; path2_arg, system::error_code ec )</span>
+<span class="lineNum">    1515 </span>                :<span class="lineNoCov">          0 :       : system::system_error(ec, what_arg)</span>
+<span class="lineNum">    1516 </span>                :            :     {
+<span class="lineNum">    1517 </span>                :            :       try
+<span class="lineNum">    1518 </span>                :            :       {
+<span class="lineNum">    1519 </span>                :<span class="lineNoCov">          0 :         m_imp_ptr.reset( new m_imp );</span>
+<span class="lineNum">    1520 </span>                :<span class="lineNoCov">          0 :         m_imp_ptr-&gt;m_path1 = path1_arg;</span>
+<span class="lineNum">    1521 </span>                :<span class="lineNoCov">          0 :         m_imp_ptr-&gt;m_path2 = path2_arg;</span>
+<span class="lineNum">    1522 </span>                :            :       }
+<span class="lineNum">    1523 </span>                :<span class="lineNoCov">          0 :       catch (...) { m_imp_ptr.reset(); }</span>
+<span class="lineNum">    1524 </span>                :            :     }
+<span class="lineNum">    1525 </span>                :            : 
+<span class="lineNum">    1526 </span>                :            :   } // namespace BOOST_FILESYSTEM_NAMESPACE
+<span class="lineNum">    1527 </span>                :            : } // namespace boost
+<span class="lineNum">    1528 </span>                :            : 
+<span class="lineNum">    1529 </span>                :            : #include &lt;boost/config/abi_suffix.hpp&gt; // pops abi_prefix.hpp pragmas
+<span class="lineNum">    1530 </span>                :            : 
+<span class="lineNum">    1531 </span>                :            : #endif // BOOST_FILESYSTEM_PATH_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

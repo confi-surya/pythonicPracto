@@ -1,0 +1,73 @@
+diff --git a/src/osd/accountUpdaterService/updater.py b/remote/hydra042/spsingh/Tag186/objectStorage/src/osd/accountUpdaterService/updater.py
+index d462c06..82d2a01 100644
+--- a/src/osd/accountUpdaterService/updater.py
++++ b/remote/hydra042/spsingh/Tag186/objectStorage/src/osd/accountUpdaterService/updater.py
+@@ -10,8 +10,6 @@ from osd.accountUpdaterService.monitor import WalkerMap, ReaderMap, \
+ GlobalVariables
+ from osd.accountUpdaterService.handler import AccountInfo, ContainerDispatcher 
+ 
+-MAX_UPDATE_FILE_COUNT = 4
+-
+ class Updater(Thread):
+     def __init__(self, walker_map, reader_map, conf, logger):
+         Thread.__init__(self)
+@@ -29,8 +27,15 @@ class Updater(Thread):
+         self.__other_file_list = []
+         self.put_queue_flag = False
+ 
++    def other_file_list_cleaning(self):
++        try:
++            for comp_tuple in self.__other_file_list:
++                if comp_tuple not in self._updater_map.keys():
++                    self.__other_file_list.remove(comp_tuple)
++        except Exception as err:
++            self.logger.error("Incleaning self.__other_file_list: %s" %err)
++
+     def populate_updater_map(self):
+-        self.__other_file_list = []
+         for component, stat_data in self._reader_map.items():
+             for stat_obj, data in stat_data.items():
+                 if not stat_obj.get_lock_flag():
+@@ -76,6 +81,7 @@ class Updater(Thread):
+         try:
+             while True:
+                 self.logger.debug("Updater started")
++                self.other_file_list_cleaning()
+                 self.populate_updater_map()
+                 self.__updater_get_new_ownership()
+                 if self.__updater_check_complete_all_event():
+@@ -84,7 +90,6 @@ class Updater(Thread):
+                 waitList = []
+                 delete_list=[]
+                 accObjectDict = {}
+-                container_list = [] #Container list contains AccountInfo objects where HEAD has been done on Accounts 
+                 for comp_tuple, map_ in self._updater_map.items():              #NOTE: compTuple = (componentNum, Filename)
+                                                                                 #NOTE: map_ = {account name : [container name]}
+                     self.logger.info("Processing start for stat file : %s, map : %s" %(comp_tuple, map_))
+@@ -106,7 +111,7 @@ class Updater(Thread):
+                                 #NOTE: in case container is already existing that means container head has already been performed.
+                                 #contObj = ContainerClass(container)
+                                 account_instance.add_container(container)
+-                        try:    
++                        try:
+                             #NOTE: perform container HEAD
+                             self.logger.debug("Processing for container HEAD request")
+                             account_instance.get_container_path()
+@@ -116,7 +121,7 @@ class Updater(Thread):
+                                 self.logger.info("Container HEAD is failing on %s, \
+                                     skipping stat file %s" %(account, comp_tuple))
+                                 break
+-                            #NOTE: if the account is present in the other stat files than we should not perform account updater
++                            #NOTE: if the account is present in the other stat files than we should not perform account update
+                             # in this iteration. We should add it to waitList and will update account at the end.
+                             if account_instance.getAccountName() in self.__other_file(\
+                                 comp_tuple[0], comp_tuple[-1]):
+@@ -132,7 +137,7 @@ class Updater(Thread):
+                                 self.logger.info("Account %s can not be modified" % account)
+                                 break
+                         except Exception as err:
+-                            self.logger.error("Exception occured :%s", err)    
++                            self.logger.error("Exception occured :%s", err) 
+                     # do not create sweeper list of stat_file if any account update(wait list) of that stat_file remains
+                     for account in map_.keys():
+                         if account in waitList or ('fail' in accObjectDict[account].account_map.values()) or account_instance.acc_update_failed:

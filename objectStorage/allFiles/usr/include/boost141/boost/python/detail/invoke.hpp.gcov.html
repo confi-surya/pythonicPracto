@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/detail/invoke.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/detail</a> - invoke.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntryLo">45.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #if !defined(BOOST_PP_IS_ITERATING)
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       4 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       5 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       6 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>                :            : # ifndef INVOKE_DWA20021122_HPP
+<span class="lineNum">       8 </span>                :            : #  define INVOKE_DWA20021122_HPP
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : #  include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">      11 </span>                :            : #  include &lt;boost/python/detail/preprocessor.hpp&gt;
+<span class="lineNum">      12 </span>                :            : #  include &lt;boost/python/detail/none.hpp&gt;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #  include &lt;boost/type_traits/is_member_function_pointer.hpp&gt;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : #  include &lt;boost/preprocessor/iterate.hpp&gt;
+<span class="lineNum">      17 </span>                :            : #  include &lt;boost/preprocessor/facilities/intercept.hpp&gt;
+<span class="lineNum">      18 </span>                :            : #  include &lt;boost/preprocessor/repetition/enum_trailing_params.hpp&gt;
+<span class="lineNum">      19 </span>                :            : #  include &lt;boost/preprocessor/repetition/enum_trailing_binary_params.hpp&gt;
+<span class="lineNum">      20 </span>                :            : #  include &lt;boost/preprocessor/repetition/enum_binary_params.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #  include &lt;boost/python/to_python_value.hpp&gt;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : // This file declares a series of overloaded invoke(...)  functions,
+<span class="lineNum">      24 </span>                :            : // used to invoke wrapped C++ function (object)s from Python. Each one
+<span class="lineNum">      25 </span>                :            : // accepts:
+<span class="lineNum">      26 </span>                :            : //
+<span class="lineNum">      27 </span>                :            : //   - a tag which identifies the invocation syntax (e.g. member
+<span class="lineNum">      28 </span>                :            : //   functions must be invoked with a different syntax from regular
+<span class="lineNum">      29 </span>                :            : //   functions)
+<span class="lineNum">      30 </span>                :            : //
+<span class="lineNum">      31 </span>                :            : //   - a pointer to a result converter type, used solely as a way of
+<span class="lineNum">      32 </span>                :            : //   transmitting the type of the result converter to the function (or
+<span class="lineNum">      33 </span>                :            : //   an int, if the return type is void).
+<span class="lineNum">      34 </span>                :            : //
+<span class="lineNum">      35 </span>                :            : //   - the &quot;function&quot;, which may be a function object, a function or
+<span class="lineNum">      36 </span>                :            : //   member function pointer, or a defaulted_virtual_fn.
+<span class="lineNum">      37 </span>                :            : //
+<span class="lineNum">      38 </span>                :            : //   - The arg_from_python converters for each of the arguments to be
+<span class="lineNum">      39 </span>                :            : //   passed to the function being invoked.
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : namespace boost { namespace python { namespace detail { 
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            : // This &quot;result converter&quot; is really just used as a dispatch tag to
+<span class="lineNum">      44 </span>                :            : // invoke(...), selecting the appropriate implementation
+<span class="lineNum">      45 </span>                :            : typedef int void_result_to_python;
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : template &lt;bool void_return, bool member&gt;
+<span class="lineNum">      48 </span>                :            : struct invoke_tag_ {};
+<span class="lineNum">      49 </span>                :            : 
+<span class="lineNum">      50 </span>                :            : // A metafunction returning the appropriate tag type for invoking an
+<span class="lineNum">      51 </span>                :            : // object of type F with return type R.
+<span class="lineNum">      52 </span>                :            : template &lt;class R, class F&gt;
+<span class="lineNum">      53 </span>                :            : struct invoke_tag
+<span class="lineNum">      54 </span>                :            :   : invoke_tag_&lt;
+<span class="lineNum">      55 </span>                :            :         is_same&lt;R,void&gt;::value
+<span class="lineNum">      56 </span>                :            :       , is_member_function_pointer&lt;F&gt;::value
+<span class="lineNum">      57 </span>                :            :     &gt;
+<span class="lineNum">      58 </span>                :            : {
+<span class="lineNum">      59 </span>                :            : };
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : #  define BOOST_PP_ITERATION_PARAMS_1                                            \
+<span class="lineNum">      62 </span>                :            :         (3, (0, BOOST_PYTHON_MAX_ARITY, &lt;boost/python/detail/invoke.hpp&gt;))
+<span class="lineNum">      63 </span>                :            : #  include BOOST_PP_ITERATE()
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            : }}} // namespace boost::python::detail
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            : # endif // INVOKE_DWA20021122_HPP
+<span class="lineNum">      68 </span>                :            : #else 
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            : # define N BOOST_PP_ITERATION()
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :            : template &lt;class RC, class F BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)&gt;
+<span class="lineNum">      73 </span>                :<span class="lineCov">         86 : inline PyObject* invoke(invoke_tag_&lt;false,false&gt;, RC const&amp; rc, F&amp; f BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, &amp; ac) )</span>
+<span class="lineNum">      74 </span>                :            : {
+<span class="lineNum">      75 </span>                :<span class="lineCov">         86 :     return rc(f( BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT) ));</span>
+<span class="lineNum">      76 </span>                :            : }
+<span class="lineNum">      77 </span>                :            :                  
+<span class="lineNum">      78 </span>                :            : template &lt;class RC, class F BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)&gt;
+<span class="lineNum">      79 </span>                :<span class="lineCov">        601 : inline PyObject* invoke(invoke_tag_&lt;true,false&gt;, RC const&amp;, F&amp; f BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, &amp; ac) )</span>
+<span class="lineNum">      80 </span>                :            : {
+<span class="lineNum">      81 </span>                :<span class="lineCov">        601 :     f( BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT) );</span>
+<span class="lineNum">      82 </span>                :<span class="lineCov">        601 :     return none();</span>
+<span class="lineNum">      83 </span>                :            : }
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            : template &lt;class RC, class F, class TC BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)&gt;
+<span class="lineNum">      86 </span>                :<span class="lineCov">       1012 : inline PyObject* invoke(invoke_tag_&lt;false,true&gt;, RC const&amp; rc, F&amp; f, TC&amp; tc BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, &amp; ac) )</span>
+<span class="lineNum">      87 </span>                :            : {
+<span class="lineNum">      88 </span>[<span class="branchCov" title="Branch 1 was taken 534 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoExec" title="Block containing branch 8 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 9 was never executed"> # </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>:<span class="lineCov">       1012 :     return rc( (tc().*f)(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT)) );</span>
+<span class="lineNum">         </span><span class="branchCov" title="Branch 7 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span><span class="branchCov" title="Branch 12 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span><span class="branchCov" title="Branch 19 was taken 4 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 25 was not taken"> - </span><span class="branchCov" title="Branch 26 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span><span class="branchCov" title="Branch 33 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 38 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 42 was not taken"> - </span><span class="branchCov" title="Branch 43 was taken 288 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span><span class="branchCov" title="Branch 48 was taken 15 times"> + </span> 
+<span class="lineNum">         </span>         <span class="branchNoCov" title="Branch 54 was not taken"> - </span><span class="branchCov" title="Branch 55 was taken 26 times"> + </span>]
+<span class="lineNum">      89 </span>                :            : }
+<span class="lineNum">      90 </span>                :            :                  
+<span class="lineNum">      91 </span>                :            : template &lt;class RC, class F, class TC BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)&gt;
+<span class="lineNum">      92 </span>                :<span class="lineCov">        475 : inline PyObject* invoke(invoke_tag_&lt;true,true&gt;, RC const&amp;, F&amp; f, TC&amp; tc BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, &amp; ac) )</span>
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>[<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 104 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 17 was taken 72 times"> + </span>:<span class="lineCov">        475 :     (tc().*f)(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT));</span>
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span><span class="branchCov" title="Branch 25 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span><span class="branchCov" title="Branch 33 was taken 28 times"> + </span><span class="branchNoCov" title="Branch 34 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 60 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 61 was not taken"> - </span><span class="branchCov" title="Branch 71 was taken 229 times"> + </span><span class="branchNoCov" title="Branch 72 was not taken"> - </span><span class="branchCov" title="Branch 85 was taken 12 times"> + </span> 
+<span class="lineNum">         </span>      <span class="branchNoCov" title="Branch 86 was not taken"> - </span><span class="branchNoExec" title="Block containing branch 99 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 100 was never executed"> # </span>]
+<span class="lineNum">      95 </span>                :<span class="lineCov">        475 :     return none();</span>
+<span class="lineNum">      96 </span>                :            : }
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :            : # undef N
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : #endif // BOOST_PP_IS_ITERATING 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

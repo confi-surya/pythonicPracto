@@ -1,0 +1,1063 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/transactionLibrary/transaction_memory.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/transactionLibrary</a> - transaction_memory.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">475</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       2 </span>                :            : #include &lt;assert.h&gt; 
+<span class="lineNum">       3 </span>                :            : #include &lt;boost/make_shared.hpp&gt;
+<span class="lineNum">       4 </span>                :            : #include &lt;boost/lexical_cast.hpp&gt;
+<span class="lineNum">       5 </span>                :            : #include &quot;boost/bind.hpp&quot;
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : #include &quot;transactionLibrary/transaction_memory.h&quot;
+<span class="lineNum">       8 </span>                :            : #include &quot;libraryUtils/object_storage_log_setup.h&quot;
+<span class="lineNum">       9 </span>                :            : //typedef boost::shared_ptr&lt;helper_utils::transactionIdElement&gt; element_ptr;
+<span class="lineNum">      10 </span>                :            : //typedef std::list&lt;element_ptr&gt; edlement_list;
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : namespace transaction_memory
+<span class="lineNum">      13 </span>                :            : {
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : TransactionStoreManager::TransactionStoreManager(
+<span class="lineNum">      16 </span>                :            :         cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr,uint8_t node_id, int listening_port
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">      18 </span>                :<span class="lineNoCov">          0 :         lock_manager_ptr(new TransactionLockManager(parser_ptr,node_id, listening_port))</span>
+<span class="lineNum">      19 </span>                :            : {
+<span class="lineNum">      20 </span>                :            : /* Manager class to manage transaction memory and Locks
+<span class="lineNum">      21 </span>                :            : */
+<span class="lineNum">      22 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TransactionStoreManager constructor called&quot;);</span>
+<span class="lineNum">      23 </span>                :            : }
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 : TransactionStoreManager::~TransactionStoreManager()</span>
+<span class="lineNum">      26 </span>                :            : {
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Destructing TransactionStoreManager&quot;);</span>
+<span class="lineNum">      28 </span>                :            : }
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : bool TransactionStoreManager::add_records_in_memory
+<span class="lineNum">      31 </span>                :<span class="lineNoCov">          0 :                 (std::list&lt;boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt; transaction_entries, bool memory_flag )</span>
+<span class="lineNum">      32 </span>                :            : {
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;add_records_in_memory(transaction_entries, memory_flag);</span>
+<span class="lineNum">      34 </span>                :            : }
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : //
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 : int64_t TransactionStoreManager::acquire_lock(boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; record)</span>
+<span class="lineNum">      39 </span>                :            : {
+<span class="lineNum">      40 </span>                :            : /* Method checks whether transaction memory is full or not
+<span class="lineNum">      41 </span>                :            :  *  * also it acquires lock if memory is free
+<span class="lineNum">      42 </span>                :            :  *   */
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;lock_manager_ptr-&gt;is_full())</span>
+<span class="lineNum">      45 </span>                :            :         {
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Lock queue is full&quot;);</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :                 return -2;  // lock acquisition request rejected</span>
+<span class="lineNum">      48 </span>                :            :         }
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;acquire_transaction_lock(record);</span>
+<span class="lineNum">      50 </span>                :            : }
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 : void TransactionStoreManager::mark_unknown_memory(std::list&lt;int32_t&gt;&amp; component_list)</span>
+<span class="lineNum">      53 </span>                :            : {
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :         this-&gt;lock_manager_ptr-&gt;mark_unknown_memory(component_list);      </span>
+<span class="lineNum">      55 </span>                :            : }
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 : void TransactionStoreManager::remove_bulk_delete_entry(std::list&lt;int64_t&gt;&amp; bulk_transaction_id)</span>
+<span class="lineNum">      58 </span>                :            : {
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :         this-&gt;lock_manager_ptr-&gt;remove_bulk_delete_entry(bulk_transaction_id);</span>
+<span class="lineNum">      60 </span>                :            : }
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 : bool TransactionStoreManager::check_for_queue_size(int32_t size)</span>
+<span class="lineNum">      63 </span>                :            : {
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;check_for_queue_size(size);</span>
+<span class="lineNum">      65 </span>                :            : }
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 : bool TransactionStoreManager::release_lock_by_id(int64_t transaction_id)</span>
+<span class="lineNum">      68 </span>                :            : {
+<span class="lineNum">      69 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;release_lock_by_id(transaction_id);</span>
+<span class="lineNum">      70 </span>                :            : }
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 : bool TransactionStoreManager::get_id_list_for_name(std::string object_name, element_list&amp; id_list)</span>
+<span class="lineNum">      73 </span>                :            : {
+<span class="lineNum">      74 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_id_list_for_name(object_name, id_list);</span>
+<span class="lineNum">      75 </span>                :            : }
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 : std::string TransactionStoreManager::get_name_for_id(int64_t transaction_id)</span>
+<span class="lineNum">      78 </span>                :            : {
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_name_for_id(transaction_id);</span>
+<span class="lineNum">      80 </span>                :            : }
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 : void TransactionStoreManager::set_last_transaction_id(int64_t transaction_id)</span>
+<span class="lineNum">      83 </span>                :            : {
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :         this-&gt;lock_manager_ptr-&gt;set_last_transaction_id(transaction_id);</span>
+<span class="lineNum">      85 </span>                :            : }
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 : std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt; TransactionStoreManager::get_memory()</span>
+<span class="lineNum">      88 </span>                :            : {
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_memory();</span>
+<span class="lineNum">      90 </span>                :            : }
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 : std::vector&lt;int64_t&gt; TransactionStoreManager::get_active_id_list()</span>
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_active_id_list();</span>
+<span class="lineNum">      95 </span>                :            : }
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 : void TransactionStoreManager::commit_recovered_data(std::list&lt;int32_t&gt;&amp; component_list, bool base_version_changed)</span>
+<span class="lineNum">      98 </span>                :            : {
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :         this-&gt;lock_manager_ptr-&gt;commit_recovered_data(component_list, base_version_changed);</span>
+<span class="lineNum">     100 </span>                :            : }
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :            : std::map&lt;int32_t,std::list&lt;recordStructure::ActiveRecord&gt; &gt;  
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :         TransactionStoreManager::get_component_transaction_map(std::list&lt;int32_t&gt;&amp; component_names)</span>
+<span class="lineNum">     104 </span>                :            : {
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_component_transaction_map(component_names);</span>
+<span class="lineNum">     106 </span>                :            : }
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 : std::map&lt;int64_t, recordStructure::ActiveRecord&gt; TransactionStoreManager::get_transaction_map()</span>
+<span class="lineNum">     108 </span>                :            : {
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_transaction_map();</span>
+<span class="lineNum">     110 </span>                :            : }
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 : std::list&lt;std::string&gt; TransactionStoreManager::get_bulk_delete_obj_list()</span>
+<span class="lineNum">     113 </span>                :            : {
+<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;get_bulk_delete_obj_list();</span>
+<span class="lineNum">     115 </span>                :            : }
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 : boost::python::list TransactionStoreManager::recover_active_record(std::string obj_name , int32_t component)</span>
+<span class="lineNum">     118 </span>                :            : {
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :         return this-&gt;lock_manager_ptr-&gt;recover_active_record(obj_name,component);</span>
+<span class="lineNum">     120 </span>                :            : }
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :            : TransactionLockManager::TransactionLockManager(
+<span class="lineNum">     123 </span>                :            :         cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr,
+<span class="lineNum">     124 </span>                :            :         uint8_t node_id,
+<span class="lineNum">     125 </span>                :            :         int listening_port
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 : ) : </span>
+<span class="lineNum">     127 </span>                :            :         id(this-&gt;get_unique_id(node_id,0)),
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :         listening_port(listening_port)</span>
+<span class="lineNum">     129 </span>                :            : {
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TransactionLockManager constructor called&quot;);</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :         this-&gt;init();</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor = boost::thread(boost::bind(&amp;TransactionLockManager::start_listening, this));</span>
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            :         //Performance : Register Transaction Memrory Stats
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :         CREATE_AND_REGISTER_STAT(this-&gt;trans_mem_stats, &quot;trans_mem&quot;, TransactionMem);</span>
+<span class="lineNum">     136 </span>                :            : }
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 : int64_t TransactionLockManager::get_unique_id(uint64_t node_id,uint64_t id)</span>
+<span class="lineNum">     139 </span>                :            : {
+<span class="lineNum">     140 </span>                :            :         uint64_t unique_id;
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :         uint64_t tmp = MAX_ID_LIMIT &amp; id;</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         node_id = node_id &lt;&lt; 55;</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :         unique_id = tmp | node_id;</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :         return unique_id;</span>
+<span class="lineNum">     145 </span>                :            : }
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 : TransactionLockManager::~TransactionLockManager()</span>
+<span class="lineNum">     149 </span>                :            : {
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Destructing TransactionLockManager&quot;);</span>
+<span class="lineNum">     151 </span>                :            : //      this-&gt;sock-&gt;close();
+<span class="lineNum">     152 </span>                :            : //      this-&gt;io_service.stop();
+<span class="lineNum">     153 </span>                :            : //      this-&gt;monitor.join();
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :         boost::thread::id tid;</span>
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :         if(this-&gt;monitor.get_id() != tid)</span>
+<span class="lineNum">     156 </span>                :            :         {
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :         this-&gt;io_service.stop();</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor.join();</span>
+<span class="lineNum">     159 </span>                :            :         }
+<span class="lineNum">     160 </span>                :            :         //Performance : De-Register Stats
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :         UNREGISTER_STAT(this-&gt;trans_mem_stats);</span>
+<span class="lineNum">     162 </span>                :            : }
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            : std::map&lt;int32_t,std::list&lt;recordStructure::ActiveRecord&gt; &gt; 
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :         TransactionLockManager::get_component_transaction_map(std::list&lt;int32_t&gt;&amp; component_names)</span>
+<span class="lineNum">     166 </span>                :            : {
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Extracting transaction data from memory&quot;);</span>
+<span class="lineNum">     169 </span>                :            :         std::map&lt;int32_t,
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :                  std::list&lt;recordStructure::ActiveRecord&gt; &gt; component_transaction_map;</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :         std::list&lt;int32_t&gt;::iterator comp_it;</span>
+<span class="lineNum">     172 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1;</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :         for ( comp_it = component_names.begin(); comp_it != component_names.end(); </span>
+<span class="lineNum">     175 </span>                :            :                         comp_it++ )
+<span class="lineNum">     176 </span>                :            :         {
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :             it1 = mem_map.find(*comp_it);</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :             if ( it1 != mem_map.end() )</span>
+<span class="lineNum">     179 </span>                :            :             {
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :                 for(std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;</span>
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :                                 ::iterator it3 = it1-&gt;second.first.begin(); it3 != it1-&gt;second.first.end(); it3++)</span>
+<span class="lineNum">     182 </span>                :            :                 {
+<span class="lineNum">     183 </span>                :            :                         std::map&lt;int32_t,std::list&lt;recordStructure::ActiveRecord&gt; &gt;
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :                                  ::iterator it2 = component_transaction_map.find(*(comp_it));</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :                         if ( it2 == component_transaction_map.end())</span>
+<span class="lineNum">     186 </span>                :            :                         {
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :                                 std::list&lt;recordStructure::ActiveRecord&gt; new_list;</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :                                 component_transaction_map.insert(std::make_pair(*(comp_it),new_list));</span>
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :                                 it2 = component_transaction_map.find(*(comp_it));</span>
+<span class="lineNum">     190 </span>                :            :                         }
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :                         recordStructure::ActiveRecord record(*(it3-&gt;second));</span>
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :                         it2-&gt;second.push_back(record);</span>
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :                         if (this-&gt;comp_map.find(record.get_transaction_id()) != this-&gt;comp_map.end())</span>
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;comp_map.erase(record.get_transaction_id());</span>
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :                         if ( this-&gt;name_map.find(record.get_object_name()) != this-&gt;name_map.end()){</span>
+<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Removing object from name_map&quot;);</span>
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;name_map.erase(record.get_object_name());</span>
+<span class="lineNum">     198 </span>                :            :                         }
+<span class="lineNum">     199 </span>                :            :                 }
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :                 mem_map.erase(it1);</span>
+<span class="lineNum">     201 </span>                :            :             }
+<span class="lineNum">     202 </span>                :            :          }
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :          return component_transaction_map;</span>
+<span class="lineNum">     204 </span>                :            : }
+<span class="lineNum">     205 </span>                :            : 
+<span class="lineNum">     206 </span>                :            : //
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 : std::map&lt;int64_t, recordStructure::ActiveRecord&gt; TransactionLockManager::get_transaction_map()</span>
+<span class="lineNum">     209 </span>                :            : {
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t, recordStructure::ActiveRecord&gt; transaction_map;</span>
+<span class="lineNum">     211 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1;</span>
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :         for (it1 = this-&gt;mem_map.begin(); it1 != this-&gt;mem_map.end(); it1++ )</span>
+<span class="lineNum">     214 </span>                :            :         {
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :             if (it1-&gt;second.second)</span>
+<span class="lineNum">     216 </span>                :            :             {
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :                 std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it2;</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :                 for(it2 = it1-&gt;second.first.begin();it2 != it1-&gt;second.first.end(); it2++)</span>
+<span class="lineNum">     219 </span>                :            :                 {
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 :                        recordStructure::ActiveRecord record(*(it2-&gt;second));</span>
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :                        int64_t id = it2-&gt;first;</span>
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :                        transaction_map.insert(std::pair&lt;int64_t, recordStructure::ActiveRecord&gt;(id, record));</span>
+<span class="lineNum">     223 </span>                :            :                 }
+<span class="lineNum">     224 </span>                :            :             }
+<span class="lineNum">     225 </span>                :            :         }
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :         return transaction_map;</span>
+<span class="lineNum">     227 </span>                :            : }
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 : int32_t TransactionLockManager::get_component_name(std::string object_path)</span>
+<span class="lineNum">     230 </span>                :            : {
+<span class="lineNum">     231 </span>                :            :         //Calculate Component Name
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Path for object is : &quot; &lt;&lt; object_path);</span>
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :         int32_t component_number = 0;</span>
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :         uint64_t comp_number = 0;</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :         int index = object_path.rfind('/');</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :         std::string acc_con_hash = object_path.substr(0,index);</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :         index = acc_con_hash.rfind('/');</span>
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :         acc_con_hash = acc_con_hash.substr(index+1);</span>
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :         std::string x = acc_con_hash.substr(0,8);</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         std::stringstream ss;</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :         ss &lt;&lt; std::hex &lt;&lt; x;            </span>
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :         ss &gt;&gt; comp_number;</span>
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :         component_number= comp_number % 512;</span>
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Component Name of Transaction Library : &quot; &lt;&lt; component_number);</span>
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :         if (osd_config)</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :                 component_number=1;</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :         return component_number;</span>
+<span class="lineNum">     249 </span>                :            : }
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            : bool TransactionLockManager::add_records_in_memory(                               
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :                          std::list&lt;boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;&amp; transaction_entries, bool memory_flag)</span>
+<span class="lineNum">     253 </span>                :            : {
+<span class="lineNum">     254 </span>                :            :    try
+<span class="lineNum">     255 </span>                :            :    {
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :         std::list&lt;boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it;</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :         for ( it = transaction_entries.begin() ; it != transaction_entries.end(); it++)</span>
+<span class="lineNum">     259 </span>                :            :         {
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :                 std::string object_name=(*it)-&gt;get_object_name();</span>
+<span class="lineNum">     261 </span>                :            :                 //Calculate Component Name
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :                 int32_t component_name=this-&gt;get_component_name(object_name);</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG,&quot;Adding Recovered Data in Component Name : &quot; &lt;&lt; component_name);</span>
+<span class="lineNum">     264 </span>                :            :                 std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     265 </span>                :            :                                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :                                                         ::iterator it1=this-&gt;mem_map.find(component_name);</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :                 if ( it1 != mem_map.end())</span>
+<span class="lineNum">     268 </span>                :            :                 {
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :                         int64_t transaction_id = (*it)-&gt;get_transaction_id();</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :                         it1-&gt;second.first.insert(std::make_pair(transaction_id,(*it)));</span>
+<span class="lineNum">     271 </span>                :            :                 }
+<span class="lineNum">     272 </span>                :            :                 else
+<span class="lineNum">     273 </span>                :            :                 {
+<span class="lineNum">     274 </span>                :            :                         std::pair&lt;std::map&lt;int64_t,boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt;
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :                                                 new_pair;</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :                         std::map&lt;int64_t,boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt; new_map;</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :                         new_map.insert(std::make_pair((*it)-&gt;get_transaction_id(),(*it)));</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :                         new_pair = std::make_pair(new_map,memory_flag);</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                         this-&gt;mem_map.insert(std::make_pair(component_name,new_pair));</span>
+<span class="lineNum">     280 </span>                :            :                 }               
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                 if ( memory_flag )</span>
+<span class="lineNum">     282 </span>                :            :                 {
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO,&quot;Memory Flag is true&quot; );</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :                         std::string obj_name = (*it)-&gt;get_object_name();</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :                         int64_t trans_id = (*it)-&gt;get_transaction_id();</span>
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :                         element_ptr new_node(new helper_utils::transactionIdElement);</span>
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :                         new_node-&gt;transaction_id = (*it)-&gt;get_transaction_id();</span>
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :                         new_node-&gt;operation = (*it)-&gt;get_operation_type();</span>
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :                         if ( this-&gt;name_map.find(obj_name) != this-&gt;name_map.end() )</span>
+<span class="lineNum">     290 </span>                :            :                         {
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO,&quot;Inserting another lock for object &quot; &lt;&lt; obj_name  );</span>
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;name_map.find(obj_name)-&gt;second.push_back(new_node);</span>
+<span class="lineNum">     293 </span>                :            :                         }
+<span class="lineNum">     294 </span>                :            :                         else
+<span class="lineNum">     295 </span>                :            :                         {
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :                                 element_list list;</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :                                 list.push_back(new_node);</span>
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;name_map.insert(std::make_pair(obj_name, list));</span>
+<span class="lineNum">     299 </span>                :            :                         }
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :                         if ( this-&gt;comp_map.find(trans_id) == this-&gt;comp_map.end() )</span>
+<span class="lineNum">     301 </span>                :            :                         {
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;comp_map.insert(std::make_pair(trans_id, component_name));</span>
+<span class="lineNum">     303 </span>                :            :                         }
+<span class="lineNum">     304 </span>                :            :                 }
+<span class="lineNum">     305 </span>                :            :         }
+<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     307 </span>                :            :     }
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :     catch(...)</span>
+<span class="lineNum">     309 </span>                :            :     {
+<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     311 </span>                :            :     }
+<span class="lineNum">     312 </span>                :            : }
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            : // 
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::mark_unknown_memory(std::list&lt;int32_t&gt;&amp; component_list)</span>
+<span class="lineNum">     317 </span>                :            : {
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;In mark_unknown_memory&quot;);</span>
+<span class="lineNum">     320 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     321 </span>                :            :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :                                                         ::iterator it1 = this-&gt;mem_map.begin();</span>
+<span class="lineNum">     323 </span>                :            : 
+<span class="lineNum">     324 </span>                :<span class="lineNoCov">          0 :         for(; it1 != this-&gt;mem_map.end(); it1++ )</span>
+<span class="lineNum">     325 </span>                :            :         {
+<span class="lineNum">     326 </span>                :            :                 std::list&lt;int32_t&gt;::iterator list_it
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :                         = std::find(component_list.begin(),component_list.end(),it1-&gt;first);</span>
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :                 if (list_it == component_list.end())</span>
+<span class="lineNum">     329 </span>                :            :                 {
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :                         it1-&gt;second.second = false;</span>
+<span class="lineNum">     331 </span>                :            :                         std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :                                         ::iterator it2 = it1-&gt;second.first.begin();</span>
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :                         for ( ; it2 != it1-&gt;second.first.end() ; ++it2 )</span>
+<span class="lineNum">     334 </span>                :            :                         {
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :                                 std::string obj_name = it2-&gt;second-&gt;get_object_name();</span>
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :                                 if (this-&gt;name_map.find(obj_name) != this-&gt;name_map.end())</span>
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;name_map.erase(obj_name);</span>
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :                                 if (this-&gt;comp_map.find(it2-&gt;first) != this-&gt;comp_map.end())</span>
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;comp_map.erase(it2-&gt;first);</span>
+<span class="lineNum">     340 </span>                :            :                         }
+<span class="lineNum">     341 </span>                :            :                 }
+<span class="lineNum">     342 </span>                :            :         }
+<span class="lineNum">     343 </span>                :            : 
+<span class="lineNum">     344 </span>                :            : }
+<span class="lineNum">     345 </span>                :            : //
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 : std::list&lt;std::string&gt; TransactionLockManager::get_bulk_delete_obj_list()</span>
+<span class="lineNum">     348 </span>                :            : {
+<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :         std::list&lt;std::string&gt; obj_list;</span>
+<span class="lineNum">     350 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     351 </span>                :            :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :                                                         ::iterator it1 = this-&gt;mem_map.begin();</span>
+<span class="lineNum">     353 </span>                :            :         
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :         for ( ; it1 != this-&gt;mem_map.end(); ++it1)</span>
+<span class="lineNum">     355 </span>                :            :         {
+<span class="lineNum">     356 </span>                :            :                 std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :                                 = it1-&gt;second.first.begin();</span>
+<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :                 for ( ; it != it1-&gt;second.first.end(); ++it )</span>
+<span class="lineNum">     359 </span>                :            :                 {
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :                         if(it-&gt;second-&gt;get_request_method() == &quot;BULK_DELETE&quot;)</span>
+<span class="lineNum">     361 </span>                :            :                         {
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :                                 obj_list.push_back(it-&gt;second-&gt;get_object_name());</span>
+<span class="lineNum">     363 </span>                :            :                         }
+<span class="lineNum">     364 </span>                :            :                 }
+<span class="lineNum">     365 </span>                :            :         }
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :         return obj_list;</span>
+<span class="lineNum">     367 </span>                :            : }
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::remove_bulk_delete_entry(std::list&lt;int64_t&gt;&amp; bulk_transaction_ids)</span>
+<span class="lineNum">     370 </span>                :            : {
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;In remove_bulk_delete_records&quot;);</span>
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t,int32_t&gt;::iterator comp_it;</span>
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :         std::list&lt;int64_t&gt;::iterator bulk_it = bulk_transaction_ids.begin();</span>
+<span class="lineNum">     375 </span>                :            :         //Start iterating bulk_transction_id list
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :         for ( ; bulk_it != bulk_transaction_ids.end(); ++bulk_it )</span>
+<span class="lineNum">     377 </span>                :            :         {
+<span class="lineNum">     378 </span>                :<span class="lineNoCov">          0 :            comp_it = this-&gt;comp_map.find((*bulk_it));</span>
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 :            if ( comp_it != this-&gt;comp_map.end() )</span>
+<span class="lineNum">     380 </span>                :            :            {
+<span class="lineNum">     381 </span>                :            :                 //ID found in component map
+<span class="lineNum">     382 </span>                :            :                 std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     383 </span>                :            :                         boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;
+<span class="lineNum">     384 </span>                :<span class="lineNoCov">          0 :                                                         ::iterator it1 = this-&gt;mem_map.find(comp_it-&gt;second);</span>
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :                 if ( it1 != this-&gt;mem_map.end() )</span>
+<span class="lineNum">     386 </span>                :            :                 {
+<span class="lineNum">     387 </span>                :            :                         //component found in Memory map
+<span class="lineNum">     388 </span>                :            :                         std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :                                 ::iterator it = it1-&gt;second.first.find((*bulk_it));</span>
+<span class="lineNum">     390 </span>                :            :                         
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :                         if ( it != it1-&gt;second.first.end() )</span>
+<span class="lineNum">     392 </span>                :            :                         {       
+<span class="lineNum">     393 </span>                :            :                                 //ID found in Memory map
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :                                 if ( it-&gt;second-&gt;get_request_method() == &quot;BULK_DELETE&quot; )</span>
+<span class="lineNum">     395 </span>                :            :                                 {
+<span class="lineNum">     396 </span>                :            :                                         //Erase from Name map
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;name_map.erase(it-&gt;second-&gt;get_object_name());</span>
+<span class="lineNum">     398 </span>                :            :                                         //Erase Active Record from Memory map
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :                                         it1-&gt;second.first.erase(it);</span>
+<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 :                                         if ( it1-&gt;second.first.size() == 0 )</span>
+<span class="lineNum">     401 </span>                :            :                                         {
+<span class="lineNum">     402 </span>                :            :                                                 //Erase component from Memory map if no active record remaining 
+<span class="lineNum">     403 </span>                :            :                                                 // for that component
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;mem_map.erase(comp_it-&gt;second);</span>
+<span class="lineNum">     405 </span>                :            :                                         }
+<span class="lineNum">     406 </span>                :            :                                         //Erasing entry from Component map
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;comp_map.erase(comp_it);</span>
+<span class="lineNum">     408 </span>                :            :                                 }
+<span class="lineNum">     409 </span>                :            :                         }
+<span class="lineNum">     410 </span>                :            :                 }
+<span class="lineNum">     411 </span>                :            :             }
+<span class="lineNum">     412 </span>                :            :         }
+<span class="lineNum">     413 </span>                :            : }
+<span class="lineNum">     414 </span>                :            : 
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 : int64_t TransactionLockManager::acquire_transaction_lock(boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; record)</span>
+<span class="lineNum">     416 </span>                :            : {
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, element_list&gt;::iterator it;</span>
+<span class="lineNum">     419 </span>                :            : 
+<span class="lineNum">     420 </span>                :            : //      boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; record(new recordStructure::ActiveRecord);
+<span class="lineNum">     421 </span>                :            : //      ::memcpy(record.get(), act_record, sizeof(recordStructure::ActiveRecord));
+<span class="lineNum">     422 </span>                :            : 
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :         std::string object_name = record-&gt;get_object_name();</span>
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;TransactionLockManager::acquire_transaction_lock for &quot; &lt;&lt; object_name);</span>
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;name_map.find(object_name) != this-&gt;name_map.end())</span>
+<span class="lineNum">     427 </span>                :            :         {
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :                 element_list list(this-&gt;name_map.find(object_name)-&gt;second);</span>
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :                 int lock_operation = list.front()-&gt;operation;</span>
+<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :                 int incoming_operation = record-&gt;get_operation_type();</span>
+<span class="lineNum">     431 </span>                :            : 
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :                 if (lock_operation == helper_utils::READ &amp;&amp; incoming_operation == helper_utils::WRITE)</span>
+<span class="lineNum">     433 </span>                :            :                 {
+<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Write lock rejected as read locks are existing for &quot; &lt;&lt; object_name);</span>
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     436 </span>                :            :                 }
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :                 else if (lock_operation == helper_utils::WRITE &amp;&amp; incoming_operation == helper_utils::WRITE)</span>
+<span class="lineNum">     438 </span>                :            :                 {
+<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Write lock rejected as write lock is already acquired for &quot; &lt;&lt; object_name);</span>
+<span class="lineNum">     440 </span>                :<span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     441 </span>                :            :                 }
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :                 else if (lock_operation == helper_utils::WRITE &amp;&amp; incoming_operation == helper_utils::READ)</span>
+<span class="lineNum">     443 </span>                :            :                 {
+<span class="lineNum">     444 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Read lock rejected as write lock is already acquired for &quot; &lt;&lt; object_name);</span>
+<span class="lineNum">     445 </span>                :<span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     446 </span>                :            :                 }
+<span class="lineNum">     447 </span>                :            :         }
+<span class="lineNum">     448 </span>                :            :         else
+<span class="lineNum">     449 </span>                :            :         {
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :                 element_list list;</span>
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :                 this-&gt;name_map.insert(std::make_pair(object_name, list));</span>
+<span class="lineNum">     452 </span>                :            :         }
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :         element_ptr new_node(new helper_utils::transactionIdElement);</span>
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :         if (record-&gt;get_transaction_id())</span>
+<span class="lineNum">     456 </span>                :            :         {
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :                 new_node-&gt;transaction_id = record-&gt;get_transaction_id();</span>
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :                 this-&gt;set_last_transaction_id(record-&gt;get_transaction_id());</span>
+<span class="lineNum">     459 </span>                :            :         }
+<span class="lineNum">     460 </span>                :            :         else
+<span class="lineNum">     461 </span>                :            :         {
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :                 new_node-&gt;transaction_id = ++(this-&gt;id);</span>
+<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :                 record-&gt;set_transaction_id(new_node-&gt;transaction_id);</span>
+<span class="lineNum">     464 </span>                :            :         }
+<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 :         new_node-&gt;operation = record-&gt;get_operation_type();</span>
+<span class="lineNum">     466 </span>                :<span class="lineNoCov">          0 :         this-&gt;name_map.find(object_name)-&gt;second.push_back(new_node);</span>
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :         int32_t component_name=this-&gt;get_component_name(object_name);</span>
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Adding Original Data in Component Name : &quot; &lt;&lt; component_name);</span>
+<span class="lineNum">     469 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :                         boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1 = this-&gt;mem_map.find(component_name);</span>
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 :         if (it1 != this-&gt;mem_map.end())</span>
+<span class="lineNum">     472 </span>                :            :         {
+<span class="lineNum">     473 </span>                :            :                 std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it2 
+<span class="lineNum">     474 </span>                :<span class="lineNoCov">          0 :                                         = it1-&gt;second.first.find(new_node.get()-&gt;transaction_id);</span>
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :                 if (it2 != it1-&gt;second.first.end())</span>
+<span class="lineNum">     476 </span>                :            :                 {
+<span class="lineNum">     477 </span>                :            :                         /* Although this condition will never occur
+<span class="lineNum">     478 </span>                :            :                          * But if it occurs it is a bug. so logging it in the logger.
+<span class="lineNum">     479 </span>                :            :                          * TODO: log this message in logger, as soon as it is prepared. 
+<span class="lineNum">     480 </span>                :            :                                  currently using STDOUT*/
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;Transaction id &quot; &lt;&lt; new_node-&gt;transaction_id &lt;&lt; &quot;is already in memory map &quot;);</span>
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     483 </span>                :            :                 }
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :                 it1-&gt;second.first.insert(std::make_pair(new_node-&gt;transaction_id, record));            </span>
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :                 this-&gt;comp_map.insert(std::make_pair(new_node-&gt;transaction_id,it1-&gt;first));      </span>
+<span class="lineNum">     486 </span>                :            :         }
+<span class="lineNum">     487 </span>                :            :         else
+<span class="lineNum">     488 </span>                :            :         {
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 :                 std::map&lt;int64_t,boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt; newcomp;</span>
+<span class="lineNum">     490 </span>                :<span class="lineNoCov">          0 :                 newcomp.insert(std::make_pair(new_node-&gt;transaction_id, record));</span>
+<span class="lineNum">     491 </span>                :            :                 std::pair&lt;std::map&lt;int64_t,boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; new_pair
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :                         = std::make_pair(newcomp,true);</span>
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :                 this-&gt;mem_map.insert(std::make_pair(component_name,new_pair));</span>
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :                 this-&gt;comp_map.insert(std::make_pair(new_node-&gt;transaction_id,component_name));      </span>
+<span class="lineNum">     495 </span>                :            :         }
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Element with ID &quot; &lt;&lt; new_node-&gt;transaction_id &lt;&lt; &quot; added in memory. Mem size is &quot; &lt;&lt; this-&gt;comp_map.size());</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :         return new_node-&gt;transaction_id;</span>
+<span class="lineNum">     498 </span>                :            : }
+<span class="lineNum">     499 </span>                :            : 
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 : bool TransactionLockManager::get_id_list_for_name(std::string object_name, element_list&amp; id_list)</span>
+<span class="lineNum">     501 </span>                :            : {       
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, element_list&gt;::iterator it;</span>
+<span class="lineNum">     503 </span>                :<span class="lineNoCov">          0 :         it = this-&gt;name_map.find(object_name);</span>
+<span class="lineNum">     504 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Getting ID list for object &quot; &lt;&lt; object_name);</span>
+<span class="lineNum">     505 </span>                :            : 
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :         if (it != this-&gt;name_map.end())</span>
+<span class="lineNum">     507 </span>                :            :         {
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :                 id_list = it-&gt;second;</span>
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     510 </span>                :            :         }
+<span class="lineNum">     511 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Lock for object &quot; &lt;&lt; object_name &lt;&lt; &quot; not found&quot;);</span>
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     513 </span>                :            : }
+<span class="lineNum">     514 </span>                :            : 
+<span class="lineNum">     515 </span>                :<span class="lineNoCov">          0 : void  TransactionLockManager::internal_release_lock_by_id(int64_t transaction_id)</span>
+<span class="lineNum">     516 </span>                :            : {
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t,int32_t&gt;::iterator it = this-&gt;comp_map.find(transaction_id);</span>
+<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :         if ( it != this-&gt;comp_map.end())</span>
+<span class="lineNum">     519 </span>                :            :         {
+<span class="lineNum">     520 </span>                :            :                 std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     521 </span>                :<span class="lineNoCov">          0 :                                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1 = this-&gt;mem_map.find(it-&gt;second);</span>
+<span class="lineNum">     522 </span>                :<span class="lineNoCov">          0 :                 it1-&gt;second.first.erase(transaction_id);</span>
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 :                 if ( it1-&gt;second.first.size() == 0 )</span>
+<span class="lineNum">     524 </span>                :<span class="lineNoCov">          0 :                         this-&gt;mem_map.erase(it1);</span>
+<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 :                 this-&gt;comp_map.erase(transaction_id);</span>
+<span class="lineNum">     526 </span>                :            :         }
+<span class="lineNum">     527 </span>                :            : }
+<span class="lineNum">     528 </span>                :            : 
+<span class="lineNum">     529 </span>                :<span class="lineNoCov">          0 : std::string TransactionLockManager::get_name_for_id(int64_t transaction_id)</span>
+<span class="lineNum">     530 </span>                :            : {
+<span class="lineNum">     531 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t,int32_t&gt;::iterator it = this-&gt;comp_map.find(transaction_id);</span>
+<span class="lineNum">     532 </span>                :<span class="lineNoCov">          0 :         if (it != this-&gt;comp_map.end())</span>
+<span class="lineNum">     533 </span>                :            :         {
+<span class="lineNum">     534 </span>                :            :                 std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     535 </span>                :<span class="lineNoCov">          0 :                                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1 = this-&gt;mem_map.find(it-&gt;second);</span>
+<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 :                 if (it1 != mem_map.end() )</span>
+<span class="lineNum">     537 </span>                :            :                 {
+<span class="lineNum">     538 </span>                :<span class="lineNoCov">          0 :                         std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it2 = it1-&gt;second.first.find(transaction_id);</span>
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :                         if(it2 != it1-&gt;second.first.end())</span>
+<span class="lineNum">     540 </span>                :            :                         {
+<span class="lineNum">     541 </span>                :<span class="lineNoCov">          0 :                                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; record(it2-&gt;second);</span>
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :                                 return it2-&gt;second-&gt;get_object_name();</span>
+<span class="lineNum">     543 </span>                :            :                         }
+<span class="lineNum">     544 </span>                :<span class="lineNoCov">          0 :                         return &quot;error&quot;;</span>
+<span class="lineNum">     545 </span>                :            :                 }
+<span class="lineNum">     546 </span>                :<span class="lineNoCov">          0 :                 return &quot;error&quot;;</span>
+<span class="lineNum">     547 </span>                :            :         }                       
+<span class="lineNum">     548 </span>                :<span class="lineNoCov">          0 :         return &quot;error&quot;;</span>
+<span class="lineNum">     549 </span>                :            : }
+<span class="lineNum">     550 </span>                :            : 
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 : bool TransactionLockManager::release_lock_by_id(int64_t transaction_id)</span>
+<span class="lineNum">     552 </span>                :            : {
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     554 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TransactionLockManager::release_lock_by_id for &quot; &lt;&lt; transaction_id);</span>
+<span class="lineNum">     555 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t,int32_t&gt;::iterator it = this-&gt;comp_map.find(transaction_id);</span>
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :         if ( it == this-&gt;comp_map.end())</span>
+<span class="lineNum">     557 </span>                :            :         {
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;ID &quot; &lt;&lt; transaction_id &lt;&lt; &quot; not found in memory, returning&quot;);</span>
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     560 </span>                :            :         }
+<span class="lineNum">     561 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1 = this-&gt;mem_map.find(it-&gt;second);</span>
+<span class="lineNum">     563 </span>                :<span class="lineNoCov">          0 :         std::map&lt;int64_t,boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it2;</span>
+<span class="lineNum">     564 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; record;</span>
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :         if (it1 != mem_map.end() )</span>
+<span class="lineNum">     566 </span>                :            :         {
+<span class="lineNum">     567 </span>                :<span class="lineNoCov">          0 :                 it2 = it1-&gt;second.first.find(transaction_id);</span>
+<span class="lineNum">     568 </span>                :<span class="lineNoCov">          0 :                 if(it2 == it1-&gt;second.first.end())</span>
+<span class="lineNum">     569 </span>                :            :                 {
+<span class="lineNum">     570 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;ID &quot; &lt;&lt; transaction_id &lt;&lt; &quot; not found in memory, returning&quot;);</span>
+<span class="lineNum">     571 </span>                :<span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">     572 </span>                :            :                 }
+<span class="lineNum">     573 </span>                :            : 
+<span class="lineNum">     574 </span>                :            :         }
+<span class="lineNum">     575 </span>                :            :         else 
+<span class="lineNum">     576 </span>                :            :         {
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;ID &quot; &lt;&lt; transaction_id &lt;&lt; &quot; not found in memory, returning&quot;);</span>
+<span class="lineNum">     578 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     579 </span>                :            :         }
+<span class="lineNum">     580 </span>                :<span class="lineNoCov">          0 :         record = it2-&gt;second;</span>
+<span class="lineNum">     581 </span>                :<span class="lineNoCov">          0 :         std::string object_name = record-&gt;get_object_name();</span>
+<span class="lineNum">     582 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, element_list&gt;::iterator it_name_map;</span>
+<span class="lineNum">     583 </span>                :<span class="lineNoCov">          0 :         it_name_map = this-&gt;name_map.find(object_name);</span>
+<span class="lineNum">     584 </span>                :<span class="lineNoCov">          0 :         element_list::iterator list_it;</span>
+<span class="lineNum">     585 </span>                :            : 
+<span class="lineNum">     586 </span>                :<span class="lineNoCov">          0 :         if (list_it == it_name_map-&gt;second.end())</span>
+<span class="lineNum">     587 </span>                :            :         {
+<span class="lineNum">     588 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Transaction id not found in name map&quot;);</span>
+<span class="lineNum">     589 </span>                :            :         }
+<span class="lineNum">     590 </span>                :            : 
+<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :         for (list_it = it_name_map-&gt;second.begin(); list_it != it_name_map-&gt;second.end(); ++list_it)</span>
+<span class="lineNum">     592 </span>                :            :         {
+<span class="lineNum">     593 </span>                :<span class="lineNoCov">          0 :                 if ((*list_it)-&gt;transaction_id == transaction_id)</span>
+<span class="lineNum">     594 </span>                :            :                 {
+<span class="lineNum">     595 </span>                :<span class="lineNoCov">          0 :                         it_name_map-&gt;second.erase(list_it++);</span>
+<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 :                         if(it_name_map-&gt;second.empty())</span>
+<span class="lineNum">     597 </span>                :            :                         {
+<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;name_map.erase(object_name);</span>
+<span class="lineNum">     599 </span>                :            :                         }
+<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">     601 </span>                :            :                 }
+<span class="lineNum">     602 </span>                :            :         }
+<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :         it1-&gt;second.first.erase(transaction_id);</span>
+<span class="lineNum">     604 </span>                :<span class="lineNoCov">          0 :         if ( it1-&gt;second.first.size() == 0 )</span>
+<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :                 this-&gt;mem_map.erase(it1-&gt;first);</span>
+<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :         this-&gt;comp_map.erase(transaction_id);</span>
+<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Lock released from memory for object &quot; &lt;&lt; object_name &lt;&lt; &quot;. Mem size is &quot; &lt;&lt; this-&gt;comp_map.size());</span>
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     609 </span>                :            : }
+<span class="lineNum">     610 </span>                :            : 
+<span class="lineNum">     611 </span>                :            : 
+<span class="lineNum">     612 </span>                :<span class="lineNoCov">          0 : std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt; TransactionLockManager::get_memory()</span>
+<span class="lineNum">     613 </span>                :            : {
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :         int size=0;</span>
+<span class="lineNum">     615 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     616 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1 = this-&gt;mem_map.begin();</span>
+<span class="lineNum">     617 </span>                :<span class="lineNoCov">          0 :         for (; it1 != mem_map.end(); it1++ )</span>
+<span class="lineNum">     618 </span>                :            :         {
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :                 size += it1-&gt;second.first.size();</span>
+<span class="lineNum">     620 </span>                :            :         }
+<span class="lineNum">     621 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Getting size of memory from Lock Manager &quot; &lt;&lt; size);</span>
+<span class="lineNum">     622 </span>                :            : 
+<span class="lineNum">     623 </span>                :<span class="lineNoCov">          0 :         return this-&gt;mem_map;</span>
+<span class="lineNum">     624 </span>                :            : }
+<span class="lineNum">     625 </span>                :            : 
+<span class="lineNum">     626 </span>                :<span class="lineNoCov">          0 : std::vector&lt;int64_t&gt; TransactionLockManager::get_active_id_list()</span>
+<span class="lineNum">     627 </span>                :            : {
+<span class="lineNum">     628 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;int64_t&gt; tmp_id_list;</span>
+<span class="lineNum">     629 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Getting &quot; &lt;&lt; this-&gt;comp_map.size() &lt;&lt; &quot; number of active IDs&quot;);</span>
+<span class="lineNum">     630 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;comp_map.size() &lt;= 1 )</span>
+<span class="lineNum">     631 </span>                :            :         {
+<span class="lineNum">     632 </span>                :<span class="lineNoCov">          0 :                 return tmp_id_list;</span>
+<span class="lineNum">     633 </span>                :            :         }
+<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 :         for ( std::map&lt;int64_t,int32_t&gt;::iterator it = this-&gt;comp_map.begin();</span>
+<span class="lineNum">     635 </span>                :            :                                                         it != this-&gt;comp_map.end(); ++it)
+<span class="lineNum">     636 </span>                :            :         {
+<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Pushing ID &quot; &lt;&lt; it-&gt;first &lt;&lt; &quot; in active ID list&quot;);</span>
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :                 tmp_id_list.push_back(it-&gt;first);</span>
+<span class="lineNum">     639 </span>                :            :         }
+<span class="lineNum">     640 </span>                :<span class="lineNoCov">          0 :         return tmp_id_list;</span>
+<span class="lineNum">     641 </span>                :            : }
+<span class="lineNum">     642 </span>                :            : 
+<span class="lineNum">     643 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::set_last_transaction_id(int64_t transaction_id)</span>
+<span class="lineNum">     644 </span>                :            : {
+<span class="lineNum">     645 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;id &lt; transaction_id)</span>
+<span class="lineNum">     646 </span>                :            :         {
+<span class="lineNum">     647 </span>                :<span class="lineNoCov">          0 :                 this-&gt;id = transaction_id;</span>
+<span class="lineNum">     648 </span>                :            :         }
+<span class="lineNum">     649 </span>                :            : }
+<span class="lineNum">     650 </span>                :            : 
+<span class="lineNum">     651 </span>                :<span class="lineNoCov">          0 : bool TransactionLockManager::is_full()</span>
+<span class="lineNum">     652 </span>                :            : {
+<span class="lineNum">     653 </span>                :<span class="lineNoCov">          0 :         return this-&gt;comp_map.size() &gt; 1000000;</span>
+<span class="lineNum">     654 </span>                :            : }
+<span class="lineNum">     655 </span>                :            : 
+<span class="lineNum">     656 </span>                :<span class="lineNoCov">          0 : bool TransactionLockManager::check_for_queue_size(int32_t size)</span>
+<span class="lineNum">     657 </span>                :            : {
+<span class="lineNum">     658 </span>                :<span class="lineNoCov">          0 :         return (this-&gt;mem_map.size() + size) &gt; 1000000;</span>
+<span class="lineNum">     659 </span>                :            : }
+<span class="lineNum">     660 </span>                :            : 
+<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 : std::string TransactionLockManager::get_bulk_delete_obj_list_in_string()</span>
+<span class="lineNum">     662 </span>                :            : {
+<span class="lineNum">     663 </span>                :<span class="lineNoCov">          0 :         std::string obj_list_str = &quot;$$$$&quot;;</span>
+<span class="lineNum">     664 </span>                :<span class="lineNoCov">          0 :         std::list&lt;std::string&gt; obj_list = this-&gt;get_bulk_delete_obj_list();</span>
+<span class="lineNum">     665 </span>                :<span class="lineNoCov">          0 :         std::list&lt;std::string&gt;::iterator it = obj_list.begin();</span>
+<span class="lineNum">     666 </span>                :<span class="lineNoCov">          0 :         for ( ; it != obj_list.end(); ++it )</span>
+<span class="lineNum">     667 </span>                :            :         {
+<span class="lineNum">     668 </span>                :<span class="lineNoCov">          0 :                 obj_list_str += (*it) + &quot;:&quot;;</span>
+<span class="lineNum">     669 </span>                :            :         }
+<span class="lineNum">     670 </span>                :<span class="lineNoCov">          0 :         obj_list_str += &quot;$$$$&quot;;</span>
+<span class="lineNum">     671 </span>                :<span class="lineNoCov">          0 :         obj_list_str.insert(0, boost::lexical_cast&lt;std::string&gt;(obj_list_str.length()));</span>
+<span class="lineNum">     672 </span>                :<span class="lineNoCov">          0 :         return obj_list_str;</span>
+<span class="lineNum">     673 </span>                :            : }
+<span class="lineNum">     674 </span>                :            : 
+<span class="lineNum">     675 </span>                :<span class="lineNoCov">          0 : std::string TransactionLockManager::get_transaction_map_in_string()</span>
+<span class="lineNum">     676 </span>                :            : {
+<span class="lineNum">     677 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :         std::string map_str;</span>
+<span class="lineNum">     679 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     680 </span>                :            :                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;
+<span class="lineNum">     681 </span>                :<span class="lineNoCov">          0 :                                                 ::iterator it1 = this-&gt;mem_map.begin();</span>
+<span class="lineNum">     682 </span>                :<span class="lineNoCov">          0 :         for(; it1 != this-&gt;mem_map.end(); it1++ )</span>
+<span class="lineNum">     683 </span>                :            :         {
+<span class="lineNum">     684 </span>                :<span class="lineNoCov">          0 :             if ( it1-&gt;second.second )</span>
+<span class="lineNum">     685 </span>                :            :             {
+<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :                 std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;::iterator it2;</span>
+<span class="lineNum">     687 </span>                :<span class="lineNoCov">          0 :                 for ( it2 = it1-&gt;second.first.begin(); it2 != it1-&gt;second.first.end(); it2++ )</span>
+<span class="lineNum">     688 </span>                :            :                 {
+<span class="lineNum">     689 </span>                :<span class="lineNoCov">          0 :                         recordStructure::ActiveRecord record(*(it2-&gt;second));</span>
+<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :                         int64_t trans_id = it2-&gt;first;</span>
+<span class="lineNum">     691 </span>                :            :                         map_str += &quot;$$$$&quot; + boost::lexical_cast&lt;std::string&gt;(trans_id) + &quot;,&quot; 
+<span class="lineNum">     692 </span>                :<span class="lineNoCov">          0 :                                                                 + record.get_object_name() + &quot;,&quot;;</span>
+<span class="lineNum">     693 </span>                :<span class="lineNoCov">          0 :                         map_str += record.get_object_id() + &quot;,&quot; + record.get_request_method() + &quot;,&quot;;</span>
+<span class="lineNum">     694 </span>                :<span class="lineNoCov">          0 :                         map_str += boost::lexical_cast&lt;std::string&gt;(record.get_time()) + &quot;####&quot;;</span>
+<span class="lineNum">     695 </span>                :            :                 }
+<span class="lineNum">     696 </span>                :            :              }
+<span class="lineNum">     697 </span>                :            :         }
+<span class="lineNum">     698 </span>                :            : 
+<span class="lineNum">     699 </span>                :<span class="lineNoCov">          0 :         int length = map_str.length();</span>
+<span class="lineNum">     700 </span>                :<span class="lineNoCov">          0 :         if (length == 0){</span>
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 :                 map_str += &quot;$$$$&quot;;</span>
+<span class="lineNum">     702 </span>                :<span class="lineNoCov">          0 :                 length += 4;</span>
+<span class="lineNum">     703 </span>                :            :         }
+<span class="lineNum">     704 </span>                :<span class="lineNoCov">          0 :         map_str += &quot;&amp;&amp;&amp;&amp;&quot;;</span>
+<span class="lineNum">     705 </span>                :<span class="lineNoCov">          0 :         length += 4;</span>
+<span class="lineNum">     706 </span>                :<span class="lineNoCov">          0 :         map_str.insert(0, boost::lexical_cast&lt;std::string&gt;(length));</span>
+<span class="lineNum">     707 </span>                :<span class="lineNoCov">          0 :         return map_str;</span>
+<span class="lineNum">     708 </span>                :            : }
+<span class="lineNum">     709 </span>                :            : 
+<span class="lineNum">     710 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::accept_handler(const boost::system::error_code &amp;error)</span>
+<span class="lineNum">     711 </span>                :            : {
+<span class="lineNum">     712 </span>                :<span class="lineNoCov">          0 :         if(!error)</span>
+<span class="lineNum">     713 </span>                :            :         {
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;New connection accepted socket: &quot; &lt;&lt;this-&gt;sock-&gt;remote_endpoint().address().to_string());</span>
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sock_read_buffer.reset(new char[2]);</span>
+<span class="lineNum">     716 </span>                :            :                 this-&gt;sock-&gt;async_read_some(boost::asio::buffer(this-&gt;sock_read_buffer.get(), 1),
+<span class="lineNum">     717 </span>                :            :                 boost::bind(&amp;TransactionLockManager::handle_read, this,
+<span class="lineNum">     718 </span>                :            :                 boost::asio::placeholders::error,
+<span class="lineNum">     719 </span>                :<span class="lineNoCov">          0 :                 boost::asio::placeholders::bytes_transferred));</span>
+<span class="lineNum">     720 </span>                :            :         }
+<span class="lineNum">     721 </span>                :            :         else
+<span class="lineNum">     722 </span>                :            :         {
+<span class="lineNum">     723 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;Error in accepting connection error no: &quot; &lt;&lt;error.value() &lt;&lt;&quot; error message: &quot; &lt;&lt;error.message());</span>
+<span class="lineNum">     724 </span>                :<span class="lineNoCov">          0 :                 this-&gt;acceptor-&gt;async_accept(*(this-&gt;sock), boost::bind(&amp;TransactionLockManager::accept_handler, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     725 </span>                :            :         }
+<span class="lineNum">     726 </span>                :            : }
+<span class="lineNum">     727 </span>                :            : 
+<span class="lineNum">     728 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::handle_read(const boost::system::error_code&amp; error, size_t bytes_transferred)</span>
+<span class="lineNum">     729 </span>                :            : {
+<span class="lineNum">     730 </span>                :<span class="lineNoCov">          0 :         if(!error &amp;&amp; this-&gt;sock_read_buffer.get())</span>
+<span class="lineNum">     731 </span>                :            :         {
+<span class="lineNum">     732 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;read successful for socket: &quot; &lt;&lt;this-&gt;sock-&gt;remote_endpoint().address().to_string() &lt;&lt;&quot; bytes_transferred: &quot; &lt;&lt;bytes_transferred);</span>
+<span class="lineNum">     733 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sock_read_buffer[1] = '\0';</span>
+<span class="lineNum">     734 </span>                :<span class="lineNoCov">          0 :                 int message_type = 0;</span>
+<span class="lineNum">     735 </span>                :            :                 try
+<span class="lineNum">     736 </span>                :            :                 {
+<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :                         message_type = boost::lexical_cast&lt;int&gt;(this-&gt;sock_read_buffer.get());</span>
+<span class="lineNum">     738 </span>                :            :                 }
+<span class="lineNum">     739 </span>                :<span class="lineNoCov">          0 :                 catch( const boost::bad_lexical_cast &amp; )</span>
+<span class="lineNum">     740 </span>                :            :                 {
+<span class="lineNum">     741 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;Unable to cast message : &quot; &lt;&lt;this-&gt;sock_read_buffer.get() &lt;&lt; &quot;to integer&quot;);</span>
+<span class="lineNum">     742 </span>                :            :                 }
+<span class="lineNum">     743 </span>                :            : 
+<span class="lineNum">     744 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sock_read_buffer.reset();</span>
+<span class="lineNum">     745 </span>                :            : 
+<span class="lineNum">     746 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;message type: &quot; &lt;&lt;message_type);</span>
+<span class="lineNum">     747 </span>                :<span class="lineNoCov">          0 :                 std::string map_str = &quot; &quot;;</span>
+<span class="lineNum">     748 </span>                :<span class="lineNoCov">          0 :                 switch(message_type)</span>
+<span class="lineNum">     749 </span>                :            :                 {
+<span class="lineNum">     750 </span>                :            :                         case 1:
+<span class="lineNum">     751 </span>                :            :                                 {
+<span class="lineNum">     752 </span>                :<span class="lineNoCov">          0 :                                 map_str = this-&gt;get_bulk_delete_obj_list_in_string();</span>
+<span class="lineNum">     753 </span>                :<span class="lineNoCov">          0 :                                 int size = map_str.length();</span>
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;sock_write_buffer.reset(new char[size+1]);</span>
+<span class="lineNum">     755 </span>                :<span class="lineNoCov">          0 :                                 memcpy(this-&gt;sock_write_buffer.get(), map_str.c_str(), size);</span>
+<span class="lineNum">     756 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;sock_write_buffer[size] = '\0';</span>
+<span class="lineNum">     757 </span>                :<span class="lineNoCov">          0 :                                 boost::asio::async_write(*(this-&gt;sock), boost::asio::buffer(this-&gt;sock_write_buffer.get()), boost::asio::transfer_all(), boost::bind(&amp;TransactionLockManager::handle_write, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     758 </span>                :            :                                 }
+<span class="lineNum">     759 </span>                :<span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     760 </span>                :            :                         case 2:
+<span class="lineNum">     761 </span>                :            :                                 {
+<span class="lineNum">     762 </span>                :<span class="lineNoCov">          0 :                                 map_str = this-&gt;get_transaction_map_in_string();</span>
+<span class="lineNum">     763 </span>                :<span class="lineNoCov">          0 :                                 int size = map_str.length();</span>
+<span class="lineNum">     764 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;sock_write_buffer.reset(new char[size+1]);</span>
+<span class="lineNum">     765 </span>                :<span class="lineNoCov">          0 :                                 memcpy(this-&gt;sock_write_buffer.get(), map_str.c_str(), size);</span>
+<span class="lineNum">     766 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;sock_write_buffer[size] = '\0';</span>
+<span class="lineNum">     767 </span>                :<span class="lineNoCov">          0 :                                 boost::asio::async_write(*(this-&gt;sock), boost::asio::buffer(this-&gt;sock_write_buffer.get()), boost::asio::transfer_all(), boost::bind(&amp;TransactionLockManager::handle_write, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     768 </span>                :            :                                 }
+<span class="lineNum">     769 </span>                :<span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     770 </span>                :            :                         default:
+<span class="lineNum">     771 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(ERROR, &quot;Unknown Request found from trigrred recovery &quot;);</span>
+<span class="lineNum">     772 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;sock-&gt;close();</span>
+<span class="lineNum">     773 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;acceptor-&gt;async_accept(*(this-&gt;sock), boost::bind(&amp;TransactionLockManager::accept_handler, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     774 </span>                :            :                 }
+<span class="lineNum">     775 </span>                :            :                 
+<span class="lineNum">     776 </span>                :            :         }
+<span class="lineNum">     777 </span>                :            :         else
+<span class="lineNum">     778 </span>                :            :         {
+<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;error while reading from socket :&quot; &lt;&lt;this-&gt;sock-&gt;remote_endpoint().address().to_string() &lt;&lt;&quot; error no: &quot; &lt;&lt;error.value() &lt;&lt;&quot; error message: &quot; &lt;&lt;error.message());</span>
+<span class="lineNum">     780 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sock_read_buffer.reset();</span>
+<span class="lineNum">     781 </span>                :            : 
+<span class="lineNum">     782 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sock-&gt;close();</span>
+<span class="lineNum">     783 </span>                :<span class="lineNoCov">          0 :                 this-&gt;acceptor-&gt;async_accept(*(this-&gt;sock), boost::bind(&amp;TransactionLockManager::accept_handler, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     784 </span>                :            :         }
+<span class="lineNum">     785 </span>                :            : }
+<span class="lineNum">     786 </span>                :            : 
+<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::handle_write(const boost::system::error_code &amp;error)</span>
+<span class="lineNum">     788 </span>                :            : {
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 :         if(error)</span>
+<span class="lineNum">     790 </span>                :            :         {
+<span class="lineNum">     791 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;while sending data : &quot; &lt;&lt; error.value() &lt;&lt; &quot; .Message: &quot; &lt;&lt; error.message());</span>
+<span class="lineNum">     792 </span>                :            :         }
+<span class="lineNum">     793 </span>                :            : 
+<span class="lineNum">     794 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;write on socket: &quot; &lt;&lt;this-&gt;sock-&gt;remote_endpoint().address().to_string() &lt;&lt;&quot; successuful&quot;);</span>
+<span class="lineNum">     795 </span>                :<span class="lineNoCov">          0 :         this-&gt;sock_write_buffer.reset();</span>
+<span class="lineNum">     796 </span>                :            : 
+<span class="lineNum">     797 </span>                :<span class="lineNoCov">          0 :         this-&gt;sock-&gt;close();</span>
+<span class="lineNum">     798 </span>                :<span class="lineNoCov">          0 :         this-&gt;acceptor-&gt;async_accept(*(this-&gt;sock), boost::bind(&amp;TransactionLockManager::accept_handler, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     799 </span>                :            : }
+<span class="lineNum">     800 </span>                :            : 
+<span class="lineNum">     801 </span>                :            : // OBB-633 fix
+<span class="lineNum">     802 </span>                :            : // Problem #1   : port already in use exception
+<span class="lineNum">     803 </span>                :            : //       Cause  : It is because of two recovery processes ran simultaneouly and the process who tries to bind port later, receives &quot;port already in use exception&quot;,
+<span class="lineNum">     804 </span>                :            : //                which was not handled, due to which core was generating.
+<span class="lineNum">     805 </span>                :            : //       Fix    : boost::system::system_error exception is handled
+<span class="lineNum">     806 </span>                :            : //       To Do  : Need to identify, why two recovery processes are initiating, even though single request for recovery process is submitting.
+<span class="lineNum">     807 </span>                :            : // Problem #2   : Core dump
+<span class="lineNum">     808 </span>                :            : //      Cause   : start_listening thread which is a member function of TransactionLockManager class, was accessing object data members even after his 
+<span class="lineNum">     809 </span>                :            : //                object destruction.
+<span class="lineNum">     810 </span>                :            : //      Fix     : object will not get destroyed until start_listening thread alive.
+<span class="lineNum">     811 </span>                :            : //                previously synchronous socket accept, read and write calls was used in start_listening thread, which are replaced with asynchronous accept, 
+<span class="lineNum">     812 </span>                :            : //                read and write calls. If we dont do these changes then start_listening thread may block on above calls and object will not get destroyed.
+<span class="lineNum">     813 </span>                :            : //                According to fix, object destruction should wait for thread completion, so synchronous calls are replaced with asysnchronous calls.
+<span class="lineNum">     814 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::start_listening()</span>
+<span class="lineNum">     815 </span>                :            : {
+<span class="lineNum">     816 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TransactionLockManager::start_listening thread started &quot;);</span>
+<span class="lineNum">     817 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TransactionLockManager started listening on port: &quot; &lt;&lt;this-&gt;listening_port);</span>
+<span class="lineNum">     818 </span>                :            : 
+<span class="lineNum">     819 </span>                :<span class="lineNoCov">          0 :         this-&gt;acceptor-&gt;async_accept(*(this-&gt;sock), boost::bind(&amp;TransactionLockManager::accept_handler, this, boost::asio::placeholders::error));</span>
+<span class="lineNum">     820 </span>                :            : 
+<span class="lineNum">     821 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;asynchronus connection acceptor is initiated and io_service is started.&quot;);</span>
+<span class="lineNum">     822 </span>                :<span class="lineNoCov">          0 :         this-&gt;io_service.run();</span>
+<span class="lineNum">     823 </span>                :            :         
+<span class="lineNum">     824 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;asynchronus communication is stopped as io_service is stopped.&quot;);</span>
+<span class="lineNum">     825 </span>                :            : 
+<span class="lineNum">     826 </span>                :            : }
+<span class="lineNum">     827 </span>                :            : 
+<span class="lineNum">     828 </span>                :            : // OBB-696
+<span class="lineNum">     829 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::init()</span>
+<span class="lineNum">     830 </span>                :            : {
+<span class="lineNum">     831 </span>                :            :         try
+<span class="lineNum">     832 </span>                :            :         {
+<span class="lineNum">     833 </span>                :            : //              boost::asio::io_service io_service;
+<span class="lineNum">     834 </span>                :<span class="lineNoCov">          0 :                 this-&gt;endpoint.reset(new boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), this-&gt;listening_port));</span>
+<span class="lineNum">     835 </span>                :            :                 // boost::asio::ip::tcp::acceptor acceptor(this-&gt;io_service, endpoint);
+<span class="lineNum">     836 </span>                :<span class="lineNoCov">          0 :                 this-&gt;acceptor.reset(new boost::asio::ip::tcp::acceptor(this-&gt;io_service, *(this-&gt;endpoint)));</span>
+<span class="lineNum">     837 </span>                :<span class="lineNoCov">          0 :                 boost::asio::socket_base::reuse_address option(true);</span>
+<span class="lineNum">     838 </span>                :<span class="lineNoCov">          0 :                 this-&gt;acceptor-&gt;set_option(option);</span>
+<span class="lineNum">     839 </span>                :            : //      boost::asio::ip::tcp::socket sock(io_service);
+<span class="lineNum">     840 </span>                :<span class="lineNoCov">          0 :                 this-&gt;sock.reset(new boost::asio::ip::tcp::socket(this-&gt;io_service));</span>
+<span class="lineNum">     841 </span>                :<span class="lineNoCov">          0 :                 this-&gt;acceptor-&gt;listen();</span>
+<span class="lineNum">     842 </span>                :<span class="lineNoCov">          0 :         }catch(boost::system::system_error &amp;ex)</span>
+<span class="lineNum">     843 </span>                :            :         {
+<span class="lineNum">     844 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;OBB-633 occured&quot;);</span>
+<span class="lineNum">     845 </span>                :            :                 // throw ex;
+<span class="lineNum">     846 </span>                :<span class="lineNoCov">          0 :                 exit(1);</span>
+<span class="lineNum">     847 </span>                :            :         }
+<span class="lineNum">     848 </span>                :            : }
+<span class="lineNum">     849 </span>                :            : 
+<span class="lineNum">     850 </span>                :<span class="lineNoCov">          0 : void TransactionLockManager::commit_recovered_data(std::list&lt;int32_t&gt;&amp; component_list, bool base_version_changed)</span>
+<span class="lineNum">     851 </span>                :            : {
+<span class="lineNum">     852 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     853 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO,&quot;Committing recovered data in main memory&quot;);</span>
+<span class="lineNum">     854 </span>                :            :         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     855 </span>                :<span class="lineNoCov">          0 :                   boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it1 = this-&gt;mem_map.begin();</span>
+<span class="lineNum">     856 </span>                :<span class="lineNoCov">          0 :         for ( ; it1 != this-&gt;mem_map.end(); it1++ )</span>
+<span class="lineNum">     857 </span>                :            :         {
+<span class="lineNum">     858 </span>                :<span class="lineNoCov">          0 :                 std::list&lt;int32_t&gt;::iterator comp_it = std::find(component_list.begin(), component_list.end(), it1-&gt;first);</span>
+<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :                 if ( comp_it != component_list.end() )</span>
+<span class="lineNum">     860 </span>                :            :                 {
+<span class="lineNum">     861 </span>                :<span class="lineNoCov">          0 :                         if ( it1-&gt;second.second )</span>
+<span class="lineNum">     862 </span>                :            :                         {
+<span class="lineNum">     863 </span>                :<span class="lineNoCov">          0 :                                 continue;</span>
+<span class="lineNum">     864 </span>                :            :                         }
+<span class="lineNum">     865 </span>                :<span class="lineNoCov">          0 :                         it1-&gt;second.second = true;</span>
+<span class="lineNum">     866 </span>                :            :                         std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;
+<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :                                         ::iterator it2 = it1-&gt;second.first.begin();</span>
+<span class="lineNum">     868 </span>                :<span class="lineNoCov">          0 :                         for ( ; it2 != it1-&gt;second.first.end(); ++it2 )</span>
+<span class="lineNum">     869 </span>                :            :                         {
+<span class="lineNum">     870 </span>                :<span class="lineNoCov">          0 :                                 std::string obj_name = it2-&gt;second-&gt;get_object_name();</span>
+<span class="lineNum">     871 </span>                :<span class="lineNoCov">          0 :                                 std::map&lt;std::string, element_list&gt;::iterator name_it = this-&gt;name_map.find(obj_name);</span>
+<span class="lineNum">     872 </span>                :<span class="lineNoCov">          0 :                                 element_ptr new_node(new helper_utils::transactionIdElement);</span>
+<span class="lineNum">     873 </span>                :<span class="lineNoCov">          0 :                                 new_node-&gt;transaction_id = it2-&gt;second-&gt;get_transaction_id();</span>
+<span class="lineNum">     874 </span>                :<span class="lineNoCov">          0 :                                 new_node-&gt;operation = it2-&gt;second-&gt;get_operation_type();</span>
+<span class="lineNum">     875 </span>                :<span class="lineNoCov">          0 :                                 if ( name_it != this-&gt;name_map.end() )</span>
+<span class="lineNum">     876 </span>                :            :                                 {
+<span class="lineNum">     877 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Lock present for object. Checking ID&quot;);</span>
+<span class="lineNum">     878 </span>                :<span class="lineNoCov">          0 :                                         element_list::iterator list_it = name_it-&gt;second.begin();</span>
+<span class="lineNum">     879 </span>                :<span class="lineNoCov">          0 :                                         if ( list_it != name_it-&gt;second.end() )</span>
+<span class="lineNum">     880 </span>                :            :                                         {
+<span class="lineNum">     881 </span>                :<span class="lineNoCov">          0 :                                                 while((*list_it)-&gt;transaction_id != new_node-&gt;transaction_id)</span>
+<span class="lineNum">     882 </span>                :            :                                                 {
+<span class="lineNum">     883 </span>                :<span class="lineNoCov">          0 :                                                         list_it++;</span>
+<span class="lineNum">     884 </span>                :<span class="lineNoCov">          0 :                                                         if (list_it == name_it-&gt;second.end()) {</span>
+<span class="lineNum">     885 </span>                :<span class="lineNoCov">          0 :                                                                 break;</span>
+<span class="lineNum">     886 </span>                :            :                                                         }
+<span class="lineNum">     887 </span>                :            :                                                 }
+<span class="lineNum">     888 </span>                :<span class="lineNoCov">          0 :                                                 if (list_it == name_it-&gt;second.end() )</span>
+<span class="lineNum">     889 </span>                :            :                                                 {
+<span class="lineNum">     890 </span>                :<span class="lineNoCov">          0 :                                                         OSDLOG(INFO,&quot;Inserting another lock for object &quot; &lt;&lt; obj_name  );</span>
+<span class="lineNum">     891 </span>                :<span class="lineNoCov">          0 :                                                         name_it-&gt;second.push_back(new_node);</span>
+<span class="lineNum">     892 </span>                :            :                                                 }
+<span class="lineNum">     893 </span>                :            :                                         }
+<span class="lineNum">     894 </span>                :            :                                 }
+<span class="lineNum">     895 </span>                :            :                                 else
+<span class="lineNum">     896 </span>                :            :                                 {
+<span class="lineNum">     897 </span>                :<span class="lineNoCov">          0 :                                         element_list list;</span>
+<span class="lineNum">     898 </span>                :<span class="lineNoCov">          0 :                                         list.push_back(new_node);</span>
+<span class="lineNum">     899 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;name_map.insert(std::make_pair(obj_name, list));       </span>
+<span class="lineNum">     900 </span>                :            :                                 }
+<span class="lineNum">     901 </span>                :<span class="lineNoCov">          0 :                                 if (this-&gt;comp_map.find(it2-&gt;second-&gt;get_transaction_id()) </span>
+<span class="lineNum">     902 </span>                :            :                                                                         == this-&gt;comp_map.end())
+<span class="lineNum">     903 </span>                :            :                                 {
+<span class="lineNum">     904 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Inserting entry in comp_map&quot;);</span>
+<span class="lineNum">     905 </span>                :            :                                         this-&gt;comp_map.insert(
+<span class="lineNum">     906 </span>                :<span class="lineNoCov">          0 :                                                 std::make_pair(it2-&gt;second-&gt;get_transaction_id(), it1-&gt;first));</span>
+<span class="lineNum">     907 </span>                :            :                                 }
+<span class="lineNum">     908 </span>                :            :                         }
+<span class="lineNum">     909 </span>                :            :                 }
+<span class="lineNum">     910 </span>                :            :                 else
+<span class="lineNum">     911 </span>                :            :                 {
+<span class="lineNum">     912 </span>                :<span class="lineNoCov">          0 :                         if ( base_version_changed )</span>
+<span class="lineNum">     913 </span>                :            :                         {
+<span class="lineNum">     914 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;mem_map.erase(it1);</span>
+<span class="lineNum">     915 </span>                :            :                         }
+<span class="lineNum">     916 </span>                :            :                 }
+<span class="lineNum">     917 </span>                :            :         }
+<span class="lineNum">     918 </span>                :            : }
+<span class="lineNum">     919 </span>                :            : 
+<span class="lineNum">     920 </span>                :<span class="lineNoCov">          0 : boost::python::list TransactionLockManager::recover_active_record(std::string obj_name , int32_t component)</span>
+<span class="lineNum">     921 </span>                :            : {
+<span class="lineNum">     922 </span>                :            : 
+<span class="lineNum">     923 </span>                :<span class="lineNoCov">          0 :         boost::python::list rec_obj_list;</span>
+<span class="lineNum">     924 </span>                :<span class="lineNoCov">          0 :         element_list list_rec;</span>
+<span class="lineNum">     925 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO,&quot;TransactionLockManager::recover_active_record&quot;);</span>
+<span class="lineNum">     926 </span>                :<span class="lineNoCov">          0 :         if(!(obj_name.empty()))</span>
+<span class="lineNum">     927 </span>                :            :         {
+<span class="lineNum">     928 </span>                :<span class="lineNoCov">          0 :                 if((name_map.find(obj_name))!= name_map.end())</span>
+<span class="lineNum">     929 </span>                :            :                 {
+<span class="lineNum">     930 </span>                :<span class="lineNoCov">          0 :                         list_rec = name_map[obj_name];</span>
+<span class="lineNum">     931 </span>                :<span class="lineNoCov">          0 :                         std::list&lt;element_ptr&gt;::iterator elem_it ;</span>
+<span class="lineNum">     932 </span>                :            :                         std::map&lt;int32_t,std::pair&lt;std::map&lt;int64_t,
+<span class="lineNum">     933 </span>                :<span class="lineNoCov">          0 :                                 boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;, bool&gt; &gt;::iterator it_mem;</span>
+<span class="lineNum">     934 </span>                :            : 
+<span class="lineNum">     935 </span>                :<span class="lineNoCov">          0 :                         for(elem_it = list_rec.begin();elem_it != list_rec.end();elem_it++)</span>
+<span class="lineNum">     936 </span>                :            :                         {
+<span class="lineNum">     937 </span>                :<span class="lineNoCov">          0 :                                 int64_t trans_id = (*elem_it)-&gt;transaction_id;</span>
+<span class="lineNum">     938 </span>                :<span class="lineNoCov">          0 :                                 it_mem = mem_map.find(component);       </span>
+<span class="lineNum">     939 </span>                :<span class="lineNoCov">          0 :                                 if(it_mem != mem_map.end())</span>
+<span class="lineNum">     940 </span>                :            :                                 {
+<span class="lineNum">     941 </span>                :            :                                         std::map&lt;int64_t, boost::shared_ptr&lt;recordStructure::ActiveRecord&gt; &gt;
+<span class="lineNum">     942 </span>                :<span class="lineNoCov">          0 :                                                 ::iterator it_rec = it_mem-&gt;second.first.begin();</span>
+<span class="lineNum">     943 </span>                :<span class="lineNoCov">          0 :                                         for ( ; it_rec != it_mem-&gt;second.first.end(); ++it_rec )</span>
+<span class="lineNum">     944 </span>                :            :                                         {
+<span class="lineNum">     945 </span>                :<span class="lineNoCov">          0 :                                                 recordStructure::ActiveRecord rec_tmp = *(it_rec-&gt;second);</span>
+<span class="lineNum">     946 </span>                :<span class="lineNoCov">          0 :                                                 if(trans_id == (rec_tmp.get_transaction_id()))</span>
+<span class="lineNum">     947 </span>                :            :                                                 {
+<span class="lineNum">     948 </span>                :<span class="lineNoCov">          0 :                                                         rec_obj_list.append(rec_tmp);</span>
+<span class="lineNum">     949 </span>                :<span class="lineNoCov">          0 :                                                         break;          </span>
+<span class="lineNum">     950 </span>                :            :                                                 }
+<span class="lineNum">     951 </span>                :            : 
+<span class="lineNum">     952 </span>                :            :                                         }               
+<span class="lineNum">     953 </span>                :            :                                 
+<span class="lineNum">     954 </span>                :            :                                 }
+<span class="lineNum">     955 </span>                :            :                         }
+<span class="lineNum">     956 </span>                :<span class="lineNoCov">          0 :                         if((boost::python::len(rec_obj_list ))== 0)</span>
+<span class="lineNum">     957 </span>                :            :                         {
+<span class="lineNum">     958 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(ERROR,&quot;TransactionLockManager::recover_active_record no transcation id corresponding to object name &quot;);</span>
+<span class="lineNum">     959 </span>                :            :                         }
+<span class="lineNum">     960 </span>                :            :                 }               
+<span class="lineNum">     961 </span>                :            :                 else
+<span class="lineNum">     962 </span>                :            :                 {
+<span class="lineNum">     963 </span>                :<span class="lineNoCov">          0 :                          OSDLOG(ERROR,&quot;TransactionLockManager::recover_active_record object name is not found in name map&quot;);</span>
+<span class="lineNum">     964 </span>                :            :                 }
+<span class="lineNum">     965 </span>                :            :         }       
+<span class="lineNum">     966 </span>                :            :         else
+<span class="lineNum">     967 </span>                :            :         {
+<span class="lineNum">     968 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR,&quot;TransactionLockManager::recover_active_record object name is not correct&quot;);</span>
+<span class="lineNum">     969 </span>                :            :         }
+<span class="lineNum">     970 </span>                :            : 
+<span class="lineNum">     971 </span>                :<span class="lineNoCov">          0 :         return rec_obj_list;</span>
+<span class="lineNum">     972 </span>                :            : 
+<span class="lineNum">     973 </span>                :            : }
+<span class="lineNum">     974 </span>                :            : 
+<span class="lineNum">     975 </span>                :            : } // namespace transaction_memory
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/program_options/parsers.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/program_options</a> - parsers.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright Vladimir Prus 2002-2004.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0.
+<span class="lineNum">       3 </span>                :            : // (See accompanying file LICENSE_1_0.txt
+<span class="lineNum">       4 </span>                :            : // or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : #ifndef BOOST_PARSERS_VP_2003_05_19
+<span class="lineNum">       8 </span>                :            : #define BOOST_PARSERS_VP_2003_05_19
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : #include &lt;boost/program_options/config.hpp&gt;
+<span class="lineNum">      11 </span>                :            : #include &lt;boost/program_options/option.hpp&gt;
+<span class="lineNum">      12 </span>                :            : #include &lt;boost/program_options/detail/cmdline.hpp&gt;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #include &lt;boost/function/function1.hpp&gt;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : #include &lt;iosfwd&gt;
+<span class="lineNum">      17 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;utility&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : namespace boost { namespace program_options {
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            :     class options_description;
+<span class="lineNum">      23 </span>                :            :     class positional_options_description;
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            :     /** Results of parsing an input source. 
+<span class="lineNum">      27 </span>                :            :         The primary use of this class is passing information from parsers 
+<span class="lineNum">      28 </span>                :            :         component to value storage component. This class does not makes
+<span class="lineNum">      29 </span>                :            :         much sense itself.        
+<span class="lineNum">      30 </span>                :            :     */
+<span class="lineNum">      31 </span>                :            :     template&lt;class charT&gt;
+<span class="lineNum">      32 </span>                :<span class="lineCov">         71 :     class basic_parsed_options {</span>
+<span class="lineNum">      33 </span>                :            :     public:
+<span class="lineNum">      34 </span>                :            :         explicit basic_parsed_options(const options_description* description) 
+<span class="lineNum">      35 </span>                :            :         : description(description) {}
+<span class="lineNum">      36 </span>                :            :         /** Options found in the source. */
+<span class="lineNum">      37 </span>                :            :         std::vector&lt; basic_option&lt;charT&gt; &gt; options;
+<span class="lineNum">      38 </span>                :            :         /** Options description that was used for parsing. 
+<span class="lineNum">      39 </span>                :            :             Parsers should return pointer to the instance of 
+<span class="lineNum">      40 </span>                :            :             option_description passed to them, and issues of lifetime are
+<span class="lineNum">      41 </span>                :            :             up to the caller. Can be NULL.
+<span class="lineNum">      42 </span>                :            :          */
+<span class="lineNum">      43 </span>                :            :         const options_description* description;
+<span class="lineNum">      44 </span>                :            :     };
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :            :     /** Specialization of basic_parsed_options which:
+<span class="lineNum">      47 </span>                :            :         - provides convenient conversion from basic_parsed_options&lt;char&gt;
+<span class="lineNum">      48 </span>                :            :         - stores the passed char-based options for later use.
+<span class="lineNum">      49 </span>                :            :     */
+<span class="lineNum">      50 </span>                :            :     template&lt;&gt;
+<span class="lineNum">      51 </span>                :            :     class BOOST_PROGRAM_OPTIONS_DECL basic_parsed_options&lt;wchar_t&gt; {
+<span class="lineNum">      52 </span>                :            :     public:
+<span class="lineNum">      53 </span>                :            :         /** Constructs wrapped options from options in UTF8 encoding. */
+<span class="lineNum">      54 </span>                :            :         explicit basic_parsed_options(const basic_parsed_options&lt;char&gt;&amp; po);
+<span class="lineNum">      55 </span>                :            : 
+<span class="lineNum">      56 </span>                :            :         std::vector&lt; basic_option&lt;wchar_t&gt; &gt; options;
+<span class="lineNum">      57 </span>                :            :         const options_description* description;
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :            :         /** Stores UTF8 encoded options that were passed to constructor,
+<span class="lineNum">      60 </span>                :            :             to avoid reverse conversion in some cases. */
+<span class="lineNum">      61 </span>                :            :         basic_parsed_options&lt;char&gt; utf8_encoded_options;        
+<span class="lineNum">      62 </span>                :            :     };
+<span class="lineNum">      63 </span>                :            : 
+<span class="lineNum">      64 </span>                :            :     typedef basic_parsed_options&lt;char&gt; parsed_options;
+<span class="lineNum">      65 </span>                :            :     typedef basic_parsed_options&lt;wchar_t&gt; wparsed_options;
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            :     /** Augments basic_parsed_options&lt;wchar_t&gt; with conversion from
+<span class="lineNum">      68 </span>                :            :         'parsed_options' */
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :            :     typedef function1&lt;std::pair&lt;std::string, std::string&gt;, const std::string&amp;&gt; ext_parser;
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :            :     /** Command line parser.
+<span class="lineNum">      74 </span>                :            : 
+<span class="lineNum">      75 </span>                :            :         The class allows one to specify all the information needed for parsing
+<span class="lineNum">      76 </span>                :            :         and to parse the command line. It is primarily needed to
+<span class="lineNum">      77 </span>                :            :         emulate named function parameters -- a regular function with 5
+<span class="lineNum">      78 </span>                :            :         parameters will be hard to use and creating overloads with a smaller
+<span class="lineNum">      79 </span>                :            :         nuber of parameters will be confusing.
+<span class="lineNum">      80 </span>                :            : 
+<span class="lineNum">      81 </span>                :            :         For the most common case, the function parse_command_line is a better 
+<span class="lineNum">      82 </span>                :            :         alternative.        
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>                :            :         There are two typedefs -- command_line_parser and wcommand_line_parser,
+<span class="lineNum">      85 </span>                :            :         for charT == char and charT == wchar_t cases.
+<span class="lineNum">      86 </span>                :            :     */
+<span class="lineNum">      87 </span>                :            :     template&lt;class charT&gt;
+<span class="lineNum">      88 </span>                :            :     class basic_command_line_parser : private detail::cmdline {
+<span class="lineNum">      89 </span>                :            :     public:
+<span class="lineNum">      90 </span>                :            :         /** Creates a command line parser for the specified arguments
+<span class="lineNum">      91 </span>                :            :             list. The 'args' parameter should not include program name.
+<span class="lineNum">      92 </span>                :            :         */
+<span class="lineNum">      93 </span>                :            :         basic_command_line_parser(const std::vector&lt;
+<span class="lineNum">      94 </span>                :            :                                   std::basic_string&lt;charT&gt; &gt;&amp; args);
+<span class="lineNum">      95 </span>                :            :         /** Creates a command line parser for the specified arguments
+<span class="lineNum">      96 </span>                :            :             list. The parameters should be the same as passed to 'main'.
+<span class="lineNum">      97 </span>                :            :         */
+<span class="lineNum">      98 </span>                :            :         basic_command_line_parser(int argc, charT* argv[]);
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            :         /** Sets options descriptions to use. */
+<span class="lineNum">     101 </span>                :            :         basic_command_line_parser&amp; options(const options_description&amp; desc);
+<span class="lineNum">     102 </span>                :            :         /** Sets positional options description to use. */
+<span class="lineNum">     103 </span>                :            :         basic_command_line_parser&amp; positional(
+<span class="lineNum">     104 </span>                :            :             const positional_options_description&amp; desc);
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            :         /** Sets the command line style. */
+<span class="lineNum">     107 </span>                :            :         basic_command_line_parser&amp; style(int);
+<span class="lineNum">     108 </span>                :            :         /** Sets the extra parsers. */
+<span class="lineNum">     109 </span>                :            :         basic_command_line_parser&amp; extra_parser(ext_parser);
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            :         /** Parses the options and returns the result of parsing.
+<span class="lineNum">     112 </span>                :            :             Throws on error.
+<span class="lineNum">     113 </span>                :            :         */
+<span class="lineNum">     114 </span>                :            :         basic_parsed_options&lt;charT&gt; run();
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :         /** Specifies that unregistered options are allowed and should
+<span class="lineNum">     117 </span>                :            :             be passed though. For each command like token that looks
+<span class="lineNum">     118 </span>                :            :             like an option but does not contain a recognized name, an
+<span class="lineNum">     119 </span>                :            :             instance of basic_option&lt;charT&gt; will be added to result,
+<span class="lineNum">     120 </span>                :            :             with 'unrecognized' field set to 'true'. It's possible to
+<span class="lineNum">     121 </span>                :            :             collect all unrecognized options with the 'collect_unrecognized'
+<span class="lineNum">     122 </span>                :            :             funciton. 
+<span class="lineNum">     123 </span>                :            :         */
+<span class="lineNum">     124 </span>                :            :         basic_command_line_parser&amp; allow_unregistered();
+<span class="lineNum">     125 </span>                :            :         
+<span class="lineNum">     126 </span>                :            :         using detail::cmdline::style_parser;
+<span class="lineNum">     127 </span>                :            : 
+<span class="lineNum">     128 </span>                :            :         basic_command_line_parser&amp; extra_style_parser(style_parser s);
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :     private:
+<span class="lineNum">     131 </span>                :            :         const options_description* m_desc;
+<span class="lineNum">     132 </span>                :            :     };
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :            :     typedef basic_command_line_parser&lt;char&gt; command_line_parser;
+<span class="lineNum">     135 </span>                :            :     typedef basic_command_line_parser&lt;wchar_t&gt; wcommand_line_parser;
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            :     /** Creates instance of 'command_line_parser', passes parameters to it,
+<span class="lineNum">     138 </span>                :            :         and returns the result of calling the 'run' method.        
+<span class="lineNum">     139 </span>                :            :      */
+<span class="lineNum">     140 </span>                :            :     template&lt;class charT&gt;
+<span class="lineNum">     141 </span>                :            :     basic_parsed_options&lt;charT&gt;
+<span class="lineNum">     142 </span>                :            :     parse_command_line(int argc, charT* argv[],
+<span class="lineNum">     143 </span>                :            :                        const options_description&amp;,
+<span class="lineNum">     144 </span>                :            :                        int style = 0,
+<span class="lineNum">     145 </span>                :            :                        function1&lt;std::pair&lt;std::string, std::string&gt;, 
+<span class="lineNum">     146 </span>                :            :                                  const std::string&amp;&gt; ext
+<span class="lineNum">     147 </span>                :            :                        = ext_parser());
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :            :     /** Parse a config file. 
+<span class="lineNum">     150 </span>                :            :     */
+<span class="lineNum">     151 </span>                :            :     template&lt;class charT&gt;
+<span class="lineNum">     152 </span>                :            : #if ! BOOST_WORKAROUND(__ICL, BOOST_TESTED_AT(700))
+<span class="lineNum">     153 </span>                :            :     BOOST_PROGRAM_OPTIONS_DECL
+<span class="lineNum">     154 </span>                :            : #endif
+<span class="lineNum">     155 </span>                :            :     basic_parsed_options&lt;charT&gt;
+<span class="lineNum">     156 </span>                :            :     parse_config_file(std::basic_istream&lt;charT&gt;&amp;, const options_description&amp;,
+<span class="lineNum">     157 </span>                :            :                       bool allow_unregistered = false);
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            :     /** Controls if the 'collect_unregistered' function should
+<span class="lineNum">     160 </span>                :            :         include positional options, or not. */
+<span class="lineNum">     161 </span>                :            :     enum collect_unrecognized_mode 
+<span class="lineNum">     162 </span>                :            :     { include_positional, exclude_positional };
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :            :     /** Collects the original tokens for all named options with
+<span class="lineNum">     165 </span>                :            :         'unregistered' flag set. If 'mode' is 'include_positional'
+<span class="lineNum">     166 </span>                :            :         also collects all positional options.
+<span class="lineNum">     167 </span>                :            :         Returns the vector of origianl tokens for all collected
+<span class="lineNum">     168 </span>                :            :         options.
+<span class="lineNum">     169 </span>                :            :     */
+<span class="lineNum">     170 </span>                :            :     template&lt;class charT&gt;
+<span class="lineNum">     171 </span>                :            :     std::vector&lt; std::basic_string&lt;charT&gt; &gt; 
+<span class="lineNum">     172 </span>                :            :     collect_unrecognized(const std::vector&lt; basic_option&lt;charT&gt; &gt;&amp; options,
+<span class="lineNum">     173 </span>                :            :                          enum collect_unrecognized_mode mode);
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :            :     /** Parse environment. 
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>                :            :         For each environment variable, the 'name_mapper' function is called to
+<span class="lineNum">     178 </span>                :            :         obtain the option name. If it returns empty string, the variable is 
+<span class="lineNum">     179 </span>                :            :         ignored. 
+<span class="lineNum">     180 </span>                :            : 
+<span class="lineNum">     181 </span>                :            :         This is done since naming of environment variables is typically 
+<span class="lineNum">     182 </span>                :            :         different from the naming of command line options.        
+<span class="lineNum">     183 </span>                :            :     */
+<span class="lineNum">     184 </span>                :            :     BOOST_PROGRAM_OPTIONS_DECL parsed_options
+<span class="lineNum">     185 </span>                :            :     parse_environment(const options_description&amp;, 
+<span class="lineNum">     186 </span>                :            :                       const function1&lt;std::string, std::string&gt;&amp; name_mapper);
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :            :     /** Parse environment.
+<span class="lineNum">     189 </span>                :            : 
+<span class="lineNum">     190 </span>                :            :         Takes all environment variables which start with 'prefix'. The option
+<span class="lineNum">     191 </span>                :            :         name is obtained from variable name by removing the prefix and 
+<span class="lineNum">     192 </span>                :            :         converting the remaining string into lower case.
+<span class="lineNum">     193 </span>                :            :     */
+<span class="lineNum">     194 </span>                :            :     BOOST_PROGRAM_OPTIONS_DECL parsed_options
+<span class="lineNum">     195 </span>                :            :     parse_environment(const options_description&amp;, const std::string&amp; prefix);
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>                :            :     /** @overload
+<span class="lineNum">     198 </span>                :            :         This function exists to resolve ambiguity between the two above 
+<span class="lineNum">     199 </span>                :            :         functions when second argument is of 'char*' type. There's implicit
+<span class="lineNum">     200 </span>                :            :         conversion to both function1 and string.
+<span class="lineNum">     201 </span>                :            :     */
+<span class="lineNum">     202 </span>                :            :     BOOST_PROGRAM_OPTIONS_DECL parsed_options
+<span class="lineNum">     203 </span>                :            :     parse_environment(const options_description&amp;, const char* prefix);
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>                :            :     #ifdef _WIN32
+<span class="lineNum">     206 </span>                :            :     /** Parses the char* string which is passed to WinMain function on
+<span class="lineNum">     207 </span>                :            :         windows. This function is provided for convenience, and because it's
+<span class="lineNum">     208 </span>                :            :         not clear how to portably access split command line string from
+<span class="lineNum">     209 </span>                :            :         runtime library and if it always exists.
+<span class="lineNum">     210 </span>                :            :         This function is available only on Windows.
+<span class="lineNum">     211 </span>                :            :     */
+<span class="lineNum">     212 </span>                :            :     BOOST_PROGRAM_OPTIONS_DECL std::vector&lt;std::string&gt;
+<span class="lineNum">     213 </span>                :            :     split_winmain(const std::string&amp; cmdline);
+<span class="lineNum">     214 </span>                :            : 
+<span class="lineNum">     215 </span>                :            : #ifndef BOOST_NO_STD_WSTRING
+<span class="lineNum">     216 </span>                :            :     /** @overload */
+<span class="lineNum">     217 </span>                :            :     BOOST_PROGRAM_OPTIONS_DECL std::vector&lt;std::wstring&gt;
+<span class="lineNum">     218 </span>                :            :     split_winmain(const std::wstring&amp; cmdline);
+<span class="lineNum">     219 </span>                :            :     #endif
+<span class="lineNum">     220 </span>                :            : #endif
+<span class="lineNum">     221 </span>                :            :     
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            : }}
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>                :            : #undef DECL
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :            : #include &quot;boost/program_options/detail/parsers.hpp&quot;
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

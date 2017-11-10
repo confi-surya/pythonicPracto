@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/include/accountLibrary/account_info_file.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/include/accountLibrary</a> - account_info_file.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef __ACCOUNT_INFO_FILE_H__
+<span class="lineNum">       2 </span>                :            : #define __ACCOUNT_INFO_FILE_H__
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;boost/regex.hpp&gt;
+<span class="lineNum">       6 </span>                :            : #include &lt;list&gt;
+<span class="lineNum">       7 </span>                :            : #include &quot;libraryUtils/object_storage_exception.h&quot;
+<span class="lineNum">       8 </span>                :            : #include &quot;libraryUtils/lock_manager.h&quot;
+<span class="lineNum">       9 </span>                :            : #include &quot;static_data_block.h&quot;
+<span class="lineNum">      10 </span>                :            : #include &quot;non_static_data_block.h&quot;
+<span class="lineNum">      11 </span>                :            : #include &quot;trailer_block.h&quot;
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : #include &quot;reader.h&quot;
+<span class="lineNum">      14 </span>                :            : #include &quot;writer.h&quot;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : namespace accountInfoFile
+<span class="lineNum">      17 </span>                :            : {
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : class Reader;
+<span class="lineNum">      20 </span>                :            : class Writer;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :<span class="lineCov">         60 : static const boost::regex META_PATTERN(&quot;^m-.*&quot;);</span>
+<span class="lineNum">      23 </span>                :<span class="lineCov">         60 : static const boost::regex ACL_PATTERN(&quot;^[rw]-.*&quot;);</span>
+<span class="lineNum">      24 </span>                :<span class="lineCov">         60 : static const boost::regex SYSTEM_META_PATTERN(&quot;^sm-.*&quot;);</span>
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :<span class="lineCov">         90 : static const std::string META_DELETE = &quot;&quot;;</span>
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : static const uint64_t MAX_META_LENGTH = 4 * 1024; // 4KB
+<span class="lineNum">      29 </span>                :            : static const uint64_t MAX_META_KEYS = 90;
+<span class="lineNum">      30 </span>                :            : static const uint64_t MAX_ACL_LENGTH = 24 * 1024; //24KB
+<span class="lineNum">      31 </span>                :            : static const uint64_t MAX_SYSTEM_META_LENGTH = 2 * 1024;
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : using StatusAndResult::Status;
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : static const uint64_t MAX_UNSORTED_RECORD = 5000; // set MAX_UNSORTED_RECORD = 10000;
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : class AccountInfoFile
+<span class="lineNum">      38 </span>                :            : {
+<span class="lineNum">      39 </span>                :            : public:
+<span class="lineNum">      40 </span>                :            :         AccountInfoFile(boost::shared_ptr&lt;Reader&gt; reader, boost::shared_ptr&lt;Writer&gt; writer, 
+<span class="lineNum">      41 </span>                :            :                                 boost::shared_ptr&lt;lockManager::Mutex&gt; mutex);
+<span class="lineNum">      42 </span>                :            :         AccountInfoFile(boost::shared_ptr&lt;Reader&gt; reader, boost::shared_ptr&lt;lockManager::Mutex&gt; mutex);
+<span class="lineNum">      43 </span>                :            :         boost::shared_ptr&lt;recordStructure::AccountStat&gt; get_account_stat();
+<span class="lineNum">      44 </span>                :            :         void set_account_stat(boost::shared_ptr&lt;recordStructure::AccountStat&gt; account_stat, bool second_put_case = false);
+<span class="lineNum">      45 </span>                :            :         void create_account(boost::shared_ptr&lt;recordStructure::AccountStat&gt; account_stat);
+<span class="lineNum">      46 </span>                :            :         void add_container(boost::shared_ptr&lt;recordStructure::ContainerRecord&gt; container_record);
+<span class="lineNum">      47 </span>                :            :         void delete_container(boost::shared_ptr&lt;recordStructure::ContainerRecord&gt; container_record);
+<span class="lineNum">      48 </span>                :            :         void update_container(std::list&lt;recordStructure::ContainerRecord&gt; container_records);
+<span class="lineNum">      49 </span>                :            :         std::list&lt;recordStructure::ContainerRecord&gt; list_container(uint64_t const count, std::string const &amp;marker, 
+<span class="lineNum">      50 </span>                :            :                 string const &amp;end_marker, std::string const &amp;prefix, std::string const &amp;delimiter);
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :            : private:
+<span class="lineNum">      53 </span>                :            :         void add_container_internal(std::list&lt;recordStructure::ContainerRecord&gt; container_records);
+<span class="lineNum">      54 </span>                :            :         void create_stat_block(boost::shared_ptr&lt;recordStructure::AccountStat&gt; account_stat);
+<span class="lineNum">      55 </span>                :            :         void read_stat_trailer();
+<span class="lineNum">      56 </span>                :            :         bool update_record(recordStructure::ContainerRecord &amp; source,
+<span class="lineNum">      57 </span>                :            :                         NonStaticDataBlockBuilder::NonStaticBlock_ &amp; target);
+<span class="lineNum">      58 </span>                :            :         void compaction();
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :            :         boost::shared_ptr&lt;Reader&gt; reader;
+<span class="lineNum">      61 </span>                :            :         boost::shared_ptr&lt;Writer&gt; writer;
+<span class="lineNum">      62 </span>                :            :         boost::shared_ptr&lt;lockManager::Mutex&gt; mutex;
+<span class="lineNum">      63 </span>                :            : 
+<span class="lineNum">      64 </span>                :            :         boost::shared_ptr&lt;StaticDataBlock&gt; static_data_block;
+<span class="lineNum">      65 </span>                :            :         boost::shared_ptr&lt;NonStaticDataBlock&gt; non_static_data_block;
+<span class="lineNum">      66 </span>                :            :         boost::shared_ptr&lt;recordStructure::AccountStat&gt; stat_block;
+<span class="lineNum">      67 </span>                :            :         boost::shared_ptr&lt;TrailerBlock&gt; trailer_block;
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :            : };
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :            : }
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+diff --git a/src/osd/accountUpdaterService/updater.py b/remote/hydra042/spsingh/15thJune/objectStorage/src/osd/accountUpdaterService/updater.py
+index d462c06..c1a06d5 100644
+--- a/src/osd/accountUpdaterService/updater.py
++++ b/remote/hydra042/spsingh/15thJune/objectStorage/src/osd/accountUpdaterService/updater.py
+@@ -113,6 +113,7 @@ class Updater(Thread):
+                             self.__container_dispatcher.dispatcher_executer(account_instance)
+                             #If any container HEAD fails then do not perform account update operation and iterate next stat file
+                             if "fail" in account_instance.account_map.values():
++                                self.msg.load_gl_map()
+                                 self.logger.info("Container HEAD is failing on %s, \
+                                     skipping stat file %s" %(account, comp_tuple))
+                                 break

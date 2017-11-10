@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/osm/osmServer/ring_py_binding.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/osmServer</a> - ring_py_binding.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;osm/osmServer/ring_file.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &lt;boost/python.hpp&gt;
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &quot;indexing_suite/value_traits.hpp&quot;
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : #include &lt;boost/python/suite/indexing/vector_indexing_suite.hpp&gt;
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : #include &quot;indexing_suite/container_suite.hpp&quot;
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : #include &quot;indexing_suite/list.hpp&quot;
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : using namespace boost::python;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : namespace bp = boost::python;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :<span class="lineCov">         12 : BOOST_PYTHON_MODULE(libOsmService) {</span>
+<span class="lineNum">      17 </span>                :            :         class_&lt; std::vector&lt;std::string&gt; &gt;(&quot;list_ring_file&quot;)
+<span class="lineNum">      18 </span>                :<span class="lineCov">          6 :         .def( vector_indexing_suite&lt; std::vector&lt;std::string&gt; &gt;() );</span>
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            :         class_&lt;ring_file_manager::RingFileReadHandler&gt;(&quot;RingFileReadHandler&quot;, init&lt;std::string&gt;())
+<span class="lineNum">      21 </span>                :            :                 .def(&quot;get_fs_list&quot;, &amp;ring_file_manager::RingFileReadHandler::get_fs_list)
+<span class="lineNum">      22 </span>                :            :                 .def(&quot;get_account_level_dir_list&quot;, &amp;ring_file_manager::RingFileReadHandler::get_account_level_dir_list)
+<span class="lineNum">      23 </span>                :            :                 .def(&quot;get_container_level_dir_list&quot;, &amp;ring_file_manager::RingFileReadHandler::get_container_level_dir_list)
+<span class="lineNum">      24 </span>                :            :                 .def(&quot;get_object_level_dir_list&quot;, &amp;ring_file_manager::RingFileReadHandler::get_object_level_dir_list)
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :<span class="lineCov">         12 :         ;</span>
+<span class="lineNum">      27 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

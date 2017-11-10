@@ -1,0 +1,352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/handle.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python</a> - handle.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryHi">90.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef HANDLE_DWA200269_HPP
+<span class="lineNum">       6 </span>                :            : # define HANDLE_DWA200269_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/cast.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/python/errors.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/borrowed.hpp&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;boost/python/handle_fwd.hpp&gt;
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/python/refcount.hpp&gt;
+<span class="lineNum">      15 </span>                :            : # include &lt;boost/python/tag.hpp&gt;
+<span class="lineNum">      16 </span>                :            : # include &lt;boost/python/detail/raw_pyobject.hpp&gt;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : namespace boost { namespace python { 
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : template &lt;class T&gt; struct null_ok;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      23 </span>                :            : inline null_ok&lt;T&gt;* allow_null(T* p)
+<span class="lineNum">      24 </span>                :            : {
+<span class="lineNum">      25 </span>                :            :     return (null_ok&lt;T&gt;*)p;
+<span class="lineNum">      26 </span>                :            : }
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : namespace detail
+<span class="lineNum">      29 </span>                :            : {
+<span class="lineNum">      30 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      31 </span>                :            :   inline T* manage_ptr(detail::borrowed&lt;null_ok&lt;T&gt; &gt;* p, int)
+<span class="lineNum">      32 </span>                :            :   {
+<span class="lineNum">      33 </span>                :            :       return python::xincref((T*)p);
+<span class="lineNum">      34 </span>                :            :   }
+<span class="lineNum">      35 </span>                :            :   
+<span class="lineNum">      36 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      37 </span>                :            :   inline T* manage_ptr(null_ok&lt;detail::borrowed&lt;T&gt; &gt;* p, int)
+<span class="lineNum">      38 </span>                :            :   {
+<span class="lineNum">      39 </span>                :            :       return python::xincref((T*)p);
+<span class="lineNum">      40 </span>                :            :   }
+<span class="lineNum">      41 </span>                :            :   
+<span class="lineNum">      42 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      43 </span>                :<span class="lineCov">        338 :   inline T* manage_ptr(detail::borrowed&lt;T&gt;* p, long)</span>
+<span class="lineNum">      44 </span>                :            :   {
+<span class="lineNum">      45 </span>                :<span class="lineCov">        338 :       return python::incref(expect_non_null((T*)p));</span>
+<span class="lineNum">      46 </span>                :            :   }
+<span class="lineNum">      47 </span>                :            :   
+<span class="lineNum">      48 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      49 </span>                :            :   inline T* manage_ptr(null_ok&lt;T&gt;* p, long)
+<span class="lineNum">      50 </span>                :            :   {
+<span class="lineNum">      51 </span>                :            :       return (T*)p;
+<span class="lineNum">      52 </span>                :            :   }
+<span class="lineNum">      53 </span>                :            :   
+<span class="lineNum">      54 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      55 </span>                :<span class="lineCov">       5124 :   inline T* manage_ptr(T* p, ...)</span>
+<span class="lineNum">      56 </span>                :            :   {
+<span class="lineNum">      57 </span>                :<span class="lineCov">       5124 :       return expect_non_null(p);</span>
+<span class="lineNum">      58 </span>                :            :   }
+<span class="lineNum">      59 </span>                :            : }
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      62 </span>                :            : class handle
+<span class="lineNum">      63 </span>                :            : {
+<span class="lineNum">      64 </span>                :            :     typedef T* (handle::* bool_type )() const;
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :            :  public: // types
+<span class="lineNum">      67 </span>                :            :     typedef T element_type;
+<span class="lineNum">      68 </span>                :            :     
+<span class="lineNum">      69 </span>                :            :  public: // member functions
+<span class="lineNum">      70 </span>                :            :     handle();
+<span class="lineNum">      71 </span>                :            :     ~handle();
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :            :     template &lt;class Y&gt;
+<span class="lineNum">      74 </span>                :<span class="lineCov">        548 :     explicit handle(Y* p)</span>
+<span class="lineNum">      75 </span>                :            :         : m_p(
+<span class="lineNum">      76 </span>                :            :             python::upcast&lt;T&gt;(
+<span class="lineNum">      77 </span>                :            :                 detail::manage_ptr(p, 0)
+<span class="lineNum">      78 </span>                :            :                 )
+<span class="lineNum">      79 </span>                :<span class="lineCov">        548 :             )</span>
+<span class="lineNum">      80 </span>                :            :     {
+<span class="lineNum">      81 </span>                :            :     }
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :<span class="lineCov">         24 :     handle&amp; operator=(handle const&amp; r)</span>
+<span class="lineNum">      84 </span>                :            :     {
+<span class="lineNum">      85 </span>                :<span class="lineCov">         24 :         python::xdecref(m_p);</span>
+<span class="lineNum">      86 </span>                :<span class="lineCov">         24 :         m_p = python::xincref(r.m_p);</span>
+<span class="lineNum">      87 </span>                :<span class="lineCov">         24 :         return *this;</span>
+<span class="lineNum">      88 </span>                :            :     }
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :            : #if !defined(BOOST_MSVC) || (BOOST_MSVC &gt;= 1300)
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            :     template&lt;typename Y&gt;
+<span class="lineNum">      93 </span>                :            :     handle&amp; operator=(handle&lt;Y&gt; const &amp; r) // never throws
+<span class="lineNum">      94 </span>                :            :     {
+<span class="lineNum">      95 </span>                :            :         python::xdecref(m_p);
+<span class="lineNum">      96 </span>                :            :         m_p = python::xincref(python::upcast&lt;T&gt;(r.get()));
+<span class="lineNum">      97 </span>                :            :         return *this;
+<span class="lineNum">      98 </span>                :            :     }
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            : #endif
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :            :     template &lt;typename Y&gt;
+<span class="lineNum">     103 </span>                :<span class="lineCov">          8 :     handle(handle&lt;Y&gt; const&amp; r)</span>
+<span class="lineNum">     104 </span>                :<span class="lineCov">          8 :         : m_p(python::xincref(python::upcast&lt;T&gt;(r.get())))</span>
+<span class="lineNum">     105 </span>                :            :     {
+<span class="lineNum">     106 </span>                :            :     }
+<span class="lineNum">     107 </span>                :            :     
+<span class="lineNum">     108 </span>                :<span class="lineCov">       1014 :     handle(handle const&amp; r)</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">       1014 :         : m_p(python::xincref(r.m_p))</span>
+<span class="lineNum">     110 </span>                :            :     {
+<span class="lineNum">     111 </span>                :            :     }
+<span class="lineNum">     112 </span>                :            :     
+<span class="lineNum">     113 </span>                :            :     T* operator-&gt; () const;
+<span class="lineNum">     114 </span>                :            :     T&amp; operator* () const;
+<span class="lineNum">     115 </span>                :            :     T* get() const;
+<span class="lineNum">     116 </span>                :            :     T* release();
+<span class="lineNum">     117 </span>                :            :     void reset();
+<span class="lineNum">     118 </span>                :            :     
+<span class="lineNum">     119 </span>                :            :     operator bool_type() const // never throws
+<span class="lineNum">     120 </span>                :            :     {
+<span class="lineNum">     121 </span>                :            :         return m_p ? &amp;handle&lt;T&gt;::get : 0;
+<span class="lineNum">     122 </span>                :            :     }
+<span class="lineNum">     123 </span>                :            :     bool operator! () const; // never throws
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :  public: // implementation details -- do not touch
+<span class="lineNum">     126 </span>                :            :     // Defining this in the class body suppresses a VC7 link failure
+<span class="lineNum">     127 </span>                :            :     inline handle(detail::borrowed_reference x)
+<span class="lineNum">     128 </span>                :            :         : m_p(
+<span class="lineNum">     129 </span>                :            :             python::incref(
+<span class="lineNum">     130 </span>                :            :                 downcast&lt;T&gt;((PyObject*)x)
+<span class="lineNum">     131 </span>                :            :                 ))
+<span class="lineNum">     132 </span>                :            :     {
+<span class="lineNum">     133 </span>                :            :     }
+<span class="lineNum">     134 </span>                :            :     
+<span class="lineNum">     135 </span>                :            :  private: // data members
+<span class="lineNum">     136 </span>                :            :     T* m_p;
+<span class="lineNum">     137 </span>                :            : };
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            : #ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+<span class="lineNum">     140 </span>                :            : } // namespace python
+<span class="lineNum">     141 </span>                :            : #endif
+<span class="lineNum">     142 </span>                :            : 
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 : template&lt;class T&gt; inline T * get_pointer(python::handle&lt;T&gt; const &amp; p)</span>
+<span class="lineNum">     144 </span>                :            : {
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :     return p.get();</span>
+<span class="lineNum">     146 </span>                :            : }
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            : #ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+<span class="lineNum">     149 </span>                :            : namespace python {
+<span class="lineNum">     150 </span>                :            : #else
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :            : // We don't want get_pointer above to hide the others
+<span class="lineNum">     153 </span>                :            : using boost::get_pointer;
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            : #endif
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :            : typedef handle&lt;PyTypeObject&gt; type_handle;
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            : //
+<span class="lineNum">     160 </span>                :            : // Compile-time introspection
+<span class="lineNum">     161 </span>                :            : //
+<span class="lineNum">     162 </span>                :            : # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     163 </span>                :            : template&lt;typename T&gt;
+<span class="lineNum">     164 </span>                :            : class is_handle
+<span class="lineNum">     165 </span>                :            : {
+<span class="lineNum">     166 </span>                :            :  public:
+<span class="lineNum">     167 </span>                :            :     BOOST_STATIC_CONSTANT(bool, value = false); 
+<span class="lineNum">     168 </span>                :            : };
+<span class="lineNum">     169 </span>                :            : 
+<span class="lineNum">     170 </span>                :            : template&lt;typename T&gt;
+<span class="lineNum">     171 </span>                :            : class is_handle&lt;handle&lt;T&gt; &gt;
+<span class="lineNum">     172 </span>                :            : {
+<span class="lineNum">     173 </span>                :            :  public:
+<span class="lineNum">     174 </span>                :            :     BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">     175 </span>                :            : };
+<span class="lineNum">     176 </span>                :            : # else
+<span class="lineNum">     177 </span>                :            : namespace detail
+<span class="lineNum">     178 </span>                :            : {
+<span class="lineNum">     179 </span>                :            :   typedef char (&amp;yes_handle_t)[1];
+<span class="lineNum">     180 </span>                :            :   typedef char (&amp;no_handle_t)[2];
+<span class="lineNum">     181 </span>                :            :       
+<span class="lineNum">     182 </span>                :            :   no_handle_t is_handle_test(...);
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>                :            :   template&lt;typename T&gt;
+<span class="lineNum">     185 </span>                :            :   yes_handle_t is_handle_test(boost::type&lt; handle&lt;T&gt; &gt;);
+<span class="lineNum">     186 </span>                :            : }
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :            : template&lt;typename T&gt;
+<span class="lineNum">     189 </span>                :            : class is_handle
+<span class="lineNum">     190 </span>                :            : {
+<span class="lineNum">     191 </span>                :            :  public:
+<span class="lineNum">     192 </span>                :            :     BOOST_STATIC_CONSTANT(
+<span class="lineNum">     193 </span>                :            :         bool, value = (
+<span class="lineNum">     194 </span>                :            :             sizeof(detail::is_handle_test(boost::type&lt;T&gt;()))
+<span class="lineNum">     195 </span>                :            :             == sizeof(detail::yes_handle_t)));
+<span class="lineNum">     196 </span>                :            : };
+<span class="lineNum">     197 </span>                :            : # endif
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :            : //
+<span class="lineNum">     200 </span>                :            : // implementations
+<span class="lineNum">     201 </span>                :            : //
+<span class="lineNum">     202 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     203 </span>                :<span class="lineCov">         54 : inline handle&lt;T&gt;::handle()</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">         54 :     : m_p(0)</span>
+<span class="lineNum">     205 </span>                :            : {
+<span class="lineNum">     206 </span>                :            : }
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     209 </span>                :<span class="lineCov">        618 : inline handle&lt;T&gt;::~handle()</span>
+<span class="lineNum">     210 </span>                :            : {
+<span class="lineNum">     211 </span>                :<span class="lineCov">        618 :     python::xdecref(m_p);</span>
+<span class="lineNum">     212 </span>                :            : }
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     215 </span>                :            : inline T* handle&lt;T&gt;::operator-&gt;() const
+<span class="lineNum">     216 </span>                :            : {
+<span class="lineNum">     217 </span>                :            :     return m_p;
+<span class="lineNum">     218 </span>                :            : }
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     221 </span>                :            : inline T&amp; handle&lt;T&gt;::operator*() const
+<span class="lineNum">     222 </span>                :            : {
+<span class="lineNum">     223 </span>                :            :     return *m_p;
+<span class="lineNum">     224 </span>                :            : }
+<span class="lineNum">     225 </span>                :            : 
+<span class="lineNum">     226 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     227 </span>                :<span class="lineCov">        226 : inline T* handle&lt;T&gt;::get() const</span>
+<span class="lineNum">     228 </span>                :            : {
+<span class="lineNum">     229 </span>                :<span class="lineCov">        226 :     return m_p;</span>
+<span class="lineNum">     230 </span>                :            : }
+<span class="lineNum">     231 </span>                :            :     
+<span class="lineNum">     232 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     233 </span>                :            : inline bool handle&lt;T&gt;::operator!() const
+<span class="lineNum">     234 </span>                :            : {
+<span class="lineNum">     235 </span>                :            :     return m_p == 0;
+<span class="lineNum">     236 </span>                :            : }
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     239 </span>                :            : inline T* handle&lt;T&gt;::release()
+<span class="lineNum">     240 </span>                :            : {
+<span class="lineNum">     241 </span>                :            :     T* result = m_p;
+<span class="lineNum">     242 </span>                :            :     m_p = 0;
+<span class="lineNum">     243 </span>                :            :     return result;
+<span class="lineNum">     244 </span>                :            : }
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     247 </span>                :            : inline void handle&lt;T&gt;::reset()
+<span class="lineNum">     248 </span>                :            : {
+<span class="lineNum">     249 </span>                :            :     python::xdecref(m_p);
+<span class="lineNum">     250 </span>                :            :     m_p = 0;
+<span class="lineNum">     251 </span>                :            : }
+<span class="lineNum">     252 </span>                :            : 
+<span class="lineNum">     253 </span>                :            : // Because get_managed_object must return a non-null PyObject*, we
+<span class="lineNum">     254 </span>                :            : // return Py_None if the handle is null.
+<span class="lineNum">     255 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     256 </span>                :            : inline PyObject* get_managed_object(handle&lt;T&gt; const&amp; h, tag_t)
+<span class="lineNum">     257 </span>                :            : {
+<span class="lineNum">     258 </span>                :            :     return h.get() ? python::upcast&lt;PyObject&gt;(h.get()) : Py_None;
+<span class="lineNum">     259 </span>                :            : }
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            : }} // namespace boost::python
+<span class="lineNum">     262 </span>                :            : 
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :            : #endif // HANDLE_DWA200269_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

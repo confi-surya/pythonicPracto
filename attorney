@@ -1,0 +1,68 @@
+
+The Attorney General is necessary for giving advice to the Government of India in legal matters referred to him.
+ He also performs other legal duties assigned to him by the President. 
+The Attorney General has the right of audience in all Courts in India as well as the right to participate in the proceedings of the Parliament, though not to vote.
+ The Attorney General appears on behalf of Government of India in all cases (including suits, appeals and other proceedings) in the Supreme Court in which Government of India is concerned.
+ He also represents the Government of India in any reference made by the President to the Supreme Court under Article 143 of the Constitution.
+
+Unlike the Attorney General of the United States, the Attorney General of India does not have any executive authority. Those functions are performed by the Law Minister of India.
+
+The Attorney General can accept briefs but cannot appear against the Government.
+ He cannot defend an accused in the criminal proceedings and accept the directorship of a company without the permission of the Government.
+
+The Attorney General is assisted by two Solicitor General and four Additional Solicitor Generals.
+ The Attorney General is to be consulted only in legal matters of real importance and only after the Ministry of Law has been consulted.
+ All references to the Attorney General are made by the Law Ministry.
+
+class Service_object:
+    def __init__(self, ip, port, id):
+        self.__ip = ip
+        self.__port = port
+        self.__id = id
+
+    def get_ip(self):
+        return self.__ip
+
+    def get_port(self):
+        return self.__port
+
+    def get_id(self):
+        return self.__id
+
+class Globalmap:
+    def __init__(self):
+        self.__service_obj = Service_object("192.168.101.1", "61007", "HN0101_0000_accountUpdater-server")
+        self.__service_obj1 = Service_object("192.168.101.4", "61007", "HN0103_0000_accountUpdater-server")
+        self.__service_obj2 = Service_object("192.168.101.6", "61007", "HN0102_0000_accountUdater-server")
+        self.__glmap = {self.__service_obj:[1,2], self.__service_obj1:[3,4], self.__service_obj2:[5,6]}
+
+    def dest_comp_map(self):
+        return self.__glmap
+
+    def source_service_obj(self):
+        return Service_object("192.168.101.1", "61007", "HN0101_0000_accountUpdater-server")
+
+
+
+
+The President appoints, as Prime Minister, the person most likely to command the support of the majority in the Lok Sabha (usually the leader of the majority party or coalition). The President then appoints the other members of the Council of Ministers, distributing portfolios to them on the advice of the Prime Minister.[17]:72
+
+The Council of Ministers remains in power during the 'pleasure' of the President.
+
+The President appoints 12 members of the Rajya Sabha from amongst persons who have special knowledge or practical experience in respect of such matters as literature, science, art and social service.
+
+The President is responsible for making a wide variety of appointments. These include:[17]:72
+
+    Governors of States
+    The Chief Justice, other judges of the Supreme Court and High Courts of India
+    The Chief Minister of National capital territory of Delhi (Article 239 AA 5 of the constitution)
+    The Attorney General
+    The Comptroller and Auditor General
+    The Chief Election Commissioner and other Election Commissioners
+    The Chairman and other Members of the Union Public Service Commission
+    Vice Chancellor of central university and academic staff of central university through his nominee
+    Ambassadors and High Commissioners to other countries (Only through the list of names given by the Prime Minister)[18][19]:48
+
+
+
+

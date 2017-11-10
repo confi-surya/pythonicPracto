@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/transactionLibrary/transaction_py_binding.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/transactionLibrary</a> - transaction_py_binding.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;transactionLibrary/transaction_library.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &quot;libraryUtils/helper.h&quot;
+<span class="lineNum">       3 </span>                :            : #include &lt;boost/python.hpp&gt;
+<span class="lineNum">       4 </span>                :            : 
+<span class="lineNum">       5 </span>                :            : #include &quot;indexing_suite/value_traits.hpp&quot;
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : #include &quot;indexing_suite/container_suite.hpp&quot;
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : #include &quot;indexing_suite/map.hpp&quot;
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : #include &quot;indexing_suite/list.hpp&quot;
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : using namespace boost::python;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : namespace bp = boost::python;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : namespace boost { namespace python { namespace indexing {
+<span class="lineNum">      19 </span>                :            : //
+<span class="lineNum">      20 </span>                :            : template&lt;&gt;
+<span class="lineNum">      21 </span>                :            : struct value_traits&lt; recordStructure::ActiveRecord &gt;
+<span class="lineNum">      22 </span>                :            : {
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            :         static bool const equality_comparable = false;
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            :         static bool const less_than_comparable = false;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            :         template&lt;typename PythonClass, typename Policy&gt;
+<span class="lineNum">      29 </span>                :<span class="lineNoCov">          0 :         static void visit_container_class(PythonClass &amp;, Policy const &amp;){</span>
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : }
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : };
+<span class="lineNum">      34 </span>                :            : //
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : }/*indexing*/ } /*python*/ } /*boost*/
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 : BOOST_PYTHON_MODULE(libTransactionLib)</span>
+<span class="lineNum">      39 </span>                :            : {
+<span class="lineNum">      40 </span>                :            :         class_&lt; std::map&lt; int64_t, recordStructure::ActiveRecord &gt; &gt;(&quot;map_less__recordStructure_scope_ActiveRecord__greater_&quot;)
+<span class="lineNum">      41 </span>                :<span class="lineNoCov">          0 :         .def( indexing::map_suite&lt; std::map&lt; int64_t, recordStructure::ActiveRecord &gt; &gt;() );</span>
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            :         class_&lt;std::list&lt;recordStructure::ActiveRecord &gt; &gt;(&quot;list_less__recordStructure_scope_ContainerRecord__greater_&quot;)
+<span class="lineNum">      44 </span>                :            :         .def(indexing::list_suite&lt;std::list&lt;recordStructure::ActiveRecord&gt; &gt;())
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :     ;</span>
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :         StatusAndResult::Status&lt;bool&gt; (transaction_library::TransactionLibrary::*release_lock_by_id)(int64_t, int32_t) = &amp;transaction_library::TransactionLibrary::release_lock;</span>
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :         StatusAndResult::Status&lt;bool&gt; (transaction_library::TransactionLibrary::*release_lock_by_name)(std::string, int32_t) = &amp;transaction_library::TransactionLibrary::release_lock;</span>
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :         class_&lt;transaction_library::TransactionLibrary&gt;(&quot;TransactionLibrary&quot;, init&lt;std::string, int, int&gt;())
+<span class="lineNum">      52 </span>                :            :                 .def(&quot;start_recovery&quot;, &amp;transaction_library::TransactionLibrary::start_recovery)
+<span class="lineNum">      53 </span>                :            :                 .def(&quot;add_transaction&quot;, &amp;transaction_library::TransactionLibrary::add_transaction)
+<span class="lineNum">      54 </span>                :            :                 .def(&quot;release_lock&quot;, release_lock_by_id)
+<span class="lineNum">      55 </span>                :            :                 .def(&quot;release_lock&quot;, release_lock_by_name)
+<span class="lineNum">      56 </span>                :            :                 .def(&quot;event_wait&quot;, &amp;transaction_library::TransactionLibrary::event_wait)
+<span class="lineNum">      57 </span>                :            :                 .def(&quot;event_wait_stop&quot;, &amp;transaction_library::TransactionLibrary::event_wait_stop)
+<span class="lineNum">      58 </span>                :            :                 .def(&quot;get_transaction_map&quot;, &amp;transaction_library::TransactionLibrary::get_transaction_map)
+<span class="lineNum">      59 </span>                :            :                 .def(&quot;accept_transaction_data&quot;, &amp;transaction_library::TransactionLibrary::accept_transaction_data)
+<span class="lineNum">      60 </span>                :            :                 .def(&quot;upgrade_accept_transaction_data&quot;, &amp;transaction_library::TransactionLibrary::accept_transaction_data)
+<span class="lineNum">      61 </span>                :            :                 .def(&quot;extract_transaction_data&quot;, &amp;transaction_library::TransactionLibrary::extract_transaction_data)
+<span class="lineNum">      62 </span>                :            :                 .def(&quot;extract_trans_journal_data&quot;, &amp;transaction_library::TransactionLibrary::extract_trans_journal_data)
+<span class="lineNum">      63 </span>                :            :                 .def(&quot;commit_recovered_data&quot;,&amp;transaction_library::TransactionLibrary::commit_recovered_data)
+<span class="lineNum">      64 </span>                :            :                 .def(&quot;revert_back_trans_data&quot;,&amp;transaction_library::TransactionLibrary::revert_back_trans_data)
+<span class="lineNum">      65 </span>                :            :                 .def(&quot;add_bulk_delete_transaction&quot;, &amp;transaction_library::TransactionLibrary::add_bulk_delete_transaction)
+<span class="lineNum">      66 </span>                :            :                 .def(&quot;recover_active_record&quot;, &amp;transaction_library::TransactionLibrary::recover_active_record)
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 :         ;</span>
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :         class_&lt;helper_utils::Request&gt;(&quot;Request&quot;, init&lt;std::string, std::string, int, std::string&gt;())
+<span class="lineNum">      71 </span>                :<span class="lineNoCov">          0 :         ;</span>
+<span class="lineNum">      72 </span>                :            :         //template &lt;&gt;
+<span class="lineNum">      73 </span>                :            :         class_&lt;StatusAndResult::Status&lt;bool&gt; &gt;(&quot;Status&quot;, no_init)
+<span class="lineNum">      74 </span>                :            :                 //.def(init&lt; bool &gt;())
+<span class="lineNum">      75 </span>                :            :                 .def(init&lt;bool, std::string&gt;())
+<span class="lineNum">      76 </span>                :            :                 //.def(init&lt;bool, int64_t&gt;())
+<span class="lineNum">      77 </span>                :            :                 .def(&quot;get_return_status&quot;, &amp;StatusAndResult::Status&lt;bool&gt;::get_return_status)
+<span class="lineNum">      78 </span>                :            :                 .def(&quot;get_failure_reason&quot;, &amp;StatusAndResult::Status&lt;bool&gt;::get_failure_reason)
+<span class="lineNum">      79 </span>                :            :                 .def(&quot;get_error_code&quot;, &amp;StatusAndResult::Status&lt;bool&gt;::get_error_code)
+<span class="lineNum">      80 </span>                :            :                 .def(&quot;get_value&quot;, &amp;StatusAndResult::Status&lt;bool&gt;::get_value)
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :         ;</span>
+<span class="lineNum">      83 </span>                :            :         class_&lt;StatusAndResult::Status&lt;int64_t&gt; &gt;(&quot;Status&quot;, no_init)
+<span class="lineNum">      84 </span>                :            :                 .def(&quot;get_error_code&quot;, &amp;StatusAndResult::Status&lt;int64_t&gt;::get_error_code)
+<span class="lineNum">      85 </span>                :            :                 .def(&quot;get_failure_reason&quot;, &amp;StatusAndResult::Status&lt;int64_t&gt;::get_failure_reason)
+<span class="lineNum">      86 </span>                :            :                 .def(&quot;get_return_status&quot;, &amp;StatusAndResult::Status&lt;int64_t&gt;::get_return_status)
+<span class="lineNum">      87 </span>                :            :                 .def(&quot;get_value&quot;, &amp;StatusAndResult::Status&lt;int64_t&gt;::get_value)
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :         ;</span>
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            :         class_&lt;recordStructure::ActiveRecord&gt;(&quot;ActiveRecord&quot;, init&lt;int, std::string, std::string, std::string, int64_t&gt;())
+<span class="lineNum">      92 </span>                :            :                 .def(init&lt;&gt;())
+<span class="lineNum">      93 </span>                :            :                 .def(&quot;get_object_id&quot;, &amp;recordStructure::ActiveRecord::get_object_id)
+<span class="lineNum">      94 </span>                :            :                 .def(&quot;get_transaction_id&quot;, &amp;recordStructure::ActiveRecord::get_transaction_id)
+<span class="lineNum">      95 </span>                :            :                 .def(&quot;get_operation_type&quot;, &amp;recordStructure::ActiveRecord::get_operation_type)
+<span class="lineNum">      96 </span>                :            :                 .def(&quot;get_request_method&quot;, &amp;recordStructure::ActiveRecord::get_request_method)
+<span class="lineNum">      97 </span>                :            :                 .def(&quot;get_time&quot;, &amp;recordStructure::ActiveRecord::get_time)
+<span class="lineNum">      98 </span>                :            :                 .def(&quot;set_transaction_id&quot;, &amp;recordStructure::ActiveRecord::set_transaction_id)
+<span class="lineNum">      99 </span>                :            :                 .def(&quot;get_object_name&quot;, &amp;recordStructure::ActiveRecord::get_object_name)
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :                 .def_pickle(recordStructure::active_object_record_pickle_suite());</span>
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :         ;</span>
+<span class="lineNum">     103 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/converter/shared_ptr_from_python.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/converter</a> - shared_ptr_from_python.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryMed">84.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">64</td>
+            <td class="headerCovTableEntryLo">9.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef SHARED_PTR_FROM_PYTHON_DWA20021130_HPP
+<span class="lineNum">       6 </span>                :            : # define SHARED_PTR_FROM_PYTHON_DWA20021130_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/handle.hpp&gt;
+<span class="lineNum">       9 </span>                :            : # include &lt;boost/python/converter/shared_ptr_deleter.hpp&gt;
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/converter/from_python.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/python/converter/rvalue_from_python_data.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/converter/registered.hpp&gt;
+<span class="lineNum">      13 </span>                :            : #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/python/converter/pytype_function.hpp&gt;
+<span class="lineNum">      15 </span>                :            : #endif
+<span class="lineNum">      16 </span>                :            : # include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : namespace boost { namespace python { namespace converter { 
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      21 </span>                :            : struct shared_ptr_from_python
+<span class="lineNum">      22 </span>                :            : {
+<span class="lineNum">      23 </span>                :<span class="lineCov">         80 :     shared_ptr_from_python()</span>
+<span class="lineNum">      24 </span>                :            :     {
+<span class="lineNum">      25 </span>                :<span class="lineCov">         80 :         converter::registry::insert(&amp;convertible, &amp;construct, type_id&lt;shared_ptr&lt;T&gt; &gt;()</span>
+<span class="lineNum">      26 </span>                :            : #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+<span class="lineNum">      27 </span>                :            :                       , &amp;converter::expected_from_python_type_direct&lt;T&gt;::get_pytype
+<span class="lineNum">      28 </span>                :            : #endif
+<span class="lineNum">      29 </span>                :            :                       );
+<span class="lineNum">      30 </span>                :            :     }
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            :  private:
+<span class="lineNum">      33 </span>                :<span class="lineCov">        338 :     static void* convertible(PyObject* p)</span>
+<span class="lineNum">      34 </span>                :            :     {
+<span class="lineNum">      35 </span>[<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>:<span class="lineCov">        338 :         if (p == Py_None)</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 109 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 229 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 14 was never executed"> # </span> 
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 15 was never executed"> # </span>]
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 :             return p;</span>
+<span class="lineNum">      37 </span>                :            :         
+<span class="lineNum">      38 </span>                :<span class="lineCov">        338 :         return converter::get_lvalue_from_python(p, registered&lt;T&gt;::converters);</span>
+<span class="lineNum">      39 </span>                :            :     }
+<span class="lineNum">      40 </span>                :            :     
+<span class="lineNum">      41 </span>                :<span class="lineCov">        338 :     static void construct(PyObject* source, rvalue_from_python_stage1_data* data)</span>
+<span class="lineNum">      42 </span>                :            :     {
+<span class="lineNum">      43 </span>                :<span class="lineCov">        338 :         void* const storage = ((converter::rvalue_from_python_storage&lt;shared_ptr&lt;T&gt; &gt;*)data)-&gt;storage.bytes;</span>
+<span class="lineNum">      44 </span>                :            :         // Deal with the &quot;None&quot; case.
+<span class="lineNum">      45 </span>[<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>:<span class="lineCov">        338 :         if (data-&gt;convertible == source)</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 109 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 229 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 14 was never executed"> # </span> 
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 15 was never executed"> # </span>]
+<span class="lineNum">      46 </span>[<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span>:<span class="lineNoCov">          0 :             new (storage) shared_ptr&lt;T&gt;();</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 16 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 17 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 21 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 22 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 26 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 27 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 31 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 32 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 36 was never executed"> # </span> 
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 37 was never executed"> # </span>]
+<span class="lineNum">      47 </span>                :            :         else
+<span class="lineNum">      48 </span>                :            :         {
+<span class="lineNum">      49 </span>                :            :             boost::shared_ptr&lt;void&gt; hold_convertible_ref_count(
+<span class="lineNum">      50 </span>                :<span class="lineCov">        338 :               (void*)0, shared_ptr_deleter(handle&lt;&gt;(borrowed(source))) );</span>
+<span class="lineNum">      51 </span>                :            :             // use aliasing constructor
+<span class="lineNum">      52 </span>[<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 8 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 9 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 15 was never executed"> # </span>:<span class="lineCov">        676 :             new (storage) shared_ptr&lt;T&gt;(</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 16 was never executed"> # </span><span class="branchCov" title="Branch 22 was taken 109 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span><span class="branchCov" title="Branch 29 was taken 229 times"> + </span><span class="branchNoCov" title="Branch 30 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 36 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 37 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 43 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 44 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 50 was never executed"> # </span> 
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 51 was never executed"> # </span>]
+<span class="lineNum">      53 </span>                :            :                 hold_convertible_ref_count,
+<span class="lineNum">      54 </span>                :            :                 static_cast&lt;T*&gt;(data-&gt;convertible));
+<span class="lineNum">      55 </span>                :            :         }
+<span class="lineNum">      56 </span>                :            :         
+<span class="lineNum">      57 </span>                :<span class="lineCov">        338 :         data-&gt;convertible = storage;</span>
+<span class="lineNum">      58 </span>                :            :     }
+<span class="lineNum">      59 </span>                :            : };
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : }}} // namespace boost::python::converter
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            : #endif // SHARED_PTR_FROM_PYTHON_DWA20021130_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

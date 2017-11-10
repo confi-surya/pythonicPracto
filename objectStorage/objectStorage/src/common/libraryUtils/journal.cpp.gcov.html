@@ -1,0 +1,618 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/libraryUtils/journal.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/libraryUtils</a> - journal.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">271</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">100</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       2 </span>                :            : #include &lt;boost/filesystem.hpp&gt;
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &lt;cool/debug.h&gt;
+<span class="lineNum">       5 </span>                :            : #include &quot;libraryUtils/journal.h&quot;
+<span class="lineNum">       6 </span>                :            : #include &quot;libraryUtils/file_handler.h&quot;
+<span class="lineNum">       7 </span>                :            : #include &quot;cool/cool.h&quot;
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : #include &quot;libraryUtils/object_storage_log_setup.h&quot;
+<span class="lineNum">      10 </span>                :            : #include &quot;libraryUtils/file_handler.h&quot;
+<span class="lineNum">      11 </span>                :            : #include &quot;libraryUtils/object_storage_exception.h&quot;
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : using namespace object_storage_log_setup;
+<span class="lineNum">      14 </span>                :            : using namespace OSDException;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : namespace journal_manager
+<span class="lineNum">      17 </span>                :            : {
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : JournalReadHandler::JournalReadHandler(
+<span class="lineNum">      20 </span>                :            :                 std::string path,
+<span class="lineNum">      21 </span>                :            :                 cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr
+<span class="lineNum">      22 </span>                :<span class="lineNoCov">          0 :                 )</span>
+<span class="lineNum">      23 </span>                :<span class="lineNoCov">          0 :         : path(path)</span>
+<span class="lineNum">      24 </span>                :            : {
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 :         this-&gt;find_latest_journal_file(path);</span>
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :         this-&gt;deserializor.reset(new serializor_manager::Deserializor());</span>
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_commit_offset = std::make_pair(0,0);</span>
+<span class="lineNum">      29 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_checkpoint_offset = std::make_pair(0,0);</span>
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Latest Recovery file id found is &quot; &lt;&lt; this-&gt;latest_file_id);</span>
+<span class="lineNum">      31 </span>                :<span class="lineNoCov">          0 :         this-&gt;checkpoint_interval = parser_ptr-&gt;checkpoint_intervalValue();</span>
+<span class="lineNum">      32 </span>                :<span class="lineNoCov">          0 :         this-&gt;buffer.resize(MAX_READ_CHUNK_SIZE);</span>
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :         this-&gt;cur_buffer_ptr = &amp;this-&gt;buffer[0];</span>
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;JournalReadHandler constructed&quot;);</span>
+<span class="lineNum">      35 </span>                :            : }
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::init()</span>
+<span class="lineNum">      38 </span>                :            : {
+<span class="lineNum">      39 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Journal path is: &quot; &lt;&lt; make_journal_path(this-&gt;path, this-&gt;latest_file_id));</span>
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler.reset(new fileHandler::FileHandler(make_journal_path(this-&gt;path, this-&gt;latest_file_id), fileHandler::OPEN_FOR_READ));</span>
+<span class="lineNum">      41 </span>                :            : }
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::init_journal()</span>
+<span class="lineNum">      44 </span>                :            : {
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Journal path is: &quot; &lt;&lt; make_journal_path(this-&gt;path, this-&gt;latest_file_id));</span>
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler.reset(new fileHandler::FileHandler(make_journal_path(this-&gt;path, this-&gt;latest_file_id), fileHandler::OPEN_FOR_READ_WRITE));</span>
+<span class="lineNum">      47 </span>                :            : }
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : 
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::find_latest_journal_file(std::string journal_path)</span>
+<span class="lineNum">      52 </span>                :            : {
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            :         namespace fs = boost::filesystem;
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :         fs::path someDir(journal_path);</span>
+<span class="lineNum">      56 </span>                :<span class="lineNoCov">          0 :         fs::directory_iterator end_iter;</span>
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :         this-&gt;latest_file_id = 0;</span>
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :         this-&gt;next_file_id = 1;</span>
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :         this-&gt;oldest_file_id = std::numeric_limits&lt;uint64_t&gt;::max();</span>
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>        [<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :         for( fs::directory_iterator dir_iter(someDir) ; dir_iter != end_iter ; ++dir_iter)</span>
+<span class="lineNum">      63 </span>                :            :         {
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :                 size_t pos = dir_iter-&gt;path().string().find(JOURNAL_FILE_NAME);</span>
+<span class="lineNum">      65 </span>[<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span>:<span class="lineNoCov">          0 :                 if (fs::is_regular_file(dir_iter-&gt;path()) &amp;&amp; pos != std::string::npos)</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 8 was never executed"> # </span>]
+<span class="lineNum">      66 </span>                :            :                 {
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :                         string suffix = dir_iter-&gt;path().string().substr(pos + JOURNAL_FILE_NAME.size() + 1);</span>
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 :                         uint64_t number = boost::lexical_cast&lt;uint64_t&gt;(suffix);</span>
+<span class="lineNum">      69 </span>                :<span class="lineNoCov">          0 :                         this-&gt;oldest_file_id = ::min(this-&gt;oldest_file_id, number);</span>
+<span class="lineNum">      70 </span>        [<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if (fs::file_size(dir_iter-&gt;path()))</span>
+<span class="lineNum">      71 </span>                :            :                         {
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Journal file with ID &quot; &lt;&lt; number &lt;&lt; &quot; is not empty&quot;);</span>
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;latest_file_id = ::max(this-&gt;latest_file_id, number);</span>
+<span class="lineNum">      74 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;next_file_id = ::max(this-&gt;next_file_id, number + 1);</span>
+<span class="lineNum">      75 </span>                :            :                         }
+<span class="lineNum">      76 </span>                :            :                         else
+<span class="lineNum">      77 </span>                :            :                         {
+<span class="lineNum">      78 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Journal file with ID &quot; &lt;&lt; number &lt;&lt; &quot; is empty&quot;);</span>
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;next_file_id = ::max(this-&gt;next_file_id, number);</span>
+<span class="lineNum">      80 </span>                :            :                         }
+<span class="lineNum">      81 </span>                :            :                 }
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Oldest File Id : &quot; &lt;&lt; this-&gt;oldest_file_id &lt;&lt; &quot;Latest File Id : &quot; &lt;&lt; this-&gt;latest_file_id);</span>
+<span class="lineNum">      83 </span>                :            :         }
+<span class="lineNum">      84 </span>                :            : }
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 : JournalReadHandler::~JournalReadHandler()</span>
+<span class="lineNum">      87 </span>                :            : {
+<span class="lineNum">      88 </span>                :            : }
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 : JournalOffset JournalReadHandler::get_last_commit_offset()</span>
+<span class="lineNum">      91 </span>                :            : {
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :         return this-&gt;last_commit_offset;</span>
+<span class="lineNum">      93 </span>                :            : }
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 : bool JournalReadHandler::recover_last_checkpoint()</span>
+<span class="lineNum">      97 </span>                :            : {
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Recovering checkpoint&quot;);</span>
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :         int64_t length = this-&gt;file_handler-&gt;get_end_offset();</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :         int64_t offset = ((length-1)/this-&gt;checkpoint_interval) * this-&gt;checkpoint_interval;</span>
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_checkpoint_offset = std::make_pair(latest_file_id, offset);</span>
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Last checkpoint offset is : &quot; &lt;&lt; this-&gt;last_checkpoint_offset);</span>
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :         return this-&gt;process_last_checkpoint(offset);</span>
+<span class="lineNum">     104 </span>                :            : }
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::clean_journal_files()</span>
+<span class="lineNum">     107 </span>                :            : {
+<span class="lineNum">     108 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (this-&gt;oldest_file_id == std::numeric_limits&lt;uint64_t&gt;::max())</span>
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler.reset();</span>
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Oldest File ID : &quot; &lt;&lt; this-&gt;oldest_file_id &lt;&lt; &quot;Latest File ID : &quot; &lt;&lt; this-&gt;latest_file_id);</span>
+<span class="lineNum">     112 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         for (uint64_t i = this-&gt;oldest_file_id; i &lt;= this-&gt;latest_file_id; i++)</span>
+<span class="lineNum">     113 </span>                :            :         {
+<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Cleaning Journal file &quot; &lt;&lt; make_journal_path(this-&gt;path, i) &lt;&lt; &quot; after recovery&quot;);</span>
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :                 boost::filesystem::remove(make_journal_path(this-&gt;path, i));</span>
+<span class="lineNum">     116 </span>                :            :         }
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            : }
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 : uint64_t JournalReadHandler::get_next_file_id() const</span>
+<span class="lineNum">     121 </span>                :            : {
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :         return this-&gt;next_file_id;</span>
+<span class="lineNum">     123 </span>                :            : }
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 : uint64_t JournalReadHandler::get_current_file_id() const</span>
+<span class="lineNum">     126 </span>                :            : {
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :         return this-&gt;latest_file_id;</span>
+<span class="lineNum">     128 </span>                :            : }
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::recover_snapshot()</span>
+<span class="lineNum">     131 </span>                :            : {
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Recovering snapshot&quot;);</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler-&gt;seek(SNAPSHOT_OFFSET);</span>
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :         this-&gt;process_snapshot();</span>
+<span class="lineNum">     135 </span>                :            : }
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::set_recovering_offset()</span>
+<span class="lineNum">     138 </span>                :            : {
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         this-&gt;process_recovering_offset();</span>
+<span class="lineNum">     140 </span>                :            : }
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::prepare_read_record()</span>
+<span class="lineNum">     143 </span>                :            : {
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :         this-&gt;buffer.resize(MAX_READ_CHUNK_SIZE+1);</span>
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :         this-&gt;rest_size = 0;</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :         this-&gt;end_of_file = false;</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_offset = std::make_pair(this-&gt;last_commit_offset.first, this-&gt;file_handler-&gt;tell());</span>
+<span class="lineNum">     148 </span>                :            : }
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 : inline void JournalReadHandler::skip_padding()</span>
+<span class="lineNum">     151 </span>                :            : {
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Skipping padding&quot;);</span>
+<span class="lineNum">     153 </span>  [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :         while (this-&gt;rest_size &gt; 0 &amp;&amp; *this-&gt;cur_buffer_ptr == fileHandler::PADDING)</span>
+<span class="lineNum">     154 </span>                :            :         {
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :                 this-&gt;rest_size --;</span>
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :                 this-&gt;cur_buffer_ptr ++;</span>
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :                 this-&gt;file_offset.second += 1;</span>
+<span class="lineNum">     158 </span>                :            :         }
+<span class="lineNum">     159 </span>                :            : }
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 : std::pair&lt;recordStructure::Record *, std::pair&lt;JournalOffset, int64_t&gt; &gt; JournalReadHandler::get_next_journal_record()</span>
+<span class="lineNum">     162 </span>                :            : {
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :         this-&gt;skip_padding();</span>
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         recordStructure::Record * record = NULL;</span>
+<span class="lineNum">     165 </span>[<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span>:<span class="lineNoCov">          0 :         if (this-&gt;rest_size &lt; serializor_manager::HEADER_SIZE</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span>]
+<span class="lineNum">     166 </span>                :            :                         || this-&gt;rest_size &lt; this-&gt;deserializor-&gt;get_record_size(this-&gt;cur_buffer_ptr))
+<span class="lineNum">     167 </span>                :            :         {
+<span class="lineNum">     168 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (this-&gt;end_of_file)</span>
+<span class="lineNum">     169 </span>                :            :                 {
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :                         return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));</span>
+<span class="lineNum">     171 </span>                :            :                 }                                                       
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :                 this-&gt;buffer.resize(RECORDS_READ_CHUNK_SIZE);</span>
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :                 ::memcpy(&amp;this-&gt;buffer[0], &amp;this-&gt;buffer[RECORDS_READ_CHUNK_SIZE - rest_size], rest_size);</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :                 int64_t start_reading_offset = this-&gt;file_handler-&gt;tell();</span>
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :                 int64_t read_record_size = this-&gt;file_handler-&gt;read(&amp;this-&gt;buffer[0] + this-&gt;rest_size, RECORDS_READ_CHUNK_SIZE - this-&gt;rest_size);</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :                 DASSERT(read_record_size != -1, &quot;read failure&quot;);</span>
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :                 this-&gt;rest_size += read_record_size;</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :                 this-&gt;cur_buffer_ptr = &amp;this-&gt;buffer[0];</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :                 int64_t record_size = this-&gt;deserializor-&gt;get_record_size(this-&gt;cur_buffer_ptr); </span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG,&quot;Record size is : &quot; &lt;&lt; record_size);</span>
+<span class="lineNum">     181 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 while ( this-&gt;rest_size &lt; record_size )</span>
+<span class="lineNum">     182 </span>                :            :                 {
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG,&quot;Continue Reading File&quot;);</span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :                         this-&gt;buffer.resize(this-&gt;rest_size + RECORDS_READ_CHUNK_SIZE);</span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :                         int64_t read_bytes = this-&gt;file_handler-&gt;read(&amp;this-&gt;buffer[0] + this-&gt;rest_size, RECORDS_READ_CHUNK_SIZE);</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :                         this-&gt;rest_size += read_bytes;</span>
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :                         DASSERT(read_bytes != -1, &quot;read failure&quot;);</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :                         read_record_size += read_bytes;</span>
+<span class="lineNum">     189 </span>                :            :                         //TODO aparauliya, Below condition is not suffucient for end of file. it can
+<span class="lineNum">     190 </span>                :            :                         //also hit in case of HFS is not able to read desirable chunk size
+<span class="lineNum">     191 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if ( read_bytes != RECORDS_READ_CHUNK_SIZE )</span>
+<span class="lineNum">     192 </span>                :            :                         {
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;end_of_file = true;</span>
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO,&quot;End of Journal File&quot;);</span>
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     196 </span>                :            :                         }
+<span class="lineNum">     197 </span>                :            :                 }
+<span class="lineNum">     198 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if ( !(this-&gt;rest_size &lt; record_size) )</span>
+<span class="lineNum">     199 </span>                :            :                 {
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;File handle at offset: &quot; &lt;&lt; this-&gt;file_handler-&gt;tell());</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :                         this-&gt;cur_buffer_ptr = &amp;this-&gt;buffer[0];</span>
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :                         this-&gt;skip_padding();</span>
+<span class="lineNum">     203 </span>  [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if (this-&gt;end_of_file == true and this-&gt;rest_size == 0)</span>
+<span class="lineNum">     204 </span>                :            :                         {
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;File decoding complete&quot;);</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :                                 return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));</span>
+<span class="lineNum">     207 </span>                :            :                         }
+<span class="lineNum">     208 </span>                :            :                 }
+<span class="lineNum">     209 </span>                :            :                 else
+<span class="lineNum">     210 </span>                :            :                 {
+<span class="lineNum">     211 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if (this-&gt;end_of_file == true)</span>
+<span class="lineNum">     212 </span>                :            :                         {
+<span class="lineNum">     213 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                                 if ( this-&gt;rest_size == 0)</span>
+<span class="lineNum">     214 </span>                :            :                                 {
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;File decoding complete&quot;);</span>
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :                                         return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));</span>
+<span class="lineNum">     217 </span>                :            :                                 }
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO,&quot;TRUNCATING FILE&quot;);</span>
+<span class="lineNum">     219 </span>                :            :                                 //Truncate the file from the last read offset
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 :                                 int ret = this-&gt;file_handler-&gt;truncate(start_reading_offset);</span>
+<span class="lineNum">     221 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                                 if ( ret != -1 )</span>
+<span class="lineNum">     222 </span>                :            :                                 {
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;file_handler-&gt;seek(start_reading_offset);</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :                                         return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));</span>
+<span class="lineNum">     225 </span>                :            :                                 }
+<span class="lineNum">     226 </span>                :            :                                 else
+<span class="lineNum">     227 </span>                :            :                                 {
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :                                         DASSERT(ret != -1, &quot;Truncate failure&quot;);</span>
+<span class="lineNum">     229 </span>                :            :                                 }
+<span class="lineNum">     230 </span>                :            :                         }
+<span class="lineNum">     231 </span>                :            :                         else
+<span class="lineNum">     232 </span>                :            :                         {
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(FATAL, &quot;Journal File Corrupted. Recovery is not possible&quot;);</span>
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :                                 PASSERT(false, &quot;Journal File Corrupted. Recovery is not possible&quot;);</span>
+<span class="lineNum">     235 </span>                :            :                                 return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));
+<span class="lineNum">     236 </span>                :            :                         }
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            :                 }
+<span class="lineNum">     239 </span>                :            :        }
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         int64_t record_size = this-&gt;deserializor-&gt;get_record_size(this-&gt;cur_buffer_ptr);</span>
+<span class="lineNum">     241 </span>[<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>:<span class="lineNoCov">          0 :         if (this-&gt;rest_size &lt; serializor_manager::HEADER_SIZE || this-&gt;rest_size &lt; record_size and this-&gt;rest_size != 0)</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]
+<span class="lineNum">     242 </span>                :            :         {
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(FATAL, &quot;Remaining buffer size less than header size&quot;);</span>
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;Remaining buffer size less than header size&quot;);</span>
+<span class="lineNum">     245 </span>                :            :                 return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));
+<span class="lineNum">     246 </span>                :            :         }
+<span class="lineNum">     247 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (record_size == -1)</span>
+<span class="lineNum">     248 </span>                :            :         {
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Invalid record size (-1) while recovering from journal&quot;);</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :                 return std::make_pair(record, std::make_pair(this-&gt;file_offset,0));</span>
+<span class="lineNum">     251 </span>                :            :         }
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Record size is &quot; &lt;&lt; record_size);</span>
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :         record = this-&gt;deserializor-&gt;deserialize(this-&gt;cur_buffer_ptr, record_size);</span>
+<span class="lineNum">     254 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (record == NULL)</span>
+<span class="lineNum">     255 </span>                :            :         {
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :                 this-&gt;file_handler-&gt;truncate(this-&gt;last_checkpoint_offset.second);</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;Invalid record while recovering from journal&quot;);</span>
+<span class="lineNum">     258 </span>                :            :                 return std::make_pair(record, std::make_pair(this-&gt;file_offset,0));
+<span class="lineNum">     259 </span>                :            :         }
+<span class="lineNum">     260 </span>                :            : 
+<span class="lineNum">     261 </span>                :            :         //OSDLOG(INFO,&quot;REST SIZE IS 2: &quot; &lt;&lt; this-&gt;rest_size);
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         JournalOffset offset = this-&gt;file_offset;</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         this-&gt;rest_size -= record_size;</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :         this-&gt;cur_buffer_ptr += record_size;</span>
+<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_offset.second += record_size;</span>
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :         return std::make_pair(record, std::make_pair(offset, record_size));</span>
+<span class="lineNum">     267 </span>                :            : }
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :            : //std::pair&lt;recordStructure::Record *, JournalOffset&gt; JournalReadHandler::get_next_record()
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 : std::pair&lt;recordStructure::Record *, std::pair&lt;JournalOffset, int64_t&gt; &gt; JournalReadHandler::get_next_record()</span>
+<span class="lineNum">     271 </span>                :            : {
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :         this-&gt;skip_padding();</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         recordStructure::Record * record = NULL;</span>
+<span class="lineNum">     274 </span>[<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span>:<span class="lineNoCov">          0 :         if (this-&gt;rest_size &lt; serializor_manager::HEADER_SIZE</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span>]
+<span class="lineNum">     275 </span>                :            :                         || this-&gt;rest_size &lt; this-&gt;deserializor-&gt;get_record_size(this-&gt;cur_buffer_ptr))
+<span class="lineNum">     276 </span>                :            :         {
+<span class="lineNum">     277 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (this-&gt;end_of_file)</span>
+<span class="lineNum">     278 </span>                :            :                 {
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                         return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));</span>
+<span class="lineNum">     280 </span>                :            :                 }
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                 ::memcpy(&amp;this-&gt;buffer[0], &amp;this-&gt;buffer[MAX_READ_CHUNK_SIZE - rest_size], rest_size);</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :                 int64_t read_bytes = this-&gt;file_handler-&gt;read(&amp;this-&gt;buffer[0] + this-&gt;rest_size, MAX_READ_CHUNK_SIZE - this-&gt;rest_size);</span>
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;File handle at offset: &quot; &lt;&lt; this-&gt;file_handler-&gt;tell());</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :                 DASSERT(read_bytes != -1, &quot;read failure&quot;);</span>
+<span class="lineNum">     285 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (read_bytes != MAX_READ_CHUNK_SIZE - rest_size)</span>
+<span class="lineNum">     286 </span>                :            :                 {
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :                         this-&gt;end_of_file = true;</span>
+<span class="lineNum">     288 </span>                :            :                 }
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :                 this-&gt;buffer.resize(read_bytes + rest_size);</span>
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :                 this-&gt;cur_buffer_ptr = &amp;this-&gt;buffer[0];</span>
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :                 this-&gt;rest_size += read_bytes;</span>
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :                 this-&gt;skip_padding();</span>
+<span class="lineNum">     293 </span>  [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (this-&gt;end_of_file == true and this-&gt;rest_size == 0)</span>
+<span class="lineNum">     294 </span>                :            :                 {
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;File decoding complete&quot;);</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :                         return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));</span>
+<span class="lineNum">     297 </span>                :            :                 }
+<span class="lineNum">     298 </span>                :            :         }
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :         int64_t record_size = this-&gt;deserializor-&gt;get_record_size(this-&gt;cur_buffer_ptr);</span>
+<span class="lineNum">     300 </span>[<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>:<span class="lineNoCov">          0 :         if ((this-&gt;rest_size &lt; serializor_manager::HEADER_SIZE) || (this-&gt;rest_size &lt; record_size and this-&gt;rest_size != 0))</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]
+<span class="lineNum">     301 </span>                :            :         {
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(FATAL, &quot;Remaining buffer size less than header size&quot;);</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;Remaining buffer size less than header size&quot;);</span>
+<span class="lineNum">     304 </span>                :            :                 return std::make_pair(record, std::make_pair(this-&gt;file_offset, 0));
+<span class="lineNum">     305 </span>                :            :         }
+<span class="lineNum">     306 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (record_size == -1)</span>
+<span class="lineNum">     307 </span>                :            :         {
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Invalid record size (-1) while recovering from journal&quot;);</span>
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :                 return std::make_pair(record, std::make_pair(this-&gt;file_offset,0));</span>
+<span class="lineNum">     310 </span>                :            :         }
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :         record = this-&gt;deserializor-&gt;deserialize(this-&gt;cur_buffer_ptr, record_size);</span>
+<span class="lineNum">     312 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (record == NULL)</span>
+<span class="lineNum">     313 </span>                :            :         {
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :                 PASSERT(false, &quot;Invalid record while recovering from journal&quot;);</span>
+<span class="lineNum">     315 </span>                :            :                 return std::make_pair(record, std::make_pair(this-&gt;file_offset,0));
+<span class="lineNum">     316 </span>                :            :         }
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :         JournalOffset offset = this-&gt;file_offset;</span>
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :         this-&gt;rest_size -= record_size;</span>
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :         this-&gt;cur_buffer_ptr += record_size;</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_offset.second += record_size;</span>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :         return std::make_pair(record, std::make_pair(offset, record_size));</span>
+<span class="lineNum">     323 </span>                :            : }
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::recover_journal_till_eof()</span>
+<span class="lineNum">     326 </span>                :            : {
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Starting recovery till eof&quot;);</span>
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :         this-&gt;prepare_read_record();</span>
+<span class="lineNum">     329 </span>                :            :         //std::pair&lt;recordStructure::Record *, JournalOffset&gt; result;
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :         std::pair&lt;recordStructure::Record *, std::pair&lt;JournalOffset, int64_t&gt; &gt; result;</span>
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :         while (true)</span>
+<span class="lineNum">     332 </span>                :            :         {
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :                 result = this-&gt;get_next_journal_record();</span>
+<span class="lineNum">     334 </span>                :            : 
+<span class="lineNum">     335 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (result.first == NULL)</span>
+<span class="lineNum">     336 </span>                :            :                 {
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Record is null&quot;);</span>
+<span class="lineNum">     338 </span>                :            :                         break;
+<span class="lineNum">     339 </span>                :            :                 }
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :                 this-&gt;recover_objects(result.first, result.second);</span>
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :                 delete result.first;</span>
+<span class="lineNum">     342 </span>                :            :         }
+<span class="lineNum">     343 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (!this-&gt;check_if_latest_journal())</span>
+<span class="lineNum">     344 </span>                :            :         {
+<span class="lineNum">     345 </span>                :<span class="lineNoCov">          0 :                 this-&gt;recover_journal_till_eof();</span>
+<span class="lineNum">     346 </span>                :            :         }
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Recovery complete. Exiting&quot;);</span>
+<span class="lineNum">     348 </span>                :            : }
+<span class="lineNum">     349 </span>                :            : 
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 : void JournalReadHandler::recover_till_eof()</span>
+<span class="lineNum">     351 </span>                :            : {
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Starting recovery till eof&quot;);</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :         this-&gt;prepare_read_record();</span>
+<span class="lineNum">     354 </span>                :            :         //std::pair&lt;recordStructure::Record *, JournalOffset&gt; result;
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :         std::pair&lt;recordStructure::Record *, std::pair&lt;JournalOffset, int64_t&gt; &gt; result;</span>
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :         while (true)</span>
+<span class="lineNum">     357 </span>                :            :         {
+<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :                 result = this-&gt;get_next_record();</span>
+<span class="lineNum">     359 </span>                :            :                 
+<span class="lineNum">     360 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (result.first == NULL)</span>
+<span class="lineNum">     361 </span>                :            :                 {
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Record is null&quot;);</span>
+<span class="lineNum">     363 </span>                :            :                         break;
+<span class="lineNum">     364 </span>                :            :                 }
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :                 this-&gt;recover_objects(result.first, result.second);</span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :                 delete result.first;</span>
+<span class="lineNum">     367 </span>                :            :         }
+<span class="lineNum">     368 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (!this-&gt;check_if_latest_journal())</span>
+<span class="lineNum">     369 </span>                :            :         {
+<span class="lineNum">     370 </span>                :<span class="lineNoCov">          0 :                 this-&gt;recover_till_eof();    </span>
+<span class="lineNum">     371 </span>                :            :         }
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Recovery complete. Exiting&quot;);</span>
+<span class="lineNum">     373 </span>                :            : }
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 : bool JournalReadHandler::check_if_latest_journal()</span>
+<span class="lineNum">     376 </span>                :            : {
+<span class="lineNum">     377 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     378 </span>                :            : }
+<span class="lineNum">     379 </span>                :            : 
+<span class="lineNum">     380 </span>                :<span class="lineNoCov">          0 : uint64_t JournalReadHandler::get_node_id_from_unique_id(uint64_t unique_id)</span>
+<span class="lineNum">     381 </span>                :            : {
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :         uint64_t node_id = unique_id &gt;&gt; 56;</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :         return node_id;</span>
+<span class="lineNum">     384 </span>                :            : }
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :            : JournalWriteHandler::JournalWriteHandler(
+<span class="lineNum">     387 </span>                :            :         std::string path,
+<span class="lineNum">     388 </span>                :            :         cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr,
+<span class="lineNum">     389 </span>                :            :         uint8_t node_id
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">     391 </span>                :            :         active_file_id(0),
+<span class="lineNum">     392 </span>                :            :         serializor(new serializor_manager::Serializor()),
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :         path(path)</span>
+<span class="lineNum">     394 </span>                :            : {
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :         this-&gt;checkpoint_interval = parser_ptr-&gt;checkpoint_intervalValue();</span>
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :         this-&gt;next_checkpoint_offset = this-&gt;checkpoint_interval;</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :         this-&gt;max_file_length = parser_ptr-&gt;max_journal_sizeValue(); //tmp done asrivastava</span>
+<span class="lineNum">     398 </span>                :            : }
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 : uint64_t JournalWriteHandler::get_unique_file_id(uint64_t node_id, uint64_t file_id)</span>
+<span class="lineNum">     401 </span>                :            : {
+<span class="lineNum">     402 </span>                :            :         uint64_t unique_id;
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :         uint64_t tmp = MAX_ID_LIMIT &amp; file_id;</span>
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :         node_id = node_id &lt;&lt; 56;</span>
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :         unique_id = tmp | node_id;</span>
+<span class="lineNum">     406 </span>                :<span class="lineNoCov">          0 :         return unique_id;</span>
+<span class="lineNum">     407 </span>                :            : }
+<span class="lineNum">     408 </span>                :            : 
+<span class="lineNum">     409 </span>                :<span class="lineNoCov">          0 : JournalWriteHandler::~JournalWriteHandler()</span>
+<span class="lineNum">     410 </span>                :            : {
+<span class="lineNum">     411 </span>[<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span>:<span class="lineNoCov">          0 :         if(this-&gt;file_handler != NULL)</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 8 was never executed"> # </span>]
+<span class="lineNum">     412 </span>                :            :         {
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :                 this-&gt;file_handler-&gt;close();</span>
+<span class="lineNum">     414 </span>                :            :         }
+<span class="lineNum">     415 </span>                :<span class="lineNoCov">          0 :         delete serializor;</span>
+<span class="lineNum">     416 </span>                :            : }
+<span class="lineNum">     417 </span>                :            : 
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 : JournalOffset JournalWriteHandler::get_last_sync_offset()</span>
+<span class="lineNum">     419 </span>                :            : {
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :         return this-&gt;last_sync_offset;</span>
+<span class="lineNum">     421 </span>                :            : }
+<span class="lineNum">     422 </span>                :            : 
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 : void JournalWriteHandler::set_active_file_id(uint64_t file_id)</span>
+<span class="lineNum">     424 </span>                :            : {
+<span class="lineNum">     425 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Setting active file id &quot; &lt;&lt; file_id);</span>
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :         this-&gt;active_file_id = this-&gt;oldest_file_id = file_id;</span>
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Journal file : &quot; &lt;&lt; make_journal_path(this-&gt;path, this-&gt;active_file_id));</span>
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler.reset(new fileHandler::FileHandler(make_journal_path(this-&gt;path, this-&gt;active_file_id), fileHandler::OPEN_FOR_APPEND));</span>
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_commit_offset = std::make_pair(this-&gt;active_file_id, 0);</span>
+<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_sync_offset = std::make_pair(this-&gt;active_file_id, 0);</span>
+<span class="lineNum">     431 </span>                :            : }
+<span class="lineNum">     432 </span>                :            : 
+<span class="lineNum">     433 </span>                :<span class="lineNoCov">          0 : void JournalWriteHandler::set_upgrade_active_file_id()</span>
+<span class="lineNum">     434 </span>                :            : {
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Journal file : &quot; &lt;&lt; this-&gt;path + &quot;/&quot; + JOURNAL_FILE_NAME + &quot;.tmp&quot; + boost::lexical_cast&lt;std::string&gt;(this-&gt;active_file_id));</span>
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler.reset(new fileHandler::FileHandler(this-&gt;path + &quot;/&quot; + JOURNAL_FILE_NAME + &quot;.tmp&quot;, fileHandler::OPEN_FOR_APPEND));</span>
+<span class="lineNum">     437 </span>                :            : }
+<span class="lineNum">     438 </span>                :            : 
+<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 : void JournalWriteHandler::rename_file()</span>
+<span class="lineNum">     440 </span>                :            : {
+<span class="lineNum">     441 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG,&quot;Journal file : &quot; &lt;&lt; this-&gt;path + &quot;/&quot; + JOURNAL_FILE_NAME + &quot;.tmp&quot; + boost::lexical_cast&lt;std::string&gt;(this-&gt;active_file_id));</span>
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :         boost::filesystem::rename(make_journal_path(this-&gt;path, this-&gt;active_file_id), this-&gt;path + &quot;/&quot; + JOURNAL_FILE_NAME + &quot;.tmp&quot;);        </span>
+<span class="lineNum">     443 </span>                :            : }
+<span class="lineNum">     444 </span>                :            : 
+<span class="lineNum">     445 </span>                :            : 
+<span class="lineNum">     446 </span>                :<span class="lineNoCov">          0 : JournalOffset JournalWriteHandler::get_current_journal_offset()</span>
+<span class="lineNum">     447 </span>                :            : {
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :         return std::make_pair(this-&gt;active_file_id, this-&gt;file_handler-&gt;tell());</span>
+<span class="lineNum">     449 </span>                :            : }
+<span class="lineNum">     450 </span>                :            : 
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 : bool JournalWriteHandler::write(recordStructure::Record * record)</span>
+<span class="lineNum">     452 </span>                :            : {
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :         boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (this-&gt;active_file_id == 0)</span>
+<span class="lineNum">     457 </span>                :            :         {
+<span class="lineNum">     458 </span>                :            :                 // called without recovery, only for test
+<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :                 this-&gt;set_active_file_id(1);</span>
+<span class="lineNum">     460 </span>                :            :         }
+<span class="lineNum">     461 </span>                :            : 
+<span class="lineNum">     462 </span>                :            :         //int64_t current_offset = this-&gt;file_handler-&gt;tell();
+<span class="lineNum">     463 </span>                :<span class="lineNoCov">          0 :         int64_t current_offset = this-&gt;file_handler-&gt;seek_end();</span>
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :         int64_t record_size = this-&gt;serializor-&gt;get_serialized_size(record);</span>
+<span class="lineNum">     465 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Writing in Journal File at offset: &quot; &lt;&lt; current_offset &lt;&lt; &quot; record size: &quot; &lt;&lt; record_size);</span>
+<span class="lineNum">     466 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (current_offset == 0)</span>
+<span class="lineNum">     467 </span>                :            :         {
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :                 this-&gt;process_snapshot();</span>
+<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :                 this-&gt;remove_old_files();</span>
+<span class="lineNum">     470 </span>                :            :         }
+<span class="lineNum">     471 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if(((this-&gt;max_file_length - current_offset) &lt; record_size))</span>
+<span class="lineNum">     472 </span>                :            :         {
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :                 this-&gt;add_padding_bytes((this-&gt;max_file_length - current_offset));</span>
+<span class="lineNum">     474 </span>                :<span class="lineNoCov">          0 :                 this-&gt;file_handler-&gt;close();</span>
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :                 this-&gt;rotate_file(); // open new file</span>
+<span class="lineNum">     476 </span>                :            : 
+<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :                 this-&gt;process_snapshot();</span>
+<span class="lineNum">     478 </span>                :<span class="lineNoCov">          0 :                 this-&gt;remove_old_files();</span>
+<span class="lineNum">     479 </span>                :            :         }
+<span class="lineNum">     480 </span>  [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if((((this-&gt;next_checkpoint_offset - current_offset) &lt;=  record_size) and current_offset &gt; 0))</span>
+<span class="lineNum">     481 </span>                :            :         {
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Adding checkpoint at offset: &quot; &lt;&lt; this-&gt;next_checkpoint_offset);</span>
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :                 this-&gt;add_padding_bytes((this-&gt;next_checkpoint_offset - current_offset));</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :                 this-&gt;process_checkpoint();</span>
+<span class="lineNum">     485 </span>                :<span class="lineNoCov">          0 :                 this-&gt;next_checkpoint_offset += this-&gt;checkpoint_interval;</span>
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Next checkpoint will be at offset: &quot; &lt;&lt; this-&gt;next_checkpoint_offset);</span>
+<span class="lineNum">     487 </span>                :            :         }
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :         this-&gt;process_write(record, record_size);</span>
+<span class="lineNum">     489 </span>                :            : 
+<span class="lineNum">     490 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     491 </span>                :            : }
+<span class="lineNum">     492 </span>                :            : 
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 : void JournalWriteHandler::rotate_file()</span>
+<span class="lineNum">     494 </span>                :            : {
+<span class="lineNum">     495 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Rotating Journal file &quot; &lt;&lt; this-&gt;active_file_id);</span>
+<span class="lineNum">     496 </span>                :<span class="lineNoCov">          0 :         this-&gt;active_file_id ++;</span>
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler-&gt;open(make_journal_path(this-&gt;path, this-&gt;active_file_id), fileHandler::OPEN_FOR_APPEND);</span>
+<span class="lineNum">     498 </span>                :            : }
+<span class="lineNum">     499 </span>                :            : 
+<span class="lineNum">     500 </span>                :<span class="lineNoCov">          0 : void JournalWriteHandler::add_padding_bytes(int64_t padding_bytes)</span>
+<span class="lineNum">     501 </span>                :            : {
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 :         this-&gt;file_handler-&gt;insert_padding(padding_bytes);</span>
+<span class="lineNum">     503 </span>                :            : }
+<span class="lineNum">     504 </span>                :            : 
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 : bool JournalWriteHandler::sync()</span>
+<span class="lineNum">     506 </span>                :            : {
+<span class="lineNum">     507 </span>                :            :         // TODO handle errors
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_sync_offset = this-&gt;get_current_journal_offset();</span>
+<span class="lineNum">     509 </span>                :<span class="lineNoCov">          0 :         return this-&gt;file_handler-&gt;sync();</span>
+<span class="lineNum">     510 </span>                :            : }
+<span class="lineNum">     511 </span>                :            : 
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 : std::string const make_journal_path(std::string const path, uint64_t const file_id)</span>
+<span class="lineNum">     513 </span>                :            : {
+<span class="lineNum">     514 </span>                :<span class="lineNoCov">          0 :         return path + &quot;/&quot; + JOURNAL_FILE_NAME + &quot;.&quot; + boost::lexical_cast&lt;std::string&gt;(file_id);</span>
+<span class="lineNum">     515 </span>                :            : }
+<span class="lineNum">     516 </span>                :            : 
+<span class="lineNum">     517 </span>                :<span class="lineNoCov">          0 : void JournalWriteHandler::close_journal()</span>
+<span class="lineNum">     518 </span>                :            : {
+<span class="lineNum">     519 </span>                :<span class="lineNoCov">          0 :         if(this-&gt;file_handler) {</span>
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :                 this-&gt;file_handler-&gt;close();</span>
+<span class="lineNum">     521 </span>                :            :         }
+<span class="lineNum">     522 </span>                :            : }
+<span class="lineNum">     523 </span>                :            : 
+<span class="lineNum">     524 </span>                :            : } // namespace journal_manager
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

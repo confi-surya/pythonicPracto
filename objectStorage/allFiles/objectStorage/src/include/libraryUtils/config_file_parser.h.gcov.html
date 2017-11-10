@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/include/libraryUtils/config_file_parser.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/include/libraryUtils</a> - config_file_parser.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">33.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef __CONFIG_FILE_PARSER__
+<span class="lineNum">       2 </span>                :            : #define __CONFIG_FILE_PARSER__
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &quot;cool/cool.h&quot;
+<span class="lineNum">       5 </span>                :            : #include &quot;cool/config/configuration.h&quot;
+<span class="lineNum">       6 </span>                :            : #include &quot;cool/config/configParamTypes.h&quot;
+<span class="lineNum">       7 </span>                :            : #include &quot;cool/config/configurationBuilder.h&quot;
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : namespace config_file
+<span class="lineNum">      10 </span>                :            : {
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :<span class="lineCov">        396 : CREATE_CONFIGURATION_CLASS(</span>
+<span class="lineNum">      13 </span>                :            :         AccountConfigFileParser,
+<span class="lineNum">      14 </span>                :            :         (async_thread_count, uint32_t, 100, &quot;Async Thread Count at Account Library Level&quot;)
+<span class="lineNum">      15 </span>                :            : )
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 : CREATE_CONFIGURATION_CLASS(</span>
+<span class="lineNum">      18 </span>                :            :         ConfigFileParser,
+<span class="lineNum">      19 </span>                :            :         (file_writer_threads_count, uint32_t, 3, &quot;no of threads &quot;),
+<span class="lineNum">      20 </span>                :            :         (transaction_journal_path, std::string, &quot;&quot;, &quot;path for transaction journal&quot;),
+<span class="lineNum">      21 </span>                :            :         (container_journal_path, std::string, &quot;&quot;, &quot;path for container journal&quot;),
+<span class="lineNum">      22 </span>                :            :         (timeout, uint32_t, 30, &quot;timeout&quot;),
+<span class="lineNum">      23 </span>                :            :         (checkpoint_interval, size_t, 5242880, &quot;check point interval value&quot;),
+<span class="lineNum">      24 </span>                :            :         (max_journal_size, size_t, 10485760, &quot;max file size&quot;),
+<span class="lineNum">      25 </span>                :            :         (updater_journal_path, std::string, &quot;&quot;, &quot;updater journal path&quot;),
+<span class="lineNum">      26 </span>                :            :         (max_updater_list_size, uint32_t, 10, &quot;Maximum length of updated containers list&quot;),
+<span class="lineNum">      27 </span>                :            :         (memory_entry_count, uint32_t, 1000, &quot;Number of entries in Memory&quot;),
+<span class="lineNum">      28 </span>                :            :         (updater_timeout, int32_t, 3600, &quot;Seconds after which new updater journal will be created&quot;),
+<span class="lineNum">      29 </span>                :            :         (async_thread_count, uint32_t, 100, &quot;Async Thread Count at Container Library Level&quot;),
+<span class="lineNum">      30 </span>                :            :         (port, uint32_t, 61011, &quot;port for sending active id list&quot;)
+<span class="lineNum">      31 </span>                :            : )
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :<span class="lineCov">        186 : CREATE_CONFIGURATION_CLASS(</span>
+<span class="lineNum">      34 </span>                :            :         LogConfig,
+<span class="lineNum">      35 </span>                :            :         (log_dir, std::string, &quot;/var/log/HYDRAstor/AN/objectStorage&quot;, &quot;folder for log directory&quot;),
+<span class="lineNum">      36 </span>                :            :         (container_library_log_file, std::string, &quot;containerLibrary.log&quot;, &quot;folder for log directory&quot;),
+<span class="lineNum">      37 </span>                :            :         (account_library_log_file, std::string, &quot;accountLibrary.log&quot;, &quot;folder for log directory&quot;),
+<span class="lineNum">      38 </span>                :            :         (object_library_log_file, std::string, &quot;objectLibrary.log&quot;, &quot;folder for log directory&quot;),
+<span class="lineNum">      39 </span>                :            :         (osm_log_file, std::string, &quot;osdMonitoringService.log&quot;, &quot;log file name for osm&quot;),
+<span class="lineNum">      40 </span>                :            :         (proxy_monitoring_log_file, std::string, &quot;proxy-server_hml.log&quot;, &quot;proxy monitoring log file&quot;),
+<span class="lineNum">      41 </span>                :            :         (account_updater_monitoring_log_file, std::string, &quot;accountUpdater_hml.log&quot;, &quot;account updater monitoring log file&quot;),
+<span class="lineNum">      42 </span>                :            :         (log_config_file, std::string, &quot;/opt/HYDRAstor/objectStorage/configFiles/OSDLogConfig.ini&quot;, &quot;ini file for logging&quot;),
+<span class="lineNum">      43 </span>                :            :         (object_storage_root_path, std::string, &quot;/opt/HYDRAstor/objectStorage&quot;, &quot;folder for root path&quot;),
+<span class="lineNum">      44 </span>                :            :         (containerchildserver_library_log_file, std::string, &quot;containerChild_hml.log&quot;, &quot;folder for log directory&quot;)
+<span class="lineNum">      45 </span>                :            : )
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 : CREATE_CONFIGURATION_CLASS(</span>
+<span class="lineNum">      48 </span>                :            :         OsdServiceConfigFileParser,
+<span class="lineNum">      49 </span>                :            :         (container_strm_timeout, uint64_t, 120, &quot;Local leader will receive the strm packet from container service&quot;),
+<span class="lineNum">      50 </span>                :            :         (account_strm_timeout, uint64_t, 120, &quot;Local leader will receive the strm packet from account service&quot;),
+<span class="lineNum">      51 </span>                :            :         (proxy_strm_timeout, uint64_t, 120, &quot;Local leader will receive the strm packet from proxy service&quot;),
+<span class="lineNum">      52 </span>                :            :         (object_strm_timeout, uint64_t, 120, &quot;Local leader will receive the strm packet from object service&quot;),
+<span class="lineNum">      53 </span>                :            :         (accountUpdater_strm_timeout, uint64_t, 120, &quot;Local leader will receive the strm packet from accountUpdater service&quot;),
+<span class="lineNum">      54 </span>                :            :         (containerChild_strm_timeout, uint64_t, 120, &quot;Local leader will receive the strm packet from accountUpdater service&quot;),
+<span class="lineNum">      55 </span>                :            :         (heartbeat_timeout, uint64_t, 30, &quot;Local leader will receive the heartbeat every this timeout&quot; ),
+<span class="lineNum">      56 </span>                :            :         (retry_count, uint16_t, 3, &quot;Recovery process will try to start the osd service until count reach to retry_count&quot;),
+<span class="lineNum">      57 </span>                :            :         (service_start_time_gap,  uint16_t, 300, &quot;Gap between each start of osd service&quot;),
+<span class="lineNum">      58 </span>                :            :         (ll_strm_timeout, uint32_t, 60, &quot;Global Leader should rcv STRM from LL before failure count multiplied by ll_strm_timeout&quot;),
+<span class="lineNum">      59 </span>                :            :         (hrbt_failure_count, uint16_t, 2, &quot;&quot;),
+<span class="lineNum">      60 </span>                :            :         (fs_create_timeout, uint64_t, 120, &quot;Timeout for fs create operation&quot;),
+<span class="lineNum">      61 </span>                :            :         (fs_mount_timeout, uint64_t, 120, &quot;Timeout for fs mount operation&quot;),
+<span class="lineNum">      62 </span>                :            :         (node_add_ack_timeout_for_gl, uint32_t, 900, &quot;Timeout for node add ack from LL&quot;),
+<span class="lineNum">      63 </span>                :            :         (ll_hrbt_failure_count, uint16_t, 8, &quot;Heartbeat count miss after which GL will mark LL as failed&quot;),
+<span class="lineNum">      64 </span>                :            :         (ll_strm_failure_count, uint16_t, 3, &quot;STRM count miss after which GL will mark LL as failed&quot;)
+<span class="lineNum">      65 </span>                :            : )
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 : CREATE_CONFIGURATION_CLASS(</span>
+<span class="lineNum">      68 </span>                :            :         OSMConfigFileParser,
+<span class="lineNum">      69 </span>                :            :         (osm_port, uint16_t, 61014, &quot;OSM listing port&quot;),
+<span class="lineNum">      70 </span>                :            :         (osm_info_file_path, std::string, &quot;/export/.osd_meta_config/&quot;, &quot;OSM Info File location&quot;),
+<span class="lineNum">      71 </span>                :            :         (config_filesystem, std::string, &quot;.osd_meta_config&quot;, &quot;meta filesystem name&quot;),
+<span class="lineNum">      72 </span>                :            :         (election_count, uint16_t, 3, &quot;count for election start When gl unable to toch the gfs file&quot;),
+<span class="lineNum">      73 </span>                :            :         (thread_wait_timeout, uint16_t, 30, &quot;timeout for thread&quot; ),
+<span class="lineNum">      74 </span>                :            :         (export_path, std::string, &quot;/export&quot;, &quot;export path&quot; ),
+<span class="lineNum">      75 </span>                :            :         (journal_path, std::string, &quot;/export/.global_leader_journal&quot;, &quot;GL journal dir path&quot;),
+<span class="lineNum">      76 </span>                :            :         (mount_command, std::string, &quot;/opt/HYDRAstor/hfs/bin/release_prod_sym/mount.hydrafs &quot;, &quot;Command used for mount filesystem&quot;),
+<span class="lineNum">      77 </span>                :            :         (mkfs_command, std::string, &quot;/opt/HYDRAstor/hfs/bin/release_prod_sym/mkfs.hydrafs&quot;, &quot;Command used for creating filesystem&quot;),
+<span class="lineNum">      78 </span>                :            :         (fsexist_command, std::string, &quot;/opt/HYDRAstor/hfs/bin/release_prod_sym/fsexists.hydrafs&quot;, &quot;Command used for creating filesystem&quot;),
+<span class="lineNum">      79 </span>                :            :         (UMOUNT_HYDRAFS, std::string, &quot;/opt/HYDRAstor/hfs/bin/release_prod_sym/umount.hydrafs &quot;, &quot;Command for unmount filesystem&quot;),
+<span class="lineNum">      80 </span>                :            :         (HFS_BUSY_TIMEOUT, uint32_t, 900, &quot;Timeout for hfs&quot;),
+<span class="lineNum">      81 </span>                :            :         (gns_accessibility_interval, uint32_t, 30, &quot;Gns Accessibility Interval&quot;),
+<span class="lineNum">      82 </span>                :            :         (hfs_avaialble_check_interval, uint32_t, 300, &quot;Hfs available check interval after remount the gfs&quot;),
+<span class="lineNum">      83 </span>                :            :         (node_addition_response_interval , uint16_t , 300, &quot;Local leader will send the ack to gl within this interval after all osd service start&quot;),
+<span class="lineNum">      84 </span>                :            :         (account_server_name, std::string, &quot;account&quot;, &quot;account server name&quot; ),
+<span class="lineNum">      85 </span>                :            :         (container_server_name, std::string, &quot;container&quot;, &quot;container server name&quot; ),
+<span class="lineNum">      86 </span>                :            :         (object_server_name, std::string, &quot;object&quot;, &quot;object server name&quot; ),
+<span class="lineNum">      87 </span>                :            :         (proxy_server_name, std::string, &quot;proxy&quot;, &quot;proxy server name&quot; ),
+<span class="lineNum">      88 </span>                :            :         (account_updater_server_name, std::string, &quot;account-updater&quot;, &quot;account-updater server name&quot; ),
+<span class="lineNum">      89 </span>                :            :         (containerChild_name, std::string, &quot;containerChild&quot;, &quot;containerChild server name&quot; ),
+<span class="lineNum">      90 </span>                :            :         (node_info_file_path, std::string, &quot;/export/.osd_meta_config/&quot;, &quot;directory path of node info file&quot;),
+<span class="lineNum">      91 </span>                :            :         (checkpoint_interval, int64_t, 3000, &quot;check point interval value&quot;),
+<span class="lineNum">      92 </span>                :            :         (max_journal_size, int64_t, 12040, &quot;max file size&quot;),
+<span class="lineNum">      93 </span>                :            :         (strm_count, uint16_t, 1, &quot;Ll retry the send to strm packet to gl until count reach this strm_count&quot;),
+<span class="lineNum">      94 </span>                :            :         (remount_interval, uint16_t, 600, &quot;Retry interval for remount the filesystem&quot;),
+<span class="lineNum">      95 </span>                :            :         (unix_domain_port, std::string, &quot;/var/opt/HYDRAstor/objectStorage/osm_socket&quot;, &quot;Unix socket on which OSM service will listen for local requests&quot;),
+<span class="lineNum">      96 </span>                :            :         (stop_service, bool, true, &quot;bool to raise assert or not when HML cannot communicate with local leader&quot;),
+<span class="lineNum">      97 </span>                :            :         (strm_ack_timeout_hml, uint16_t, 30, &quot;time after which HML retires STRM message to LL&quot;),
+<span class="lineNum">      98 </span>                :            :         (hbrt_ack_timeout_hml, uint16_t, 30, &quot;time after which HML retires HBRT message to LL&quot;),
+<span class="lineNum">      99 </span>                :            :         (tcp_port, int32_t, 61014, &quot;TCP port on which OSM will listen for requests from services on other nodes&quot;),
+<span class="lineNum">     100 </span>                :            :         (listener_thread_count, int, 10, &quot;Maximum no of threads for handling requests coming at OSM service&quot;),
+<span class="lineNum">     101 </span>                :            :         (gfs_write_interval, int, 30, &quot;Time after which GL will touch file on GFS&quot;),
+<span class="lineNum">     102 </span>                :            :         (gfs_write_failure_count, int, 3, &quot;Count of GFS write failure after which GL will assume its failed&quot;),
+<span class="lineNum">     103 </span>                :            :         (service_stop_interval, uint32_t, 300, &quot;Local leader will kill osd service if service is not stop within this interval&quot;),
+<span class="lineNum">     104 </span>                :            :         (container_recovery_script_location, std::string, &quot;/opt/HYDRAstor/objectStorage/osd/containerService/container_recovery.py&quot;, &quot;Script location of container server recovery process&quot;),
+<span class="lineNum">     105 </span>                :            :         (account_recovery_script_location, std::string, &quot;/opt/HYDRAstor/objectStorage/osd/accountService/account_server_recovery.py&quot;, &quot;Script location of account server recovery process&quot;),
+<span class="lineNum">     106 </span>                :            :         (updater_recovery_script_location, std::string, &quot;/opt/HYDRAstor/objectStorage/osd/accountUpdaterService/account_updater_recovery.py&quot;, &quot;Script location of updater server recovery process&quot;),
+<span class="lineNum">     107 </span>                :            :         (object_recovery_script_location, std::string, &quot;/opt/HYDRAstor/objectStorage/osd/objectService/object_recovery.py&quot;, &quot;Script location of object server recovery process&quot;),
+<span class="lineNum">     108 </span>                :            :         (recovery_script_wrapper, std::string, &quot;/opt/HYDRAstor/objectStorage/osd/common/recovery_script_executor.sh&quot;, &quot;&quot;),
+<span class="lineNum">     109 </span>                :            :         (select_timeout, int, 300, &quot;Timeout for select call for osd service monitoring&quot;),
+<span class="lineNum">     110 </span>                :            :         (hrbt_select_timeout, int, 60, &quot;Timeout for select call for Osm service monitoring&quot;),
+<span class="lineNum">     111 </span>                :            :         (system_stop_file, std::string, &quot;/export/.osd_meta_config/osm_stop&quot;, &quot;system stop file&quot;),
+<span class="lineNum">     112 </span>                :            :         (te_file_wait_timeout, uint16_t , 10, &quot;timeout when election file not exists&quot;),
+<span class="lineNum">     113 </span>                :            :         (t_el_timeout, uint16_t, 60, &quot;time window to write records in file&quot;),
+<span class="lineNum">     114 </span>                :            :         (t_notify_timeout, uint16_t, 60, &quot;timeout to take gl ownership&quot;),
+<span class="lineNum">     115 </span>                :            :         (new_GL_response_timeout, uint16_t, 200, &quot;timeout in which new GL must respond back to co-ordinator&quot;),
+<span class="lineNum">     116 </span>                :            :         (ll_strm_retry_timeout, uint16_t, 30, &quot;time after which LL retries sending STRM to GL&quot;),
+<span class="lineNum">     117 </span>                :            :         (total_components, uint16_t, 512, &quot;total number of components per service&quot;),
+<span class="lineNum">     118 </span>                :            :         (node_status_query_interval, int, 120, &quot;time interval after which LL, which is in failed state, sends node status to GL&quot;),
+<span class="lineNum">     119 </span>                :            :         (t_el_timeout_delta, uint16_t , 90, &quot;t_el_timeout plus delta&quot;),
+<span class="lineNum">     120 </span>                :            :         (node_status_time_interval, int , 20 , &quot;time interval when LL doesn't got node status on startup&quot;),
+<span class="lineNum">     121 </span>                :            :         (hrbt_ack_failure_count, uint16_t, 5, &quot;heartbeat ack failure count when gns stat is writability&quot;)
+<span class="lineNum">     122 </span>                :            : )
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 : CREATE_CONFIGURATION_CLASS(</span>
+<span class="lineNum">     125 </span>                :            :         StatsConfigParser,
+<span class="lineNum">     126 </span>                :            :         (product_version, std::string, &quot;V1&quot;,&quot;Product Version Tag&quot;),
+<span class="lineNum">     127 </span>                :            :         (contLib_base_stats_dir, std::string, &quot;./cont_lib&quot;, &quot;Base directory where the stats files of Container Library will be dumped.(Must be empty)&quot;),
+<span class="lineNum">     128 </span>                :            :         (transLib_base_stats_dir, std::string, &quot;./trans_lib&quot;, &quot;Base directory where the stats files of Transaction Library will be dumped.(Must be empty)&quot;),
+<span class="lineNum">     129 </span>                :            :         (gl_base_stats_dir, std::string, &quot;./global_leader&quot;, &quot;Base directory where the stats files of Global Leader will be dumped.(Must be empty)&quot;),
+<span class="lineNum">     130 </span>                :            :         (ll_base_stats_dir, std::string, &quot;./local_leader&quot;, &quot;Base directory where the stats files of Global Leader will be dumped.(Must be empty)&quot;),
+<span class="lineNum">     131 </span>                :            :         (cont_serv_stats_dir, std::string, &quot;./container_service&quot;, &quot;Base directory where the stats files of Container Service will be dumped&quot;),
+<span class="lineNum">     132 </span>                :            :         (proxy_serv_stats_dir, std::string, &quot;./proxy_service&quot;, &quot;Base directory where the stats files of Proxy Service will be dumped&quot;),
+<span class="lineNum">     133 </span>                :            :         (obj_serv_stats_dir, std::string, &quot;./object_service&quot;, &quot;Base directory where the stats files of Proxy Service will be dumped&quot;),
+<span class="lineNum">     134 </span>                :            :         (acc_serv_stats_dir, std::string, &quot;./account_service&quot;, &quot;Base directory where the stats files of Proxy Service will be dumped&quot;),
+<span class="lineNum">     135 </span>                :            :         (acc_lib_stats_dir, std::string, &quot;./acc_lib&quot;, &quot;Base directory where the stats files of Proxy Service will be dumped&quot;),
+<span class="lineNum">     136 </span>                :            :         (stat_collect_interval, uint64_t, 500, &quot;Stats collection time interval&quot;),
+<span class="lineNum">     137 </span>                :            :         (journal_memory_limit, uint64_t, 10485760, &quot;Journal File Size limit&quot;),
+<span class="lineNum">     138 </span>                :            :         (journal_compress_limit, uint64_t, 10485760, &quot;Journal Compress limit&quot;)
+<span class="lineNum">     139 </span>                :            :         )
+<span class="lineNum">     140 </span>                :            : } // namespace config_file
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

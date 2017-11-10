@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/common/libraryUtils/info_file_sorter.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/libraryUtils</a> - info_file_sorter.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">48</td>
+            <td class="headerCovTableEntry">82</td>
+            <td class="headerCovTableEntryLo">58.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       2 </span>                :            : #include &quot;libraryUtils/osd_logger_iniliazer.h&quot;
+<span class="lineNum">       3 </span>                :            : #include &quot;cool/debug.h&quot;
+<span class="lineNum">       4 </span>                :            : #include &quot;libraryUtils/info_file_sorter.h&quot;
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : namespace infoFileSorter
+<span class="lineNum">       7 </span>                :            : {
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : InfoFileSorter::InfoFileSorter(std::vector&lt;InfoFileIterator *&gt; iterators,
+<span class="lineNum">      10 </span>                :<span class="lineCov">         26 :                 std::string marker, std::string end_marker, bool prefix)</span>
+<span class="lineNum">      11 </span>                :<span class="lineCov">         26 :         : iterators(iterators), end_marker(end_marker)</span>
+<span class="lineNum">      12 </span>                :            : {
+<span class="lineNum">      13 </span>                :<span class="lineCov">         26 :         std::vector&lt;InfoFileIterator *&gt;::const_iterator iter = this-&gt;iterators.begin();</span>
+<span class="lineNum">      14 </span>  [<span class="branchCov" title="Branch 1 was taken 52 times"> + </span><span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineCov">         78 :         for (uint32_t i = 0; i &lt; this-&gt;iterators.size(); i ++)</span>
+<span class="lineNum">      15 </span>                :            :         {
+<span class="lineNum">      16 </span>                :<span class="lineCov">         52 :                 InfoFileRecord const * record = this-&gt;iterators[i]-&gt;next();</span>
+<span class="lineNum">      17 </span>  [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchCov" title="Branch 2 was taken 40 times"> + </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineCov">         52 :                 if (!marker.empty())</span>
+<span class="lineNum">      18 </span>                :            :                 {
+<span class="lineNum">      19 </span>                :            :                         //if(record) OSDLOG(INFO, &quot;record name next 1 &quot;&lt;&lt;record-&gt;get_name());
+<span class="lineNum">      20 </span>[<span class="branchCov" title="Branch 0 was taken 14 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 8 was taken 4 times"> + </span>:<span class="lineCov">         32 :                         while((record &amp;&amp; prefix &amp;&amp; ::strncmp(marker.c_str(), record-&gt;get_name(), marker.length()) != 0)</span>
+<span class="lineNum">         </span><span class="branchCov" title="Branch 9 was taken 8 times"> + </span><span class="branchCov" title="Branch 10 was taken 6 times"> + </span><span class="branchCov" title="Branch 11 was taken 6 times"> + </span><span class="branchCov" title="Branch 12 was taken 2 times"> + </span><span class="branchCov" title="Branch 13 was taken 4 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span><span class="branchCov" title="Branch 19 was taken 2 times"> + </span><span class="branchCov" title="Branch 20 was taken 8 times"> + </span><span class="branchCov" title="Branch 21 was taken 12 times"> + </span><span class="branchNoExec" title="Block containing branch 22 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 23 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 24 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 25 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 30 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 31 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 32 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 33 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 34 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 35 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 40 was never executed"> # </span> 
+<span class="lineNum">         </span>      <span class="branchNoExec" title="Block containing branch 41 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 42 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 43 was never executed"> # </span>]
+<span class="lineNum">      21 </span>                :            :                                 || (record &amp;&amp; !prefix &amp;&amp; (::strncmp(marker.c_str(), record-&gt;get_name(), marker.length()) &gt; 0)))
+<span class="lineNum">      22 </span>                :            :                         //              || (record &amp;&amp; !prefix &amp;&amp; ::strncmp(marker.c_str(), record-&gt;get_name(), marker.length()) &lt; 0))
+<span class="lineNum">      23 </span>                :            :                         {
+<span class="lineNum">      24 </span>                :<span class="lineCov">          8 :                                 record = this-&gt;iterators[i]-&gt;next();</span>
+<span class="lineNum">      25 </span>                :            :                                 //if(record) OSDLOG(INFO, &quot;record name next 1 &quot;&lt;&lt;record-&gt;get_name()&lt;&lt;&quot; come &quot;&lt;&lt;prefix &lt;&lt;&quot; oun &quot;&lt;&lt;
+<span class="lineNum">      26 </span>                :            :                                         //::strncmp(marker.c_str(), record-&gt;get_name(), marker.length()));
+<span class="lineNum">      27 </span>                :            :                         }  
+<span class="lineNum">      28 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 8 was taken 2 times"> + </span>:<span class="lineCov">         12 :                         if(!prefix &amp;&amp; record &amp;&amp; ::strncmp(marker.c_str(), record-&gt;get_name(), marker.length()) == 0 </span>
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span><span class="branchCov" title="Branch 13 was taken 1 time"> + </span><span class="branchCov" title="Branch 14 was taken 1 time"> + </span><span class="branchCov" title="Branch 15 was taken 1 time"> + </span><span class="branchCov" title="Branch 16 was taken 11 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 17 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 18 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 19 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 20 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 25 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 26 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 30 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 31 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 32 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 33 was never executed"> # </span>]
+<span class="lineNum">      29 </span>                :            :                                         &amp;&amp; ::strlen(record-&gt;get_name()) == marker.length())
+<span class="lineNum">      30 </span>                :            :                         {
+<span class="lineNum">      31 </span>                :<span class="lineCov">          1 :                                 record = this-&gt;iterators[i]-&gt;next();</span>
+<span class="lineNum">      32 </span>                :            :                                 //if(record) OSDLOG(INFO, &quot;record name next back 1 &quot;&lt;&lt;record-&gt;get_name());
+<span class="lineNum">      33 </span>                :            :                         }
+<span class="lineNum">      34 </span>                :            :                 }
+<span class="lineNum">      35 </span>                :<span class="lineCov">         52 :                 this-&gt;records.push_back(record);</span>
+<span class="lineNum">      36 </span>                :            :         }
+<span class="lineNum">      37 </span>                :<span class="lineCov">         26 :         ::memset(this-&gt;target_name, 0, sizeof(this-&gt;target_name));</span>
+<span class="lineNum">      38 </span>                :            :         /*  if(!marker.empty())
+<span class="lineNum">      39 </span>                :            :         {
+<span class="lineNum">      40 </span>                :            :                 for (uint32_t i = 0; i &lt; this-&gt;iterators.size(); i ++)
+<span class="lineNum">      41 </span>                :            :                 {
+<span class="lineNum">      42 </span>                :            :                         if (this-&gt;records[i] &amp;&amp; (::strnlen(this-&gt;target_name, 256) == 0 ||
+<span class="lineNum">      43 </span>                :            :                                         ::strncmp(this-&gt;target_name, this-&gt;records[i]-&gt;get_name(), 256) &gt;= 0))
+<span class="lineNum">      44 </span>                :            :                         {
+<span class="lineNum">      45 </span>                :            :                                 ::strncpy(this-&gt;target_name, this-&gt;records[i]-&gt;get_name(), 256);
+<span class="lineNum">      46 </span>                :            :                                 DASSERT(::strnlen(this-&gt;target_name, 256), &quot;must have name&quot;);
+<span class="lineNum">      47 </span>                :            :                         }
+<span class="lineNum">      48 </span>                :            :                 }
+<span class="lineNum">      49 </span>                :            :         }*/
+<span class="lineNum">      50 </span>                :            : }
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineCov">        306 : InfoFileRecord const * InfoFileSorter::next()</span>
+<span class="lineNum">      53 </span>                :            : {
+<span class="lineNum">      54 </span>                :            :         //OSDLOG(INFO, &quot;target name &quot;&lt;&lt;this-&gt;target_name);
+<span class="lineNum">      55 </span>        [<span class="branchCov" title="Branch 1 was taken 280 times"> + </span><span class="branchCov" title="Branch 2 was taken 26 times"> + </span>]:<span class="lineCov">        306 :         if (::strnlen(this-&gt;target_name, 256))</span>
+<span class="lineNum">      56 </span>                :            :         {
+<span class="lineNum">      57 </span>        [<span class="branchCov" title="Branch 1 was taken 560 times"> + </span><span class="branchCov" title="Branch 2 was taken 280 times"> + </span>]:<span class="lineCov">        840 :                 for (uint32_t i = 0; i &lt; this-&gt;iterators.size(); i ++)</span>
+<span class="lineNum">      58 </span>                :            :                 {
+<span class="lineNum">      59 </span>[<span class="branchCov" title="Branch 1 was taken 280 times"> + </span><span class="branchCov" title="Branch 2 was taken 280 times"> + </span><span class="branchCov" title="Branch 6 was taken 280 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span><span class="branchCov" title="Branch 8 was taken 280 times"> + </span>:<span class="lineCov">        560 :                         if (this-&gt;records[i] &amp;&amp; ::strncmp(this-&gt;target_name, this-&gt;records[i]-&gt;get_name(), 256) == 0)</span>
+<span class="lineNum">         </span>            <span class="branchCov" title="Branch 9 was taken 280 times"> + </span>]
+<span class="lineNum">      60 </span>                :            :                         {
+<span class="lineNum">      61 </span>                :            :                                 //OSDLOG(INFO, &quot;record name next 1 &quot;&lt;&lt;records[i]-&gt;get_name());
+<span class="lineNum">      62 </span>                :<span class="lineCov">        280 :                                 this-&gt;records[i] = this-&gt;iterators[i]-&gt;next();</span>
+<span class="lineNum">      63 </span>                :            :                                 //if(records[i]) OSDLOG(INFO, &quot;record name next 2 &quot;&lt;&lt;records[i]-&gt;get_name());
+<span class="lineNum">      64 </span>                :            :                         }
+<span class="lineNum">      65 </span>                :            :                 }
+<span class="lineNum">      66 </span>                :            :         }
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineCov">        306 :         InfoFileRecord const * record = NULL;</span>
+<span class="lineNum">      69 </span>                :<span class="lineCov">        306 :         ::memset(this-&gt;target_name, 0, sizeof(this-&gt;target_name));</span>
+<span class="lineNum">      70 </span>        [<span class="branchCov" title="Branch 1 was taken 612 times"> + </span><span class="branchCov" title="Branch 2 was taken 306 times"> + </span>]:<span class="lineCov">        918 :         for (uint32_t i = 0; i &lt; this-&gt;iterators.size(); i ++)</span>
+<span class="lineNum">      71 </span>                :            :         {
+<span class="lineNum">      72 </span>[<span class="branchCov" title="Branch 1 was taken 287 times"> + </span><span class="branchCov" title="Branch 2 was taken 325 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 287 times"> + </span><span class="branchNoExec" title="Block containing branch 9 was never executed"> # </span>:<span class="lineCov">        612 :                 if (this-&gt;records[i] &amp;&amp; (::strnlen(this-&gt;target_name, 256) == 0 ||</span>
+<span class="lineNum">         </span>      <span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchCov" title="Branch 11 was taken 287 times"> + </span><span class="branchCov" title="Branch 12 was taken 325 times"> + </span>]
+<span class="lineNum">      73 </span>                :            :                                 ::strncmp(this-&gt;target_name, this-&gt;records[i]-&gt;get_name(), 256) &gt;= 0))
+<span class="lineNum">      74 </span>                :            :                 {
+<span class="lineNum">      75 </span>                :<span class="lineCov">        287 :                         ::strncpy(this-&gt;target_name, this-&gt;records[i]-&gt;get_name(), 256);</span>
+<span class="lineNum">      76 </span>                :<span class="lineCov">        287 :                         DASSERT(::strnlen(this-&gt;target_name, 256), &quot;must have name&quot;);</span>
+<span class="lineNum">      77 </span>                :<span class="lineCov">        287 :                         record = this-&gt;records[i];</span>
+<span class="lineNum">      78 </span>                :            :                         //if(records[i]) OSDLOG(INFO, &quot;record name next in 2 loog 1 &quot;&lt;&lt;records[i]-&gt;get_name());
+<span class="lineNum">      79 </span>                :            :                 }
+<span class="lineNum">      80 </span>                :            :         }
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>[<span class="branchCov" title="Branch 1 was taken 47 times"> + </span><span class="branchCov" title="Branch 2 was taken 259 times"> + </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchCov" title="Branch 6 was taken 45 times"> + </span><span class="branchCov" title="Branch 7 was taken 2 times"> + </span>:<span class="lineCov">        306 :         if (!this-&gt;end_marker.empty() &amp;&amp; ::strncmp(this-&gt;end_marker.c_str(), this-&gt;target_name, 256) &lt;= 0)</span>
+<span class="lineNum">         </span>            <span class="branchCov" title="Branch 8 was taken 304 times"> + </span>]
+<span class="lineNum">      83 </span>                :            :         {
+<span class="lineNum">      84 </span>                :<span class="lineCov">          2 :                 return NULL;</span>
+<span class="lineNum">      85 </span>                :            :         }
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            :         //if(record) OSDLOG(INFO, &quot;returning record; &quot;&lt;&lt;record-&gt;get_name());
+<span class="lineNum">      88 </span>                :<span class="lineCov">        304 :         return record;</span>
+<span class="lineNum">      89 </span>                :            : }
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

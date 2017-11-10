@@ -1,0 +1,440 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/common/osm/globalLeader/unitTest/monitoringTest.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/globalLeader/unitTest</a> - monitoringTest.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">186</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #define GTEST_USE_OWN_TR1_TUPLE 0
+<span class="lineNum">       2 </span>                :            : #include &quot;gmock/gmock.h&quot;
+<span class="lineNum">       3 </span>                :            : #include &quot;gtest/gtest.h&quot;
+<span class="lineNum">       4 </span>                :            : 
+<span class="lineNum">       5 </span>                :            : #include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">       6 </span>                :            : #include &lt;boost/filesystem.hpp&gt;
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : #include &quot;osm/globalLeader/monitoring.h&quot;
+<span class="lineNum">       9 </span>                :            : #include &quot;osm/osmServer/osm_info_file.h&quot;
+<span class="lineNum">      10 </span>                :            : #include &quot;communication/message_binding.pb.h&quot;
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : namespace MonitoringTest
+<span class="lineNum">      13 </span>                :            : {
+<span class="lineNum">      14 </span>                :<span class="lineNoCov">          0 : cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt; const get_config_parser()</span>
+<span class="lineNum">      15 </span>                :            : {
+<span class="lineNum">      16 </span>                :<span class="lineNoCov">          0 :         cool::config::ConfigurationBuilder&lt;config_file::OSMConfigFileParser&gt; config_file_builder;</span>
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 :         char const * const osd_config = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">      18 </span>                :<span class="lineNoCov">          0 :         if (osd_config)</span>
+<span class="lineNum">      19 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(std::string(osd_config).append(&quot;/osm.conf&quot;));</span>
+<span class="lineNum">      20 </span>                :            :         else
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(&quot;/opt/HYDRAstor/objectStorage/configFiles/product/libConfig/osm.conf&quot;);</span>
+<span class="lineNum">      22 </span>                :<span class="lineNoCov">          0 :         return config_file_builder.buildConfiguration();</span>
+<span class="lineNum">      23 </span>                :            : }
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 : cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt; parser_ptr = get_config_parser();</span>
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 : char const * const osd_config = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 : std::string path = parser_ptr-&gt;osm_info_file_pathValue();</span>
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_HealthMonitoringRecord_Test)</span>
+<span class="lineNum">      31 </span>                :            : {
+<span class="lineNum">      32 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Monitoring Tests------&quot;);</span>
+<span class="lineNum">      33 </span>                :            :         time_t timer;
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :         time(&amp;timer);</span>
+<span class="lineNum">      35 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::HealthMonitoringRecord&gt; hmrecord(new gl_monitoring::HealthMonitoringRecord(gl_monitoring::STRM, timer, gl_monitoring::NEW, 30, 0, OSDException::OSDHfsStatus::NOT_READABILITY, 1));</span>
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(gl_monitoring::STRM, hmrecord-&gt;get_expected_msg_type());</span>
+<span class="lineNum">      37 </span>                :<span class="lineNoCov">          0 :         hmrecord-&gt;set_expected_msg_type(gl_monitoring::HRBT);</span>
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(gl_monitoring::HRBT, hmrecord-&gt;get_expected_msg_type());</span>
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(timer, hmrecord-&gt;get_last_updated_time());</span>
+<span class="lineNum">      41 </span>                :            :         time_t timer1;
+<span class="lineNum">      42 </span>                :<span class="lineNoCov">          0 :         time(&amp;timer1);</span>
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 :         hmrecord-&gt;set_last_updated_time(timer1);</span>
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(timer1, hmrecord-&gt;get_last_updated_time());</span>
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(gl_monitoring::NEW, hmrecord-&gt;get_status());</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :         hmrecord-&gt;set_status(network_messages::RECOVERED);</span>
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(network_messages::RECOVERED, hmrecord-&gt;get_status());</span>
+<span class="lineNum">      49 </span>                :            : 
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(0, hmrecord-&gt;get_timeout());</span>
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; whandler1( new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(whandler1-&gt;init());</span>
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(0, hmrecord-&gt;get_failure_count());</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :         hmrecord-&gt;increment_failure_count();</span>
+<span class="lineNum">      56 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(1, hmrecord-&gt;get_failure_count());</span>
+<span class="lineNum">      57 </span>                :            :         
+<span class="lineNum">      58 </span>                :            : }
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_add_entry_in_map_Test)</span>
+<span class="lineNum">      61 </span>                :            : {
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 :         std::string node_id = &quot;HN0101_60123&quot;;</span>
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(node_id);</span>
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :<span class="lineNoCov">          0 :         ASSERT_FALSE(monitoring-&gt;if_node_already_exists(node_id));</span>
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;add_entry_in_map(msg));</span>
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;if_node_already_exists(node_id));</span>
+<span class="lineNum">      74 </span>                :<span class="lineNoCov">          0 :         ASSERT_FALSE(monitoring-&gt;if_node_already_exists(&quot;HN0111_60123&quot;));</span>
+<span class="lineNum">      75 </span>                :            : }
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_add_entry_in_map_while_recovery_Test)</span>
+<span class="lineNum">      78 </span>                :            : {
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">      80 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED));</span>
+<span class="lineNum">      83 </span>                :            : }
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_remove_node_from_monitoring_Test)</span>
+<span class="lineNum">      86 </span>                :            : {
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;add_entries_while_recovery(&quot;HN0101_60123&quot;, gl_monitoring::HRBT, network_messages::RETIRED));</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED));</span>
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :         ASSERT_FALSE(monitoring-&gt;remove_node_from_monitoring(&quot;HN0101_60123&quot;));</span>
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;remove_node_from_monitoring(&quot;HN0102_60123&quot;));</span>
+<span class="lineNum">      95 </span>                :            : }
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_get_node_status_Test)</span>
+<span class="lineNum">      98 </span>                :            : {
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED);</span>
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(network_messages::FAILED, monitoring-&gt;get_node_status(&quot;HN0102_60123&quot;));</span>
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(network_messages::INVALID_NODE, monitoring-&gt;get_node_status(&quot;HN0112_60123&quot;));</span>
+<span class="lineNum">     105 </span>                :            : }
+<span class="lineNum">     106 </span>                :            : 
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_retrieve_node_status_Test)</span>
+<span class="lineNum">     108 </span>                :            : {
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED);</span>
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(network_messages::FAILED, monitoring-&gt;get_node_status(&quot;HN0102_60123&quot;));</span>
+<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(network_messages::INVALID_NODE, monitoring-&gt;get_node_status(&quot;HN0112_60123&quot;));</span>
+<span class="lineNum">     115 </span>                :            :         
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; node (new ServiceObject());</span>
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :         node-&gt;set_service_id(&quot;HN0102_60123_container-server&quot;);</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :         node-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :         node-&gt;set_port(60123);</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::NodeStatus&gt; node_status(new comm_messages::NodeStatus(node));</span>
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm1 (new Communication::SynchronousCommunication(&quot;192.168.101.1&quot;, 60123));</span>
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;retrieve_node_status(node_status, sync_comm1);</span>
+<span class="lineNum">     124 </span>                :            : }
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_update_time_in_map_Test)</span>
+<span class="lineNum">     127 </span>                :            : {
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg(new ServiceObject()); //make sure node id is HN0101_60123</span>
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     133 </span>                :            :         
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entry_in_map(msg); //Remember the Node Id and Time</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED);</span>
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;update_time_in_map(&quot;HN0101_60123&quot;, OSDException::OSDHfsStatus::NOT_READABILITY)); //Make sure this is not in failed state</span>
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :         ASSERT_FALSE(monitoring-&gt;update_time_in_map(&quot;HN0102_60123&quot;, OSDException::OSDHfsStatus::NOT_READABILITY)); //Make sure this is in failed state</span>
+<span class="lineNum">     141 </span>                :            : }
+<span class="lineNum">     142 </span>                :            : 
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_monitor_for_recovery_Test)</span>
+<span class="lineNum">     144 </span>                :            : {
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0107_60123&quot;);</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::MonitoringImpl&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entry_in_map(msg);</span>
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :            : //-------------
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;recordStructure::NodeInfoFileRecord&gt; nifrecord1(new recordStructure::NodeInfoFileRecord(&quot;HN0107_60123&quot;, &quot;192.168.101.1&quot;, 60123, 61006, 61007, 61008, 61009, 61005, network_messages::REGISTERED));</span>
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :         std::list&lt;boost::shared_ptr&lt;recordStructure::Record&gt; &gt; record_list;</span>
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :         record_list.push_back(nifrecord1);</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         node_info_file_writer-&gt;add_record(record_list);</span>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            : //----------------
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :         sleep(8);</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :         boost::thread bthread(boost::bind(&amp;gl_monitoring::MonitoringImpl::monitor_for_recovery, monitoring));</span>
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         sleep(8);</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :         bthread.interrupt();</span>
+<span class="lineNum">     166 </span>                :            :         //TODO: populate prepare_and_add_entry
+<span class="lineNum">     167 </span>                :            :         //ASSERT_FALSE(monitoring-&gt;update_time_in_map(&quot;HN0107_60123&quot;));
+<span class="lineNum">     168 </span>                :            :         //node_info_file_writer-&gt;delete_record(&quot;HN0107_60123&quot;);
+<span class="lineNum">     169 </span>                :            : }
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_update_map_Test)</span>
+<span class="lineNum">     172 </span>                :            : {
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);</span>
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     177 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entry_in_map(msg);</span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED);</span>
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; strm_msg1 (new comm_messages::LocalLeaderStartMonitoring(&quot;HN0101_60123&quot;));</span>
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm1 (new Communication::SynchronousCommunication(&quot;192.168.101.1&quot;, 60123));</span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;update_map(strm_msg1)); </span>
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; strm_msg2 (new comm_messages::LocalLeaderStartMonitoring(&quot;HN0102_60123&quot;));</span>
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :         ASSERT_FALSE(monitoring-&gt;update_map(strm_msg2));</span>
+<span class="lineNum">     187 </span>                :            : }
+<span class="lineNum">     188 </span>                :            : 
+<span class="lineNum">     189 </span>                :            : /*TEST(MonitoringTest, Monitoring_add_bucket_Test) //Declared but not Defined
+<span class="lineNum">     190 </span>                :            : {
+<span class="lineNum">     191 </span>                :            :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr (new Bucket());
+<span class="lineNum">     192 </span>                :            :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer;
+<span class="lineNum">     193 </span>                :            :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::Monitoring(node_info_file_writer));
+<span class="lineNum">     194 </span>                :            :         monitoring-&gt;add_bucket(bucket_ptr);
+<span class="lineNum">     195 </span>                :            : }*/
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_get_nodes_status_Test)</span>
+<span class="lineNum">     198 </span>                :            : {
+<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     203 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entry_in_map(msg);</span>
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entries_while_recovery(&quot;HN0102_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED);</span>
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; nodes_registered;</span>
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; nodes_failed;</span>
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; nodes_retired;</span>
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt; nodes_recovered;</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;get_nodes_status(nodes_registered, nodes_failed, nodes_retired, nodes_recovered);</span>
+<span class="lineNum">     213 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(1, int (nodes_registered.size()));</span>
+<span class="lineNum">     214 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(1, int (nodes_failed.size()));</span>
+<span class="lineNum">     215 </span>                :            :         
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(0, int (nodes_retired.size()));</span>
+<span class="lineNum">     217 </span>                :            : 
+<span class="lineNum">     218 </span>                :            : }
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, Monitoring_change_status_in_monitoring_component_Test)</span>
+<span class="lineNum">     221 </span>                :            : {
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :         boost::filesystem::remove(boost::filesystem::path(&quot;/remote/hydra042/gmishra/journal_dir/node_info_file.info&quot;));</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :         monitoring-&gt;add_entry_in_map(msg);</span>
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :            : //-------------
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;recordStructure::NodeInfoFileRecord&gt; nifrecord1(new recordStructure::NodeInfoFileRecord(&quot;HN0101_60123&quot;, &quot;192.168.101.1&quot;, 60123, 61006, 61007, 61008, 61009, 61005, network_messages::REGISTERED));</span>
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :         std::list&lt;boost::shared_ptr&lt;recordStructure::Record&gt; &gt; record_list;</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :         record_list.push_back(nifrecord1);</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :         node_info_file_writer-&gt;add_record(record_list);</span>
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            : //----------------
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoring-&gt;change_status_in_monitoring_component(&quot;HN0101_60123&quot;, network_messages::FAILED));</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :         ASSERT_FALSE(monitoring-&gt;change_status_in_monitoring_component(&quot;HN0109_60123&quot;, network_messages::FAILED));</span>
+<span class="lineNum">     242 </span>                :            : }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringTest, get_node_status_Test)</span>
+<span class="lineNum">     245 </span>                :            : {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::NodeStatus&gt; node_status_req (new comm_messages::NodeStatus(msg));</span>
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm1 (new Communication::SynchronousCommunication(&quot;192.168.101.1&quot;, 60123));</span>
+<span class="lineNum">     254 </span>                :            :         
+<span class="lineNum">     255 </span>                :            : }
+<span class="lineNum">     256 </span>                :            : 
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringThreadTest, MonitoringThread_add_bucket_Test)</span>
+<span class="lineNum">     258 </span>                :            : {
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr (new Bucket());</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     262 </span>                :            :         
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::MonitoringThread&gt; monitoringthread (new gl_monitoring::MonitoringThread(monitoring, bucket_ptr));</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoringthread-&gt;add_bucket(bucket_ptr));</span>
+<span class="lineNum">     265 </span>                :            : }
+<span class="lineNum">     266 </span>                :            : 
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringThreadTest, MonitoringThread_add_node_for_monitoring_Test)</span>
+<span class="lineNum">     268 </span>                :            : {
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);</span>
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :         msg-&gt;set_port(60123);</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr (new Bucket());</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     276 </span>                :            :         
+<span class="lineNum">     277 </span>                :            :         //boost::shared_ptr&lt;gl_monitoring::MonitoringThread&gt; monitoringthread (new gl_monitoring::MonitoringThread(monitoring, bucket_ptr));
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::MonitoringThreadManager&gt; monitoringthreadmanager (new gl_monitoring::MonitoringThreadManager(monitoring));</span>
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :         ASSERT_TRUE(monitoringthreadmanager-&gt;add_node_for_monitoring(msg));</span>
+<span class="lineNum">     281 </span>                :            :         
+<span class="lineNum">     282 </span>                :            :         
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :            : }
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringThreadTest, MonitoringThread_receive_heartbeat_Test)</span>
+<span class="lineNum">     287 </span>                :            : {
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr (new Bucket());</span>
+<span class="lineNum">     289 </span>                :            :         //boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; strm_msg1 (new comm_messages::LocalLeaderStartMonitoring(&quot;HN0101_60123&quot;, 60123, &quot;192.168.101.1&quot;));
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm1(new Communication::SynchronousCommunication(&quot;192.168.101.1&quot;, 60123));</span>
+<span class="lineNum">     291 </span>                :<span class="lineNoCov">          0 :         bucket_ptr-&gt;add_fd(1, sync_comm1);</span>
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));</span>
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;gl_monitoring::MonitoringThread&gt; monitoringthread (new gl_monitoring::MonitoringThread(monitoring, bucket_ptr));</span>
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::HeartBeat&gt; hbrt = monitoringthread-&gt;receive_heartbeat(1);</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(&quot;HEARTBEAT&quot;, hbrt-&gt;get_msg());</span>
+<span class="lineNum">     297 </span>                :            :         //monitoringthread-&gt;close_all_sockets();
+<span class="lineNum">     298 </span>                :            : }
+<span class="lineNum">     299 </span>                :            : 
+<span class="lineNum">     300 </span>                :            : /*TEST(MonitoringThreadTest, MonitoringThread_send_heartbeat_ack_Test)
+<span class="lineNum">     301 </span>                :            : {
+<span class="lineNum">     302 </span>                :            :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr (new Bucket());
+<span class="lineNum">     303 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm1(new Communication::SynchronousCommunication(&quot;192.168.101.1&quot;, 60123));
+<span class="lineNum">     304 </span>                :            :         bucket_ptr-&gt;add_fd(1, sync_comm1);
+<span class="lineNum">     305 </span>                :            :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));
+<span class="lineNum">     306 </span>                :            :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));
+<span class="lineNum">     307 </span>                :            :         boost::shared_ptr&lt;gl_monitoring::MonitoringThread&gt; monitoringthread (new gl_monitoring::MonitoringThread(monitoring, bucket_ptr));
+<span class="lineNum">     308 </span>                :            :         monitoringthread-&gt;send_heartbeat_ack(1, 1);
+<span class="lineNum">     309 </span>                :            : }*/
+<span class="lineNum">     310 </span>                :            : 
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 : TEST(MonitoringThreadManagerTest, MonitoringThreadManager_monitor_service_Test)</span>
+<span class="lineNum">     312 </span>                :            : {
+<span class="lineNum">     313 </span>                :            :          //TODO: Aborted Terminated by an unhandled exception: mutex: Invalid argument 
+<span class="lineNum">     314 </span>                :            :         /*
+<span class="lineNum">     315 </span>                :            :         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; strm_msg1 (new comm_messages::LocalLeaderStartMonitoring(&quot;HN0101_60123&quot;));
+<span class="lineNum">     316 </span>                :            :         
+<span class="lineNum">     317 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm(new Communication::SynchronousCommunication(&quot;192.168.101.1&quot;, 60123));
+<span class="lineNum">     318 </span>                :            :         
+<span class="lineNum">     319 </span>                :            :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer (new osm_info_file_manager::NodeInfoFileWriteHandler(path));
+<span class="lineNum">     320 </span>                :            :         boost::shared_ptr&lt;gl_monitoring::Monitoring&gt; monitoring (new gl_monitoring::MonitoringImpl(node_info_file_writer));
+<span class="lineNum">     321 </span>                :            :         
+<span class="lineNum">     322 </span>                :            :         boost::shared_ptr&lt;gl_monitoring::MonitoringThreadManager&gt; monitoringthreadmanager (new gl_monitoring::MonitoringThreadManager(monitoring));
+<span class="lineNum">     323 </span>                :            :         OSDLOG(DEBUG, &quot;Updating Monitoring Map for STRM&quot;);
+<span class="lineNum">     324 </span>                :            :         ASSERT_FALSE(monitoring-&gt;update_map(strm_msg1)); 
+<span class="lineNum">     325 </span>                :            :         
+<span class="lineNum">     326 </span>                :            :         boost::shared_ptr&lt;ServiceObject&gt; msg (new ServiceObject());
+<span class="lineNum">     327 </span>                :            :         msg-&gt;set_service_id(&quot;HN0101_60123&quot;);
+<span class="lineNum">     328 </span>                :            :         msg-&gt;set_ip(&quot;192.168.101.1&quot;);
+<span class="lineNum">     329 </span>                :            :         msg-&gt;set_port(60123);
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>                :            :         ASSERT_TRUE(monitoring-&gt;add_entry_in_map(msg));
+<span class="lineNum">     332 </span>                :            :         ASSERT_TRUE(monitoring-&gt;update_map(strm_msg1)); 
+<span class="lineNum">     333 </span>                :            :         
+<span class="lineNum">     334 </span>                :            :         //ASSERT_TRUE(monitoring-&gt;add_entries_while_recovery(&quot;HN0101_60123&quot;, gl_monitoring::HRBT, network_messages::FAILED));
+<span class="lineNum">     335 </span>                :            :         monitoringthreadmanager-&gt;monitor_service(strm_msg1, comm);
+<span class="lineNum">     336 </span>                :            :         monitoringthreadmanager-&gt;stop_all_mon_threads();
+<span class="lineNum">     337 </span>                :            :         */
+<span class="lineNum">     338 </span>                :            :         
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :         std::string command = &quot;whoami&quot;;</span>
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :         FILE *proc = popen(command.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">     341 </span>                :            :         char buf[1024];
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :         while ( !feof(proc) &amp;&amp; fgets(buf,sizeof(buf),proc) )</span>
+<span class="lineNum">     343 </span>                :            :         {
+<span class="lineNum">     344 </span>                :            :                 //std::cout &lt;&lt; buf &lt;&lt; std::endl;
+<span class="lineNum">     345 </span>                :            :         }
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :         std::string username(buf);</span>
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :         username.erase(std::remove(username.begin(), username.end(), '\n'), username.end());</span>
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :         boost::filesystem::remove(boost::filesystem::path(&quot;/export/home/&quot; + username + &quot;/node_info_file.info&quot;));</span>
+<span class="lineNum">     349 </span>                :            : 
+<span class="lineNum">     350 </span>                :            : }
+<span class="lineNum">     351 </span>                :            : 
+<span class="lineNum">     352 </span>                :            : } //namespace InfoFileHelperWriterTest
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

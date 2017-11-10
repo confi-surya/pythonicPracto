@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/include/communication/http_handler.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/include/communication</a> - http_handler.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef __HTTP_HANDLER_H__
+<span class="lineNum">       2 </span>                :            : #define __HTTP_HANDLER_H_
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;map&gt;
+<span class="lineNum">       6 </span>                :            : #include &quot;communication/communication.h&quot;
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : namespace HttpSupport{
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :<span class="lineNoCov">          0 : const std::string send_http_method = &quot;PUT&quot;;</span>
+<span class="lineNum">      12 </span>                :<span class="lineNoCov">          0 : const std::string http_delimitter = &quot;\r\n&quot;;</span>
+<span class="lineNum">      13 </span>                :<span class="lineNoCov">          0 : const std::string http_header_seperator = &quot;: &quot;;</span>
+<span class="lineNum">      14 </span>                :<span class="lineNoCov">          0 : const std::string http_protocol = &quot;HTTP/1.1&quot;;</span>
+<span class="lineNum">      15 </span>                :<span class="lineNoCov">          0 : const std::string host_header = &quot;Host&quot;;</span>
+<span class="lineNum">      16 </span>                :<span class="lineNoCov">          0 : const std::string body_length_header = &quot;Content-Length&quot;;</span>
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 : const std::string continue_header = &quot;Expect&quot;;</span>
+<span class="lineNum">      18 </span>                :<span class="lineNoCov">          0 : const std::string continue_header_value = &quot;100-continue&quot;;</span>
+<span class="lineNum">      19 </span>                :<span class="lineNoCov">          0 : const std::string http_dummy_path = &quot;/v1/AUTH_D/ac/a&quot;;</span>
+<span class="lineNum">      20 </span>                :<span class="lineNoCov">          0 : const std::string http_end_marker = &quot;\r\n\r\n&quot;;</span>
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 : const std::string http_response_ack_string = &quot;HTTP/1.1 100 Continue\r\n\r\n&quot;;</span>
+<span class="lineNum">      22 </span>                :<span class="lineNoCov">          0 : const std::string accept_header = &quot;Accept: */*&quot;;</span>
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : class HttpMessage
+<span class="lineNum">      25 </span>                :            : {
+<span class="lineNum">      26 </span>                :            :         public:
+<span class="lineNum">      27 </span>                :            :                 HttpMessage();
+<span class="lineNum">      28 </span>                :            :                 ~HttpMessage();
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            :                 void attach_generic_headers(
+<span class="lineNum">      31 </span>                :            :                         const uint32_t &amp;,
+<span class="lineNum">      32 </span>                :            :                         std::map&lt;std::string, std::string&gt; &amp;,
+<span class="lineNum">      33 </span>                :            :                         std::string &amp;,
+<span class="lineNum">      34 </span>                :            :                         const std::string &amp;,
+<span class="lineNum">      35 </span>                :            :                         const uint32_t
+<span class="lineNum">      36 </span>                :            :                 );
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            :         private:
+<span class="lineNum">      39 </span>                :            :                 void prepare_header_string(std::string &amp;, std::map&lt;std::string, std::string&gt; &amp;);
+<span class="lineNum">      40 </span>                :            : };
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            : }
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

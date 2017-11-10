@@ -1,0 +1,734 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/communication/message_format_handler.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/communication</a> - message_format_handler.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">316</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       2 </span>                :            : //#include &lt;cmath&gt;
+<span class="lineNum">       3 </span>                :            : //#include &lt;netinet/in.h&gt;
+<span class="lineNum">       4 </span>                :            : #include &quot;libraryUtils/md5.h&quot;
+<span class="lineNum">       5 </span>                :            : #include &quot;communication/message_type_enum.pb.h&quot;
+<span class="lineNum">       6 </span>                :            : #include &quot;communication/message_format_handler.h&quot;
+<span class="lineNum">       7 </span>                :            : #include &quot;communication/http_handler.h&quot;
+<span class="lineNum">       8 </span>                :            : #include &lt;boost/lexical_cast.hpp&gt;
+<span class="lineNum">       9 </span>                :            : #include &lt;boost/bind.hpp&gt;
+<span class="lineNum">      10 </span>                :            : #include &lt;boost/regex.hpp&gt;
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : namespace ProtocolStructure
+<span class="lineNum">      13 </span>                :            : {
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : MessageFormatHandler::MessageFormatHandler(
+<span class="lineNum">      16 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 :         is_timeout(false)</span>
+<span class="lineNum">      18 </span>                :            : {
+<span class="lineNum">      19 </span>                :            : }
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 : void MessageFormatHandler::set_timeout(boost::shared_ptr&lt;Communication::Communication&gt; sock, uint32_t const timeout)</span>
+<span class="lineNum">      22 </span>                :            : {
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :<span class="lineNoCov">          0 :         this-&gt;timer.reset(new boost::asio::deadline_timer(*(sock-&gt;get_io_service()), boost::posix_time::seconds(timeout)));</span>
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 :         if (timeout &gt; 0){</span>
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(DEBUG, &quot;Timeout is : &quot; &lt;&lt; timeout);</span>
+<span class="lineNum">      27 </span>                :            :                 this-&gt;timer-&gt;async_wait(boost::bind(
+<span class="lineNum">      28 </span>                :            :                                 &amp;ProtocolStructure::MessageFormatHandler::set_timeout_flag,
+<span class="lineNum">      29 </span>                :            :                                 this,
+<span class="lineNum">      30 </span>                :            :                                 sock,
+<span class="lineNum">      31 </span>                :            :                                 boost::asio::placeholders::error
+<span class="lineNum">      32 </span>                :            :                         )
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">      34 </span>                :            :         }
+<span class="lineNum">      35 </span>                :            :         else{
+<span class="lineNum">      36 </span>                :            :                 this-&gt;timer-&gt;async_wait(boost::bind(
+<span class="lineNum">      37 </span>                :            :                                 &amp;ProtocolStructure::MessageFormatHandler::do_nothing,
+<span class="lineNum">      38 </span>                :            :                                 this, boost::asio::placeholders::error
+<span class="lineNum">      39 </span>                :            :                         )
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">      41 </span>                :            :         }
+<span class="lineNum">      42 </span>                :            :         
+<span class="lineNum">      43 </span>                :            : }
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 : boost::shared_ptr&lt;MessageResultWrap&gt; MessageFormatHandler::get_msg(){</span>
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :         return this-&gt;result;</span>
+<span class="lineNum">      47 </span>                :            : }
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : void MessageFormatHandler::set_timeout_flag(
+<span class="lineNum">      50 </span>                :            :         boost::shared_ptr&lt;Communication::Communication&gt; sock,
+<span class="lineNum">      51 </span>                :            :         const boost::system::error_code&amp; ec
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">      53 </span>                :            : {
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :         if (ec.value() == 0){</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Timeout handler is invoked&quot;);</span>
+<span class="lineNum">      56 </span>                :<span class="lineNoCov">          0 :                 this-&gt;is_timeout = true;</span>
+<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 :                 sock-&gt;stop_operations();</span>
+<span class="lineNum">      58 </span>                :            :         }
+<span class="lineNum">      59 </span>                :            : }
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 : void MessageFormatHandler::do_nothing(const boost::system::error_code&amp; ec)</span>
+<span class="lineNum">      62 </span>                :            : {
+<span class="lineNum">      63 </span>                :            : }
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            : void MessageFormatHandler::read_payload(
+<span class="lineNum">      66 </span>                :            :         char * payload,
+<span class="lineNum">      67 </span>                :            :         uint32_t size,
+<span class="lineNum">      68 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">      69 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">      70 </span>                :            :         const boost::system::error_code &amp;er,
+<span class="lineNum">      71 </span>                :            :         uint64_t bytes
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">      73 </span>                :            : {
+<span class="lineNum">      74 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_error_code(Communication::TIMEOUT_OCCURED);</span>
+<span class="lineNum">      76 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_error_message(&quot;timeout occured while reading payload&quot;);</span>
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :                 delete [] payload;</span>
+<span class="lineNum">      78 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Timeout occured while reading payload&quot;);</span>
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">      80 </span>                :            :         }
+<span class="lineNum">      81 </span>                :<span class="lineNoCov">          0 :         else if (er.value() == 2 || er.value() == 9){</span>
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">      84 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; er.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; er.message());</span>
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :                 delete [] payload;</span>
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">      87 </span>                :            :         }
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :         else if (er.value() &gt; 0){</span>
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_error_code(Communication::FAILED_TO_READ_PAYLOAD);</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_error_message(&quot;error while reading payload&quot;);</span>
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :                 delete [] payload;</span>
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error while reading payload : &quot; &lt;&lt; er.message());</span>
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">      95 </span>                :            :         }
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :         else if (bytes != size){</span>
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_error_code(Communication::FAILED_TO_READ_PAYLOAD);</span>
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_error_message(&quot;incomplete packet recieved while reading payload&quot;);</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :                 delete [] payload;</span>
+<span class="lineNum">     101 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Incomplete payload recieved&quot;);</span>
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     103 </span>                :            :         }
+<span class="lineNum">     104 </span>                :            :         else{
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_payload(payload, bytes);</span>
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :                 success_handler(this-&gt;result);</span>
+<span class="lineNum">     108 </span>                :            :         }
+<span class="lineNum">     109 </span>                :            : }
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :            : void MessageFormatHandler::verify_headers_handler(
+<span class="lineNum">     112 </span>                :            :         char * message_header,
+<span class="lineNum">     113 </span>                :            :         boost::shared_ptr&lt;Communication::Communication&gt; sock,
+<span class="lineNum">     114 </span>                :            : //      boost::shared_ptr&lt;comm_messages::Message&gt; msg,
+<span class="lineNum">     115 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     116 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     117 </span>                :            :         const boost::system::error_code &amp;ec,
+<span class="lineNum">     118 </span>                :            :         uint64_t bytes
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     120 </span>                :            : {
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured while reading headers&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :                 delete [] message_header;</span>
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Timeout occured while reading protocol headers&quot;);</span>
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     126 </span>                :            :         }
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :         else if (ec.value() == 2 || ec.value() == 9){</span>
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :                 delete [] message_header;</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; ec.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     133 </span>                :            :         }
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :         else if (ec.value() &gt; 0){</span>
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(ec.message(), Communication::FAILED_TO_READ_HEADER));</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :                 delete [] message_header;</span>
+<span class="lineNum">     138 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error occured while reading protocl headers : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     140 </span>                :            :         }
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :         else if (bytes != HEADER_CHUNK_READ_SIZE){</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Incomplete pakcet recieved&quot;, Communication::FAILED_TO_READ_HEADER));</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :                 delete [] message_header;</span>
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Incomplete packet recieved : &quot; &lt;&lt; bytes &lt;&lt; &quot; .Actual expected : &quot; &lt;&lt; HEADER_CHUNK_READ_SIZE);</span>
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     147 </span>                :            :         }
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :         else if (!this-&gt;protocol.verify_headers(message_header)){</span>
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Invalid Protocol&quot;, Communication::INVALID_HEADER));</span>
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :                 delete [] message_header;</span>
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Protocol header mismatched&quot;);</span>
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     154 </span>                :            :         }
+<span class="lineNum">     155 </span>                :            :         else{
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :                 uint32_t type = this-&gt;protocol.get_type(message_header);</span>
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :                 uint32_t size = this-&gt;protocol.get_size(message_header);</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(type));</span>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(INFO, &quot;recieved message type : &quot; &lt;&lt; type &lt;&lt; &quot;, payload size : &quot; &lt;&lt; size);</span>
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 :                 char * payload = new char[size];</span>
+<span class="lineNum">     163 </span>                :<span class="lineNoCov">          0 :                 memset(payload, '\0', size);</span>
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :            :                 sock-&gt;read_socket(
+<span class="lineNum">     166 </span>                :            :                         payload,
+<span class="lineNum">     167 </span>                :            :                         boost::bind(
+<span class="lineNum">     168 </span>                :            :                                 &amp;ProtocolStructure::MessageFormatHandler::read_payload,
+<span class="lineNum">     169 </span>                :            :                                 this,
+<span class="lineNum">     170 </span>                :            :                                 payload,
+<span class="lineNum">     171 </span>                :            :                                 size,
+<span class="lineNum">     172 </span>                :            :                                 success_handler,
+<span class="lineNum">     173 </span>                :            :                                 failure_handler,
+<span class="lineNum">     174 </span>                :            :                                 boost::asio::placeholders::error,
+<span class="lineNum">     175 </span>                :            :                                 boost::asio::placeholders::bytes_transferred
+<span class="lineNum">     176 </span>                :            :                         ),
+<span class="lineNum">     177 </span>                :            :                         size
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :                 delete [] message_header;</span>
+<span class="lineNum">     180 </span>                :            :         }
+<span class="lineNum">     181 </span>                :            : }
+<span class="lineNum">     182 </span>                :            : 
+<span class="lineNum">     183 </span>                :            : void MessageFormatHandler::get_message_object(
+<span class="lineNum">     184 </span>                :            :         boost::shared_ptr&lt;Communication::Communication&gt; sock,
+<span class="lineNum">     185 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     186 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     187 </span>                :            :         uint32_t timeout
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     189 </span>                :            : {
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :         if (sock-&gt;is_connected()){</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Empty Result&quot;, Communication::NO_OPERATION));</span>
+<span class="lineNum">     192 </span>                :            :         }
+<span class="lineNum">     193 </span>                :            :         else{
+<span class="lineNum">     194 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Communication object is not prepared&quot;, Communication::SOCKET_NOT_CONNECTED));</span>
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     197 </span>                :            :         }
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_timeout(sock, timeout);</span>
+<span class="lineNum">     200 </span>                :            : 
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :         char * message_header = new char[HEADER_CHUNK_READ_SIZE];</span>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            :         sock-&gt;read_socket(
+<span class="lineNum">     204 </span>                :            :                 message_header,
+<span class="lineNum">     205 </span>                :            :                 boost::bind(
+<span class="lineNum">     206 </span>                :            :                         &amp;ProtocolStructure::MessageFormatHandler::verify_headers_handler,
+<span class="lineNum">     207 </span>                :            :                         this,
+<span class="lineNum">     208 </span>                :            :                         message_header,
+<span class="lineNum">     209 </span>                :            :                         sock,
+<span class="lineNum">     210 </span>                :            :                         success_handler,
+<span class="lineNum">     211 </span>                :            :                         failure_handler,
+<span class="lineNum">     212 </span>                :            :                         boost::asio::placeholders::error,
+<span class="lineNum">     213 </span>                :            :                         boost::asio::placeholders::bytes_transferred
+<span class="lineNum">     214 </span>                :            :                 ),
+<span class="lineNum">     215 </span>                :            :                 HEADER_CHUNK_READ_SIZE
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :         );</span>
+<span class="lineNum">     217 </span>                :            : }
+<span class="lineNum">     218 </span>                :            : 
+<span class="lineNum">     219 </span>                :            : void MessageFormatHandler::send_message_handler(
+<span class="lineNum">     220 </span>                :            :         char * message,
+<span class="lineNum">     221 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     222 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     223 </span>                :            :         const boost::system::error_code &amp;ec,
+<span class="lineNum">     224 </span>                :            :         uint64_t bytes
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     226 </span>                :            : {
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Timeout error occured while sending message&quot;);</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     231 </span>                :            :         }
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :         else if (ec.value() == 2 || ec.value() == 9){</span>
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; ec.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     237 </span>                :            :         }
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :         else if (ec.value() &gt; 0){</span>
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(ec.message(), Communication::FAILED_TO_SEND_MESSAGE));</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error occured while sending message : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     243 </span>                :            :         }
+<span class="lineNum">     244 </span>                :            :         else{
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;&quot;, 0));</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :                 success_handler(this-&gt;result);</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(DEBUG, &quot;Message sent successfully on network&quot;);</span>
+<span class="lineNum">     249 </span>                :            :         }
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :         delete [] message;</span>
+<span class="lineNum">     252 </span>                :            : }
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :            : void MessageFormatHandler::send_message(
+<span class="lineNum">     255 </span>                :            :         boost::shared_ptr&lt;Communication::Communication&gt; sock,
+<span class="lineNum">     256 </span>                :            :         comm_messages::Message * msg,
+<span class="lineNum">     257 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     258 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     259 </span>                :            :         uint32_t timeout
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     261 </span>                :            : {
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :         if (sock-&gt;is_connected()){</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Empty Result&quot;, Communication::NO_OPERATION));</span>
+<span class="lineNum">     264 </span>                :            :         }
+<span class="lineNum">     265 </span>                :            :         else{
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Communication object is not prepared&quot;, Communication::SOCKET_NOT_CONNECTED));</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     269 </span>                :            :         }
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_timeout(sock, timeout);</span>
+<span class="lineNum">     272 </span>                :            : 
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         uint32_t type = msg-&gt;get_type();</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :         COMMLOGGER(INFO, &quot;Message type : &quot; &lt;&lt; type &lt;&lt; &quot; to be sent&quot;);</span>
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :         std::string serialized_string;</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :         if (!msg-&gt;serialize(serialized_string)){</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;unable to serialize message&quot;, Communication::SERIALIZATION_FAILED));</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Unable to serialize the message&quot;);</span>
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     282 </span>                :            :         }
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :         COMMLOGGER(DEBUG, &quot;message serialized. size : &quot; &lt;&lt; serialized_string.size() &lt;&lt; &quot; . md5sum : &quot; &lt;&lt; md5(serialized_string.c_str(), serialized_string.size()));</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :         uint32_t size = this-&gt;protocol.get_complete_size_of_packet(serialized_string);</span>
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :         char * packet_string = new char[size];</span>
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :         this-&gt;protocol.packetize(packet_string, serialized_string, serialized_string.size(), type);</span>
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :            :         sock-&gt;write_socket(
+<span class="lineNum">     291 </span>                :            :                         packet_string,
+<span class="lineNum">     292 </span>                :            :                         boost::bind(
+<span class="lineNum">     293 </span>                :            :                                 &amp;ProtocolStructure::MessageFormatHandler::send_message_handler,
+<span class="lineNum">     294 </span>                :            :                                 this,
+<span class="lineNum">     295 </span>                :            :                                 packet_string,
+<span class="lineNum">     296 </span>                :            :                                 success_handler,
+<span class="lineNum">     297 </span>                :            :                                 failure_handler,
+<span class="lineNum">     298 </span>                :            :                                 boost::asio::placeholders::error,
+<span class="lineNum">     299 </span>                :            :                                 boost::asio::placeholders::bytes_transferred
+<span class="lineNum">     300 </span>                :            :                         ),
+<span class="lineNum">     301 </span>                :            :                         size
+<span class="lineNum">     302 </span>                :            : 
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">     304 </span>                :            : }
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            : void MessageFormatHandler::extract_response_header(
+<span class="lineNum">     307 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sock,
+<span class="lineNum">     308 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     309 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     310 </span>                :            :         const boost::system::error_code &amp;ec,
+<span class="lineNum">     311 </span>                :            :         uint64_t bytes
+<span class="lineNum">     312 </span>                :            : 
+<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 : ){</span>
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured http request&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;timeout occured in http request&quot;);</span>
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     318 </span>                :            :         }
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :         if (ec.value() == 2 || ec.value() == 9){</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; ec.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     324 </span>                :            :         }
+<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 :         else if (ec.value() &gt; 0){</span>
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(ec.message(), Communication::FAILED_TO_READ_BODY));</span>
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error in http request : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     329 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     330 </span>                :            :         }
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :         boost::asio::streambuf buff(512);</span>
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :         boost::system::error_code er;</span>
+<span class="lineNum">     334 </span>                :<span class="lineNoCov">          0 :         std::string response_header_string;</span>
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :         uint64_t bytes_transfered = 0;</span>
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :         uint64_t total_bytes_read = 0;</span>
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :         bytes_transfered = sock-&gt;read_socket_until(response_header_string, HttpSupport::http_end_marker, er);</span>
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :         total_bytes_read = response_header_string.size();</span>
+<span class="lineNum">     340 </span>                :            : 
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured while reading body&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;timeout occured while reading http request response headers&quot;);</span>
+<span class="lineNum">     344 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     345 </span>                :            :         }
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :         if (er.value() == 2 || er.value() == 9){</span>
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; er.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     350 </span>                :            :                 return;
+<span class="lineNum">     351 </span>                :            :         }
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :         else if (er.value() &gt; 0){</span>
+<span class="lineNum">     353 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(er.message(), Communication::FAILED_TO_READ_BODY));</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error occured while reading http request response headers : &quot; &lt;&lt; er.message());</span>
+<span class="lineNum">     356 </span>                :            :                 return;
+<span class="lineNum">     357 </span>                :            :         }
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :<span class="lineNoCov">          0 :         uint32_t content_length = 0;</span>
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :         boost::cmatch what_content_length;</span>
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :         boost::regex expression(&quot;Content-Length: ([0-9]*)&quot;);</span>
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :         if (!boost::regex_search(response_header_string.c_str(), what_content_length, expression)){</span>
+<span class="lineNum">     363 </span>                :            :         }
+<span class="lineNum">     364 </span>                :            :         else{
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :                 std::string cl = what_content_length[1];</span>
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :                 content_length = atoi(cl.c_str());</span>
+<span class="lineNum">     367 </span>                :            :         }
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :<span class="lineNoCov">          0 :         COMMLOGGER(DEBUG, &quot;Content-length : &quot; &lt;&lt; content_length);</span>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :         uint32_t type = 0;</span>
+<span class="lineNum">     372 </span>                :<span class="lineNoCov">          0 :         boost::cmatch what_type;</span>
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :         boost::regex expression_type(&quot;Message-Type: ([0-9]*)&quot;);</span>
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :         if (!boost::regex_search(response_header_string.c_str(), what_type, expression_type)){</span>
+<span class="lineNum">     375 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Message type header not found&quot;, Communication::TYPE_NOT_FOUND));</span>
+<span class="lineNum">     377 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Message type header not found&quot;);</span>
+<span class="lineNum">     378 </span>                :            :                 return;
+<span class="lineNum">     379 </span>                :            :         }
+<span class="lineNum">     380 </span>                :            :         else{
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :                 std::string type_str = what_type[1];</span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :                 type = atoi(type_str.c_str());</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(DEBUG, &quot;type found in http header: &quot; &lt;&lt; type);</span>
+<span class="lineNum">     384 </span>                :            :         }
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :<span class="lineNoCov">          0 :         if (content_length == 0){</span>
+<span class="lineNum">     387 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(type));</span>
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(DEBUG, &quot;content length is 0 so nothing to read in body&quot;);</span>
+<span class="lineNum">     390 </span>                :            :                 return;
+<span class="lineNum">     391 </span>                :            :         }
+<span class="lineNum">     392 </span>                :            :         else{
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :                 char * body = new char[content_length];</span>
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :                 memset(body, '\0', content_length);</span>
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :                 uint64_t diff = content_length - (total_bytes_read - bytes_transfered);</span>
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :                 memcpy(body, &amp;response_header_string[bytes_transfered], total_bytes_read - bytes_transfered);</span>
+<span class="lineNum">     398 </span>                :            : 
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(DEBUG, &quot;size : &quot; &lt;&lt; bytes_transfered &lt;&lt; &quot;, total bytes : &quot; &lt;&lt; total_bytes_read);</span>
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :<span class="lineNoCov">          0 :                 if (diff &gt; 0){</span>
+<span class="lineNum">     402 </span>                :<span class="lineNoCov">          0 :                         boost::system::error_code es;</span>
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :                         uint64_t t_bytes = sock-&gt;read_socket_without_handler(&amp;body[total_bytes_read - bytes_transfered], diff, es);</span>
+<span class="lineNum">     404 </span>                :            : 
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :                         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     406 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured while reading body&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :                                 COMMLOGGER(ERROR, &quot;Timeout occured while reading http response body&quot;);</span>
+<span class="lineNum">     408 </span>                :            :                                 return;
+<span class="lineNum">     409 </span>                :            :                         }
+<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :                         if (es.value() == 2 || es.value() == 9){</span>
+<span class="lineNum">     411 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :                                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; es.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; es.message());</span>
+<span class="lineNum">     414 </span>                :            :                                 return; 
+<span class="lineNum">     415 </span>                :            :                         }
+<span class="lineNum">     416 </span>                :<span class="lineNoCov">          0 :                         if (es.value() &gt; 0){</span>
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;result.reset(new MessageResultWrap(es.message(), Communication::FAILED_TO_READ_BODY));</span>
+<span class="lineNum">     419 </span>                :<span class="lineNoCov">          0 :                                 COMMLOGGER(ERROR, &quot;Error while reading http response body : &quot; &lt;&lt; es.message());</span>
+<span class="lineNum">     420 </span>                :            :                                 return;
+<span class="lineNum">     421 </span>                :            :                         }
+<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :                         if (t_bytes != diff){</span>
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;result.reset(new MessageResultWrap(&quot;Incomplete body recieved&quot;, Communication::FAILED_TO_READ_BODY));</span>
+<span class="lineNum">     425 </span>                :<span class="lineNoCov">          0 :                                 COMMLOGGER(ERROR, &quot;Incomplete body recived : &quot; &lt;&lt; t_bytes);</span>
+<span class="lineNum">     426 </span>                :            :                                 return;
+<span class="lineNum">     427 </span>                :            :                         }
+<span class="lineNum">     428 </span>                :            :                 }
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(type));</span>
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result-&gt;set_payload(body, content_length);</span>
+<span class="lineNum">     432 </span>                :            :         }
+<span class="lineNum">     433 </span>                :            : }
+<span class="lineNum">     434 </span>                :            : 
+<span class="lineNum">     435 </span>                :            : void MessageFormatHandler::send_http_body(
+<span class="lineNum">     436 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sock,
+<span class="lineNum">     437 </span>                :            :         std::string serialized_string,
+<span class="lineNum">     438 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     439 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     440 </span>                :            :         const boost::system::error_code &amp;ec,
+<span class="lineNum">     441 </span>                :            :         uint64_t bytes
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 : ){</span>
+<span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     444 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured while reading headers&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     445 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;timeout occured sending http request headers&quot;);</span>
+<span class="lineNum">     446 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     447 </span>                :            :         }
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :         if (ec.value() == 2 || ec.value() == 9){</span>
+<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; ec.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; ec.message());</span>
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     453 </span>                :            :         }
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 :         if (ec.value() &gt; 0){</span>
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(ec.message(), Communication::FAILED_TO_SEND_MESSAGE));</span>
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error while sending http request headers : &quot; &lt;&lt; ec.value());</span>
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     459 </span>                :            :         }
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :<span class="lineNoCov">          0 :         char * ack_header_string = new char[ACK_HEADER_SIZE];</span>
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :         boost::system::error_code er;</span>
+<span class="lineNum">     463 </span>                :            : 
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :         int ret = sock-&gt;read_socket_without_handler(ack_header_string, ACK_HEADER_SIZE, er);</span>
+<span class="lineNum">     465 </span>                :            : 
+<span class="lineNum">     466 </span>                :<span class="lineNoCov">          0 :         if (this-&gt;is_timeout){</span>
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;timeout occured while reading headers&quot;, Communication::TIMEOUT_OCCURED));</span>
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;timeout occured while reading Expect continue header&quot;);</span>
+<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :                 delete [] ack_header_string;</span>
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     471 </span>                :            :         }
+<span class="lineNum">     472 </span>                :<span class="lineNoCov">          0 :         if (er.value() == 2 || er.value() == 9){</span>
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     474 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Connection issue&quot;, Communication::CONNECTION_ISSUE));</span>
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;got connection issue : &quot; &lt;&lt; er.value() &lt;&lt; &quot; , message : &quot; &lt;&lt; er.message());</span>
+<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :                 delete [] ack_header_string;</span>
+<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     478 </span>                :            :         }
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :         if (er.value() &gt; 0){</span>
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Error Occured&quot;, Communication::ERROR_OCCURED));</span>
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Error while reading Expect continue headers : &quot; &lt;&lt; er.message());</span>
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :                 delete [] ack_header_string;</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     485 </span>                :            :         }
+<span class="lineNum">     486 </span>                :            : 
+<span class="lineNum">     487 </span>                :<span class="lineNoCov">          0 :         boost::cmatch what_type;</span>
+<span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :         boost::regex expression_type(&quot;HTTP/1.1 100 Continue\r\n\r\n&quot;);</span>
+<span class="lineNum">     489 </span>                :<span class="lineNoCov">          0 :         if (!boost::regex_search(ack_header_string, what_type, expression_type)){</span>
+<span class="lineNum">     490 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     491 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Expect continue response header not found&quot;, Communication::TYPE_NOT_FOUND));</span>
+<span class="lineNum">     492 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;100 Continue header not recieved or is corrupt or is incomplete.&quot;);</span>
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :                 delete [] ack_header_string;</span>
+<span class="lineNum">     494 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     495 </span>                :            :         }
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :<span class="lineNoCov">          0 :         delete [] ack_header_string;</span>
+<span class="lineNum">     498 </span>                :            : 
+<span class="lineNum">     499 </span>                :            :         sock-&gt;write_socket(
+<span class="lineNum">     500 </span>                :            :                 serialized_string.c_str(),
+<span class="lineNum">     501 </span>                :            :                 boost::bind(
+<span class="lineNum">     502 </span>                :            :                         &amp;ProtocolStructure::MessageFormatHandler::extract_response_header,
+<span class="lineNum">     503 </span>                :            :                         this,
+<span class="lineNum">     504 </span>                :            :                         sock,
+<span class="lineNum">     505 </span>                :            :                         success_handler,
+<span class="lineNum">     506 </span>                :            :                         failure_handler,
+<span class="lineNum">     507 </span>                :            :                         boost::asio::placeholders::error,
+<span class="lineNum">     508 </span>                :            :                         boost::asio::placeholders::bytes_transferred
+<span class="lineNum">     509 </span>                :            :                 ),
+<span class="lineNum">     510 </span>                :            :                 serialized_string.size()
+<span class="lineNum">     511 </span>                :<span class="lineNoCov">          0 :         );</span>
+<span class="lineNum">     512 </span>                :            : }
+<span class="lineNum">     513 </span>                :            : 
+<span class="lineNum">     514 </span>                :            : void MessageFormatHandler::send_http_request(
+<span class="lineNum">     515 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sock,
+<span class="lineNum">     516 </span>                :            :         comm_messages::Message * sending_message,
+<span class="lineNum">     517 </span>                :            :         const std::string &amp; ip,
+<span class="lineNum">     518 </span>                :            :         const uint32_t port,
+<span class="lineNum">     519 </span>                :            :         const std::string &amp; http_request_method,
+<span class="lineNum">     520 </span>                :            :         boost::function&lt;void(boost::shared_ptr&lt;MessageResultWrap&gt;)&gt; success_handler,
+<span class="lineNum">     521 </span>                :            :         boost::function&lt;void()&gt; failure_handler,
+<span class="lineNum">     522 </span>                :            :         uint32_t timeout
+<span class="lineNum">     523 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     524 </span>                :            : {
+<span class="lineNum">     525 </span>                :<span class="lineNoCov">          0 :         if (sock-&gt;is_connected()){</span>
+<span class="lineNum">     526 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Empty Result&quot;, Communication::NO_OPERATION));</span>
+<span class="lineNum">     527 </span>                :            :         }
+<span class="lineNum">     528 </span>                :            :         else{
+<span class="lineNum">     529 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Communication object is not prepared&quot;, Communication::SOCKET_NOT_CONNECTED));</span>
+<span class="lineNum">     530 </span>                :<span class="lineNoCov">          0 :                 failure_handler();</span>
+<span class="lineNum">     531 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     532 </span>                :            :         }
+<span class="lineNum">     533 </span>                :            : 
+<span class="lineNum">     534 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_timeout(sock, timeout);</span>
+<span class="lineNum">     535 </span>                :            : 
+<span class="lineNum">     536 </span>                :<span class="lineNoCov">          0 :         uint32_t type = sending_message-&gt;get_type();</span>
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 :         COMMLOGGER(DEBUG, &quot;Message type : &quot; &lt;&lt; type &lt;&lt; &quot; to be sent via http&quot;);</span>
+<span class="lineNum">     538 </span>                :<span class="lineNoCov">          0 :         std::string serialized_string;</span>
+<span class="lineNum">     539 </span>                :            : 
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, std::string&gt; header_map = sending_message-&gt;get_header_map();</span>
+<span class="lineNum">     541 </span>                :<span class="lineNoCov">          0 :         if (!sending_message-&gt;serialize(serialized_string)){</span>
+<span class="lineNum">     542 </span>                :<span class="lineNoCov">          0 :                 this-&gt;timer-&gt;cancel();</span>
+<span class="lineNum">     543 </span>                :<span class="lineNoCov">          0 :                 this-&gt;result.reset(new MessageResultWrap(&quot;Unable to serialize the message for http request&quot;, Communication::SERIALIZATION_FAILED));</span>
+<span class="lineNum">     544 </span>                :<span class="lineNoCov">          0 :                 COMMLOGGER(ERROR, &quot;Unable to serialize the message when sending http request&quot;);</span>
+<span class="lineNum">     545 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     546 </span>                :            :         }
+<span class="lineNum">     547 </span>                :            : 
+<span class="lineNum">     548 </span>                :<span class="lineNoCov">          0 :         COMMLOGGER(DEBUG, &quot;Message serialized. size : &quot; &lt;&lt; serialized_string.size());</span>
+<span class="lineNum">     549 </span>                :            : 
+<span class="lineNum">     550 </span>                :<span class="lineNoCov">          0 :         std::string sending_string;</span>
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :         sending_string += http_request_method;</span>
+<span class="lineNum">     552 </span>                :<span class="lineNoCov">          0 :         sending_string += &quot; &quot;;</span>
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :         sending_string += HttpSupport::http_dummy_path;</span>
+<span class="lineNum">     554 </span>                :<span class="lineNoCov">          0 :         sending_string += &quot; &quot;;</span>
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 :         HttpSupport::HttpMessage http_obj;</span>
+<span class="lineNum">     557 </span>                :<span class="lineNoCov">          0 :         http_obj.attach_generic_headers(serialized_string.size(), header_map, sending_string, ip, port);</span>
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            :         //NOTE: sending initial sending header to the server
+<span class="lineNum">     560 </span>                :            :         
+<span class="lineNum">     561 </span>                :<span class="lineNoCov">          0 :         if (serialized_string.size() &gt; 0){</span>
+<span class="lineNum">     562 </span>                :            :                 sock-&gt;write_socket(
+<span class="lineNum">     563 </span>                :            :                         sending_string.c_str(),
+<span class="lineNum">     564 </span>                :            :                         boost::bind(
+<span class="lineNum">     565 </span>                :            :                                 &amp;ProtocolStructure::MessageFormatHandler::send_http_body,
+<span class="lineNum">     566 </span>                :            :                                 this,
+<span class="lineNum">     567 </span>                :            :                                 sock,
+<span class="lineNum">     568 </span>                :            :                                 serialized_string,
+<span class="lineNum">     569 </span>                :            :                                 success_handler,
+<span class="lineNum">     570 </span>                :            :                                 failure_handler,
+<span class="lineNum">     571 </span>                :            :                                 boost::asio::placeholders::error,
+<span class="lineNum">     572 </span>                :            :                                 boost::asio::placeholders::bytes_transferred
+<span class="lineNum">     573 </span>                :            :                         ),
+<span class="lineNum">     574 </span>                :            :                         sending_string.size()
+<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">     576 </span>                :            :         }
+<span class="lineNum">     577 </span>                :            :         else{
+<span class="lineNum">     578 </span>                :            :                 sock-&gt;write_socket(
+<span class="lineNum">     579 </span>                :            :                         sending_string.c_str(),
+<span class="lineNum">     580 </span>                :            :                         boost::bind(
+<span class="lineNum">     581 </span>                :            :                                 &amp;ProtocolStructure::MessageFormatHandler::extract_response_header,
+<span class="lineNum">     582 </span>                :            :                                 this,
+<span class="lineNum">     583 </span>                :            :                                 sock,
+<span class="lineNum">     584 </span>                :            :                                 success_handler,
+<span class="lineNum">     585 </span>                :            :                                 failure_handler,
+<span class="lineNum">     586 </span>                :            :                                 boost::asio::placeholders::error,
+<span class="lineNum">     587 </span>                :            :                                 boost::asio::placeholders::bytes_transferred
+<span class="lineNum">     588 </span>                :            :                         ),
+<span class="lineNum">     589 </span>                :            :                         sending_string.size()
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">     591 </span>                :            :                 
+<span class="lineNum">     592 </span>                :            :         }
+<span class="lineNum">     593 </span>                :            : }
+<span class="lineNum">     594 </span>                :            : 
+<span class="lineNum">     595 </span>                :            : Protocol::Protocol(
+<span class="lineNum">     596 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     597 </span>                :            : {
+<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :         strncpy(this-&gt;header.banner, &amp;ProtocolStructure::banner[0], BANNER_CHUNK_LENGTH);</span>
+<span class="lineNum">     599 </span>                :            : }
+<span class="lineNum">     600 </span>                :            : 
+<span class="lineNum">     601 </span>                :<span class="lineNoCov">          0 : bool Protocol::verify_headers(char * header_string){</span>
+<span class="lineNum">     602 </span>                :<span class="lineNoCov">          0 :         if (std::strncmp(header_string, &amp;ProtocolStructure::banner[0], BANNER_CHUNK_LENGTH) != 0){</span>
+<span class="lineNum">     603 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     604 </span>                :            :         }
+<span class="lineNum">     605 </span>                :<span class="lineNoCov">          0 :         headerStructure * headerStruct = reinterpret_cast&lt;headerStructure *&gt;(header_string);</span>
+<span class="lineNum">     606 </span>                :            :         
+<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_header_size(headerStruct-&gt;size);</span>
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_header_type(headerStruct-&gt;type);</span>
+<span class="lineNum">     609 </span>                :<span class="lineNoCov">          0 :         headerStruct = NULL;</span>
+<span class="lineNum">     610 </span>                :<span class="lineNoCov">          0 :         delete headerStruct;</span>
+<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     612 </span>                :            : }
+<span class="lineNum">     613 </span>                :            : 
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 : uint32_t Protocol::get_size(char * message_header){</span>
+<span class="lineNum">     615 </span>                :<span class="lineNoCov">          0 :         return this-&gt;header.size;</span>
+<span class="lineNum">     616 </span>                :            : }
+<span class="lineNum">     617 </span>                :            : 
+<span class="lineNum">     618 </span>                :<span class="lineNoCov">          0 : uint32_t Protocol::get_type(char * message_header){</span>
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :         return this-&gt;header.type;</span>
+<span class="lineNum">     620 </span>                :            : }
+<span class="lineNum">     621 </span>                :            : 
+<span class="lineNum">     622 </span>                :<span class="lineNoCov">          0 : void Protocol::set_header_size(uint32_t size){</span>
+<span class="lineNum">     623 </span>                :<span class="lineNoCov">          0 :         this-&gt;header.size = size;</span>
+<span class="lineNum">     624 </span>                :            : }
+<span class="lineNum">     625 </span>                :            : 
+<span class="lineNum">     626 </span>                :<span class="lineNoCov">          0 : void Protocol::set_header_type(uint32_t type){</span>
+<span class="lineNum">     627 </span>                :<span class="lineNoCov">          0 :         this-&gt;header.type = type;</span>
+<span class="lineNum">     628 </span>                :            : }
+<span class="lineNum">     629 </span>                :            : 
+<span class="lineNum">     630 </span>                :<span class="lineNoCov">          0 : uint32_t Protocol::get_complete_size_of_packet(std::string &amp; message){</span>
+<span class="lineNum">     631 </span>                :<span class="lineNoCov">          0 :         uint32_t size = message.size();</span>
+<span class="lineNum">     632 </span>                :<span class="lineNoCov">          0 :         size += HEADER_CHUNK_READ_SIZE;</span>
+<span class="lineNum">     633 </span>                :<span class="lineNoCov">          0 :         return size;</span>
+<span class="lineNum">     634 </span>                :            : }
+<span class="lineNum">     635 </span>                :            : 
+<span class="lineNum">     636 </span>                :<span class="lineNoCov">          0 : void Protocol::packetize(char * packet_string, std::string &amp; message, uint32_t size, uint32_t type){</span>
+<span class="lineNum">     637 </span>                :            : 
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_header_size(size);</span>
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :         this-&gt;set_header_type(type);</span>
+<span class="lineNum">     640 </span>                :            : 
+<span class="lineNum">     641 </span>                :<span class="lineNoCov">          0 :         memset(packet_string, '\0', HEADER_CHUNK_READ_SIZE + size);</span>
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :         memcpy(packet_string, reinterpret_cast&lt;char *&gt;(&amp;this-&gt;header), HEADER_CHUNK_READ_SIZE);</span>
+<span class="lineNum">     643 </span>                :<span class="lineNoCov">          0 :         memcpy(&amp;packet_string[HEADER_CHUNK_READ_SIZE], message.c_str(), size);</span>
+<span class="lineNum">     644 </span>                :            : }
+<span class="lineNum">     645 </span>                :            : 
+<span class="lineNum">     646 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

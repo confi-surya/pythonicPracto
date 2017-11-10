@@ -1,0 +1,49 @@
+import os.path
+
+Import('context')
+
+context.module(
+	name = "TransactionLib",
+	#srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		../libraryUtils/helper.cpp
+		../libraryUtils/record_structure.cpp
+		../libraryUtils/file_handler.cpp
+		../libraryUtils/journal.cpp
+		../libraryUtils/job_manager.cpp
+		../libraryUtils/serialize.cpp
+		../libraryUtils/object_storage_log_setup.cpp
+		../libraryUtils/osd_logger_initialize.cpp
+		../libraryUtils/stats.cpp
+                ../libraryUtils/osdStatGather.cpp
+                ../libraryUtils/statFactory.cpp
+                ../libraryUtils/statManager.cpp
+		transaction_library.cpp
+		transaction_memory.cpp
+		journal_library.cpp
+		transaction_write_handler.cpp
+		transaction_read_handler.cpp
+		transaction_py_binding.cpp 
+                
+	"""),
+	
+        targetType = context.TYPE_DLL,
+        libs = context.split("""
+                #any external libs  that you may need.
+#                cool,
+		
+#		libraryUtils
+        """),
+        # only in case of unit test dir
+        #wholeLibs = context.split("""
+        #       gmock
+        #""")
+        requiredLibs = context.split("""
+		cool
+		coolNet
+		statGather
+		#libraryUtils
+                boost_python
+                boost_thread
+        """)
+)

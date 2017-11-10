@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/mpl/for_each.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/mpl</a> - for_each.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : 
+<span class="lineNum">       2 </span>                :            : #ifndef BOOST_MPL_FOR_EACH_HPP_INCLUDED
+<span class="lineNum">       3 </span>                :            : #define BOOST_MPL_FOR_EACH_HPP_INCLUDED
+<span class="lineNum">       4 </span>                :            : 
+<span class="lineNum">       5 </span>                :            : // Copyright Aleksey Gurtovoy 2000-2008
+<span class="lineNum">       6 </span>                :            : //
+<span class="lineNum">       7 </span>                :            : // Distributed under the Boost Software License, Version 1.0. 
+<span class="lineNum">       8 </span>                :            : // (See accompanying file LICENSE_1_0.txt or copy at 
+<span class="lineNum">       9 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">      10 </span>                :            : //
+<span class="lineNum">      11 </span>                :            : // See http://www.boost.org/libs/mpl for documentation.
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : // $Id$
+<span class="lineNum">      14 </span>                :            : // $Date$
+<span class="lineNum">      15 </span>                :            : // $Revision$
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #include &lt;boost/mpl/is_sequence.hpp&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;boost/mpl/begin_end.hpp&gt;
+<span class="lineNum">      19 </span>                :            : #include &lt;boost/mpl/apply.hpp&gt;
+<span class="lineNum">      20 </span>                :            : #include &lt;boost/mpl/bool.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/mpl/next_prior.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/mpl/deref.hpp&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/mpl/identity.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/mpl/assert.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/mpl/aux_/unwrap.hpp&gt;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : #include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;boost/utility/value_init.hpp&gt;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : namespace boost { namespace mpl {
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : namespace aux {
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : template&lt; bool done = true &gt;
+<span class="lineNum">      35 </span>                :            : struct for_each_impl
+<span class="lineNum">      36 </span>                :            : {
+<span class="lineNum">      37 </span>                :            :     template&lt;
+<span class="lineNum">      38 </span>                :            :           typename Iterator
+<span class="lineNum">      39 </span>                :            :         , typename LastIterator
+<span class="lineNum">      40 </span>                :            :         , typename TransformFunc
+<span class="lineNum">      41 </span>                :            :         , typename F
+<span class="lineNum">      42 </span>                :            :         &gt;
+<span class="lineNum">      43 </span>                :            :     static void execute(
+<span class="lineNum">      44 </span>                :            :           Iterator*
+<span class="lineNum">      45 </span>                :            :         , LastIterator*
+<span class="lineNum">      46 </span>                :            :         , TransformFunc*
+<span class="lineNum">      47 </span>                :            :         , F
+<span class="lineNum">      48 </span>                :<span class="lineCov">        160 :         )</span>
+<span class="lineNum">      49 </span>                :            :     {
+<span class="lineNum">      50 </span>                :            :     }
+<span class="lineNum">      51 </span>                :            : };
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :            : template&lt;&gt;
+<span class="lineNum">      54 </span>                :            : struct for_each_impl&lt;false&gt;
+<span class="lineNum">      55 </span>                :            : {
+<span class="lineNum">      56 </span>                :            :     template&lt;
+<span class="lineNum">      57 </span>                :            :           typename Iterator
+<span class="lineNum">      58 </span>                :            :         , typename LastIterator
+<span class="lineNum">      59 </span>                :            :         , typename TransformFunc
+<span class="lineNum">      60 </span>                :            :         , typename F
+<span class="lineNum">      61 </span>                :            :         &gt;
+<span class="lineNum">      62 </span>                :            :     static void execute(
+<span class="lineNum">      63 </span>                :            :           Iterator*
+<span class="lineNum">      64 </span>                :            :         , LastIterator*
+<span class="lineNum">      65 </span>                :            :         , TransformFunc* 
+<span class="lineNum">      66 </span>                :            :         , F f
+<span class="lineNum">      67 </span>                :<span class="lineCov">         36 :         )</span>
+<span class="lineNum">      68 </span>                :            :     {
+<span class="lineNum">      69 </span>                :            :         typedef typename deref&lt;Iterator&gt;::type item;
+<span class="lineNum">      70 </span>                :            :         typedef typename apply1&lt;TransformFunc,item&gt;::type arg;
+<span class="lineNum">      71 </span>                :            :     
+<span class="lineNum">      72 </span>                :            :         // dwa 2002/9/10 -- make sure not to invoke undefined behavior
+<span class="lineNum">      73 </span>                :            :         // when we pass arg.
+<span class="lineNum">      74 </span>                :<span class="lineCov">         36 :         value_initialized&lt;arg&gt; x;</span>
+<span class="lineNum">      75 </span>                :<span class="lineCov">         36 :         aux::unwrap(f, 0)(boost::get(x));</span>
+<span class="lineNum">      76 </span>                :            :         
+<span class="lineNum">      77 </span>                :            :         typedef typename mpl::next&lt;Iterator&gt;::type iter;
+<span class="lineNum">      78 </span>                :<span class="lineCov">         36 :         for_each_impl&lt;boost::is_same&lt;iter,LastIterator&gt;::value&gt;</span>
+<span class="lineNum">      79 </span>                :            :             ::execute( static_cast&lt;iter*&gt;(0), static_cast&lt;LastIterator*&gt;(0), static_cast&lt;TransformFunc*&gt;(0), f);
+<span class="lineNum">      80 </span>                :            :     }
+<span class="lineNum">      81 </span>                :            : };
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :            : } // namespace aux
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            : // agurt, 17/mar/02: pointer default parameters are necessary to workaround 
+<span class="lineNum">      86 </span>                :            : // MSVC 6.5 function template signature's mangling bug
+<span class="lineNum">      87 </span>                :            : template&lt;
+<span class="lineNum">      88 </span>                :            :       typename Sequence
+<span class="lineNum">      89 </span>                :            :     , typename TransformOp
+<span class="lineNum">      90 </span>                :            :     , typename F
+<span class="lineNum">      91 </span>                :            :     &gt;
+<span class="lineNum">      92 </span>                :            : inline
+<span class="lineNum">      93 </span>                :<span class="lineCov">        160 : void for_each(F f, Sequence* = 0, TransformOp* = 0)</span>
+<span class="lineNum">      94 </span>                :            : {
+<span class="lineNum">      95 </span>                :            :     BOOST_MPL_ASSERT(( is_sequence&lt;Sequence&gt; ));
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :            :     typedef typename begin&lt;Sequence&gt;::type first;
+<span class="lineNum">      98 </span>                :            :     typedef typename end&lt;Sequence&gt;::type last;
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :<span class="lineCov">        160 :     aux::for_each_impl&lt; boost::is_same&lt;first,last&gt;::value &gt;</span>
+<span class="lineNum">     101 </span>                :            :         ::execute(static_cast&lt;first*&gt;(0), static_cast&lt;last*&gt;(0), static_cast&lt;TransformOp*&gt;(0), f);
+<span class="lineNum">     102 </span>                :            : }
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>                :            : template&lt;
+<span class="lineNum">     105 </span>                :            :       typename Sequence
+<span class="lineNum">     106 </span>                :            :     , typename F
+<span class="lineNum">     107 </span>                :            :     &gt;
+<span class="lineNum">     108 </span>                :            : inline
+<span class="lineNum">     109 </span>                :            : void for_each(F f, Sequence* = 0)
+<span class="lineNum">     110 </span>                :            : {
+<span class="lineNum">     111 </span>                :            :     for_each&lt;Sequence, identity&lt;&gt; &gt;(f);
+<span class="lineNum">     112 </span>                :            : }
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :            : }}
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            : #endif // BOOST_MPL_FOR_EACH_HPP_INCLUDED
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

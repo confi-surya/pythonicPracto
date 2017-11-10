@@ -1,0 +1,1416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/date_time/time_facet.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/date_time</a> - time_facet.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : 
+<span class="lineNum">       2 </span>                :            : #ifndef _DATE_TIME_FACET__HPP__
+<span class="lineNum">       3 </span>                :            : #define _DATE_TIME_FACET__HPP__
+<span class="lineNum">       4 </span>                :            : 
+<span class="lineNum">       5 </span>                :            : /* Copyright (c) 2004-2005 CrystalClear Software, Inc.
+<span class="lineNum">       6 </span>                :            :  * Use, modification and distribution is subject to the 
+<span class="lineNum">       7 </span>                :            :  * Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       8 </span>                :            :  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>                :            :  * Author:  Martin Andrian, Jeff Garland, Bart Garst
+<span class="lineNum">      10 </span>                :            :  * $Date$
+<span class="lineNum">      11 </span>                :            :  */
+<span class="lineNum">      12 </span>                :            : 
+<span class="lineNum">      13 </span>                :            : #include &lt;cctype&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;locale&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;limits&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      17 </span>                :            : #include &lt;sstream&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;iomanip&gt;
+<span class="lineNum">      19 </span>                :            : #include &lt;iterator&gt; // i/ostreambuf_iterator
+<span class="lineNum">      20 </span>                :            : #include &lt;exception&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/lexical_cast.hpp&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/throw_exception.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/algorithm/string/erase.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/algorithm/string/replace.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;boost/date_time/compiler_config.hpp&gt;
+<span class="lineNum">      27 </span>                :            : #include &lt;boost/date_time/date_facet.hpp&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;boost/date_time/string_convert.hpp&gt;
+<span class="lineNum">      29 </span>                :            : #include &lt;boost/date_time/special_defs.hpp&gt;
+<span class="lineNum">      30 </span>                :            : #include &lt;boost/date_time/time_resolution_traits.hpp&gt; // absolute_value
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : namespace boost {
+<span class="lineNum">      33 </span>                :            : namespace date_time {
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            :   template &lt;class CharT&gt;
+<span class="lineNum">      36 </span>                :            :   struct time_formats {
+<span class="lineNum">      37 </span>                :            :     public:
+<span class="lineNum">      38 </span>                :            :       typedef CharT char_type;
+<span class="lineNum">      39 </span>                :            :       static const char_type fractional_seconds_format[3];               // f
+<span class="lineNum">      40 </span>                :            :       static const char_type fractional_seconds_or_none_format[3];       // F
+<span class="lineNum">      41 </span>                :            :       static const char_type seconds_with_fractional_seconds_format[3];  // s
+<span class="lineNum">      42 </span>                :            :       static const char_type seconds_format[3];                          // S
+<span class="lineNum">      43 </span>                :            :       static const char_type hours_format[3];                            // H
+<span class="lineNum">      44 </span>                :            :       static const char_type unrestricted_hours_format[3];               // O
+<span class="lineNum">      45 </span>                :            :       static const char_type standard_format[9];                         // x X
+<span class="lineNum">      46 </span>                :            :       static const char_type zone_abbrev_format[3];                      // z
+<span class="lineNum">      47 </span>                :            :       static const char_type zone_name_format[3];                        // Z
+<span class="lineNum">      48 </span>                :            :       static const char_type zone_iso_format[3];                         // q
+<span class="lineNum">      49 </span>                :            :       static const char_type zone_iso_extended_format[3];                // Q
+<span class="lineNum">      50 </span>                :            :       static const char_type posix_zone_string_format[4];                // ZP
+<span class="lineNum">      51 </span>                :            :       static const char_type duration_sign_negative_only[3];             // -
+<span class="lineNum">      52 </span>                :            :       static const char_type duration_sign_always[3];                    // +
+<span class="lineNum">      53 </span>                :            :       static const char_type duration_seperator[2];
+<span class="lineNum">      54 </span>                :            :       static const char_type negative_sign[2];                           //-
+<span class="lineNum">      55 </span>                :            :       static const char_type positive_sign[2];                           //+
+<span class="lineNum">      56 </span>                :            :       static const char_type iso_time_format_specifier[18];
+<span class="lineNum">      57 </span>                :            :       static const char_type iso_time_format_extended_specifier[22];
+<span class="lineNum">      58 </span>                :            :       //default ptime format is YYYY-Mon-DD HH:MM:SS[.fff...][ zzz]
+<span class="lineNum">      59 </span>                :            :       static const char_type default_time_format[23]; 
+<span class="lineNum">      60 </span>                :            :       // default_time_input_format uses a posix_time_zone_string instead of a time zone abbrev
+<span class="lineNum">      61 </span>                :            :       static const char_type default_time_input_format[24]; 
+<span class="lineNum">      62 </span>                :            :       //default time_duration format is HH:MM:SS[.fff...]
+<span class="lineNum">      63 </span>                :            :       static const char_type default_time_duration_format[11];
+<span class="lineNum">      64 </span>                :            :   };
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">      67 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      68 </span>                :            :   time_formats&lt;CharT&gt;::fractional_seconds_format[3] = {'%','f'};
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">      71 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      72 </span>                :            :   time_formats&lt;CharT&gt;::fractional_seconds_or_none_format[3] = {'%','F'};
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">      75 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      76 </span>                :            :   time_formats&lt;CharT&gt;::seconds_with_fractional_seconds_format[3] = 
+<span class="lineNum">      77 </span>                :            :     {'%','s'};
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            :   template &lt;class CharT&gt;
+<span class="lineNum">      80 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      81 </span>                :            :   time_formats&lt;CharT&gt;::seconds_format[3] =  {'%','S'};
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :            :   template &lt;class CharT&gt;
+<span class="lineNum">      84 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      85 </span>                :            :   time_formats&lt;CharT&gt;::hours_format[3] =  {'%','H'};
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            :   template &lt;class CharT&gt;
+<span class="lineNum">      88 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      89 </span>                :            :   time_formats&lt;CharT&gt;::unrestricted_hours_format[3] =  {'%','O'};
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">      92 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      93 </span>                :            :   //time_formats&lt;CharT&gt;::standard_format[5] =  {'%','c',' ','%','z'};
+<span class="lineNum">      94 </span>                :            :   time_formats&lt;CharT&gt;::standard_format[9] =  {'%','x',' ','%','X',' ','%','z'};
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">      97 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">      98 </span>                :            :   time_formats&lt;CharT&gt;::zone_abbrev_format[3] =  {'%','z'};
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     101 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     102 </span>                :            :   time_formats&lt;CharT&gt;::zone_name_format[3] =  {'%','Z'};
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     105 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     106 </span>                :            :   time_formats&lt;CharT&gt;::zone_iso_format[3] =  {'%','q'};
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     109 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     110 </span>                :            :   time_formats&lt;CharT&gt;::zone_iso_extended_format[3] ={'%','Q'};
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     113 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     114 </span>                :            :   time_formats&lt;CharT&gt;::posix_zone_string_format[4] ={'%','Z','P'};
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     117 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     118 </span>                :            :   time_formats&lt;CharT&gt;::duration_seperator[2] =  {':'};
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     121 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     122 </span>                :            :   time_formats&lt;CharT&gt;::negative_sign[2] =  {'-'};
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     125 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     126 </span>                :            :   time_formats&lt;CharT&gt;::positive_sign[2] =  {'+'};
+<span class="lineNum">     127 </span>                :            : 
+<span class="lineNum">     128 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     129 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     130 </span>                :            :   time_formats&lt;CharT&gt;::duration_sign_negative_only[3] ={'%','-'};
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     133 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     134 </span>                :            :   time_formats&lt;CharT&gt;::duration_sign_always[3] ={'%','+'};
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     137 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     138 </span>                :            :   time_formats&lt;CharT&gt;::iso_time_format_specifier[18] =  
+<span class="lineNum">     139 </span>                :            :     {'%', 'Y', '%', 'm', '%', 'd', 'T', 
+<span class="lineNum">     140 </span>                :            :      '%', 'H', '%', 'M', '%', 'S', '%', 'F', '%','q' };
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     143 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     144 </span>                :            :   time_formats&lt;CharT&gt;::iso_time_format_extended_specifier[22] =  
+<span class="lineNum">     145 </span>                :            :     {'%', 'Y', '-', '%', 'm', '-', '%', 'd', ' ', 
+<span class="lineNum">     146 </span>                :            :      '%', 'H', ':', '%', 'M', ':', '%', 'S', '%', 'F','%','Q'};
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     149 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     150 </span>                :            :   time_formats&lt;CharT&gt;::default_time_format[23] = 
+<span class="lineNum">     151 </span>                :            :     {'%','Y','-','%','b','-','%','d',' ',
+<span class="lineNum">     152 </span>                :            :       '%','H',':','%','M',':','%','S','%','F',' ','%','z'};
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     155 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     156 </span>                :            :   time_formats&lt;CharT&gt;::default_time_input_format[24] = 
+<span class="lineNum">     157 </span>                :            :     {'%','Y','-','%','b','-','%','d',' ',
+<span class="lineNum">     158 </span>                :            :       '%','H',':','%','M',':','%','S','%','F',' ','%','Z','P'};
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            :   template &lt;class CharT&gt;  
+<span class="lineNum">     161 </span>                :            :   const typename time_formats&lt;CharT&gt;::char_type 
+<span class="lineNum">     162 </span>                :            :   time_formats&lt;CharT&gt;::default_time_duration_format[11] = 
+<span class="lineNum">     163 </span>                :            :     {'%','O',':','%','M',':','%','S','%','F'};
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :            :   /*! Facet used for format-based output of time types 
+<span class="lineNum">     168 </span>                :            :    * This class provides for the use of format strings to output times.  In addition
+<span class="lineNum">     169 </span>                :            :    * to the flags for formatting date elements, the following are the allowed format flags:
+<span class="lineNum">     170 </span>                :            :    *  - %x %X =&gt; default format - enables addition of more flags to default (ie. &quot;%x %X %z&quot;)
+<span class="lineNum">     171 </span>                :            :    *  - %f =&gt; fractional seconds &quot;.123456&quot;
+<span class="lineNum">     172 </span>                :            :    *  - %F =&gt; fractional seconds or none: like frac sec but empty if frac sec == 0
+<span class="lineNum">     173 </span>                :            :    *  - %s =&gt; seconds w/ fractional sec &quot;02.123&quot; (this is the same as &quot;%S%f) 
+<span class="lineNum">     174 </span>                :            :    *  - %S =&gt; seconds &quot;02&quot;
+<span class="lineNum">     175 </span>                :            :    *  - %z =&gt; abbreviated time zone &quot;EDT&quot;
+<span class="lineNum">     176 </span>                :            :    *  - %Z =&gt; full time zone name &quot;Eastern Daylight Time&quot;
+<span class="lineNum">     177 </span>                :            :    */
+<span class="lineNum">     178 </span>                :            :   template &lt;class time_type,
+<span class="lineNum">     179 </span>                :            :             class CharT, 
+<span class="lineNum">     180 </span>                :            :             class OutItrT = std::ostreambuf_iterator&lt;CharT, std::char_traits&lt;CharT&gt; &gt; &gt;
+<span class="lineNum">     181 </span>                :            :   class time_facet : 
+<span class="lineNum">     182 </span>                :            :     public boost::date_time::date_facet&lt;typename time_type::date_type , CharT, OutItrT&gt; {
+<span class="lineNum">     183 </span>                :            :    public:
+<span class="lineNum">     184 </span>                :            :     typedef typename time_type::date_type date_type;
+<span class="lineNum">     185 </span>                :            :     typedef typename time_type::time_duration_type time_duration_type;
+<span class="lineNum">     186 </span>                :            :     typedef boost::date_time::period&lt;time_type,time_duration_type&gt; period_type;
+<span class="lineNum">     187 </span>                :            :     typedef boost::date_time::date_facet&lt;typename time_type::date_type, CharT, OutItrT&gt; base_type;
+<span class="lineNum">     188 </span>                :            :     typedef typename base_type::string_type string_type;
+<span class="lineNum">     189 </span>                :            :     typedef typename base_type::char_type   char_type;
+<span class="lineNum">     190 </span>                :            :     typedef typename base_type::period_formatter_type period_formatter_type;
+<span class="lineNum">     191 </span>                :            :     typedef typename base_type::special_values_formatter_type special_values_formatter_type;
+<span class="lineNum">     192 </span>                :            :     typedef typename base_type::date_gen_formatter_type date_gen_formatter_type;
+<span class="lineNum">     193 </span>                :            :     static const char_type* fractional_seconds_format;                // %f
+<span class="lineNum">     194 </span>                :            :     static const char_type* fractional_seconds_or_none_format;        // %F
+<span class="lineNum">     195 </span>                :            :     static const char_type* seconds_with_fractional_seconds_format;   // %s
+<span class="lineNum">     196 </span>                :            :     static const char_type* seconds_format;                           // %S
+<span class="lineNum">     197 </span>                :            :     static const char_type* hours_format;                             // %H
+<span class="lineNum">     198 </span>                :            :     static const char_type* unrestricted_hours_format;                // %O
+<span class="lineNum">     199 </span>                :            :     static const char_type* standard_format;                          // %x X
+<span class="lineNum">     200 </span>                :            :     static const char_type* zone_abbrev_format;                       // %z
+<span class="lineNum">     201 </span>                :            :     static const char_type* zone_name_format;                         // %Z
+<span class="lineNum">     202 </span>                :            :     static const char_type* zone_iso_format;                          // %q
+<span class="lineNum">     203 </span>                :            :     static const char_type* zone_iso_extended_format;                 // %Q
+<span class="lineNum">     204 </span>                :            :     static const char_type* posix_zone_string_format;                 // %ZP
+<span class="lineNum">     205 </span>                :            :     static const char_type* duration_seperator;
+<span class="lineNum">     206 </span>                :            :     static const char_type* duration_sign_always;                     // %+
+<span class="lineNum">     207 </span>                :            :     static const char_type* duration_sign_negative_only;              // %-
+<span class="lineNum">     208 </span>                :            :     static const char_type* negative_sign;                            //-
+<span class="lineNum">     209 </span>                :            :     static const char_type* positive_sign;                            //+
+<span class="lineNum">     210 </span>                :            :     static const char_type* iso_time_format_specifier;
+<span class="lineNum">     211 </span>                :            :     static const char_type* iso_time_format_extended_specifier;
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :     //default ptime format is YYYY-Mon-DD HH:MM:SS[.fff...][ zzz]
+<span class="lineNum">     214 </span>                :            :     static const char_type* default_time_format; 
+<span class="lineNum">     215 </span>                :            :     //default time_duration format is HH:MM:SS[.fff...]
+<span class="lineNum">     216 </span>                :            :     static const char_type* default_time_duration_format;
+<span class="lineNum">     217 </span>                :            :     static std::locale::id id;
+<span class="lineNum">     218 </span>                :            : 
+<span class="lineNum">     219 </span>                :            : #if defined (__SUNPRO_CC) &amp;&amp; defined (_RWSTD_VER)
+<span class="lineNum">     220 </span>                :            :       std::locale::id&amp; __get_id (void) const { return id; }
+<span class="lineNum">     221 </span>                :            : #endif
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            :     //! sets default formats for ptime, local_date_time, and time_duration
+<span class="lineNum">     224 </span>                :            :     explicit time_facet(::size_t a_ref = 0)
+<span class="lineNum">     225 </span>                :            :       : base_type(default_time_format, period_formatter_type(), special_values_formatter_type(), date_gen_formatter_type(), a_ref),
+<span class="lineNum">     226 </span>                :            :         m_time_duration_format(string_type(duration_sign_negative_only) + default_time_duration_format)
+<span class="lineNum">     227 </span>                :            :     {}
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :            :     //! Construct the facet with an explicitly specified format
+<span class="lineNum">     230 </span>                :            :     explicit time_facet(const char_type* a_format,
+<span class="lineNum">     231 </span>                :            :                         period_formatter_type period_formatter = period_formatter_type(), 
+<span class="lineNum">     232 </span>                :            :                         const special_values_formatter_type&amp; special_value_formatter = special_values_formatter_type(), 
+<span class="lineNum">     233 </span>                :            :                         date_gen_formatter_type dg_formatter = date_gen_formatter_type(),
+<span class="lineNum">     234 </span>                :            :                          ::size_t a_ref = 0) 
+<span class="lineNum">     235 </span>                :            :       : base_type(a_format, 
+<span class="lineNum">     236 </span>                :            :                   period_formatter,
+<span class="lineNum">     237 </span>                :            :                   special_value_formatter, 
+<span class="lineNum">     238 </span>                :            :                   dg_formatter, 
+<span class="lineNum">     239 </span>                :            :                   a_ref),
+<span class="lineNum">     240 </span>                :            :         m_time_duration_format(string_type(duration_sign_negative_only) + default_time_duration_format)
+<span class="lineNum">     241 </span>                :            :     {}
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            :     //! Changes format for time_duration
+<span class="lineNum">     244 </span>                :            :     void time_duration_format(const char_type* const format) 
+<span class="lineNum">     245 </span>                :            :     {
+<span class="lineNum">     246 </span>                :            :       m_time_duration_format = format;
+<span class="lineNum">     247 </span>                :            :     }
+<span class="lineNum">     248 </span>                :            : 
+<span class="lineNum">     249 </span>                :            :     virtual void set_iso_format()
+<span class="lineNum">     250 </span>                :            :     {
+<span class="lineNum">     251 </span>                :            :       this-&gt;m_format = iso_time_format_specifier;
+<span class="lineNum">     252 </span>                :            :     }
+<span class="lineNum">     253 </span>                :            :     virtual void set_iso_extended_format()
+<span class="lineNum">     254 </span>                :            :     {
+<span class="lineNum">     255 </span>                :            :       this-&gt;m_format = iso_time_format_extended_specifier;
+<span class="lineNum">     256 </span>                :            :     }
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :            :     OutItrT put(OutItrT a_next, 
+<span class="lineNum">     259 </span>                :            :                 std::ios_base&amp; a_ios, 
+<span class="lineNum">     260 </span>                :            :                 char_type a_fill, 
+<span class="lineNum">     261 </span>                :            :                 const time_type&amp; a_time) const 
+<span class="lineNum">     262 </span>                :            :     {
+<span class="lineNum">     263 </span>                :            :       if (a_time.is_special()) { 
+<span class="lineNum">     264 </span>                :            :         return this-&gt;do_put_special(a_next, a_ios, a_fill, 
+<span class="lineNum">     265 </span>                :            :                               a_time.date().as_special());
+<span class="lineNum">     266 </span>                :            :       }
+<span class="lineNum">     267 </span>                :            :       string_type format(this-&gt;m_format);
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :            :       string_type frac_str;
+<span class="lineNum">     270 </span>                :            :       if (format.find(seconds_with_fractional_seconds_format) != string_type::npos) {
+<span class="lineNum">     271 </span>                :            :         // replace %s with %S.nnn 
+<span class="lineNum">     272 </span>                :            :         frac_str = 
+<span class="lineNum">     273 </span>                :            :           fractional_seconds_as_string(a_time.time_of_day(), false);
+<span class="lineNum">     274 </span>                :            :         char_type sep = std::use_facet&lt;std::numpunct&lt;char_type&gt; &gt;(a_ios.getloc()).decimal_point();
+<span class="lineNum">     275 </span>                :            :         
+<span class="lineNum">     276 </span>                :            :         string_type replace_string(seconds_format);
+<span class="lineNum">     277 </span>                :            :         replace_string += sep;
+<span class="lineNum">     278 </span>                :            :         replace_string += frac_str;
+<span class="lineNum">     279 </span>                :            :         boost::algorithm::replace_all(format, 
+<span class="lineNum">     280 </span>                :            :                                       seconds_with_fractional_seconds_format, 
+<span class="lineNum">     281 </span>                :            :                                       replace_string);
+<span class="lineNum">     282 </span>                :            :       }
+<span class="lineNum">     283 </span>                :            :       /* NOTE: replacing posix_zone_string_format must be done BEFORE
+<span class="lineNum">     284 </span>                :            :        * zone_name_format: &quot;%ZP&quot; &amp; &quot;%Z&quot;, if Z is checked first it will 
+<span class="lineNum">     285 </span>                :            :        * incorrectly replace a zone_name where a posix_string should go */
+<span class="lineNum">     286 </span>                :            :       if (format.find(posix_zone_string_format) != string_type::npos) {
+<span class="lineNum">     287 </span>                :            :         if(a_time.zone_abbrev().empty()) {
+<span class="lineNum">     288 </span>                :            :           // if zone_abbrev() returns an empty string, we want to
+<span class="lineNum">     289 </span>                :            :           // erase posix_zone_string_format from format
+<span class="lineNum">     290 </span>                :            :           boost::algorithm::erase_all(format, posix_zone_string_format);
+<span class="lineNum">     291 </span>                :            :         }
+<span class="lineNum">     292 </span>                :            :         else{
+<span class="lineNum">     293 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     294 </span>                :            :                                         posix_zone_string_format,
+<span class="lineNum">     295 </span>                :            :                                         a_time.zone_as_posix_string());
+<span class="lineNum">     296 </span>                :            :         }
+<span class="lineNum">     297 </span>                :            :       }
+<span class="lineNum">     298 </span>                :            :       if (format.find(zone_name_format) != string_type::npos) {
+<span class="lineNum">     299 </span>                :            :         if(a_time.zone_name().empty()) {
+<span class="lineNum">     300 </span>                :            :           /* TODO: this'll probably create problems if a user places 
+<span class="lineNum">     301 </span>                :            :            * the zone_*_format flag in the format with a ptime. This 
+<span class="lineNum">     302 </span>                :            :            * code removes the flag from the default formats */
+<span class="lineNum">     303 </span>                :            : 
+<span class="lineNum">     304 </span>                :            :           // if zone_name() returns an empty string, we want to
+<span class="lineNum">     305 </span>                :            :           // erase zone_name_format &amp; one preceeding space
+<span class="lineNum">     306 </span>                :            :           std::basic_ostringstream&lt;char_type&gt; ss;
+<span class="lineNum">     307 </span>                :            :           ss &lt;&lt; ' ' &lt;&lt; zone_name_format;
+<span class="lineNum">     308 </span>                :            :           boost::algorithm::erase_all(format, ss.str());
+<span class="lineNum">     309 </span>                :            :         }
+<span class="lineNum">     310 </span>                :            :         else{
+<span class="lineNum">     311 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     312 </span>                :            :                                         zone_name_format,
+<span class="lineNum">     313 </span>                :            :                                         a_time.zone_name());
+<span class="lineNum">     314 </span>                :            :         }
+<span class="lineNum">     315 </span>                :            :       }
+<span class="lineNum">     316 </span>                :            :       if (format.find(zone_abbrev_format) != string_type::npos) {
+<span class="lineNum">     317 </span>                :            :         if(a_time.zone_abbrev(false).empty()) {
+<span class="lineNum">     318 </span>                :            :           /* TODO: this'll probably create problems if a user places 
+<span class="lineNum">     319 </span>                :            :            * the zone_*_format flag in the format with a ptime. This 
+<span class="lineNum">     320 </span>                :            :            * code removes the flag from the default formats */
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :           // if zone_abbrev() returns an empty string, we want to
+<span class="lineNum">     323 </span>                :            :           // erase zone_abbrev_format &amp; one preceeding space
+<span class="lineNum">     324 </span>                :            :           std::basic_ostringstream&lt;char_type&gt; ss;
+<span class="lineNum">     325 </span>                :            :           ss &lt;&lt; ' ' &lt;&lt; zone_abbrev_format;
+<span class="lineNum">     326 </span>                :            :           boost::algorithm::erase_all(format, ss.str());
+<span class="lineNum">     327 </span>                :            :         }
+<span class="lineNum">     328 </span>                :            :         else{
+<span class="lineNum">     329 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     330 </span>                :            :                                         zone_abbrev_format,
+<span class="lineNum">     331 </span>                :            :                                         a_time.zone_abbrev(false));
+<span class="lineNum">     332 </span>                :            :         }
+<span class="lineNum">     333 </span>                :            :       }
+<span class="lineNum">     334 </span>                :            :       if (format.find(zone_iso_extended_format) != string_type::npos) {
+<span class="lineNum">     335 </span>                :            :         if(a_time.zone_name(true).empty()) {
+<span class="lineNum">     336 </span>                :            :           /* TODO: this'll probably create problems if a user places 
+<span class="lineNum">     337 </span>                :            :            * the zone_*_format flag in the format with a ptime. This 
+<span class="lineNum">     338 </span>                :            :            * code removes the flag from the default formats */
+<span class="lineNum">     339 </span>                :            : 
+<span class="lineNum">     340 </span>                :            :           // if zone_name() returns an empty string, we want to
+<span class="lineNum">     341 </span>                :            :           // erase zone_iso_extended_format from format
+<span class="lineNum">     342 </span>                :            :           boost::algorithm::erase_all(format, zone_iso_extended_format);
+<span class="lineNum">     343 </span>                :            :         }
+<span class="lineNum">     344 </span>                :            :         else{
+<span class="lineNum">     345 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     346 </span>                :            :                                         zone_iso_extended_format,
+<span class="lineNum">     347 </span>                :            :                                         a_time.zone_name(true));
+<span class="lineNum">     348 </span>                :            :         }
+<span class="lineNum">     349 </span>                :            :       }
+<span class="lineNum">     350 </span>                :            : 
+<span class="lineNum">     351 </span>                :            :       if (format.find(zone_iso_format) != string_type::npos) {
+<span class="lineNum">     352 </span>                :            :         if(a_time.zone_abbrev(true).empty()) {
+<span class="lineNum">     353 </span>                :            :           /* TODO: this'll probably create problems if a user places 
+<span class="lineNum">     354 </span>                :            :            * the zone_*_format flag in the format with a ptime. This 
+<span class="lineNum">     355 </span>                :            :            * code removes the flag from the default formats */
+<span class="lineNum">     356 </span>                :            : 
+<span class="lineNum">     357 </span>                :            :           // if zone_abbrev() returns an empty string, we want to
+<span class="lineNum">     358 </span>                :            :           // erase zone_iso_format from format
+<span class="lineNum">     359 </span>                :            :           boost::algorithm::erase_all(format, zone_iso_format);
+<span class="lineNum">     360 </span>                :            :         }
+<span class="lineNum">     361 </span>                :            :         else{
+<span class="lineNum">     362 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     363 </span>                :            :                                         zone_iso_format,
+<span class="lineNum">     364 </span>                :            :                                         a_time.zone_abbrev(true));
+<span class="lineNum">     365 </span>                :            :         }
+<span class="lineNum">     366 </span>                :            :       }
+<span class="lineNum">     367 </span>                :            :       if (format.find(fractional_seconds_format) != string_type::npos) {
+<span class="lineNum">     368 </span>                :            :         // replace %f with nnnnnnn
+<span class="lineNum">     369 </span>                :            :         if (!frac_str.size()) {
+<span class="lineNum">     370 </span>                :            :           frac_str = fractional_seconds_as_string(a_time.time_of_day(), false);
+<span class="lineNum">     371 </span>                :            :         }
+<span class="lineNum">     372 </span>                :            :         boost::algorithm::replace_all(format,
+<span class="lineNum">     373 </span>                :            :                                       fractional_seconds_format, 
+<span class="lineNum">     374 </span>                :            :                                       frac_str);
+<span class="lineNum">     375 </span>                :            :       }
+<span class="lineNum">     376 </span>                :            : 
+<span class="lineNum">     377 </span>                :            :       if (format.find(fractional_seconds_or_none_format) != string_type::npos) {
+<span class="lineNum">     378 </span>                :            :         // replace %F with nnnnnnn or nothing if fs == 0
+<span class="lineNum">     379 </span>                :            :         frac_str = 
+<span class="lineNum">     380 </span>                :            :           fractional_seconds_as_string(a_time.time_of_day(), true);
+<span class="lineNum">     381 </span>                :            :         if (frac_str.size()) {
+<span class="lineNum">     382 </span>                :            :           char_type sep = std::use_facet&lt;std::numpunct&lt;char_type&gt; &gt;(a_ios.getloc()).decimal_point();
+<span class="lineNum">     383 </span>                :            :           string_type replace_string;
+<span class="lineNum">     384 </span>                :            :           replace_string += sep;
+<span class="lineNum">     385 </span>                :            :           replace_string += frac_str;
+<span class="lineNum">     386 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     387 </span>                :            :                                         fractional_seconds_or_none_format, 
+<span class="lineNum">     388 </span>                :            :                                         replace_string);
+<span class="lineNum">     389 </span>                :            :         }
+<span class="lineNum">     390 </span>                :            :         else {
+<span class="lineNum">     391 </span>                :            :           boost::algorithm::erase_all(format,
+<span class="lineNum">     392 </span>                :            :                                       fractional_seconds_or_none_format);
+<span class="lineNum">     393 </span>                :            :         }
+<span class="lineNum">     394 </span>                :            :       }
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :            :       return this-&gt;do_put_tm(a_next, a_ios, a_fill, 
+<span class="lineNum">     397 </span>                :            :                        to_tm(a_time), format);
+<span class="lineNum">     398 </span>                :            :     }
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :            :     //! put function for time_duration
+<span class="lineNum">     401 </span>                :            :     OutItrT put(OutItrT a_next, 
+<span class="lineNum">     402 </span>                :            :                 std::ios_base&amp; a_ios, 
+<span class="lineNum">     403 </span>                :            :                 char_type a_fill, 
+<span class="lineNum">     404 </span>                :            :                 const time_duration_type&amp; a_time_dur) const 
+<span class="lineNum">     405 </span>                :            :     {
+<span class="lineNum">     406 </span>                :            :       if (a_time_dur.is_special()) { 
+<span class="lineNum">     407 </span>                :            :         return this-&gt;do_put_special(a_next, a_ios, a_fill, 
+<span class="lineNum">     408 </span>                :            :                               a_time_dur.get_rep().as_special());
+<span class="lineNum">     409 </span>                :            :       }
+<span class="lineNum">     410 </span>                :            : 
+<span class="lineNum">     411 </span>                :            :       string_type format(m_time_duration_format);
+<span class="lineNum">     412 </span>                :            :       if (a_time_dur.is_negative()) {
+<span class="lineNum">     413 </span>                :            :         // replace %- with minus sign.  Should we use the numpunct facet?
+<span class="lineNum">     414 </span>                :            :         boost::algorithm::replace_all(format, 
+<span class="lineNum">     415 </span>                :            :                                       duration_sign_negative_only, 
+<span class="lineNum">     416 </span>                :            :                                       negative_sign);
+<span class="lineNum">     417 </span>                :            :           // remove all the %+ in the string with '-'
+<span class="lineNum">     418 </span>                :            :         boost::algorithm::replace_all(format, 
+<span class="lineNum">     419 </span>                :            :                                       duration_sign_always, 
+<span class="lineNum">     420 </span>                :            :                                       negative_sign);
+<span class="lineNum">     421 </span>                :            :       }
+<span class="lineNum">     422 </span>                :            :       else { //duration is positive
+<span class="lineNum">     423 </span>                :            :         // remove all the %- combos from the string
+<span class="lineNum">     424 </span>                :            :         boost::algorithm::erase_all(format, duration_sign_negative_only);
+<span class="lineNum">     425 </span>                :            :         // remove all the %+ in the string with '+'
+<span class="lineNum">     426 </span>                :            :         boost::algorithm::replace_all(format, 
+<span class="lineNum">     427 </span>                :            :                                       duration_sign_always, 
+<span class="lineNum">     428 </span>                :            :                                       positive_sign);
+<span class="lineNum">     429 </span>                :            :       }
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :            :       /*
+<span class="lineNum">     432 </span>                :            :        * It is possible for a time duration to span more then 24 hours.  
+<span class="lineNum">     433 </span>                :            :        * Standard time_put::put is obliged to behave the same as strftime 
+<span class="lineNum">     434 </span>                :            :        * (See ISO 14882-2003 22.2.5.3.1 par. 1) and strftime's behavior is 
+<span class="lineNum">     435 </span>                :            :        * unspecified for the case when tm_hour field is outside 0-23 range 
+<span class="lineNum">     436 </span>                :            :        * (See ISO 9899-1999 7.23.3.5 par. 3). So we must output %H and %O
+<span class="lineNum">     437 </span>                :            :        * here ourself.
+<span class="lineNum">     438 </span>                :            :        */
+<span class="lineNum">     439 </span>                :            :       string_type hours_str;
+<span class="lineNum">     440 </span>                :            :       if (format.find(unrestricted_hours_format) != string_type::npos) {
+<span class="lineNum">     441 </span>                :            :         hours_str = hours_as_string(a_time_dur);
+<span class="lineNum">     442 </span>                :            :         boost::algorithm::replace_all(format, unrestricted_hours_format, hours_str);
+<span class="lineNum">     443 </span>                :            :       }
+<span class="lineNum">     444 </span>                :            :       // We still have to process restricted hours format specifier. In order to
+<span class="lineNum">     445 </span>                :            :       // support parseability of durations in ISO format (%H%M%S), we'll have to
+<span class="lineNum">     446 </span>                :            :       // restrict the stringified hours length to 2 characters.
+<span class="lineNum">     447 </span>                :            :       if (format.find(hours_format) != string_type::npos) {
+<span class="lineNum">     448 </span>                :            :         if (hours_str.empty())
+<span class="lineNum">     449 </span>                :            :           hours_str = hours_as_string(a_time_dur);
+<span class="lineNum">     450 </span>                :            :         BOOST_ASSERT(hours_str.length() &lt;= 2);
+<span class="lineNum">     451 </span>                :            :         boost::algorithm::replace_all(format, hours_format, hours_str);
+<span class="lineNum">     452 </span>                :            :       }
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :            :       string_type frac_str;
+<span class="lineNum">     455 </span>                :            :       if (format.find(seconds_with_fractional_seconds_format) != string_type::npos) {
+<span class="lineNum">     456 </span>                :            :         // replace %s with %S.nnn 
+<span class="lineNum">     457 </span>                :            :         frac_str = 
+<span class="lineNum">     458 </span>                :            :           fractional_seconds_as_string(a_time_dur, false);
+<span class="lineNum">     459 </span>                :            :         char_type sep = std::use_facet&lt;std::numpunct&lt;char_type&gt; &gt;(a_ios.getloc()).decimal_point();
+<span class="lineNum">     460 </span>                :            :         
+<span class="lineNum">     461 </span>                :            :         string_type replace_string(seconds_format);
+<span class="lineNum">     462 </span>                :            :         replace_string += sep;
+<span class="lineNum">     463 </span>                :            :         replace_string += frac_str;
+<span class="lineNum">     464 </span>                :            :         boost::algorithm::replace_all(format, 
+<span class="lineNum">     465 </span>                :            :                                       seconds_with_fractional_seconds_format, 
+<span class="lineNum">     466 </span>                :            :                                       replace_string);
+<span class="lineNum">     467 </span>                :            :       }
+<span class="lineNum">     468 </span>                :            :       if (format.find(fractional_seconds_format) != string_type::npos) {
+<span class="lineNum">     469 </span>                :            :         // replace %f with nnnnnnn
+<span class="lineNum">     470 </span>                :            :         if (!frac_str.size()) {
+<span class="lineNum">     471 </span>                :            :           frac_str = fractional_seconds_as_string(a_time_dur, false);
+<span class="lineNum">     472 </span>                :            :         }
+<span class="lineNum">     473 </span>                :            :         boost::algorithm::replace_all(format,
+<span class="lineNum">     474 </span>                :            :                                       fractional_seconds_format, 
+<span class="lineNum">     475 </span>                :            :                                       frac_str);
+<span class="lineNum">     476 </span>                :            :       }
+<span class="lineNum">     477 </span>                :            : 
+<span class="lineNum">     478 </span>                :            :       if (format.find(fractional_seconds_or_none_format) != string_type::npos) {
+<span class="lineNum">     479 </span>                :            :         // replace %F with nnnnnnn or nothing if fs == 0
+<span class="lineNum">     480 </span>                :            :         frac_str = 
+<span class="lineNum">     481 </span>                :            :           fractional_seconds_as_string(a_time_dur, true);
+<span class="lineNum">     482 </span>                :            :         if (frac_str.size()) {
+<span class="lineNum">     483 </span>                :            :           char_type sep = std::use_facet&lt;std::numpunct&lt;char_type&gt; &gt;(a_ios.getloc()).decimal_point();
+<span class="lineNum">     484 </span>                :            :           string_type replace_string;
+<span class="lineNum">     485 </span>                :            :           replace_string += sep;
+<span class="lineNum">     486 </span>                :            :           replace_string += frac_str;
+<span class="lineNum">     487 </span>                :            :           boost::algorithm::replace_all(format,
+<span class="lineNum">     488 </span>                :            :                                         fractional_seconds_or_none_format, 
+<span class="lineNum">     489 </span>                :            :                                         replace_string);
+<span class="lineNum">     490 </span>                :            :         }
+<span class="lineNum">     491 </span>                :            :         else {
+<span class="lineNum">     492 </span>                :            :           boost::algorithm::erase_all(format,
+<span class="lineNum">     493 </span>                :            :                                       fractional_seconds_or_none_format);
+<span class="lineNum">     494 </span>                :            :         }
+<span class="lineNum">     495 </span>                :            :       }
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :            :       return this-&gt;do_put_tm(a_next, a_ios, a_fill, 
+<span class="lineNum">     498 </span>                :            :                        to_tm(a_time_dur), format);
+<span class="lineNum">     499 </span>                :            :     }
+<span class="lineNum">     500 </span>                :            :     
+<span class="lineNum">     501 </span>                :            :     OutItrT put(OutItrT next, std::ios_base&amp; a_ios, 
+<span class="lineNum">     502 </span>                :            :                 char_type fill, const period_type&amp; p) const 
+<span class="lineNum">     503 </span>                :            :     {
+<span class="lineNum">     504 </span>                :            :       return this-&gt;m_period_formatter.put_period(next, a_ios, fill,p,*this);
+<span class="lineNum">     505 </span>                :            :     }
+<span class="lineNum">     506 </span>                :            : 
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :            :   protected:
+<span class="lineNum">     509 </span>                :            : 
+<span class="lineNum">     510 </span>                :            :     static 
+<span class="lineNum">     511 </span>                :            :     string_type 
+<span class="lineNum">     512 </span>                :            :     fractional_seconds_as_string(const time_duration_type&amp; a_time,
+<span class="lineNum">     513 </span>                :            :                                  bool null_when_zero) 
+<span class="lineNum">     514 </span>                :            :     {
+<span class="lineNum">     515 </span>                :            :       typename time_duration_type::fractional_seconds_type frac_sec = 
+<span class="lineNum">     516 </span>                :            :         a_time.fractional_seconds();
+<span class="lineNum">     517 </span>                :            : 
+<span class="lineNum">     518 </span>                :            :       if (null_when_zero &amp;&amp; (frac_sec == 0)) {
+<span class="lineNum">     519 </span>                :            :         return string_type();
+<span class="lineNum">     520 </span>                :            :       }
+<span class="lineNum">     521 </span>                :            : 
+<span class="lineNum">     522 </span>                :            :       //make sure there is no sign
+<span class="lineNum">     523 </span>                :            :       return integral_as_string(
+<span class="lineNum">     524 </span>                :            :         date_time::absolute_value(frac_sec),
+<span class="lineNum">     525 </span>                :            :         time_duration_type::num_fractional_digits());
+<span class="lineNum">     526 </span>                :            :     }
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>                :            :     static
+<span class="lineNum">     529 </span>                :            :     string_type
+<span class="lineNum">     530 </span>                :            :     hours_as_string(const time_duration_type&amp; a_time, int width = 2)
+<span class="lineNum">     531 </span>                :            :     {
+<span class="lineNum">     532 </span>                :            :       return integral_as_string(date_time::absolute_value(a_time.hours()), width);
+<span class="lineNum">     533 </span>                :            :     }
+<span class="lineNum">     534 </span>                :            : 
+<span class="lineNum">     535 </span>                :            :     template&lt; typename IntT &gt;
+<span class="lineNum">     536 </span>                :            :     static
+<span class="lineNum">     537 </span>                :            :     string_type
+<span class="lineNum">     538 </span>                :            :     integral_as_string(IntT val, int width = 2)
+<span class="lineNum">     539 </span>                :            :     {
+<span class="lineNum">     540 </span>                :            :       std::basic_ostringstream&lt;char_type&gt; ss;
+<span class="lineNum">     541 </span>                :            :       ss.imbue(std::locale::classic()); // don't want any formatting
+<span class="lineNum">     542 </span>                :            :       ss &lt;&lt; std::setw(width) 
+<span class="lineNum">     543 </span>                :            :         &lt;&lt; std::setfill(static_cast&lt;char_type&gt;('0'));
+<span class="lineNum">     544 </span>                :            : #if (defined(BOOST_MSVC) &amp;&amp; (_MSC_VER &lt; 1300))
+<span class="lineNum">     545 </span>                :            :       // JDG [7/6/02 VC++ compatibility]
+<span class="lineNum">     546 </span>                :            :       char_type buff[34];
+<span class="lineNum">     547 </span>                :            :       ss &lt;&lt; _i64toa(static_cast&lt;boost::int64_t&gt;(val), buff, 10);
+<span class="lineNum">     548 </span>                :            : #else
+<span class="lineNum">     549 </span>                :            :       ss &lt;&lt; val;
+<span class="lineNum">     550 </span>                :            : #endif
+<span class="lineNum">     551 </span>                :            :       return ss.str();
+<span class="lineNum">     552 </span>                :            :     }
+<span class="lineNum">     553 </span>                :            : 
+<span class="lineNum">     554 </span>                :            :   private:
+<span class="lineNum">     555 </span>                :            :     string_type m_time_duration_format;
+<span class="lineNum">     556 </span>                :            : 
+<span class="lineNum">     557 </span>                :            :   };
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     560 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 72 times"> + </span>]:<span class="lineCov">         84 :   std::locale::id time_facet&lt;time_type, CharT, OutItrT&gt;::id;</span>
+<span class="lineNum">     561 </span>                :            : 
+<span class="lineNum">     562 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     563 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type* 
+<span class="lineNum">     564 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::fractional_seconds_format = time_formats&lt;CharT&gt;::fractional_seconds_format;
+<span class="lineNum">     565 </span>                :            : 
+<span class="lineNum">     566 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     567 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type* 
+<span class="lineNum">     568 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::fractional_seconds_or_none_format = time_formats&lt;CharT&gt;::fractional_seconds_or_none_format;
+<span class="lineNum">     569 </span>                :            : 
+<span class="lineNum">     570 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     571 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type* 
+<span class="lineNum">     572 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::seconds_with_fractional_seconds_format = 
+<span class="lineNum">     573 </span>                :            :     time_formats&lt;CharT&gt;::seconds_with_fractional_seconds_format;
+<span class="lineNum">     574 </span>                :            : 
+<span class="lineNum">     575 </span>                :            : 
+<span class="lineNum">     576 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     577 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     578 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::zone_name_format =  time_formats&lt;CharT&gt;::zone_name_format;
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     581 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     582 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::zone_abbrev_format =  time_formats&lt;CharT&gt;::zone_abbrev_format;
+<span class="lineNum">     583 </span>                :            : 
+<span class="lineNum">     584 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     585 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     586 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::zone_iso_extended_format =time_formats&lt;CharT&gt;::zone_iso_extended_format;
+<span class="lineNum">     587 </span>                :            : 
+<span class="lineNum">     588 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     589 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     590 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::posix_zone_string_format =time_formats&lt;CharT&gt;::posix_zone_string_format;
+<span class="lineNum">     591 </span>                :            : 
+<span class="lineNum">     592 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     593 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     594 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::zone_iso_format =  time_formats&lt;CharT&gt;::zone_iso_format;
+<span class="lineNum">     595 </span>                :            : 
+<span class="lineNum">     596 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     597 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     598 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::seconds_format =  time_formats&lt;CharT&gt;::seconds_format;
+<span class="lineNum">     599 </span>                :            : 
+<span class="lineNum">     600 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     601 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     602 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::hours_format =  time_formats&lt;CharT&gt;::hours_format;
+<span class="lineNum">     603 </span>                :            : 
+<span class="lineNum">     604 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     605 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     606 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::unrestricted_hours_format =  time_formats&lt;CharT&gt;::unrestricted_hours_format;
+<span class="lineNum">     607 </span>                :            : 
+<span class="lineNum">     608 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     609 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     610 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::standard_format =  time_formats&lt;CharT&gt;::standard_format;
+<span class="lineNum">     611 </span>                :            : 
+<span class="lineNum">     612 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     613 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     614 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::duration_seperator =  time_formats&lt;CharT&gt;::duration_seperator;
+<span class="lineNum">     615 </span>                :            : 
+<span class="lineNum">     616 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     617 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     618 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::negative_sign =  time_formats&lt;CharT&gt;::negative_sign;
+<span class="lineNum">     619 </span>                :            : 
+<span class="lineNum">     620 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     621 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     622 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::positive_sign =  time_formats&lt;CharT&gt;::positive_sign;
+<span class="lineNum">     623 </span>                :            : 
+<span class="lineNum">     624 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     625 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     626 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::duration_sign_negative_only =  time_formats&lt;CharT&gt;::duration_sign_negative_only;
+<span class="lineNum">     627 </span>                :            : 
+<span class="lineNum">     628 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     629 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     630 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::duration_sign_always =  time_formats&lt;CharT&gt;::duration_sign_always;
+<span class="lineNum">     631 </span>                :            : 
+<span class="lineNum">     632 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     633 </span>                :            :   const typename time_facet&lt;time_type,CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     634 </span>                :            :   time_facet&lt;time_type,CharT, OutItrT&gt;::iso_time_format_specifier = time_formats&lt;CharT&gt;::iso_time_format_specifier;
+<span class="lineNum">     635 </span>                :            : 
+<span class="lineNum">     636 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     637 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     638 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::iso_time_format_extended_specifier = time_formats&lt;CharT&gt;::iso_time_format_extended_specifier;
+<span class="lineNum">     639 </span>                :            : 
+<span class="lineNum">     640 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     641 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type*
+<span class="lineNum">     642 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::default_time_format = 
+<span class="lineNum">     643 </span>                :            :     time_formats&lt;CharT&gt;::default_time_format;
+<span class="lineNum">     644 </span>                :            : 
+<span class="lineNum">     645 </span>                :            :   template &lt;class time_type, class CharT, class OutItrT&gt;  
+<span class="lineNum">     646 </span>                :            :   const typename time_facet&lt;time_type, CharT, OutItrT&gt;::char_type* 
+<span class="lineNum">     647 </span>                :            :   time_facet&lt;time_type, CharT, OutItrT&gt;::default_time_duration_format = 
+<span class="lineNum">     648 </span>                :            :     time_formats&lt;CharT&gt;::default_time_duration_format;
+<span class="lineNum">     649 </span>                :            : 
+<span class="lineNum">     650 </span>                :            : 
+<span class="lineNum">     651 </span>                :            :   //! Facet for format-based input.  
+<span class="lineNum">     652 </span>                :            :   /*!
+<span class="lineNum">     653 </span>                :            :    */
+<span class="lineNum">     654 </span>                :            :   template &lt;class time_type,
+<span class="lineNum">     655 </span>                :            :             class CharT, 
+<span class="lineNum">     656 </span>                :            :             class InItrT = std::istreambuf_iterator&lt;CharT, std::char_traits&lt;CharT&gt; &gt; &gt;
+<span class="lineNum">     657 </span>                :            :   class time_input_facet : 
+<span class="lineNum">     658 </span>                :            :     public boost::date_time::date_input_facet&lt;typename time_type::date_type , CharT, InItrT&gt; {
+<span class="lineNum">     659 </span>                :            :     public:
+<span class="lineNum">     660 </span>                :            :       typedef typename time_type::date_type date_type;
+<span class="lineNum">     661 </span>                :            :       typedef typename time_type::time_duration_type time_duration_type;
+<span class="lineNum">     662 </span>                :            :       typedef typename time_duration_type::fractional_seconds_type fracional_seconds_type;
+<span class="lineNum">     663 </span>                :            :       typedef boost::date_time::period&lt;time_type,time_duration_type&gt; period_type;
+<span class="lineNum">     664 </span>                :            :       typedef boost::date_time::date_input_facet&lt;typename time_type::date_type, CharT, InItrT&gt; base_type;
+<span class="lineNum">     665 </span>                :            :       typedef typename base_type::duration_type date_duration_type;
+<span class="lineNum">     666 </span>                :            :       typedef typename base_type::year_type year_type;
+<span class="lineNum">     667 </span>                :            :       typedef typename base_type::month_type month_type;
+<span class="lineNum">     668 </span>                :            :       typedef typename base_type::day_type day_type;
+<span class="lineNum">     669 </span>                :            :       typedef typename base_type::string_type string_type;
+<span class="lineNum">     670 </span>                :            :       typedef typename string_type::const_iterator const_itr;
+<span class="lineNum">     671 </span>                :            :       typedef typename base_type::char_type   char_type;
+<span class="lineNum">     672 </span>                :            :       typedef typename base_type::format_date_parser_type format_date_parser_type;
+<span class="lineNum">     673 </span>                :            :       typedef typename base_type::period_parser_type period_parser_type;
+<span class="lineNum">     674 </span>                :            :       typedef typename base_type::special_values_parser_type special_values_parser_type;
+<span class="lineNum">     675 </span>                :            :       typedef typename base_type::date_gen_parser_type date_gen_parser_type;
+<span class="lineNum">     676 </span>                :            :       typedef typename base_type::special_values_parser_type::match_results match_results;
+<span class="lineNum">     677 </span>                :            : 
+<span class="lineNum">     678 </span>                :            :       static const char_type* fractional_seconds_format;                // f
+<span class="lineNum">     679 </span>                :            :       static const char_type* fractional_seconds_or_none_format;        // F
+<span class="lineNum">     680 </span>                :            :       static const char_type* seconds_with_fractional_seconds_format;   // s
+<span class="lineNum">     681 </span>                :            :       static const char_type* seconds_format;                           // S
+<span class="lineNum">     682 </span>                :            :       static const char_type* standard_format;                          // x X
+<span class="lineNum">     683 </span>                :            :       static const char_type* zone_abbrev_format;                       // z
+<span class="lineNum">     684 </span>                :            :       static const char_type* zone_name_format;                         // Z
+<span class="lineNum">     685 </span>                :            :       static const char_type* zone_iso_format;                          // q
+<span class="lineNum">     686 </span>                :            :       static const char_type* zone_iso_extended_format;                 // Q
+<span class="lineNum">     687 </span>                :            :       static const char_type* duration_seperator;
+<span class="lineNum">     688 </span>                :            :       static const char_type* iso_time_format_specifier;
+<span class="lineNum">     689 </span>                :            :       static const char_type* iso_time_format_extended_specifier;
+<span class="lineNum">     690 </span>                :            :       static const char_type* default_time_input_format; 
+<span class="lineNum">     691 </span>                :            :       static const char_type* default_time_duration_format;
+<span class="lineNum">     692 </span>                :            :       static std::locale::id id;
+<span class="lineNum">     693 </span>                :            : 
+<span class="lineNum">     694 </span>                :            :       //! Constructor that takes a format string for a ptime
+<span class="lineNum">     695 </span>                :            :       explicit time_input_facet(const string_type&amp; format, ::size_t a_ref = 0) 
+<span class="lineNum">     696 </span>                :            :         : base_type(format, a_ref), 
+<span class="lineNum">     697 </span>                :            :           m_time_duration_format(default_time_duration_format)
+<span class="lineNum">     698 </span>                :            :       { }
+<span class="lineNum">     699 </span>                :            : 
+<span class="lineNum">     700 </span>                :            :       explicit time_input_facet(const string_type&amp; format,
+<span class="lineNum">     701 </span>                :            :                                 const format_date_parser_type&amp; date_parser,
+<span class="lineNum">     702 </span>                :            :                                 const special_values_parser_type&amp; sv_parser,
+<span class="lineNum">     703 </span>                :            :                                 const period_parser_type&amp; per_parser,
+<span class="lineNum">     704 </span>                :            :                                 const date_gen_parser_type&amp; date_gen_parser,
+<span class="lineNum">     705 </span>                :            :                                 ::size_t a_ref = 0)
+<span class="lineNum">     706 </span>                :            :         : base_type(format,
+<span class="lineNum">     707 </span>                :            :                     date_parser,
+<span class="lineNum">     708 </span>                :            :                     sv_parser,
+<span class="lineNum">     709 </span>                :            :                     per_parser,
+<span class="lineNum">     710 </span>                :            :                     date_gen_parser,
+<span class="lineNum">     711 </span>                :            :                     a_ref), 
+<span class="lineNum">     712 </span>                :            :           m_time_duration_format(default_time_duration_format)
+<span class="lineNum">     713 </span>                :            :       {}
+<span class="lineNum">     714 </span>                :            : 
+<span class="lineNum">     715 </span>                :            :       //! sets default formats for ptime, local_date_time, and time_duration
+<span class="lineNum">     716 </span>                :            :       explicit time_input_facet(::size_t a_ref = 0) 
+<span class="lineNum">     717 </span>                :            :         : base_type(default_time_input_format, a_ref), 
+<span class="lineNum">     718 </span>                :            :           m_time_duration_format(default_time_duration_format)
+<span class="lineNum">     719 </span>                :            :       { }
+<span class="lineNum">     720 </span>                :            :       
+<span class="lineNum">     721 </span>                :            :       //! Set the format for time_duration
+<span class="lineNum">     722 </span>                :            :       void time_duration_format(const char_type* const format) {
+<span class="lineNum">     723 </span>                :            :         m_time_duration_format = format;
+<span class="lineNum">     724 </span>                :            :       }
+<span class="lineNum">     725 </span>                :            :       virtual void set_iso_format()
+<span class="lineNum">     726 </span>                :            :       {
+<span class="lineNum">     727 </span>                :            :         this-&gt;m_format = iso_time_format_specifier;
+<span class="lineNum">     728 </span>                :            :       }
+<span class="lineNum">     729 </span>                :            :       virtual void set_iso_extended_format()
+<span class="lineNum">     730 </span>                :            :       {
+<span class="lineNum">     731 </span>                :            :         this-&gt;m_format = iso_time_format_extended_specifier;
+<span class="lineNum">     732 </span>                :            :       }
+<span class="lineNum">     733 </span>                :            :       
+<span class="lineNum">     734 </span>                :            :       InItrT get(InItrT&amp; sitr,
+<span class="lineNum">     735 </span>                :            :                  InItrT&amp; stream_end,
+<span class="lineNum">     736 </span>                :            :                  std::ios_base&amp; a_ios,
+<span class="lineNum">     737 </span>                :            :                  period_type&amp; p) const
+<span class="lineNum">     738 </span>                :            :       {
+<span class="lineNum">     739 </span>                :            :         p = this-&gt;m_period_parser.get_period(sitr, 
+<span class="lineNum">     740 </span>                :            :                                              stream_end, 
+<span class="lineNum">     741 </span>                :            :                                              a_ios, 
+<span class="lineNum">     742 </span>                :            :                                              p, 
+<span class="lineNum">     743 </span>                :            :                                              time_duration_type::unit(), 
+<span class="lineNum">     744 </span>                :            :                                              *this);
+<span class="lineNum">     745 </span>                :            :         return sitr;
+<span class="lineNum">     746 </span>                :            :       }
+<span class="lineNum">     747 </span>                :            :       
+<span class="lineNum">     748 </span>                :            :       //default ptime format is YYYY-Mon-DD HH:MM:SS[.fff...][ zzz]
+<span class="lineNum">     749 </span>                :            :       //default time_duration format is %H:%M:%S%F HH:MM:SS[.fff...]
+<span class="lineNum">     750 </span>                :            : 
+<span class="lineNum">     751 </span>                :            :       InItrT get(InItrT&amp; sitr, 
+<span class="lineNum">     752 </span>                :            :                  InItrT&amp; stream_end, 
+<span class="lineNum">     753 </span>                :            :                  std::ios_base&amp; a_ios, 
+<span class="lineNum">     754 </span>                :            :                  time_duration_type&amp; td) const
+<span class="lineNum">     755 </span>                :            :       {
+<span class="lineNum">     756 </span>                :            :         // skip leading whitespace
+<span class="lineNum">     757 </span>                :            :         while((sitr != stream_end) &amp;&amp; std::isspace(*sitr)) { ++sitr; }
+<span class="lineNum">     758 </span>                :            :         
+<span class="lineNum">     759 </span>                :            :         bool use_current_char = false;
+<span class="lineNum">     760 </span>                :            :         
+<span class="lineNum">     761 </span>                :            :         // num_get will consume the +/-, we may need a copy if special_value
+<span class="lineNum">     762 </span>                :            :         char_type c = '\0';
+<span class="lineNum">     763 </span>                :            :         if((sitr != stream_end) &amp;&amp; (*sitr == '-' || *sitr == '+')) {
+<span class="lineNum">     764 </span>                :            :           c = *sitr;
+<span class="lineNum">     765 </span>                :            :         }
+<span class="lineNum">     766 </span>                :            :         
+<span class="lineNum">     767 </span>                :            :         typedef typename time_duration_type::hour_type hour_type;
+<span class="lineNum">     768 </span>                :            :         typedef typename time_duration_type::min_type min_type;
+<span class="lineNum">     769 </span>                :            :         typedef typename time_duration_type::sec_type sec_type;
+<span class="lineNum">     770 </span>                :            : 
+<span class="lineNum">     771 </span>                :            :         hour_type hour = 0; 
+<span class="lineNum">     772 </span>                :            :         min_type min = 0; 
+<span class="lineNum">     773 </span>                :            :         sec_type sec = 0; 
+<span class="lineNum">     774 </span>                :            :         typename time_duration_type::fractional_seconds_type frac(0);
+<span class="lineNum">     775 </span>                :            : 
+<span class="lineNum">     776 </span>                :            :         typedef std::num_get&lt;CharT, InItrT&gt; num_get;
+<span class="lineNum">     777 </span>                :            :         if(!std::has_facet&lt;num_get&gt;(a_ios.getloc())) {
+<span class="lineNum">     778 </span>                :            :           num_get* ng = new num_get();
+<span class="lineNum">     779 </span>                :            :           std::locale loc = std::locale(a_ios.getloc(), ng);
+<span class="lineNum">     780 </span>                :            :           a_ios.imbue(loc);
+<span class="lineNum">     781 </span>                :            :         }
+<span class="lineNum">     782 </span>                :            :        
+<span class="lineNum">     783 </span>                :            :         const_itr itr(m_time_duration_format.begin());
+<span class="lineNum">     784 </span>                :            :         while (itr != m_time_duration_format.end() &amp;&amp; (sitr != stream_end)) {
+<span class="lineNum">     785 </span>                :            :           if (*itr == '%') {
+<span class="lineNum">     786 </span>                :            :             ++itr;
+<span class="lineNum">     787 </span>                :            :             if (*itr != '%') {
+<span class="lineNum">     788 </span>                :            :               switch(*itr) {
+<span class="lineNum">     789 </span>                :            :               case 'O': 
+<span class="lineNum">     790 </span>                :            :                 {
+<span class="lineNum">     791 </span>                :            :                   // A period may span more than 24 hours. In that case the format
+<span class="lineNum">     792 </span>                :            :                   // string should be composed with the unrestricted hours specifier.
+<span class="lineNum">     793 </span>                :            :                   hour = var_string_to_int&lt;hour_type, CharT&gt;(sitr, stream_end, 
+<span class="lineNum">     794 </span>                :            :                                       std::numeric_limits&lt;hour_type&gt;::digits10 + 1);
+<span class="lineNum">     795 </span>                :            :                   if(hour == -1){
+<span class="lineNum">     796 </span>                :            :                      return check_special_value(sitr, stream_end, td, c);
+<span class="lineNum">     797 </span>                :            :                   }
+<span class="lineNum">     798 </span>                :            :                   break;
+<span class="lineNum">     799 </span>                :            :                 }
+<span class="lineNum">     800 </span>                :            :               case 'H': 
+<span class="lineNum">     801 </span>                :            :                 {
+<span class="lineNum">     802 </span>                :            :                   match_results mr;
+<span class="lineNum">     803 </span>                :            :                   hour = fixed_string_to_int&lt;hour_type, CharT&gt;(sitr, stream_end, mr, 2);
+<span class="lineNum">     804 </span>                :            :                   if(hour == -1){
+<span class="lineNum">     805 </span>                :            :                      return check_special_value(sitr, stream_end, td, c);
+<span class="lineNum">     806 </span>                :            :                   }
+<span class="lineNum">     807 </span>                :            :                   break;
+<span class="lineNum">     808 </span>                :            :                 }
+<span class="lineNum">     809 </span>                :            :               case 'M': 
+<span class="lineNum">     810 </span>                :            :                 {
+<span class="lineNum">     811 </span>                :            :                   match_results mr;
+<span class="lineNum">     812 </span>                :            :                   min = fixed_string_to_int&lt;min_type, CharT&gt;(sitr, stream_end, mr, 2);
+<span class="lineNum">     813 </span>                :            :                   if(min == -1){
+<span class="lineNum">     814 </span>                :            :                      return check_special_value(sitr, stream_end, td, c);
+<span class="lineNum">     815 </span>                :            :                   }
+<span class="lineNum">     816 </span>                :            :                   break;
+<span class="lineNum">     817 </span>                :            :                 }
+<span class="lineNum">     818 </span>                :            :               case 's':
+<span class="lineNum">     819 </span>                :            :               case 'S': 
+<span class="lineNum">     820 </span>                :            :                 {
+<span class="lineNum">     821 </span>                :            :                   match_results mr;
+<span class="lineNum">     822 </span>                :            :                   sec = fixed_string_to_int&lt;sec_type, CharT&gt;(sitr, stream_end, mr, 2);
+<span class="lineNum">     823 </span>                :            :                   if(sec == -1){
+<span class="lineNum">     824 </span>                :            :                      return check_special_value(sitr, stream_end, td, c);
+<span class="lineNum">     825 </span>                :            :                   }
+<span class="lineNum">     826 </span>                :            :                   if (*itr == 'S')
+<span class="lineNum">     827 </span>                :            :                     break;
+<span class="lineNum">     828 </span>                :            :                   // %s is the same as %S%f so we drop through into %f
+<span class="lineNum">     829 </span>                :            :                 }
+<span class="lineNum">     830 </span>                :            :               case 'f':
+<span class="lineNum">     831 </span>                :            :                 {
+<span class="lineNum">     832 </span>                :            :                   // check for decimal, check special_values if missing
+<span class="lineNum">     833 </span>                :            :                   if(*sitr == '.') {
+<span class="lineNum">     834 </span>                :            :                     ++sitr;
+<span class="lineNum">     835 </span>                :            :                     parse_frac_type(sitr, stream_end, frac);
+<span class="lineNum">     836 </span>                :            :                     // sitr will point to next expected char after this parsing 
+<span class="lineNum">     837 </span>                :            :                     // is complete so no need to advance it
+<span class="lineNum">     838 </span>                :            :                     use_current_char = true;
+<span class="lineNum">     839 </span>                :            :                   }
+<span class="lineNum">     840 </span>                :            :                   else {
+<span class="lineNum">     841 </span>                :            :                     return check_special_value(sitr, stream_end, td, c);
+<span class="lineNum">     842 </span>                :            :                   }
+<span class="lineNum">     843 </span>                :            :                   break;
+<span class="lineNum">     844 </span>                :            :                 }
+<span class="lineNum">     845 </span>                :            :               case 'F': 
+<span class="lineNum">     846 </span>                :            :                 {
+<span class="lineNum">     847 </span>                :            :                   // check for decimal, skip if missing
+<span class="lineNum">     848 </span>                :            :                   if(*sitr == '.') {
+<span class="lineNum">     849 </span>                :            :                     ++sitr;
+<span class="lineNum">     850 </span>                :            :                     parse_frac_type(sitr, stream_end, frac);
+<span class="lineNum">     851 </span>                :            :                     // sitr will point to next expected char after this parsing 
+<span class="lineNum">     852 </span>                :            :                     // is complete so no need to advance it
+<span class="lineNum">     853 </span>                :            :                     use_current_char = true;
+<span class="lineNum">     854 </span>                :            :                   }
+<span class="lineNum">     855 </span>                :            :                   else {
+<span class="lineNum">     856 </span>                :            :                     // nothing was parsed so we don't want to advance sitr
+<span class="lineNum">     857 </span>                :            :                     use_current_char = true;
+<span class="lineNum">     858 </span>                :            :                   }
+<span class="lineNum">     859 </span>                :            :                   break;
+<span class="lineNum">     860 </span>                :            :                 }
+<span class="lineNum">     861 </span>                :            :               default:
+<span class="lineNum">     862 </span>                :            :                 {} // ignore what we don't understand?
+<span class="lineNum">     863 </span>                :            :               }// switch
+<span class="lineNum">     864 </span>                :            :             }
+<span class="lineNum">     865 </span>                :            :             else { // itr == '%', second consecutive
+<span class="lineNum">     866 </span>                :            :               ++sitr;
+<span class="lineNum">     867 </span>                :            :             }
+<span class="lineNum">     868 </span>                :            :         
+<span class="lineNum">     869 </span>                :            :             ++itr; //advance past format specifier
+<span class="lineNum">     870 </span>                :            :           }
+<span class="lineNum">     871 </span>                :            :           else {  //skip past chars in format and in buffer
+<span class="lineNum">     872 </span>                :            :             ++itr;
+<span class="lineNum">     873 </span>                :            :             // set use_current_char when sitr is already 
+<span class="lineNum">     874 </span>                :            :             // pointing at the next character to process
+<span class="lineNum">     875 </span>                :            :             if (use_current_char) {
+<span class="lineNum">     876 </span>                :            :               use_current_char = false;
+<span class="lineNum">     877 </span>                :            :             }
+<span class="lineNum">     878 </span>                :            :             else {
+<span class="lineNum">     879 </span>                :            :               ++sitr;
+<span class="lineNum">     880 </span>                :            :             }
+<span class="lineNum">     881 </span>                :            :           }
+<span class="lineNum">     882 </span>                :            :         }
+<span class="lineNum">     883 </span>                :            : 
+<span class="lineNum">     884 </span>                :            :         td = time_duration_type(hour, min, sec, frac);
+<span class="lineNum">     885 </span>                :            :         return sitr;
+<span class="lineNum">     886 </span>                :            :       }
+<span class="lineNum">     887 </span>                :            :     
+<span class="lineNum">     888 </span>                :            : 
+<span class="lineNum">     889 </span>                :            :       //! Parses a time object from the input stream
+<span class="lineNum">     890 </span>                :            :       InItrT get(InItrT&amp; sitr, 
+<span class="lineNum">     891 </span>                :            :                  InItrT&amp; stream_end, 
+<span class="lineNum">     892 </span>                :            :                  std::ios_base&amp; a_ios, 
+<span class="lineNum">     893 </span>                :            :                  time_type&amp; t) const
+<span class="lineNum">     894 </span>                :            :       {
+<span class="lineNum">     895 </span>                :            :         string_type tz_str;
+<span class="lineNum">     896 </span>                :            :         return get(sitr, stream_end, a_ios, t, tz_str, false);
+<span class="lineNum">     897 </span>                :            :       }
+<span class="lineNum">     898 </span>                :            :       //! Expects a time_zone in the input stream
+<span class="lineNum">     899 </span>                :            :       InItrT get_local_time(InItrT&amp; sitr, 
+<span class="lineNum">     900 </span>                :            :                             InItrT&amp; stream_end, 
+<span class="lineNum">     901 </span>                :            :                             std::ios_base&amp; a_ios, 
+<span class="lineNum">     902 </span>                :            :                             time_type&amp; t,
+<span class="lineNum">     903 </span>                :            :                             string_type&amp; tz_str) const
+<span class="lineNum">     904 </span>                :            :       {
+<span class="lineNum">     905 </span>                :            :         return get(sitr, stream_end, a_ios, t, tz_str, true);
+<span class="lineNum">     906 </span>                :            :       }
+<span class="lineNum">     907 </span>                :            : 
+<span class="lineNum">     908 </span>                :            :     protected:
+<span class="lineNum">     909 </span>                :            : 
+<span class="lineNum">     910 </span>                :            :       InItrT get(InItrT&amp; sitr, 
+<span class="lineNum">     911 </span>                :            :                  InItrT&amp; stream_end, 
+<span class="lineNum">     912 </span>                :            :                  std::ios_base&amp; a_ios, 
+<span class="lineNum">     913 </span>                :            :                  time_type&amp; t,
+<span class="lineNum">     914 </span>                :            :                  string_type&amp; tz_str,
+<span class="lineNum">     915 </span>                :            :                  bool time_is_local) const
+<span class="lineNum">     916 </span>                :            :       {
+<span class="lineNum">     917 </span>                :            :         // skip leading whitespace
+<span class="lineNum">     918 </span>                :            :         while((sitr != stream_end) &amp;&amp; std::isspace(*sitr)) { ++sitr; }
+<span class="lineNum">     919 </span>                :            :         
+<span class="lineNum">     920 </span>                :            :         bool use_current_char = false;
+<span class="lineNum">     921 </span>                :            :         bool use_current_format_char = false; // used whith two character flags
+<span class="lineNum">     922 </span>                :            :         
+<span class="lineNum">     923 </span>                :            :         // num_get will consume the +/-, we may need a copy if special_value
+<span class="lineNum">     924 </span>                :            :         char_type c = '\0';
+<span class="lineNum">     925 </span>                :            :         if((sitr != stream_end) &amp;&amp; (*sitr == '-' || *sitr == '+')) {
+<span class="lineNum">     926 </span>                :            :           c = *sitr;
+<span class="lineNum">     927 </span>                :            :         }
+<span class="lineNum">     928 </span>                :            : 
+<span class="lineNum">     929 </span>                :            :         typedef typename time_duration_type::hour_type hour_type;
+<span class="lineNum">     930 </span>                :            :         typedef typename time_duration_type::min_type min_type;
+<span class="lineNum">     931 </span>                :            :         typedef typename time_duration_type::sec_type sec_type;
+<span class="lineNum">     932 </span>                :            : 
+<span class="lineNum">     933 </span>                :            :         // time elements
+<span class="lineNum">     934 </span>                :            :         hour_type hour = 0; 
+<span class="lineNum">     935 </span>                :            :         min_type min = 0; 
+<span class="lineNum">     936 </span>                :            :         sec_type sec = 0; 
+<span class="lineNum">     937 </span>                :            :         typename time_duration_type::fractional_seconds_type frac(0);
+<span class="lineNum">     938 </span>                :            :         // date elements
+<span class="lineNum">     939 </span>                :            :         short day_of_year(0);
+<span class="lineNum">     940 </span>                :            :         /* Initialized the following to their minimum values. These intermediate 
+<span class="lineNum">     941 </span>                :            :          * objects are used so we get specific exceptions when part of the input 
+<span class="lineNum">     942 </span>                :            :          * is unparsable. 
+<span class="lineNum">     943 </span>                :            :          * Ex: &quot;205-Jan-15&quot; will throw a bad_year, &quot;2005-Jsn-15&quot;- bad_month, etc.*/
+<span class="lineNum">     944 </span>                :            :         year_type t_year(1400);
+<span class="lineNum">     945 </span>                :            :         month_type t_month(1);
+<span class="lineNum">     946 </span>                :            :         day_type t_day(1);
+<span class="lineNum">     947 </span>                :            :         
+<span class="lineNum">     948 </span>                :            :         typedef std::num_get&lt;CharT, InItrT&gt; num_get;
+<span class="lineNum">     949 </span>                :            :         if(!std::has_facet&lt;num_get&gt;(a_ios.getloc())) {
+<span class="lineNum">     950 </span>                :            :           num_get* ng = new num_get();
+<span class="lineNum">     951 </span>                :            :           std::locale loc = std::locale(a_ios.getloc(), ng);
+<span class="lineNum">     952 </span>                :            :           a_ios.imbue(loc);
+<span class="lineNum">     953 </span>                :            :         }
+<span class="lineNum">     954 </span>                :            :        
+<span class="lineNum">     955 </span>                :            :         const_itr itr(this-&gt;m_format.begin());
+<span class="lineNum">     956 </span>                :            :         while (itr != this-&gt;m_format.end() &amp;&amp; (sitr != stream_end)) {
+<span class="lineNum">     957 </span>                :            :           if (*itr == '%') {
+<span class="lineNum">     958 </span>                :            :             ++itr;
+<span class="lineNum">     959 </span>                :            :             if (*itr != '%') {
+<span class="lineNum">     960 </span>                :            :               // the cases are grouped by date &amp; time flags - not alphabetical order
+<span class="lineNum">     961 </span>                :            :               switch(*itr) {
+<span class="lineNum">     962 </span>                :            :                 // date flags
+<span class="lineNum">     963 </span>                :            :                 case 'Y':
+<span class="lineNum">     964 </span>                :            :                 case 'y':
+<span class="lineNum">     965 </span>                :            :                   {
+<span class="lineNum">     966 </span>                :            :                     char_type cs[3] = { '%', *itr };
+<span class="lineNum">     967 </span>                :            :                     string_type s(cs);
+<span class="lineNum">     968 </span>                :            :                     match_results mr;
+<span class="lineNum">     969 </span>                :            :                     try {
+<span class="lineNum">     970 </span>                :            :                       t_year = this-&gt;m_parser.parse_year(sitr, stream_end, s, mr);
+<span class="lineNum">     971 </span>                :            :                     }
+<span class="lineNum">     972 </span>                :            :                     catch(std::out_of_range&amp;) { // base class for bad_year exception
+<span class="lineNum">     973 </span>                :            :                       if(this-&gt;m_sv_parser.match(sitr, stream_end, mr)) {
+<span class="lineNum">     974 </span>                :            :                         t = time_type(static_cast&lt;special_values&gt;(mr.current_match));
+<span class="lineNum">     975 </span>                :            :                         return sitr;
+<span class="lineNum">     976 </span>                :            :                       }
+<span class="lineNum">     977 </span>                :            :                       else {
+<span class="lineNum">     978 </span>                :            :                         throw; // rethrow bad_year
+<span class="lineNum">     979 </span>                :            :                       }
+<span class="lineNum">     980 </span>                :            :                     }
+<span class="lineNum">     981 </span>                :            :                     break;
+<span class="lineNum">     982 </span>                :            :                   }
+<span class="lineNum">     983 </span>                :            :                 case 'B':
+<span class="lineNum">     984 </span>                :            :                 case 'b':
+<span class="lineNum">     985 </span>                :            :                 case 'm':
+<span class="lineNum">     986 </span>                :            :                   {
+<span class="lineNum">     987 </span>                :            :                     char_type cs[3] = { '%', *itr };
+<span class="lineNum">     988 </span>                :            :                     string_type s(cs);
+<span class="lineNum">     989 </span>                :            :                     match_results mr;
+<span class="lineNum">     990 </span>                :            :                     try {
+<span class="lineNum">     991 </span>                :            :                       t_month = this-&gt;m_parser.parse_month(sitr, stream_end, s, mr);
+<span class="lineNum">     992 </span>                :            :                     }
+<span class="lineNum">     993 </span>                :            :                     catch(std::out_of_range&amp;) { // base class for bad_month exception
+<span class="lineNum">     994 </span>                :            :                       if(this-&gt;m_sv_parser.match(sitr, stream_end, mr)) {
+<span class="lineNum">     995 </span>                :            :                         t = time_type(static_cast&lt;special_values&gt;(mr.current_match));
+<span class="lineNum">     996 </span>                :            :                         return sitr;
+<span class="lineNum">     997 </span>                :            :                       }
+<span class="lineNum">     998 </span>                :            :                       else {
+<span class="lineNum">     999 </span>                :            :                         throw; // rethrow bad_month
+<span class="lineNum">    1000 </span>                :            :                       }
+<span class="lineNum">    1001 </span>                :            :                     }
+<span class="lineNum">    1002 </span>                :            :                     // did m_parser already advance sitr to next char?
+<span class="lineNum">    1003 </span>                :            :                     if(mr.has_remaining()) {
+<span class="lineNum">    1004 </span>                :            :                       use_current_char = true;
+<span class="lineNum">    1005 </span>                :            :                     }
+<span class="lineNum">    1006 </span>                :            :                     break;
+<span class="lineNum">    1007 </span>                :            :                   }
+<span class="lineNum">    1008 </span>                :            :                 case 'a':
+<span class="lineNum">    1009 </span>                :            :                 case 'A':
+<span class="lineNum">    1010 </span>                :            :                 case 'w':
+<span class="lineNum">    1011 </span>                :            :                   {
+<span class="lineNum">    1012 </span>                :            :                     // weekday is not used in construction but we need to get it out of the stream
+<span class="lineNum">    1013 </span>                :            :                     char_type cs[3] = { '%', *itr };
+<span class="lineNum">    1014 </span>                :            :                     string_type s(cs);
+<span class="lineNum">    1015 </span>                :            :                     match_results mr;
+<span class="lineNum">    1016 </span>                :            :                     typename date_type::day_of_week_type wd(0);
+<span class="lineNum">    1017 </span>                :            :                     try {
+<span class="lineNum">    1018 </span>                :            :                       wd = this-&gt;m_parser.parse_weekday(sitr, stream_end, s, mr);
+<span class="lineNum">    1019 </span>                :            :                     }
+<span class="lineNum">    1020 </span>                :            :                     catch(std::out_of_range&amp;) { // base class for bad_weekday exception
+<span class="lineNum">    1021 </span>                :            :                       if(this-&gt;m_sv_parser.match(sitr, stream_end, mr)) {
+<span class="lineNum">    1022 </span>                :            :                         t = time_type(static_cast&lt;special_values&gt;(mr.current_match));
+<span class="lineNum">    1023 </span>                :            :                         return sitr;
+<span class="lineNum">    1024 </span>                :            :                       }
+<span class="lineNum">    1025 </span>                :            :                       else {
+<span class="lineNum">    1026 </span>                :            :                         throw; // rethrow bad_weekday
+<span class="lineNum">    1027 </span>                :            :                       }
+<span class="lineNum">    1028 </span>                :            :                     }
+<span class="lineNum">    1029 </span>                :            :                     // did m_parser already advance sitr to next char?
+<span class="lineNum">    1030 </span>                :            :                     if(mr.has_remaining()) {
+<span class="lineNum">    1031 </span>                :            :                       use_current_char = true;
+<span class="lineNum">    1032 </span>                :            :                     }
+<span class="lineNum">    1033 </span>                :            :                     break;
+<span class="lineNum">    1034 </span>                :            :                   }
+<span class="lineNum">    1035 </span>                :            :                 case 'j':
+<span class="lineNum">    1036 </span>                :            :                   {
+<span class="lineNum">    1037 </span>                :            :                     // code that gets julian day (from format_date_parser)
+<span class="lineNum">    1038 </span>                :            :                     match_results mr;
+<span class="lineNum">    1039 </span>                :            :                     day_of_year = fixed_string_to_int&lt;unsigned short, CharT&gt;(sitr, stream_end, mr, 3);
+<span class="lineNum">    1040 </span>                :            :                     if(day_of_year == -1) {
+<span class="lineNum">    1041 </span>                :            :                       if(this-&gt;m_sv_parser.match(sitr, stream_end, mr)) {
+<span class="lineNum">    1042 </span>                :            :                         t = time_type(static_cast&lt;special_values&gt;(mr.current_match));
+<span class="lineNum">    1043 </span>                :            :                         return sitr;
+<span class="lineNum">    1044 </span>                :            :                       }
+<span class="lineNum">    1045 </span>                :            :                     }
+<span class="lineNum">    1046 </span>                :            :                     // these next two lines are so we get an exception with bad input
+<span class="lineNum">    1047 </span>                :            :                     typedef typename time_type::date_type::day_of_year_type day_of_year_type;
+<span class="lineNum">    1048 </span>                :            :                     day_of_year_type t_day_of_year(day_of_year);
+<span class="lineNum">    1049 </span>                :            :                     break;
+<span class="lineNum">    1050 </span>                :            :                   }
+<span class="lineNum">    1051 </span>                :            :                 case 'd':
+<span class="lineNum">    1052 </span>                :            :                   {
+<span class="lineNum">    1053 </span>                :            :                     try {
+<span class="lineNum">    1054 </span>                :            :                       t_day = this-&gt;m_parser.parse_day_of_month(sitr, stream_end);
+<span class="lineNum">    1055 </span>                :            :                     }
+<span class="lineNum">    1056 </span>                :            :                     catch(std::out_of_range&amp;) { // base class for exception bad_day_of_month
+<span class="lineNum">    1057 </span>                :            :                       match_results mr;
+<span class="lineNum">    1058 </span>                :            :                       if(this-&gt;m_sv_parser.match(sitr, stream_end, mr)) {
+<span class="lineNum">    1059 </span>                :            :                         t = time_type(static_cast&lt;special_values&gt;(mr.current_match));
+<span class="lineNum">    1060 </span>                :            :                         return sitr;
+<span class="lineNum">    1061 </span>                :            :                       }
+<span class="lineNum">    1062 </span>                :            :                       else {
+<span class="lineNum">    1063 </span>                :            :                         throw; // rethrow bad_day_of_month
+<span class="lineNum">    1064 </span>                :            :                       }
+<span class="lineNum">    1065 </span>                :            :                     }
+<span class="lineNum">    1066 </span>                :            :                     break;
+<span class="lineNum">    1067 </span>                :            :                   }
+<span class="lineNum">    1068 </span>                :            :                 // time flags
+<span class="lineNum">    1069 </span>                :            :                 case 'H': 
+<span class="lineNum">    1070 </span>                :            :                   {
+<span class="lineNum">    1071 </span>                :            :                     match_results mr;
+<span class="lineNum">    1072 </span>                :            :                     hour = fixed_string_to_int&lt;hour_type, CharT&gt;(sitr, stream_end, mr, 2);
+<span class="lineNum">    1073 </span>                :            :                     if(hour == -1){
+<span class="lineNum">    1074 </span>                :            :                        return check_special_value(sitr, stream_end, t, c);
+<span class="lineNum">    1075 </span>                :            :                     }
+<span class="lineNum">    1076 </span>                :            :                     break;
+<span class="lineNum">    1077 </span>                :            :                   }
+<span class="lineNum">    1078 </span>                :            :                 case 'M': 
+<span class="lineNum">    1079 </span>                :            :                   {
+<span class="lineNum">    1080 </span>                :            :                     match_results mr;
+<span class="lineNum">    1081 </span>                :            :                     min = fixed_string_to_int&lt;min_type, CharT&gt;(sitr, stream_end, mr, 2);
+<span class="lineNum">    1082 </span>                :            :                     if(min == -1){
+<span class="lineNum">    1083 </span>                :            :                        return check_special_value(sitr, stream_end, t, c);
+<span class="lineNum">    1084 </span>                :            :                     }
+<span class="lineNum">    1085 </span>                :            :                     break;
+<span class="lineNum">    1086 </span>                :            :                   }
+<span class="lineNum">    1087 </span>                :            :                 case 's':
+<span class="lineNum">    1088 </span>                :            :                 case 'S': 
+<span class="lineNum">    1089 </span>                :            :                   {
+<span class="lineNum">    1090 </span>                :            :                     match_results mr;
+<span class="lineNum">    1091 </span>                :            :                     sec = fixed_string_to_int&lt;sec_type, CharT&gt;(sitr, stream_end, mr, 2);
+<span class="lineNum">    1092 </span>                :            :                     if(sec == -1){
+<span class="lineNum">    1093 </span>                :            :                        return check_special_value(sitr, stream_end, t, c);
+<span class="lineNum">    1094 </span>                :            :                     }
+<span class="lineNum">    1095 </span>                :            :                     if (*itr == 'S')
+<span class="lineNum">    1096 </span>                :            :                       break;
+<span class="lineNum">    1097 </span>                :            :                     // %s is the same as %S%f so we drop through into %f
+<span class="lineNum">    1098 </span>                :            :                   }
+<span class="lineNum">    1099 </span>                :            :                 case 'f':
+<span class="lineNum">    1100 </span>                :            :                   {
+<span class="lineNum">    1101 </span>                :            :                     // check for decimal, check SV if missing
+<span class="lineNum">    1102 </span>                :            :                     if(*sitr == '.') {
+<span class="lineNum">    1103 </span>                :            :                       ++sitr;
+<span class="lineNum">    1104 </span>                :            :                       parse_frac_type(sitr, stream_end, frac);
+<span class="lineNum">    1105 </span>                :            :                       // sitr will point to next expected char after this parsing 
+<span class="lineNum">    1106 </span>                :            :                       // is complete so no need to advance it
+<span class="lineNum">    1107 </span>                :            :                       use_current_char = true;
+<span class="lineNum">    1108 </span>                :            :                     }
+<span class="lineNum">    1109 </span>                :            :                     else {
+<span class="lineNum">    1110 </span>                :            :                       return check_special_value(sitr, stream_end, t, c);
+<span class="lineNum">    1111 </span>                :            :                     }
+<span class="lineNum">    1112 </span>                :            :                     break;
+<span class="lineNum">    1113 </span>                :            :                   }
+<span class="lineNum">    1114 </span>                :            :                 case 'F': 
+<span class="lineNum">    1115 </span>                :            :                   {
+<span class="lineNum">    1116 </span>                :            :                     // check for decimal, skip if missing
+<span class="lineNum">    1117 </span>                :            :                     if(*sitr == '.') {
+<span class="lineNum">    1118 </span>                :            :                       ++sitr;
+<span class="lineNum">    1119 </span>                :            :                       parse_frac_type(sitr, stream_end, frac);
+<span class="lineNum">    1120 </span>                :            :                       // sitr will point to next expected char after this parsing 
+<span class="lineNum">    1121 </span>                :            :                       // is complete so no need to advance it
+<span class="lineNum">    1122 </span>                :            :                       use_current_char = true;
+<span class="lineNum">    1123 </span>                :            :                     }
+<span class="lineNum">    1124 </span>                :            :                     else {
+<span class="lineNum">    1125 </span>                :            :                       // nothing was parsed so we don't want to advance sitr
+<span class="lineNum">    1126 </span>                :            :                       use_current_char = true;
+<span class="lineNum">    1127 </span>                :            :                     }
+<span class="lineNum">    1128 </span>                :            :                     break;
+<span class="lineNum">    1129 </span>                :            :                   }
+<span class="lineNum">    1130 </span>                :            :                   // time_zone flags
+<span class="lineNum">    1131 </span>                :            :                 //case 'q':
+<span class="lineNum">    1132 </span>                :            :                 //case 'Q':
+<span class="lineNum">    1133 </span>                :            :                 //case 'z':
+<span class="lineNum">    1134 </span>                :            :                 case 'Z':
+<span class="lineNum">    1135 </span>                :            :                   {
+<span class="lineNum">    1136 </span>                :            :                     if(time_is_local) { // skip if 't' is a ptime
+<span class="lineNum">    1137 </span>                :            :                       ++itr;
+<span class="lineNum">    1138 </span>                :            :                       if(*itr == 'P') {
+<span class="lineNum">    1139 </span>                :            :                         // skip leading whitespace
+<span class="lineNum">    1140 </span>                :            :                         while((sitr != stream_end) &amp;&amp; std::isspace(*sitr)) { ++sitr; }
+<span class="lineNum">    1141 </span>                :            :                         // parse zone
+<span class="lineNum">    1142 </span>                :            :                         while((sitr != stream_end) &amp;&amp; (!std::isspace(*sitr))) {
+<span class="lineNum">    1143 </span>                :            :                           tz_str += *sitr;
+<span class="lineNum">    1144 </span>                :            :                           ++sitr;
+<span class="lineNum">    1145 </span>                :            :                         }
+<span class="lineNum">    1146 </span>                :            :                       }
+<span class="lineNum">    1147 </span>                :            :                       else {
+<span class="lineNum">    1148 </span>                :            :                         use_current_format_char = true;
+<span class="lineNum">    1149 </span>                :            :                       }
+<span class="lineNum">    1150 </span>                :            :                     
+<span class="lineNum">    1151 </span>                :            :                     }
+<span class="lineNum">    1152 </span>                :            :                     else {
+<span class="lineNum">    1153 </span>                :            :                       // nothing was parsed so we don't want to advance sitr
+<span class="lineNum">    1154 </span>                :            :                       use_current_char = true;
+<span class="lineNum">    1155 </span>                :            :                     }
+<span class="lineNum">    1156 </span>                :            :                    
+<span class="lineNum">    1157 </span>                :            :                     break;
+<span class="lineNum">    1158 </span>                :            :                   }
+<span class="lineNum">    1159 </span>                :            :                 default:
+<span class="lineNum">    1160 </span>                :            :                 {} // ignore what we don't understand?
+<span class="lineNum">    1161 </span>                :            :               }// switch
+<span class="lineNum">    1162 </span>                :            :             } 
+<span class="lineNum">    1163 </span>                :            :             else { // itr == '%', second consecutive
+<span class="lineNum">    1164 </span>                :            :               ++sitr;
+<span class="lineNum">    1165 </span>                :            :             }
+<span class="lineNum">    1166 </span>                :            :        
+<span class="lineNum">    1167 </span>                :            :             if(use_current_format_char) {
+<span class="lineNum">    1168 </span>                :            :               use_current_format_char = false;
+<span class="lineNum">    1169 </span>                :            :             }
+<span class="lineNum">    1170 </span>                :            :             else {
+<span class="lineNum">    1171 </span>                :            :               ++itr; //advance past format specifier
+<span class="lineNum">    1172 </span>                :            :             }
+<span class="lineNum">    1173 </span>                :            :              
+<span class="lineNum">    1174 </span>                :            :           }
+<span class="lineNum">    1175 </span>                :            :           else {  //skip past chars in format and in buffer
+<span class="lineNum">    1176 </span>                :            :             ++itr;
+<span class="lineNum">    1177 </span>                :            :             // set use_current_char when sitr is already 
+<span class="lineNum">    1178 </span>                :            :             // pointing at the next character to process
+<span class="lineNum">    1179 </span>                :            :             if (use_current_char) {
+<span class="lineNum">    1180 </span>                :            :               use_current_char = false;
+<span class="lineNum">    1181 </span>                :            :             }
+<span class="lineNum">    1182 </span>                :            :             else {
+<span class="lineNum">    1183 </span>                :            :               ++sitr;
+<span class="lineNum">    1184 </span>                :            :             }
+<span class="lineNum">    1185 </span>                :            :           }
+<span class="lineNum">    1186 </span>                :            :         }
+<span class="lineNum">    1187 </span>                :            :         
+<span class="lineNum">    1188 </span>                :            :         date_type d(not_a_date_time);
+<span class="lineNum">    1189 </span>                :            :         if (day_of_year &gt; 0) {
+<span class="lineNum">    1190 </span>                :            :           d = date_type(static_cast&lt;unsigned short&gt;(t_year-1),12,31) + date_duration_type(day_of_year);
+<span class="lineNum">    1191 </span>                :            :         }
+<span class="lineNum">    1192 </span>                :            :         else {
+<span class="lineNum">    1193 </span>                :            :           d = date_type(t_year, t_month, t_day);
+<span class="lineNum">    1194 </span>                :            :         }
+<span class="lineNum">    1195 </span>                :            : 
+<span class="lineNum">    1196 </span>                :            :         time_duration_type td(hour, min, sec, frac);
+<span class="lineNum">    1197 </span>                :            :         t = time_type(d, td);
+<span class="lineNum">    1198 </span>                :            :         return sitr;
+<span class="lineNum">    1199 </span>                :            :       }
+<span class="lineNum">    1200 </span>                :            : 
+<span class="lineNum">    1201 </span>                :            :       //! Helper function to check for special_value
+<span class="lineNum">    1202 </span>                :            :       /*! First character may have been consumed during original parse 
+<span class="lineNum">    1203 </span>                :            :        * attempt. Parameter 'c' should be a copy of that character. 
+<span class="lineNum">    1204 </span>                :            :        * Throws ios_base::failure if parse fails. */
+<span class="lineNum">    1205 </span>                :            :       template&lt;class temporal_type&gt;
+<span class="lineNum">    1206 </span>                :            :       inline
+<span class="lineNum">    1207 </span>                :            :       InItrT check_special_value(InItrT&amp; sitr,InItrT&amp; stream_end, temporal_type&amp; tt, char_type c='\0') const
+<span class="lineNum">    1208 </span>                :            :       {
+<span class="lineNum">    1209 </span>                :            :         match_results mr;
+<span class="lineNum">    1210 </span>                :            :         if((c == '-' || c == '+') &amp;&amp; (*sitr != c)) { // was the first character consumed?
+<span class="lineNum">    1211 </span>                :            :           mr.cache += c;
+<span class="lineNum">    1212 </span>                :            :         }
+<span class="lineNum">    1213 </span>                :            :         this-&gt;m_sv_parser.match(sitr, stream_end, mr);
+<span class="lineNum">    1214 </span>                :            :         if(mr.current_match == match_results::PARSE_ERROR) {
+<span class="lineNum">    1215 </span>                :            :           std::string tmp = convert_string_type&lt;char_type, char&gt;(mr.cache);
+<span class="lineNum">    1216 </span>                :            :           boost::throw_exception(std::ios_base::failure(&quot;Parse failed. No match found for '&quot; + tmp + &quot;'&quot;));
+<span class="lineNum">    1217 </span>                :            :           BOOST_DATE_TIME_UNREACHABLE_EXPRESSION(return sitr); // should never reach
+<span class="lineNum">    1218 </span>                :            :         }
+<span class="lineNum">    1219 </span>                :            :         tt = temporal_type(static_cast&lt;special_values&gt;(mr.current_match)); 
+<span class="lineNum">    1220 </span>                :            :         return sitr;
+<span class="lineNum">    1221 </span>                :            :       }
+<span class="lineNum">    1222 </span>                :            : 
+<span class="lineNum">    1223 </span>                :            :       //! Helper function for parsing a fractional second type from the stream
+<span class="lineNum">    1224 </span>                :            :       void parse_frac_type(InItrT&amp; sitr, 
+<span class="lineNum">    1225 </span>                :            :                            InItrT&amp; stream_end, 
+<span class="lineNum">    1226 </span>                :            :                            fracional_seconds_type&amp; frac) const
+<span class="lineNum">    1227 </span>                :            :       {
+<span class="lineNum">    1228 </span>                :            :         string_type cache;
+<span class="lineNum">    1229 </span>                :            :         while((sitr != stream_end) &amp;&amp; std::isdigit(*sitr)) {
+<span class="lineNum">    1230 </span>                :            :           cache += *sitr;
+<span class="lineNum">    1231 </span>                :            :           ++sitr;
+<span class="lineNum">    1232 </span>                :            :         }
+<span class="lineNum">    1233 </span>                :            :         if(cache.size() &gt; 0) {
+<span class="lineNum">    1234 </span>                :            :           unsigned short precision = time_duration_type::num_fractional_digits();
+<span class="lineNum">    1235 </span>                :            :           // input may be only the first few decimal places
+<span class="lineNum">    1236 </span>                :            :           if(cache.size() &lt; precision) {
+<span class="lineNum">    1237 </span>                :            :             frac = lexical_cast&lt;fracional_seconds_type&gt;(cache);
+<span class="lineNum">    1238 </span>                :            :             frac = decimal_adjust(frac, static_cast&lt;unsigned short&gt;(precision - cache.size()));
+<span class="lineNum">    1239 </span>                :            :           }
+<span class="lineNum">    1240 </span>                :            :           else {
+<span class="lineNum">    1241 </span>                :            :             // if input has too many decimal places, drop excess digits
+<span class="lineNum">    1242 </span>                :            :             frac = lexical_cast&lt;fracional_seconds_type&gt;(cache.substr(0, precision));
+<span class="lineNum">    1243 </span>                :            :           }
+<span class="lineNum">    1244 </span>                :            :         }
+<span class="lineNum">    1245 </span>                :            :       }
+<span class="lineNum">    1246 </span>                :            :       
+<span class="lineNum">    1247 </span>                :            :     private:
+<span class="lineNum">    1248 </span>                :            :       string_type m_time_duration_format;
+<span class="lineNum">    1249 </span>                :            : 
+<span class="lineNum">    1250 </span>                :            :       //! Helper function to adjust trailing zeros when parsing fractional digits
+<span class="lineNum">    1251 </span>                :            :       template&lt;class int_type&gt;
+<span class="lineNum">    1252 </span>                :            :       inline
+<span class="lineNum">    1253 </span>                :            :       int_type decimal_adjust(int_type val, const unsigned short places) const
+<span class="lineNum">    1254 </span>                :            :       {
+<span class="lineNum">    1255 </span>                :            :         unsigned long factor = 1;
+<span class="lineNum">    1256 </span>                :            :         for(int i = 0; i &lt; places; ++i){
+<span class="lineNum">    1257 </span>                :            :           factor *= 10; // shift decimal to the right
+<span class="lineNum">    1258 </span>                :            :         }
+<span class="lineNum">    1259 </span>                :            :         return val * factor;
+<span class="lineNum">    1260 </span>                :            :       }
+<span class="lineNum">    1261 </span>                :            : 
+<span class="lineNum">    1262 </span>                :            :   };
+<span class="lineNum">    1263 </span>                :            : 
+<span class="lineNum">    1264 </span>                :            : template &lt;class time_type, class CharT, class InItrT&gt;
+<span class="lineNum">    1265 </span>                :            :   std::locale::id time_input_facet&lt;time_type, CharT, InItrT&gt;::id;
+<span class="lineNum">    1266 </span>                :            : 
+<span class="lineNum">    1267 </span>                :            : template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1268 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1269 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::fractional_seconds_format = time_formats&lt;CharT&gt;::fractional_seconds_format;
+<span class="lineNum">    1270 </span>                :            : 
+<span class="lineNum">    1271 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1272 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1273 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::fractional_seconds_or_none_format = time_formats&lt;CharT&gt;::fractional_seconds_or_none_format;
+<span class="lineNum">    1274 </span>                :            : 
+<span class="lineNum">    1275 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1276 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1277 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::seconds_with_fractional_seconds_format = time_formats&lt;CharT&gt;::seconds_with_fractional_seconds_format;
+<span class="lineNum">    1278 </span>                :            : 
+<span class="lineNum">    1279 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1280 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1281 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::seconds_format = time_formats&lt;CharT&gt;::seconds_format;
+<span class="lineNum">    1282 </span>                :            : 
+<span class="lineNum">    1283 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1284 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1285 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::standard_format = time_formats&lt;CharT&gt;::standard_format;
+<span class="lineNum">    1286 </span>                :            : 
+<span class="lineNum">    1287 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1288 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1289 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::zone_abbrev_format = time_formats&lt;CharT&gt;::zone_abbrev_format;
+<span class="lineNum">    1290 </span>                :            : 
+<span class="lineNum">    1291 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1292 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1293 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::zone_name_format = time_formats&lt;CharT&gt;::zone_name_format;
+<span class="lineNum">    1294 </span>                :            : 
+<span class="lineNum">    1295 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1296 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1297 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::zone_iso_format = time_formats&lt;CharT&gt;::zone_iso_format;
+<span class="lineNum">    1298 </span>                :            : 
+<span class="lineNum">    1299 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1300 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1301 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::zone_iso_extended_format = time_formats&lt;CharT&gt;::zone_iso_extended_format;
+<span class="lineNum">    1302 </span>                :            : 
+<span class="lineNum">    1303 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1304 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1305 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::duration_seperator = time_formats&lt;CharT&gt;::duration_seperator;
+<span class="lineNum">    1306 </span>                :            : 
+<span class="lineNum">    1307 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1308 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1309 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::iso_time_format_specifier = time_formats&lt;CharT&gt;::iso_time_format_specifier;
+<span class="lineNum">    1310 </span>                :            : 
+<span class="lineNum">    1311 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1312 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1313 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::iso_time_format_extended_specifier = time_formats&lt;CharT&gt;::iso_time_format_extended_specifier;
+<span class="lineNum">    1314 </span>                :            : 
+<span class="lineNum">    1315 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1316 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1317 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::default_time_input_format = time_formats&lt;CharT&gt;::default_time_input_format;
+<span class="lineNum">    1318 </span>                :            : 
+<span class="lineNum">    1319 </span>                :            :   template &lt;class time_type, class CharT, class InItrT&gt;  
+<span class="lineNum">    1320 </span>                :            :   const typename time_input_facet&lt;time_type, CharT, InItrT&gt;::char_type* 
+<span class="lineNum">    1321 </span>                :            :   time_input_facet&lt;time_type, CharT, InItrT&gt;::default_time_duration_format = time_formats&lt;CharT&gt;::default_time_duration_format;
+<span class="lineNum">    1322 </span>                :            : 
+<span class="lineNum">    1323 </span>                :            : 
+<span class="lineNum">    1324 </span>                :            : } } // namespaces
+<span class="lineNum">    1325 </span>                :            : 
+<span class="lineNum">    1326 </span>                :            : 
+<span class="lineNum">    1327 </span>                :            : #endif
+<span class="lineNum">    1328 </span>                :            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

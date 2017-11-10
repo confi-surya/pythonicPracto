@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/converter/rvalue_from_python_data.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/converter</a> - rvalue_from_python_data.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryLo">45.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef FROM_PYTHON_AUX_DATA_DWA2002128_HPP
+<span class="lineNum">       6 </span>                :            : # define FROM_PYTHON_AUX_DATA_DWA2002128_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/converter/constructor_function.hpp&gt;
+<span class="lineNum">       9 </span>                :            : # include &lt;boost/python/detail/referent_storage.hpp&gt;
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/detail/destroy.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/type_traits/add_reference.hpp&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;boost/type_traits/add_cv.hpp&gt;
+<span class="lineNum">      14 </span>                :            : # include &lt;cstddef&gt;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : // Data management for potential rvalue conversions from Python to C++
+<span class="lineNum">      17 </span>                :            : // types. When a client requests a conversion to T* or T&amp;, we
+<span class="lineNum">      18 </span>                :            : // generally require that an object of type T exists in the source
+<span class="lineNum">      19 </span>                :            : // Python object, and the code here does not apply**. This implements
+<span class="lineNum">      20 </span>                :            : // conversions which may create new temporaries of type T. The classic
+<span class="lineNum">      21 </span>                :            : // example is a conversion which converts a Python tuple to a
+<span class="lineNum">      22 </span>                :            : // std::vector. Since no std::vector lvalue exists in the Python
+<span class="lineNum">      23 </span>                :            : // object -- it must be created &quot;on-the-fly&quot; by the converter, and
+<span class="lineNum">      24 </span>                :            : // which must manage the lifetime of the created object.
+<span class="lineNum">      25 </span>                :            : //
+<span class="lineNum">      26 </span>                :            : // Note that the client is not precluded from using a registered
+<span class="lineNum">      27 </span>                :            : // lvalue conversion to T in this case. In other words, we will
+<span class="lineNum">      28 </span>                :            : // happily accept a Python object which /does/ contain a std::vector
+<span class="lineNum">      29 </span>                :            : // lvalue, provided an appropriate converter is registered. So, while
+<span class="lineNum">      30 </span>                :            : // this is an rvalue conversion from the client's point-of-view, the
+<span class="lineNum">      31 </span>                :            : // converter registry may serve up lvalue or rvalue conversions for
+<span class="lineNum">      32 </span>                :            : // the target type.
+<span class="lineNum">      33 </span>                :            : //
+<span class="lineNum">      34 </span>                :            : // ** C++ argument from_python conversions to T const&amp; are an
+<span class="lineNum">      35 </span>                :            : // exception to the rule for references: since in C++, const
+<span class="lineNum">      36 </span>                :            : // references can bind to temporary rvalues, we allow rvalue
+<span class="lineNum">      37 </span>                :            : // converters to be chosen when the target type is T const&amp; for some
+<span class="lineNum">      38 </span>                :            : // T.
+<span class="lineNum">      39 </span>                :            : namespace boost { namespace python { namespace converter { 
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : // Conversions begin by filling in and returning a copy of this
+<span class="lineNum">      42 </span>                :            : // structure. The process looks up a converter in the rvalue converter
+<span class="lineNum">      43 </span>                :            : // registry for the target type. It calls the convertible() function
+<span class="lineNum">      44 </span>                :            : // of each registered converter, passing the source PyObject* as an
+<span class="lineNum">      45 </span>                :            : // argument, until a non-null result is returned. This result goes in
+<span class="lineNum">      46 </span>                :            : // the convertible field, and the converter's construct() function is
+<span class="lineNum">      47 </span>                :            : // stored in the construct field.
+<span class="lineNum">      48 </span>                :            : //
+<span class="lineNum">      49 </span>                :            : // If no appropriate converter is found, conversion fails and the
+<span class="lineNum">      50 </span>                :            : // convertible field is null. When used in argument conversion for
+<span class="lineNum">      51 </span>                :            : // wrapped C++ functions, it causes overload resolution to reject the
+<span class="lineNum">      52 </span>                :            : // current function but not to fail completely. If an exception is
+<span class="lineNum">      53 </span>                :            : // thrown, overload resolution stops and the exception propagates back
+<span class="lineNum">      54 </span>                :            : // through the caller.
+<span class="lineNum">      55 </span>                :            : //
+<span class="lineNum">      56 </span>                :            : // If an lvalue converter is matched, its convertible() function is
+<span class="lineNum">      57 </span>                :            : // expected to return a pointer to the stored T object; its
+<span class="lineNum">      58 </span>                :            : // construct() function will be NULL. The convertible() function of
+<span class="lineNum">      59 </span>                :            : // rvalue converters may return any non-singular pointer; the actual
+<span class="lineNum">      60 </span>                :            : // target object will only be available once the converter's
+<span class="lineNum">      61 </span>                :            : // construct() function is called.
+<span class="lineNum">      62 </span>                :            : struct rvalue_from_python_stage1_data
+<span class="lineNum">      63 </span>                :            : {
+<span class="lineNum">      64 </span>                :            :     void* convertible;
+<span class="lineNum">      65 </span>                :            :     constructor_function construct;
+<span class="lineNum">      66 </span>                :            : };
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :            : // Augments rvalue_from_python_stage1_data by adding storage for
+<span class="lineNum">      69 </span>                :            : // constructing an object of remove_reference&lt;T&gt;::type. The
+<span class="lineNum">      70 </span>                :            : // construct() function of rvalue converters (stored in m_construct
+<span class="lineNum">      71 </span>                :            : // above) will cast the rvalue_from_python_stage1_data to an
+<span class="lineNum">      72 </span>                :            : // appropriate instantiation of this template in order to access that
+<span class="lineNum">      73 </span>                :            : // storage.
+<span class="lineNum">      74 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      75 </span>                :            : struct rvalue_from_python_storage
+<span class="lineNum">      76 </span>                :            : {
+<span class="lineNum">      77 </span>                :            :     rvalue_from_python_stage1_data stage1;
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            :     // Storage for the result, in case an rvalue must be constructed
+<span class="lineNum">      80 </span>                :            :     typename python::detail::referent_storage&lt;
+<span class="lineNum">      81 </span>                :            :         typename add_reference&lt;T&gt;::type
+<span class="lineNum">      82 </span>                :            :     &gt;::type storage;
+<span class="lineNum">      83 </span>                :            : };
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            : // Augments rvalue_from_python_storage&lt;T&gt; with a destructor. If
+<span class="lineNum">      86 </span>                :            : // stage1.convertible == storage.bytes, it indicates that an object of
+<span class="lineNum">      87 </span>                :            : // remove_reference&lt;T&gt;::type has been constructed in storage and
+<span class="lineNum">      88 </span>                :            : // should will be destroyed in ~rvalue_from_python_data(). It is
+<span class="lineNum">      89 </span>                :            : // crucial that successful rvalue conversions establish this equality
+<span class="lineNum">      90 </span>                :            : // and that unsuccessful ones do not.
+<span class="lineNum">      91 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      92 </span>                :            : struct rvalue_from_python_data : rvalue_from_python_storage&lt;T&gt;
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>                :            : # if (!defined(__MWERKS__) || __MWERKS__ &gt;= 0x3000) \
+<span class="lineNum">      95 </span>                :            :         &amp;&amp; (!defined(__EDG_VERSION__) || __EDG_VERSION__ &gt;= 245) \
+<span class="lineNum">      96 </span>                :            :         &amp;&amp; (!defined(__DECCXX_VER) || __DECCXX_VER &gt; 60590014) \
+<span class="lineNum">      97 </span>                :            :         &amp;&amp; !defined(BOOST_PYTHON_SYNOPSIS) /* Synopsis' OpenCXX has trouble parsing this */
+<span class="lineNum">      98 </span>                :            :     // This must always be a POD struct with m_data its first member.
+<span class="lineNum">      99 </span>                :            :     BOOST_STATIC_ASSERT(BOOST_PYTHON_OFFSETOF(rvalue_from_python_storage&lt;T&gt;,stage1) == 0);
+<span class="lineNum">     100 </span>                :            : # endif
+<span class="lineNum">     101 </span>                :            :     
+<span class="lineNum">     102 </span>                :            :     // The usual constructor 
+<span class="lineNum">     103 </span>                :            :     rvalue_from_python_data(rvalue_from_python_stage1_data const&amp;);
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :            :     // This constructor just sets m_convertible -- used by
+<span class="lineNum">     106 </span>                :            :     // implicitly_convertible&lt;&gt; to perform the final step of the
+<span class="lineNum">     107 </span>                :            :     // conversion, where the construct() function is already known.
+<span class="lineNum">     108 </span>                :            :     rvalue_from_python_data(void* convertible);
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            :     // Destroys any object constructed in the storage.
+<span class="lineNum">     111 </span>                :            :     ~rvalue_from_python_data();
+<span class="lineNum">     112 </span>                :            :  private:
+<span class="lineNum">     113 </span>                :            :     typedef typename add_reference&lt;typename add_cv&lt;T&gt;::type&gt;::type ref_type;
+<span class="lineNum">     114 </span>                :            : };
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            : //
+<span class="lineNum">     117 </span>                :            : // Implementataions
+<span class="lineNum">     118 </span>                :            : //
+<span class="lineNum">     119 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     120 </span>                :<span class="lineCov">       4842 : inline rvalue_from_python_data&lt;T&gt;::rvalue_from_python_data(rvalue_from_python_stage1_data const&amp; _stage1)</span>
+<span class="lineNum">     121 </span>                :            : {
+<span class="lineNum">     122 </span>                :<span class="lineCov">       4842 :     this-&gt;stage1 = _stage1;</span>
+<span class="lineNum">     123 </span>                :            : }
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     126 </span>                :            : inline rvalue_from_python_data&lt;T&gt;::rvalue_from_python_data(void* convertible)
+<span class="lineNum">     127 </span>                :            : {
+<span class="lineNum">     128 </span>                :            :     this-&gt;stage1.convertible = convertible;
+<span class="lineNum">     129 </span>                :            : }
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">     132 </span>                :<span class="lineCov">       4842 : inline rvalue_from_python_data&lt;T&gt;::~rvalue_from_python_data()</span>
+<span class="lineNum">     133 </span>                :            : {
+<span class="lineNum">     134 </span>[<span class="branchCov" title="Branch 0 was taken 208 times"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchCov" title="Branch 2 was taken 109 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 395 times"> + </span>:<span class="lineCov">       4842 :     if (this-&gt;stage1.convertible == this-&gt;storage.bytes)</span>
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 469 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span><span class="branchCov" title="Branch 8 was taken 1039 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 10 was taken 2133 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span><span class="branchCov" title="Branch 12 was taken 229 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 15 was taken 12 times"> + </span><span class="branchCov" title="Branch 16 was taken 236 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span><span class="branchNoExec" title="Block containing branch 18 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 19 was never executed"> # </span> 
+<span class="lineNum">         </span>         <span class="branchNoExec" title="Block containing branch 20 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 21 was never executed"> # </span>]
+<span class="lineNum">     135 </span>                :<span class="lineCov">       4818 :         python::detail::destroy_referent&lt;ref_type&gt;(this-&gt;storage.bytes);</span>
+<span class="lineNum">     136 </span>                :            : }
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :            : }}} // namespace boost::python::converter
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            : #endif // FROM_PYTHON_AUX_DATA_DWA2002128_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

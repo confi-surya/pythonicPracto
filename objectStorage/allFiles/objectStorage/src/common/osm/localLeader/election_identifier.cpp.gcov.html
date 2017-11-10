@@ -1,0 +1,467 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - objectStorage/src/common/osm/localLeader/election_identifier.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/localLeader</a> - election_identifier.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">213</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;osm/localLeader/election_identifier.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       3 </span>                :            : #include &quot;communication/message.h&quot;
+<span class="lineNum">       4 </span>                :            : #include &quot;communication/message_type_enum.pb.h&quot;
+<span class="lineNum">       5 </span>                :            : 
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : ElectionIdentifier::ElectionIdentifier(
+<span class="lineNum">       8 </span>                :            :                                 boost::shared_ptr&lt;ElectionManager&gt; mgr, 
+<span class="lineNum">       9 </span>                :            :                                 boost::shared_ptr&lt;HfsChecker&gt;checker,
+<span class="lineNum">      10 </span>                :            :                                 boost::shared_ptr&lt;MonitoringManager&gt; mon_mgr,
+<span class="lineNum">      11 </span>                :            :                                 cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt;config_parser,
+<span class="lineNum">      12 </span>                :            :                                 enum network_messages::NodeStatusEnum &amp;stat,
+<span class="lineNum">      13 </span>                :            :                                 boost::mutex &amp;mtx
+<span class="lineNum">      14 </span>                :<span class="lineNoCov">          0 :                                 ):mtx(mtx),stat(stat)</span>
+<span class="lineNum">      15 </span>                :            : {
+<span class="lineNum">      16 </span>                :<span class="lineNoCov">          0 :         this-&gt;stop = false;</span>
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 :         this-&gt;elec_mgr = mgr;</span>
+<span class="lineNum">      18 </span>                :<span class="lineNoCov">          0 :         this-&gt;hfs_checker = checker;</span>
+<span class="lineNum">      19 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_mgr = mon_mgr;</span>
+<span class="lineNum">      20 </span>                :<span class="lineNoCov">          0 :         this-&gt;config_parser = config_parser;</span>
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 :         this-&gt;count = 0;</span>
+<span class="lineNum">      22 </span>                :<span class="lineNoCov">          0 :         this-&gt;heartbeat_failure_count = 0;</span>
+<span class="lineNum">      23 </span>                :<span class="lineNoCov">          0 :         this-&gt;strm_failure_count = 0;</span>
+<span class="lineNum">      24 </span>                :<span class="lineNoCov">          0 :         this-&gt;failure = false;</span>
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 :         this-&gt;successer = false;</span>
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 :         this-&gt;conn_stat = OSDException::OSDConnStatus::CONNECTED;</span>
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :         this-&gt;not_readability_flag =  true;</span>
+<span class="lineNum">      28 </span>                :            : }
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 : ElectionIdentifier::~ElectionIdentifier()</span>
+<span class="lineNum">      31 </span>                :            : {
+<span class="lineNum">      32 </span>                :<span class="lineNoCov">          0 :         this-&gt;elec_mgr.reset();</span>
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :         this-&gt;hfs_checker.reset();</span>
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_mgr.reset();</span>
+<span class="lineNum">      35 </span>                :<span class="lineNoCov">          0 :         this-&gt;config_parser.reset();</span>
+<span class="lineNum">      36 </span>                :            : }
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 : boost::tuple&lt;boost::shared_ptr&lt;Communication::SynchronousCommunication&gt;  , int&gt; ElectionIdentifier::send_strm_to_gl()</span>
+<span class="lineNum">      39 </span>                :            : {
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Sending strm packet to GL for starting monitoring of LL&quot;);</span>
+<span class="lineNum">      41 </span>                :<span class="lineNoCov">          0 :         int retry_count = 0;</span>
+<span class="lineNum">      42 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm;</span>
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 :         std::string node_id;</span>
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :         GLUtils utils;</span>
+<span class="lineNum">      45 </span>                :            :         node_id = utils.get_my_node_id() + &quot;_&quot; + 
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :                                         boost::lexical_cast&lt;std::string&gt;(this-&gt;config_parser-&gt;osm_portValue());</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :         while( retry_count != this-&gt;config_parser-&gt;strm_countValue())</span>
+<span class="lineNum">      48 </span>                :            :         {
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :                 this-&gt;failure = false;</span>
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Retry count for sending strm packet to GL: &quot;&lt;&lt; retry_count);</span>
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;ErrorStatus&gt; error_status;</span>
+<span class="lineNum">      52 </span>                :            :                 OsmUtils ut;
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :                 boost::tuple&lt;std::string, uint32_t&gt; info = ut.get_ip_and_port_of_gl();</span>
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :                 if(info.get&lt;1&gt;() == 0) {</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :                         PASSERT(false, &quot;CORRUPTED ENTRIES IN GL INFO FILE&quot;);</span>
+<span class="lineNum">      56 </span>                :<span class="lineNoCov">          0 :                 }else if(info.get&lt;1&gt;() == 6) {</span>
+<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 :                          OSDLOG(INFO, &quot;Stopping OSD services as failed to read gl info file in 10 retry attempts&quot;);</span>
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :                          this-&gt;stop_all_service();           </span>
+<span class="lineNum">      59 </span>                :            :                 }
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Connecting to GL with ip and port: &quot;&lt;&lt; boost::get&lt;0&gt;(info) &lt;&lt; &quot; &quot; &lt;&lt; boost::get&lt;1&gt;(info)); </span>
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :                 comm.reset(new Communication::SynchronousCommunication( boost::get&lt;0&gt;(info), boost::get&lt;1&gt;(info)));</span>
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 :                 if(!comm-&gt;is_connected())</span>
+<span class="lineNum">      64 </span>                :            :                 {
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Connection couldn't be established with GL&quot;);</span>
+<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :                         if(comm)</span>
+<span class="lineNum">      67 </span>                :            :                         {
+<span class="lineNum">      68 </span>                :            :                                 //delete comm;
+<span class="lineNum">      69 </span>                :            :                                 //comm = NULL;
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 :                                 comm.reset();</span>
+<span class="lineNum">      71 </span>                :            :                         }
+<span class="lineNum">      72 </span>                :            :                         //return boost::make_tuple( comm, OSDException::OSDErrorCode::UNABLE_RECV_ACK_FROM_GL);
+<span class="lineNum">      73 </span>                :            :                 }
+<span class="lineNum">      74 </span>                :            :                 else
+<span class="lineNum">      75 </span>                :            :                 {
+<span class="lineNum">      76 </span>                :            :                         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; strm_obj(
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :                                         new comm_messages::LocalLeaderStartMonitoring(node_id));</span>
+<span class="lineNum">      78 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;Sending STRM for node &quot; &lt;&lt; node_id &lt;&lt; &quot; to GL.&quot;);</span>
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :                         boost::shared_ptr&lt;MessageResultWrap&gt; result1(new MessageResultWrap(messageTypeEnum::typeEnums::LL_START_MONITORING));</span>
+<span class="lineNum">      80 </span>                :            :                         MessageExternalInterface::sync_send_local_leader_start_monitoring(
+<span class="lineNum">      81 </span>                :            :                                         strm_obj.get(),
+<span class="lineNum">      82 </span>                :            :                                         comm,
+<span class="lineNum">      83 </span>                :            :                                         boost::bind(&amp;ElectionIdentifier::success_handler, this, result1),
+<span class="lineNum">      84 </span>                :            :                                         boost::bind(&amp;ElectionIdentifier::failure_handler, this),
+<span class="lineNum">      85 </span>                :            :                                         30
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :                                         );</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :                         if( !this-&gt;failure)</span>
+<span class="lineNum">      88 </span>                :            :                         {
+<span class="lineNum">      89 </span>                :            :                                 boost::shared_ptr&lt;MessageResult&lt;comm_messages::LocalLeaderStartMonitoringAck&gt; &gt;     ack_obj( 
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :                                                 new MessageResult&lt;comm_messages::LocalLeaderStartMonitoringAck&gt;());</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :                                 ack_obj = MessageExternalInterface::sync_read_local_leader_start_monitoring_ack(comm, 30);              </span>
+<span class="lineNum">      92 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Rcvd STRM ack from GL, status is &quot; &lt;&lt; ack_obj-&gt;get_status());</span>
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :                                 if( ack_obj-&gt;get_status())</span>
+<span class="lineNum">      94 </span>                :            :                                 {
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;count = 0;</span>
+<span class="lineNum">      96 </span>                :<span class="lineNoCov">          0 :                                         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoringAck&gt; ll_strm_ack;</span>
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :                                         ll_strm_ack.reset(ack_obj-&gt;get_message_object());</span>
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :                                         if(!ll_strm_ack-&gt;get_status())</span>
+<span class="lineNum">      99 </span>                :            :                                         {
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;STRM packet rejected by GL&quot;);</span>
+<span class="lineNum">     101 </span>                :            :                                         }
+<span class="lineNum">     102 </span>                :            :                                         else
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :                                                 return boost::make_tuple(comm, OSDException::OSDSuccessCode::RECV_ACK_FROM_GL);</span>
+<span class="lineNum">     104 </span>                :            :                                 }
+<span class="lineNum">     105 </span>                :            :                                 else
+<span class="lineNum">     106 </span>                :            :                                 {
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(DEBUG, &quot;Sending of strm packet to GL failed with return status: &quot; &lt;&lt; ack_obj-&gt;get_status()); </span>
+<span class="lineNum">     108 </span>                :            :                                 }
+<span class="lineNum">     109 </span>                :            :                         }
+<span class="lineNum">     110 </span>                :            :                         else
+<span class="lineNum">     111 </span>                :            :                         {
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Unable to connect to GL&quot;);</span>
+<span class="lineNum">     113 </span>                :            :                         }
+<span class="lineNum">     114 </span>                :            :                 }
+<span class="lineNum">     115 </span>                :<span class="lineNoCov">          0 :                 retry_count++;</span>
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 :                 if( comm)</span>
+<span class="lineNum">     117 </span>                :            :                 {
+<span class="lineNum">     118 </span>                :            :                         //delete comm;
+<span class="lineNum">     119 </span>                :            :                         //comm = NULL;
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :                         comm.reset();</span>
+<span class="lineNum">     121 </span>                :            :                 }
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep(boost::posix_time::seconds(this-&gt;config_parser-&gt;ll_strm_retry_timeoutValue()));</span>
+<span class="lineNum">     123 </span>                :            :         }
+<span class="lineNum">     124 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Unable to send start monitoring packet to GL&quot;);</span>
+<span class="lineNum">     125 </span>                :<span class="lineNoCov">          0 :         enum network_messages::NodeStatusEnum node_stat = utils.verify_if_part_of_cluster(node_id);</span>
+<span class="lineNum">     126 </span>                :<span class="lineNoCov">          0 :         if(node_stat == network_messages::NEW) /*|| node_stat == network_messages::FAILED)*/</span>
+<span class="lineNum">     127 </span>                :            :         {
+<span class="lineNum">     128 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Stopping osd services because LL is not registered&quot;);</span>
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :                 this-&gt;stop_all_service();</span>
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :                 return boost::make_tuple(comm, OSDException::OSDErrorCode::LL_IS_NOT_REGISTERED);</span>
+<span class="lineNum">     131 </span>                :            :         }
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         if( comm)</span>
+<span class="lineNum">     133 </span>                :            :                 //delete comm;
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :                 comm.reset();</span>
+<span class="lineNum">     135 </span>                :            : //      comm = NULL;
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :         return boost::make_tuple( comm, OSDException::OSDErrorCode::UNABLE_RECV_ACK_FROM_GL);</span>
+<span class="lineNum">     137 </span>                :            : }
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 : void ElectionIdentifier::success_handler(boost::shared_ptr&lt;MessageResultWrap&gt; result)</span>
+<span class="lineNum">     140 </span>                :            : {
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :         this-&gt;successer = true;</span>
+<span class="lineNum">     142 </span>                :            : }
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 : void ElectionIdentifier::failure_handler()</span>
+<span class="lineNum">     145 </span>                :            : {
+<span class="lineNum">     146 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Couldn't get back strm/hrbt ack from GL&quot;);</span>
+<span class="lineNum">     147 </span>                :<span class="lineNoCov">          0 :         this-&gt;failure = true;</span>
+<span class="lineNum">     148 </span>                :            : }
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 : int ElectionIdentifier::send_heartbeat_to_gl(boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm, uint32_t seq_no)</span>
+<span class="lineNum">     151 </span>                :            : {
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;ErrorStatus&gt; error_status;</span>
+<span class="lineNum">     153 </span>                :<span class="lineNoCov">          0 :         GLUtils utils;</span>
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :         std::string node_id = utils.get_my_node_id() + &quot;_&quot; + boost::lexical_cast&lt;std::string&gt;(this-&gt;config_parser-&gt;osm_portValue());</span>
+<span class="lineNum">     155 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::HeartBeat&gt; heartbeat( new comm_messages::HeartBeat(node_id, seq_no,this-&gt;hfs_checker-&gt;get_gfs_stat()));</span>
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;MessageResultWrap&gt; result1(new MessageResultWrap(messageTypeEnum::typeEnums::HEART_BEAT));</span>
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Sending HB to GL&quot;);</span>
+<span class="lineNum">     158 </span>                :            :         MessageExternalInterface::sync_send_heartbeat( 
+<span class="lineNum">     159 </span>                :            :                                         heartbeat.get(),
+<span class="lineNum">     160 </span>                :            :                                         comm,
+<span class="lineNum">     161 </span>                :            :                                         boost::bind(&amp;ElectionIdentifier::success_handler, this, result1),
+<span class="lineNum">     162 </span>                :            :                                         boost::bind(&amp;ElectionIdentifier::failure_handler, this),
+<span class="lineNum">     163 </span>                :            :                                         30
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :                                         );</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :         if( !this-&gt;failure )</span>
+<span class="lineNum">     166 </span>                :            :         {
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Sent HB to GL successfully&quot;);</span>
+<span class="lineNum">     168 </span>                :            :                 boost::shared_ptr&lt;MessageResult&lt;comm_messages::HeartBeatAck&gt; &gt; ack_obj( 
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :                                                                 new MessageResult&lt;comm_messages::HeartBeatAck&gt;());</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :                 ack_obj = MessageExternalInterface::sync_read_heartbeatack(comm, 30);</span>
+<span class="lineNum">     171 </span>                :<span class="lineNoCov">          0 :                 if( !ack_obj-&gt;get_status())</span>
+<span class="lineNum">     172 </span>                :            :                 {
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Failed to receive heartbeat ack from GL&quot;);</span>
+<span class="lineNum">     174 </span>                :<span class="lineNoCov">          0 :                         this-&gt;conn_stat = OSDException::OSDConnStatus::DISCONNECTED;</span>
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :                         return OSDException::OSDErrorCode::UNABLE_RECV_ACK_FROM_GL;</span>
+<span class="lineNum">     176 </span>                :            :                 }
+<span class="lineNum">     177 </span>                :            :                 else
+<span class="lineNum">     178 </span>                :            :                 {
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Recvd heartbeat ack from gl successfully and node status as &quot; &lt;&lt; ack_obj-&gt;get_message_object()-&gt;get_node_stat());</span>
+<span class="lineNum">     180 </span>                :<span class="lineNoCov">          0 :                         this-&gt;conn_stat = OSDException::OSDConnStatus::CONNECTED;</span>
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            :                         { /*mutex for local node status*/ 
+<span class="lineNum">     183 </span>                :<span class="lineNoCov">          0 :                                 boost::mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     184 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;local_stat = this-&gt;stat;</span>
+<span class="lineNum">     185 </span>                :            :                         }
+<span class="lineNum">     186 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Got local node_stat from GL on start:&quot; &lt;&lt; this-&gt;local_stat);</span>
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :                         if(this-&gt;local_stat != ack_obj-&gt;get_message_object()-&gt;get_node_stat()) { </span>
+<span class="lineNum">     188 </span>                :            : 
+<span class="lineNum">     189 </span>                :<span class="lineNoCov">          0 :                                 if(ack_obj-&gt;get_message_object()-&gt;get_node_stat() == network_messages::RECOVERED || ack_obj-&gt;get_message_object()-&gt;get_node_stat() ==  network_messages::FAILED || ack_obj-&gt;get_message_object()-&gt;get_node_stat() == network_messages::NODE_STOPPED || ack_obj-&gt;get_message_object()-&gt;get_node_stat() == network_messages::TRANSITION_STATE) {</span>
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Stopping all services as got node stat as recovered or failed&quot;);</span>
+<span class="lineNum">     191 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;stop_all_service();</span>
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            :                                 }
+<span class="lineNum">     194 </span>                :            :                         }
+<span class="lineNum">     195 </span>                :<span class="lineNoCov">          0 :                         return OSDException::OSDSuccessCode::RECV_ACK_FROM_GL;</span>
+<span class="lineNum">     196 </span>                :            :                 }
+<span class="lineNum">     197 </span>                :            :         }
+<span class="lineNum">     198 </span>                :            :         else
+<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Unable to connect to GL for heartbeat request&quot;);</span>
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :         this-&gt;conn_stat = OSDException::OSDConnStatus::DISCONNECTED;</span>
+<span class="lineNum">     201 </span>                :<span class="lineNoCov">          0 :         return OSDException::OSDErrorCode::UNABLE_RECV_ACK_FROM_GL;</span>
+<span class="lineNum">     202 </span>                :            : }
+<span class="lineNum">     203 </span>                :            : 
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 : int ElectionIdentifier::notify_to_election_manager_for_start_election(enum OSDException::OSDConnStatus::connectivity_stat conn_stat)</span>
+<span class="lineNum">     205 </span>                :            : {
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 :         cool::unused(conn_stat);</span>
+<span class="lineNum">     207 </span>                :            : //      GLUtils utils;
+<span class="lineNum">     208 </span>                :            :         OsmUtils osm_utils;
+<span class="lineNum">     209 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Notifing Election Manager to start election&quot;);</span>
+<span class="lineNum">     210 </span>                :            : //      boost::tuple&lt;std::string, bool&gt; file = utils.find_file(
+<span class="lineNum">     211 </span>                :            : //                                      utils.get_mount_path(this-&gt;config_parser-&gt;export_pathValue(), &quot;osd_meta_config&quot;),
+<span class="lineNum">     212 </span>                :            : //                                      &quot;osd_global_leader_information_&quot;);
+<span class="lineNum">     213 </span>                :            : //      OSDLOG(INFO, &quot;Election version file: &quot; &lt;&lt; file);
+<span class="lineNum">     214 </span>                :            : //      std::string gl_info = osm_utils.split( boost::get&lt;0&gt;(file), &quot;_&quot; ) ; 
+<span class="lineNum">     215 </span>                :            : //      OSDLOG(INFO, &quot;GL version is &quot;&lt;&lt; gl_info);
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :         GLUtils util_obj;</span>
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :         std::string gl_info = util_obj.read_GL_file();</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :         std::string gl_service_id = gl_info.substr(0, gl_info.find(&quot;\t&quot;));</span>
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :         return this-&gt;elec_mgr-&gt;start_election(gl_service_id);</span>
+<span class="lineNum">     220 </span>                :            : }
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 : void ElectionIdentifier::stop_election_identifier()</span>
+<span class="lineNum">     223 </span>                :            : {
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :         this-&gt;stop = true;</span>
+<span class="lineNum">     225 </span>                :            : }
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 : enum OSDException::OSDHfsStatus::gfs_stat ElectionIdentifier::verify_gfs_stat()</span>
+<span class="lineNum">     228 </span>                :            : {
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :         return this-&gt;hfs_checker-&gt;get_gfs_stat();</span>
+<span class="lineNum">     230 </span>                :            : }
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 : bool ElectionIdentifier::stop_all_service()</span>
+<span class="lineNum">     233 </span>                :            : {
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :         bool failover = false;</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Stopping all osd services&quot;);</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_mgr-&gt;stop_all_service();</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;All osd services stopped successfully&quot;);</span>
+<span class="lineNum">     238 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Terminating the monitoring thread&quot;);</span>
+<span class="lineNum">     239 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_mgr-&gt;stop_mon_thread();</span>
+<span class="lineNum">     240 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitor_mgr-&gt;join();</span>
+<span class="lineNum">     241 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     242 </span>                :            : }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineNoCov">          0 : int ElectionIdentifier::stat_handler(enum OSDException::OSDHfsStatus::gfs_stat stat)</span>
+<span class="lineNum">     245 </span>                :            : {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :         int return_value = 0;</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Stat of gfs is = &quot;&lt;&lt;stat);</span>
+<span class="lineNum">     248 </span>                :            :         
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :         if(stat == OSDException::OSDHfsStatus::NOT_READABILITY &amp;&amp; this-&gt;not_readability_flag == true) {</span>
+<span class="lineNum">     250 </span>                :<span class="lineNoCov">          0 :                  OSDLOG(INFO, &quot;Stopping all osd services as stat of gfs is not readability and notifying node failover to GL&quot;);</span>
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :                  this-&gt;stop_all_service();</span>
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :                  this-&gt;monitor_mgr-&gt;notify_to_gl();</span>
+<span class="lineNum">     253 </span>                :<span class="lineNoCov">          0 :                  this-&gt;not_readability_flag = false;</span>
+<span class="lineNum">     254 </span>                :            :         
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :         }else if (stat == OSDException::OSDHfsStatus::WRITABILITY) {</span>
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :                  this-&gt;not_readability_flag =  true;</span>
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :         }else if( stat == OSDException::OSDHfsStatus::NOT_WRITABILITY )</span>
+<span class="lineNum">     258 </span>                :            :         {
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :                 this-&gt;not_readability_flag =  true;</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :                 if( this-&gt;count != this-&gt;config_parser-&gt;election_countValue())</span>
+<span class="lineNum">     261 </span>                :            :                 {
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;LL gfs reader is unable to update the stat, failure count: &quot; &lt;&lt; this-&gt;count);</span>
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :                         this-&gt;count++ ;</span>
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :                         return 0;</span>
+<span class="lineNum">     265 </span>                :            :                 }
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :                 return_value =  this-&gt;notify_to_election_manager_for_start_election(this-&gt;conn_stat);</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Election is completed with return value &quot;&lt;&lt;return_value);</span>
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :                 this-&gt;count = 0;</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :                 this-&gt;strm_failure_count = 0;</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :                 return return_value;</span>
+<span class="lineNum">     271 </span>                :            :         }
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :         this-&gt;count = 0;</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         return return_value;</span>
+<span class="lineNum">     274 </span>                :            : }
+<span class="lineNum">     275 </span>                :            : 
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 : void ElectionIdentifier::start()</span>
+<span class="lineNum">     277 </span>                :            : {
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Election Indentifier thread start&quot;);</span>
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :         this-&gt;stop = false;</span>
+<span class="lineNum">     280 </span>                :            :         try
+<span class="lineNum">     281 </span>                :            :         {
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :         for(;;)</span>
+<span class="lineNum">     283 </span>                :            :         {
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :                 if( this-&gt;stop)</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :                         return;</span>
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep(boost::posix_time::seconds(5));</span>
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::interruption_point();</span>
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :                 boost::tuple&lt;boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; , int&gt; conn_info;</span>
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :                 conn_info = this-&gt;send_strm_to_gl();</span>
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :                 if( boost::get&lt;1&gt;(conn_info) == OSDException::OSDErrorCode::UNABLE_RECV_ACK_FROM_GL )</span>
+<span class="lineNum">     291 </span>                :            :                 {
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :                         int ret = 0;</span>
+<span class="lineNum">     293 </span>                :<span class="lineNoCov">          0 :                         this-&gt;strm_failure_count++;</span>
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;STRM ACK failure count: &quot; &lt;&lt; this-&gt;strm_failure_count);</span>
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :                         if(this-&gt;strm_failure_count == this-&gt;config_parser-&gt;hrbt_ack_failure_countValue() &amp;&amp; ((this-&gt;verify_gfs_stat() == OSDException::OSDHfsStatus::WRITABILITY) || (this-&gt;verify_gfs_stat() == OSDException::OSDHfsStatus::NOT_READABILITY))) {</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Stopping all osd services asumming GL as isolated or LL has NOT_READABILITY&quot;);</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;stop_all_service();</span>
+<span class="lineNum">     298 </span>                :            :                         }
+<span class="lineNum">     299 </span>                :<span class="lineNoCov">          0 :                         if( (ret = this-&gt;stat_handler(this-&gt;verify_gfs_stat())) != OSDException::OSDSuccessCode::ELECTION_SUCCESS)</span>
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :                                 continue;       </span>
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :                         if( ret == OSDException::OSDSuccessCode::ELECTION_SUCCESS)</span>
+<span class="lineNum">     302 </span>                :            :                         {
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Sending the strm msg to newly elected GL&quot;); </span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;strm_failure_count = 0;                </span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :                                 if( boost::get&lt;0&gt;(conn_info))</span>
+<span class="lineNum">     306 </span>                :            :                                 {
+<span class="lineNum">     307 </span>                :            :                                         //                              delete boost::get&lt;0&gt;(conn_info);
+<span class="lineNum">     308 </span>                :            :                                         //                              boost::get&lt;0&gt;(conn_info) = NULL;
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :                                         boost::get&lt;0&gt;(conn_info).reset();</span>
+<span class="lineNum">     310 </span>                :            :                                 }
+<span class="lineNum">     311 </span>                :            :                                 continue;
+<span class="lineNum">     312 </span>                :            :                         }
+<span class="lineNum">     313 </span>                :            :                 }
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :                 else if(boost::get&lt;1&gt;(conn_info) == OSDException::OSDErrorCode::LL_IS_NOT_REGISTERED)</span>
+<span class="lineNum">     315 </span>                :            :                 {
+<span class="lineNum">     316 </span>                :            :         //              OSDLOG(INFO,&quot;Sleep before stopping for 90 seconds&quot;);
+<span class="lineNum">     317 </span>                :            :         //              boost::this_thread::sleep(boost::posix_time::seconds(90));
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :                         this-&gt;stop = true;   // stopping election thread as LL not registered</span>
+<span class="lineNum">     319 </span>                :            :                         continue;
+<span class="lineNum">     320 </span>                :            :                 }
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Sent strm packet to GL successfully&quot;);</span>
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :                 this-&gt;strm_failure_count = 0;</span>
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :                 uint32_t seq_no = 0;</span>
+<span class="lineNum">     324 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm = boost::get&lt;0&gt;(conn_info);</span>
+<span class="lineNum">     325 </span>                :<span class="lineNoCov">          0 :                 if( !comm)</span>
+<span class="lineNum">     326 </span>                :            :                 {
+<span class="lineNum">     327 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Invalid connection object&quot;);</span>
+<span class="lineNum">     328 </span>                :            :                         continue;
+<span class="lineNum">     329 </span>                :            :                 }       
+<span class="lineNum">     330 </span>                :<span class="lineNoCov">          0 :                 this-&gt;failure = false;</span>
+<span class="lineNum">     331 </span>                :<span class="lineNoCov">          0 :                 this-&gt;successer = false;</span>
+<span class="lineNum">     332 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep(boost::posix_time::seconds(30));</span>
+<span class="lineNum">     333 </span>                :<span class="lineNoCov">          0 :                 for(;;)</span>
+<span class="lineNum">     334 </span>                :            :                 {
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :                         if( this-&gt;stop)</span>
+<span class="lineNum">     336 </span>                :<span class="lineNoCov">          0 :                                 return;</span>
+<span class="lineNum">     337 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::sleep(boost::posix_time::seconds(2));</span>
+<span class="lineNum">     338 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::interruption_point();</span>
+<span class="lineNum">     339 </span>                :            :                         time_t begin, end;
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :                         time(&amp;begin);</span>
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :                         seq_no = seq_no + 1; </span>
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :                         int ret = this-&gt;send_heartbeat_to_gl(comm, seq_no);</span>
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :                         if( ret == OSDException::OSDErrorCode::UNABLE_RECV_ACK_FROM_GL)</span>
+<span class="lineNum">     344 </span>                :            :                         {
+<span class="lineNum">     345 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;heartbeat_failure_count++;</span>
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Heartbeat ack failure count: &quot; &lt;&lt; this-&gt;heartbeat_failure_count);</span>
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :                                 if(this-&gt;heartbeat_failure_count == this-&gt;config_parser-&gt;hrbt_ack_failure_countValue() &amp;&amp; ((this-&gt;verify_gfs_stat() == OSDException::OSDHfsStatus::WRITABILITY) || (this-&gt;verify_gfs_stat() == OSDException::OSDHfsStatus::NOT_READABILITY))) {</span>
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Stopping all osd services asumming GL as isolated or LL has NOT_READABILITY&quot;);</span>
+<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;stop_all_service();</span>
+<span class="lineNum">     350 </span>                :            :                                 }
+<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :                                 boost::this_thread::sleep(boost::posix_time::seconds(30));</span>
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     353 </span>                :            :                         }
+<span class="lineNum">     354 </span>                :<span class="lineNoCov">          0 :                         time(&amp;end);</span>
+<span class="lineNum">     355 </span>                :<span class="lineNoCov">          0 :                         uint64_t timeout = this-&gt;config_parser-&gt;gns_accessibility_intervalValue();</span>
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 :                         if( (timeout - (end - begin)) &gt; 0)</span>
+<span class="lineNum">     357 </span>                :<span class="lineNoCov">          0 :                                 boost::this_thread::sleep(boost::posix_time::seconds(timeout - (end - begin)));</span>
+<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :                         if( this-&gt;stat_handler(this-&gt;verify_gfs_stat()) == OSDException::OSDSuccessCode::ELECTION_SUCCESS)</span>
+<span class="lineNum">     359 </span>                :            :                         {
+<span class="lineNum">     360 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Election completed successfully&quot;);</span>
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;heartbeat_failure_count = 0;</span>
+<span class="lineNum">     362 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;strm_failure_count = 0;</span>
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :                                 break;</span>
+<span class="lineNum">     364 </span>                :            :                         }
+<span class="lineNum">     365 </span>                :            :                 }
+<span class="lineNum">     366 </span>                :<span class="lineNoCov">          0 :                 if( comm)</span>
+<span class="lineNum">     367 </span>                :            :                 {
+<span class="lineNum">     368 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;Deleting comm object&quot;);</span>
+<span class="lineNum">     369 </span>                :            :                 //      delete comm;
+<span class="lineNum">     370 </span>                :            :                 //      comm = NULL;
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :                         comm.reset();</span>
+<span class="lineNum">     372 </span>                :            :                 }
+<span class="lineNum">     373 </span>                :            :         }}
+<span class="lineNum">     374 </span>                :<span class="lineNoCov">          0 :         catch (boost::thread_interrupted&amp;)</span>
+<span class="lineNum">     375 </span>                :            :         {
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Closing election thread&quot;);</span>
+<span class="lineNum">     377 </span>                :            :         }       
+<span class="lineNum">     378 </span>                :            : }
+<span class="lineNum">     379 </span>                :            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

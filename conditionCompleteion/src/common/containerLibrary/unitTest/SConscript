@@ -1,0 +1,108 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "containerLibraryUnitTest",
+        srcs = context.split("""
+		main.cpp
+		../containerInfoFile_manager.cpp
+		../containerInfoFile.cpp
+		../containerInfoFile_builder.cpp
+		../file.cpp
+		../trailer_stat_block_builder.cpp
+		../trailer_stat_block_writer.cpp
+		../index_block.cpp
+		../index_block_builder.cpp
+		../index_block_writer.cpp
+		../info_file_sorter.cpp
+		../data_block.cpp
+		../data_block_writer.cpp
+		../data_block_builder.cpp
+		../data_block_iterator.cpp
+		../reader.cpp
+		../writer.cpp
+		../updater_info.cpp
+		../memory_writer.cpp
+		../../libraryUtils/record_structure.cpp
+		../../libraryUtils/serialize.cpp
+		../file_writer.cpp
+		../../libraryUtils/helper.cpp
+		../job_manager.cpp
+		../../libraryUtils/file_handler.cpp
+		../../libraryUtils/journal.cpp
+		../journal_writer.cpp
+		../journal_reader.cpp
+		../../libraryUtils/object_storage_log_setup.cpp
+		../../libraryUtils/lock_manager.cpp
+		../../libraryUtils/osd_logger_initialize.cpp
+		fileTest.cpp
+		#journal_writer_test.cpp
+		#journal_reader_test.cpp
+		#job_manager_test.cpp
+		#memory_manager_test.cpp
+		container_info_manager_test.cpp
+		#file_writer_test.cpp
+		trailer_stat_block_builderTest.cpp
+		trailerBlockTest.cpp
+		statTest.cpp
+		index_block_test.cpp
+		index_block_reader_writer_test.cpp
+		readerTest.cpp
+		config_file_parser_test.cpp
+		data_block_test.cpp
+		#container_info_file_test.cpp
+	"""),
+        targetType = context.TYPE_EXE,
+        libs = context.split("""
+                #any external libs  that you may need.
+        """),
+        wholeLibs = context.split("""
+               gmock
+        """),
+        requiredLibs = context.split("""
+                boost_python
+                boost_filesystem
+		rt
+		dl
+		util
+        """)
+)
+
+src = context.split("""
+                main.cpp
+                ../containerInfoFile.cpp
+                ../containerInfoFile_builder.cpp
+                ../file.cpp
+                ../trailer_block_builder.cpp
+                ../trailer_block_writer.cpp
+                ../stat_block_builder.cpp
+                ../stat_block_writer.cpp
+                ../index_block.cpp
+                ../index_block_builder.cpp
+                ../index_block_writer.cpp
+                ../data_block.cpp
+                ../data_block_writer.cpp
+                ../data_block_builder.cpp
+                ../reader.cpp
+                ../writer.cpp
+                ../memory_writer.cpp
+                ../record_structure.cpp
+                ../file_writer.cpp
+                fileTest.cpp
+                memory_manager_test.cpp
+                #file_writer_test.cpp
+                trailerBlockBuilderTest.cpp
+                trailerBlockTest.cpp
+                statTest.cpp
+                statBlockBuilderTest.cpp
+                index_block_test.cpp
+                index_block_reader_writer_test.cpp
+                readerTest.cpp
+                config_file_parser_test.cpp
+                data_block_test.cpp
+        """)
+
+print "type ", type(src)
+print "content", src
+

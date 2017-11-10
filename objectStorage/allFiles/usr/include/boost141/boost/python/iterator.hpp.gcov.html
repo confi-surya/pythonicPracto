@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/iterator.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python</a> - iterator.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryMed">75.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef ITERATOR_DWA2002512_HPP
+<span class="lineNum">       6 </span>                :            : # define ITERATOR_DWA2002512_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/detail/target.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/python/object/iterator.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/object_core.hpp&gt;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/type_traits/cv_traits.hpp&gt;
+<span class="lineNum">      15 </span>                :            : # include &lt;boost/type_traits/transform_traits.hpp&gt;
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : # if defined(BOOST_MSVC) &amp;&amp; (BOOST_MSVC == 1400) /*
+<span class="lineNum">      18 </span>                :            : &gt; warning C4180: qualifier applied to function type has no meaning; ignored
+<span class="lineNum">      19 </span>                :            : Peter Dimov wrote:
+<span class="lineNum">      20 </span>                :            : This warning is caused by an overload resolution bug in VC8 that cannot be
+<span class="lineNum">      21 </span>                :            : worked around and will probably not be fixed by MS in the VC8 line. The
+<span class="lineNum">      22 </span>                :            : problematic overload is only instantiated and never called, and the code
+<span class="lineNum">      23 </span>                :            : works correctly. */
+<span class="lineNum">      24 </span>                :            : #  pragma warning(disable: 4180)
+<span class="lineNum">      25 </span>                :            : # endif
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : # include &lt;boost/bind.hpp&gt;
+<span class="lineNum">      28 </span>                :            : # include &lt;boost/bind/protect.hpp&gt;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : namespace boost { namespace python { 
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : namespace detail
+<span class="lineNum">      33 </span>                :            : {
+<span class="lineNum">      34 </span>                :            :   // Adds an additional layer of binding to
+<span class="lineNum">      35 </span>                :            :   // objects::make_iterator(...), which allows us to pass member
+<span class="lineNum">      36 </span>                :            :   // function and member data pointers.
+<span class="lineNum">      37 </span>                :            :   template &lt;class Target, class Accessor1, class Accessor2, class NextPolicies&gt;
+<span class="lineNum">      38 </span>                :            :   inline object make_iterator(
+<span class="lineNum">      39 </span>                :            :       Accessor1 get_start
+<span class="lineNum">      40 </span>                :            :     , Accessor2 get_finish
+<span class="lineNum">      41 </span>                :            :     , NextPolicies next_policies
+<span class="lineNum">      42 </span>                :            :     , Target&amp;(*)()
+<span class="lineNum">      43 </span>                :<span class="lineCov">         12 :   )</span>
+<span class="lineNum">      44 </span>                :            :   {
+<span class="lineNum">      45 </span>                :            :       return objects::make_iterator_function&lt;Target&gt;(
+<span class="lineNum">      46 </span>                :            :           boost::protect(boost::bind(get_start, _1))
+<span class="lineNum">      47 </span>                :            :         , boost::protect(boost::bind(get_finish, _1))
+<span class="lineNum">      48 </span>                :            :         , next_policies
+<span class="lineNum">      49 </span>                :<span class="lineCov">         12 :       );</span>
+<span class="lineNum">      50 </span>                :            :   }
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :            :   // Guts of template class iterators&lt;&gt;, below.
+<span class="lineNum">      53 </span>                :            :   template &lt;bool const_ = false&gt;
+<span class="lineNum">      54 </span>                :            :   struct iterators_impl
+<span class="lineNum">      55 </span>                :            :   {
+<span class="lineNum">      56 </span>                :            :       template &lt;class T&gt;
+<span class="lineNum">      57 </span>                :            :       struct apply
+<span class="lineNum">      58 </span>                :            :       {
+<span class="lineNum">      59 </span>                :            :           typedef typename T::iterator iterator;
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :           static iterator begin(T&amp; x) { return x.begin(); }</span>
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :           static iterator end(T&amp; x) { return x.end(); }</span>
+<span class="lineNum">      62 </span>                :            :       };
+<span class="lineNum">      63 </span>                :            :   };
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            :   template &lt;&gt;
+<span class="lineNum">      66 </span>                :            :   struct iterators_impl&lt;true&gt;
+<span class="lineNum">      67 </span>                :            :   {
+<span class="lineNum">      68 </span>                :            :       template &lt;class T&gt;
+<span class="lineNum">      69 </span>                :            :       struct apply
+<span class="lineNum">      70 </span>                :            :       {
+<span class="lineNum">      71 </span>                :            :           typedef typename T::const_iterator iterator;
+<span class="lineNum">      72 </span>                :            :           static iterator begin(T&amp; x) { return x.begin(); }
+<span class="lineNum">      73 </span>                :            :           static iterator end(T&amp; x) { return x.end(); }
+<span class="lineNum">      74 </span>                :            :       };
+<span class="lineNum">      75 </span>                :            :   };
+<span class="lineNum">      76 </span>                :            : }
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :            : // An &quot;ordinary function generator&quot; which contains static begin(x) and
+<span class="lineNum">      79 </span>                :            : // end(x) functions that invoke T::begin() and T::end(), respectively.
+<span class="lineNum">      80 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      81 </span>                :            : struct iterators
+<span class="lineNum">      82 </span>                :            :     : detail::iterators_impl&lt;
+<span class="lineNum">      83 </span>                :            :         boost::is_const&lt;T&gt;::value
+<span class="lineNum">      84 </span>                :            :       &gt;::template apply&lt;T&gt;
+<span class="lineNum">      85 </span>                :            : {
+<span class="lineNum">      86 </span>                :            : };
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :            : // Create an iterator-building function which uses the given
+<span class="lineNum">      89 </span>                :            : // accessors. Deduce the Target type from the accessors. The iterator
+<span class="lineNum">      90 </span>                :            : // returns copies of the inderlying elements.
+<span class="lineNum">      91 </span>                :            : template &lt;class Accessor1, class Accessor2&gt;
+<span class="lineNum">      92 </span>                :            : object range(Accessor1 start, Accessor2 finish)
+<span class="lineNum">      93 </span>                :            : {
+<span class="lineNum">      94 </span>                :            :     return detail::make_iterator(
+<span class="lineNum">      95 </span>                :            :         start, finish
+<span class="lineNum">      96 </span>                :            :       , objects::default_iterator_call_policies()
+<span class="lineNum">      97 </span>                :            :       , detail::target(start)
+<span class="lineNum">      98 </span>                :            :     );
+<span class="lineNum">      99 </span>                :            : }
+<span class="lineNum">     100 </span>                :            : 
+<span class="lineNum">     101 </span>                :            : // Create an iterator-building function which uses the given accessors
+<span class="lineNum">     102 </span>                :            : // and next() policies. Deduce the Target type.
+<span class="lineNum">     103 </span>                :            : template &lt;class NextPolicies, class Accessor1, class Accessor2&gt;
+<span class="lineNum">     104 </span>                :<span class="lineCov">         12 : object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)</span>
+<span class="lineNum">     105 </span>                :            : {
+<span class="lineNum">     106 </span>                :<span class="lineCov">         12 :     return detail::make_iterator(start, finish, NextPolicies(), detail::target(start));</span>
+<span class="lineNum">     107 </span>                :            : }
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :            : // Create an iterator-building function which uses the given accessors
+<span class="lineNum">     110 </span>                :            : // and next() policies, operating on the given Target type
+<span class="lineNum">     111 </span>                :            : template &lt;class NextPolicies, class Target, class Accessor1, class Accessor2&gt;
+<span class="lineNum">     112 </span>                :            : object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type&lt;Target&gt;* = 0)
+<span class="lineNum">     113 </span>                :            : {
+<span class="lineNum">     114 </span>                :            :     // typedef typename add_reference&lt;Target&gt;::type target;
+<span class="lineNum">     115 </span>                :            :     return detail::make_iterator(start, finish, NextPolicies(), (Target&amp;(*)())0);
+<span class="lineNum">     116 </span>                :            : }
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            : // A Python callable object which produces an iterator traversing
+<span class="lineNum">     119 </span>                :            : // [x.begin(), x.end()), where x is an instance of the Container
+<span class="lineNum">     120 </span>                :            : // type. NextPolicies are used as the CallPolicies for the iterator's
+<span class="lineNum">     121 </span>                :            : // next() function.
+<span class="lineNum">     122 </span>                :            : template &lt;class Container
+<span class="lineNum">     123 </span>                :            :           , class NextPolicies = objects::default_iterator_call_policies&gt;
+<span class="lineNum">     124 </span>                :            : struct iterator : object
+<span class="lineNum">     125 </span>                :            : {
+<span class="lineNum">     126 </span>                :<span class="lineCov">          6 :     iterator()</span>
+<span class="lineNum">     127 </span>                :            :         : object(
+<span class="lineNum">     128 </span>                :            :             python::range&lt;NextPolicies&gt;(
+<span class="lineNum">     129 </span>                :            :                 &amp;iterators&lt;Container&gt;::begin, &amp;iterators&lt;Container&gt;::end
+<span class="lineNum">     130 </span>                :<span class="lineCov">          6 :                 ))</span>
+<span class="lineNum">     131 </span>                :            :     {
+<span class="lineNum">     132 </span>                :            :     }
+<span class="lineNum">     133 </span>                :            : };
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :            : }} // namespace boost::python
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            : #endif // ITERATOR_DWA2002512_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

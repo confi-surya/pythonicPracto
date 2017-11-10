@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/converter/return_from_python.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/converter</a> - return_from_python.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef RETURN_FROM_PYTHON_DWA200265_HPP
+<span class="lineNum">       6 </span>                :            : # define RETURN_FROM_PYTHON_DWA200265_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/converter/from_python.hpp&gt;
+<span class="lineNum">       9 </span>                :            : # include &lt;boost/python/converter/rvalue_from_python_data.hpp&gt;
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/converter/registered.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/python/converter/registered_pointee.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/converter/object_manager.hpp&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;boost/python/detail/void_ptr.hpp&gt;
+<span class="lineNum">      14 </span>                :            : # include &lt;boost/python/detail/void_return.hpp&gt;
+<span class="lineNum">      15 </span>                :            : # include &lt;boost/python/errors.hpp&gt;
+<span class="lineNum">      16 </span>                :            : # include &lt;boost/python/handle.hpp&gt;
+<span class="lineNum">      17 </span>                :            : # include &lt;boost/type_traits/has_trivial_copy.hpp&gt;
+<span class="lineNum">      18 </span>                :            : # include &lt;boost/mpl/and.hpp&gt;
+<span class="lineNum">      19 </span>                :            : # include &lt;boost/mpl/bool.hpp&gt;
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : namespace boost { namespace python { namespace converter { 
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : template &lt;class T&gt; struct is_object_manager;
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : namespace detail
+<span class="lineNum">      26 </span>                :            : {
+<span class="lineNum">      27 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      28 </span>                :            :   struct return_pointer_from_python
+<span class="lineNum">      29 </span>                :            :   {
+<span class="lineNum">      30 </span>                :            :       typedef T result_type;
+<span class="lineNum">      31 </span>                :            :       T operator()(PyObject*) const;
+<span class="lineNum">      32 </span>                :            :   };
+<span class="lineNum">      33 </span>                :            :   
+<span class="lineNum">      34 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      35 </span>                :            :   struct return_reference_from_python
+<span class="lineNum">      36 </span>                :            :   {
+<span class="lineNum">      37 </span>                :            :       typedef T result_type;
+<span class="lineNum">      38 </span>                :            :       T operator()(PyObject*) const;
+<span class="lineNum">      39 </span>                :            :   };
+<span class="lineNum">      40 </span>                :            :   
+<span class="lineNum">      41 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      42 </span>                :            :   struct return_rvalue_from_python
+<span class="lineNum">      43 </span>                :            :   {
+<span class="lineNum">      44 </span>                :            :       typedef T result_type;
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :            :       return_rvalue_from_python();
+<span class="lineNum">      47 </span>                :            :       result_type operator()(PyObject*);
+<span class="lineNum">      48 </span>                :            :    private:
+<span class="lineNum">      49 </span>                :            :       rvalue_from_python_data&lt;T&gt; m_data;
+<span class="lineNum">      50 </span>                :            :   };
+<span class="lineNum">      51 </span>                :            :   
+<span class="lineNum">      52 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      53 </span>                :            :   struct return_object_manager_from_python
+<span class="lineNum">      54 </span>                :            :   {
+<span class="lineNum">      55 </span>                :            :       typedef T result_type;
+<span class="lineNum">      56 </span>                :            :       result_type operator()(PyObject*) const;
+<span class="lineNum">      57 </span>                :            :   };
+<span class="lineNum">      58 </span>                :            :   
+<span class="lineNum">      59 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">      60 </span>                :            :   struct select_return_from_python
+<span class="lineNum">      61 </span>                :            :   {
+<span class="lineNum">      62 </span>                :            :       BOOST_STATIC_CONSTANT(
+<span class="lineNum">      63 </span>                :            :           bool, obj_mgr = is_object_manager&lt;T&gt;::value);
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            :       BOOST_STATIC_CONSTANT(
+<span class="lineNum">      66 </span>                :            :           bool, ptr = is_pointer&lt;T&gt;::value);
+<span class="lineNum">      67 </span>                :            :     
+<span class="lineNum">      68 </span>                :            :       BOOST_STATIC_CONSTANT(
+<span class="lineNum">      69 </span>                :            :           bool, ref = is_reference&lt;T&gt;::value);
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :            :       typedef typename mpl::if_c&lt;
+<span class="lineNum">      72 </span>                :            :           obj_mgr
+<span class="lineNum">      73 </span>                :            :           , return_object_manager_from_python&lt;T&gt;
+<span class="lineNum">      74 </span>                :            :           , typename mpl::if_c&lt;
+<span class="lineNum">      75 </span>                :            :               ptr
+<span class="lineNum">      76 </span>                :            :               , return_pointer_from_python&lt;T&gt;
+<span class="lineNum">      77 </span>                :            :               , typename mpl::if_c&lt;
+<span class="lineNum">      78 </span>                :            :                   ref
+<span class="lineNum">      79 </span>                :            :                   , return_reference_from_python&lt;T&gt;
+<span class="lineNum">      80 </span>                :            :                   , return_rvalue_from_python&lt;T&gt;
+<span class="lineNum">      81 </span>                :            :                 &gt;::type
+<span class="lineNum">      82 </span>                :            :             &gt;::type
+<span class="lineNum">      83 </span>                :            :          &gt;::type type;
+<span class="lineNum">      84 </span>                :            :   };
+<span class="lineNum">      85 </span>                :            : }
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            : template &lt;class T&gt;
+<span class="lineNum">      88 </span>                :            : struct return_from_python
+<span class="lineNum">      89 </span>                :            :     : detail::select_return_from_python&lt;T&gt;::type
+<span class="lineNum">      90 </span>                :            : {
+<span class="lineNum">      91 </span>                :            : };
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :            : // Specialization as a convenience for call and call_method
+<span class="lineNum">      94 </span>                :            : template &lt;&gt;
+<span class="lineNum">      95 </span>                :            : struct return_from_python&lt;void&gt;
+<span class="lineNum">      96 </span>                :            : {
+<span class="lineNum">      97 </span>                :            :     typedef python::detail::returnable&lt;void&gt;::type result_type;
+<span class="lineNum">      98 </span>                :            :     
+<span class="lineNum">      99 </span>                :            :     result_type operator()(PyObject* x) const
+<span class="lineNum">     100 </span>                :            :     {
+<span class="lineNum">     101 </span>                :            :         (void_result_from_python)(x);
+<span class="lineNum">     102 </span>                :            : # ifdef BOOST_NO_VOID_RETURNS
+<span class="lineNum">     103 </span>                :            :         return result_type();
+<span class="lineNum">     104 </span>                :            : # endif 
+<span class="lineNum">     105 </span>                :            :     }
+<span class="lineNum">     106 </span>                :            : };
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            : //
+<span class="lineNum">     109 </span>                :            : // Implementations
+<span class="lineNum">     110 </span>                :            : //
+<span class="lineNum">     111 </span>                :            : namespace detail
+<span class="lineNum">     112 </span>                :            : {
+<span class="lineNum">     113 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     114 </span>                :            :   inline return_rvalue_from_python&lt;T&gt;::return_rvalue_from_python()
+<span class="lineNum">     115 </span>                :            :       : m_data(
+<span class="lineNum">     116 </span>                :            :           const_cast&lt;registration*&gt;(&amp;registered&lt;T&gt;::converters)
+<span class="lineNum">     117 </span>                :            :           )
+<span class="lineNum">     118 </span>                :            :   {
+<span class="lineNum">     119 </span>                :            :   }
+<span class="lineNum">     120 </span>                :            :   
+<span class="lineNum">     121 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     122 </span>                :            :   inline typename return_rvalue_from_python&lt;T&gt;::result_type
+<span class="lineNum">     123 </span>                :            :   return_rvalue_from_python&lt;T&gt;::operator()(PyObject* obj)
+<span class="lineNum">     124 </span>                :            :   {
+<span class="lineNum">     125 </span>                :            :     // Take possession of the source object here.  If the result is in
+<span class="lineNum">     126 </span>                :            :     // fact going to be a copy of an lvalue embedded in the object,
+<span class="lineNum">     127 </span>                :            :     // and we take possession inside rvalue_result_from_python, it
+<span class="lineNum">     128 </span>                :            :     // will be destroyed too early.
+<span class="lineNum">     129 </span>                :            :     handle&lt;&gt; holder(obj);
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :            :       return *(T*)
+<span class="lineNum">     132 </span>                :            :           (rvalue_result_from_python)(obj, m_data.stage1);
+<span class="lineNum">     133 </span>                :            :   }
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     136 </span>                :            :   inline T return_reference_from_python&lt;T&gt;::operator()(PyObject* obj) const
+<span class="lineNum">     137 </span>                :            :   {
+<span class="lineNum">     138 </span>                :            :       return python::detail::void_ptr_to_reference(
+<span class="lineNum">     139 </span>                :            :           (reference_result_from_python)(obj, registered&lt;T&gt;::converters)
+<span class="lineNum">     140 </span>                :            :           , (T(*)())0);
+<span class="lineNum">     141 </span>                :            :   }
+<span class="lineNum">     142 </span>                :            : 
+<span class="lineNum">     143 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     144 </span>                :            :   inline T return_pointer_from_python&lt;T&gt;::operator()(PyObject* obj) const
+<span class="lineNum">     145 </span>                :            :   {
+<span class="lineNum">     146 </span>                :            :       return T(
+<span class="lineNum">     147 </span>                :            :           (pointer_result_from_python)(obj, registered_pointee&lt;T&gt;::converters)
+<span class="lineNum">     148 </span>                :            :           );
+<span class="lineNum">     149 </span>                :            :   }
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :   inline T return_object_manager_from_python&lt;T&gt;::operator()(PyObject* obj) const</span>
+<span class="lineNum">     153 </span>                :            :   {
+<span class="lineNum">     154 </span>                :            :       return T(
+<span class="lineNum">     155 </span>                :            :           object_manager_traits&lt;T&gt;::adopt(expect_non_null(obj))
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :           );</span>
+<span class="lineNum">     157 </span>                :            :   }
+<span class="lineNum">     158 </span>                :            : }
+<span class="lineNum">     159 </span>                :            :   
+<span class="lineNum">     160 </span>                :            : }}} // namespace boost::python::converter
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            : #endif // RETURN_FROM_PYTHON_DWA200265_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

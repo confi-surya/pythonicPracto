@@ -1,0 +1,263 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/args.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python</a> - args.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryHi">90.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef KEYWORDS_DWA2002323_HPP
+<span class="lineNum">       6 </span>                :            : # define KEYWORDS_DWA2002323_HPP
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # include &lt;boost/python/detail/prefix.hpp&gt;
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : # include &lt;boost/python/args_fwd.hpp&gt;
+<span class="lineNum">      11 </span>                :            : # include &lt;boost/config.hpp&gt;
+<span class="lineNum">      12 </span>                :            : # include &lt;boost/python/detail/preprocessor.hpp&gt;
+<span class="lineNum">      13 </span>                :            : # include &lt;boost/python/detail/type_list.hpp&gt;
+<span class="lineNum">      14 </span>                :            : 
+<span class="lineNum">      15 </span>                :            : # include &lt;boost/type_traits/is_reference.hpp&gt;
+<span class="lineNum">      16 </span>                :            : # include &lt;boost/type_traits/remove_reference.hpp&gt;
+<span class="lineNum">      17 </span>                :            : # include &lt;boost/type_traits/remove_cv.hpp&gt;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : # include &lt;boost/preprocessor/enum_params.hpp&gt;
+<span class="lineNum">      20 </span>                :            : # include &lt;boost/preprocessor/repeat.hpp&gt;
+<span class="lineNum">      21 </span>                :            : # include &lt;boost/preprocessor/facilities/intercept.hpp&gt;
+<span class="lineNum">      22 </span>                :            : # include &lt;boost/preprocessor/iteration/local.hpp&gt;
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : # include &lt;boost/python/detail/mpl_lambda.hpp&gt;
+<span class="lineNum">      25 </span>                :            : # include &lt;boost/python/object_core.hpp&gt;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : # include &lt;boost/mpl/bool.hpp&gt;
+<span class="lineNum">      28 </span>                :            : 
+<span class="lineNum">      29 </span>                :            : # include &lt;cstddef&gt;
+<span class="lineNum">      30 </span>                :            : # include &lt;algorithm&gt;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : namespace boost { namespace python {
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : typedef detail::keywords&lt;1&gt; arg;
+<span class="lineNum">      35 </span>                :            : typedef arg arg_; // gcc 2.96 workaround
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : namespace detail
+<span class="lineNum">      38 </span>                :            : {
+<span class="lineNum">      39 </span>                :            :   template &lt;std::size_t nkeywords&gt;
+<span class="lineNum">      40 </span>                :            :   struct keywords_base
+<span class="lineNum">      41 </span>                :            :   {
+<span class="lineNum">      42 </span>                :            :       BOOST_STATIC_CONSTANT(std::size_t, size = nkeywords);
+<span class="lineNum">      43 </span>                :            :       
+<span class="lineNum">      44 </span>                :<span class="lineCov">         18 :       keyword_range range() const</span>
+<span class="lineNum">      45 </span>                :            :       {
+<span class="lineNum">      46 </span>                :<span class="lineCov">         18 :           return keyword_range(elements, elements + nkeywords);</span>
+<span class="lineNum">      47 </span>                :            :       }
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            :       keyword elements[nkeywords];
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :       keywords&lt;nkeywords+1&gt;
+<span class="lineNum">      52 </span>                :<span class="lineCov">         12 :       operator,(python::arg const &amp;k) const;</span>
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            :       keywords&lt;nkeywords + 1&gt;
+<span class="lineNum">      55 </span>                :            :       operator,(char const *name) const;
+<span class="lineNum">      56 </span>                :            :   };
+<span class="lineNum">      57 </span>                :            :   
+<span class="lineNum">      58 </span>                :            :   template &lt;std::size_t nkeywords&gt;
+<span class="lineNum">      59 </span>                :            :   struct keywords : keywords_base&lt;nkeywords&gt;
+<span class="lineNum">      60 </span>                :            :   {
+<span class="lineNum">      61 </span>                :            :   };
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            :   template &lt;&gt;
+<span class="lineNum">      64 </span>                :            :   struct keywords&lt;1&gt; : keywords_base&lt;1&gt;
+<span class="lineNum">      65 </span>                :            :   {
+<span class="lineNum">      66 </span>                :<span class="lineCov">         30 :       explicit keywords(char const *name)</span>
+<span class="lineNum">      67 </span>                :            :       {
+<span class="lineNum">      68 </span>                :<span class="lineCov">         30 :           elements[0].name = name;</span>
+<span class="lineNum">      69 </span>                :            :       }
+<span class="lineNum">      70 </span>                :            :     
+<span class="lineNum">      71 </span>                :            :       template &lt;class T&gt;
+<span class="lineNum">      72 </span>                :            :       python::arg&amp; operator=(T const&amp; value)
+<span class="lineNum">      73 </span>                :            :       {
+<span class="lineNum">      74 </span>                :            :           object z(value);
+<span class="lineNum">      75 </span>                :            :           elements[0].default_value = handle&lt;&gt;(python::borrowed(object(value).ptr()));
+<span class="lineNum">      76 </span>                :            :           return *this;
+<span class="lineNum">      77 </span>                :            :       }
+<span class="lineNum">      78 </span>                :            :     
+<span class="lineNum">      79 </span>                :            :       operator detail::keyword const&amp;() const
+<span class="lineNum">      80 </span>                :            :       {
+<span class="lineNum">      81 </span>                :            :           return elements[0];
+<span class="lineNum">      82 </span>                :            :       }
+<span class="lineNum">      83 </span>                :            :   };
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            :   template &lt;std::size_t nkeywords&gt;
+<span class="lineNum">      86 </span>                :            :   inline
+<span class="lineNum">      87 </span>                :            :   keywords&lt;nkeywords+1&gt;
+<span class="lineNum">      88 </span>                :            :   keywords_base&lt;nkeywords&gt;::operator,(python::arg const &amp;k) const
+<span class="lineNum">      89 </span>                :            :   {
+<span class="lineNum">      90 </span>                :<span class="lineCov">         12 :       keywords&lt;nkeywords&gt; const&amp; l = *static_cast&lt;keywords&lt;nkeywords&gt; const*&gt;(this);</span>
+<span class="lineNum">      91 </span>                :<span class="lineCov">         12 :       python::detail::keywords&lt;nkeywords+1&gt; res;</span>
+<span class="lineNum">      92 </span>                :<span class="lineCov">         12 :       std::copy(l.elements, l.elements+nkeywords, res.elements);</span>
+<span class="lineNum">      93 </span>                :<span class="lineCov">         12 :       res.elements[nkeywords] = k.elements[0];</span>
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :       return res;</span>
+<span class="lineNum">      95 </span>                :            :   }
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :            :   template &lt;std::size_t nkeywords&gt;
+<span class="lineNum">      98 </span>                :            :   inline
+<span class="lineNum">      99 </span>                :            :   keywords&lt;nkeywords + 1&gt;
+<span class="lineNum">     100 </span>                :            :   keywords_base&lt;nkeywords&gt;::operator,(char const *name) const
+<span class="lineNum">     101 </span>                :            :   {
+<span class="lineNum">     102 </span>                :            :       return this-&gt;operator,(python::arg(name));
+<span class="lineNum">     103 </span>                :            :   }
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :            : # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+<span class="lineNum">     106 </span>                :            :   template&lt;typename T&gt;
+<span class="lineNum">     107 </span>                :            :   struct is_keywords
+<span class="lineNum">     108 </span>                :            :   {
+<span class="lineNum">     109 </span>                :            :       BOOST_STATIC_CONSTANT(bool, value = false); 
+<span class="lineNum">     110 </span>                :            :   };
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :            :   template&lt;std::size_t nkeywords&gt;
+<span class="lineNum">     113 </span>                :            :   struct is_keywords&lt;keywords&lt;nkeywords&gt; &gt;
+<span class="lineNum">     114 </span>                :            :   {
+<span class="lineNum">     115 </span>                :            :       BOOST_STATIC_CONSTANT(bool, value = true);
+<span class="lineNum">     116 </span>                :            :   };
+<span class="lineNum">     117 </span>                :            :   template &lt;class T&gt;
+<span class="lineNum">     118 </span>                :            :   struct is_reference_to_keywords
+<span class="lineNum">     119 </span>                :            :   {
+<span class="lineNum">     120 </span>                :            :       BOOST_STATIC_CONSTANT(bool, is_ref = is_reference&lt;T&gt;::value);
+<span class="lineNum">     121 </span>                :            :       typedef typename remove_reference&lt;T&gt;::type deref;
+<span class="lineNum">     122 </span>                :            :       typedef typename remove_cv&lt;deref&gt;::type key_t;
+<span class="lineNum">     123 </span>                :            :       BOOST_STATIC_CONSTANT(bool, is_key = is_keywords&lt;key_t&gt;::value);
+<span class="lineNum">     124 </span>                :            :       BOOST_STATIC_CONSTANT(bool, value = (is_ref &amp; is_key));
+<span class="lineNum">     125 </span>                :            :       
+<span class="lineNum">     126 </span>                :            :       typedef mpl::bool_&lt;value&gt; type;
+<span class="lineNum">     127 </span>                :            :       BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
+<span class="lineNum">     128 </span>                :            :   };
+<span class="lineNum">     129 </span>                :            : # else 
+<span class="lineNum">     130 </span>                :            :   typedef char (&amp;yes_keywords_t)[1];
+<span class="lineNum">     131 </span>                :            :   typedef char (&amp;no_keywords_t)[2];
+<span class="lineNum">     132 </span>                :            :       
+<span class="lineNum">     133 </span>                :            :   no_keywords_t is_keywords_test(...);
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :            :   template&lt;std::size_t nkeywords&gt;
+<span class="lineNum">     136 </span>                :            :   yes_keywords_t is_keywords_test(void (*)(keywords&lt;nkeywords&gt;&amp;));
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :            :   template&lt;std::size_t nkeywords&gt;
+<span class="lineNum">     139 </span>                :            :   yes_keywords_t is_keywords_test(void (*)(keywords&lt;nkeywords&gt; const&amp;));
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>                :            :   template&lt;typename T&gt;
+<span class="lineNum">     142 </span>                :            :   class is_reference_to_keywords
+<span class="lineNum">     143 </span>                :            :   {
+<span class="lineNum">     144 </span>                :            :    public:
+<span class="lineNum">     145 </span>                :            :       BOOST_STATIC_CONSTANT(
+<span class="lineNum">     146 </span>                :            :           bool, value = (
+<span class="lineNum">     147 </span>                :            :               sizeof(detail::is_keywords_test( (void (*)(T))0 ))
+<span class="lineNum">     148 </span>                :            :               == sizeof(detail::yes_keywords_t)));
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :       typedef mpl::bool_&lt;value&gt; type;
+<span class="lineNum">     151 </span>                :            :       BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
+<span class="lineNum">     152 </span>                :            :   };
+<span class="lineNum">     153 </span>                :            : # endif 
+<span class="lineNum">     154 </span>                :            : }
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            : inline detail::keywords&lt;1&gt; args(char const* name)
+<span class="lineNum">     157 </span>                :            : { 
+<span class="lineNum">     158 </span>                :            :     return detail::keywords&lt;1&gt;(name);
+<span class="lineNum">     159 </span>                :            : }
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :            : #  define BOOST_PYTHON_ASSIGN_NAME(z, n, _) result.elements[n].name = name##n;
+<span class="lineNum">     162 </span>                :            : #  define BOOST_PP_LOCAL_MACRO(n)                                               \
+<span class="lineNum">     163 </span>                :            : inline detail::keywords&lt;n&gt; args(BOOST_PP_ENUM_PARAMS_Z(1, n, char const* name)) \
+<span class="lineNum">     164 </span>                :            : {                                                                               \
+<span class="lineNum">     165 </span>                :            :     detail::keywords&lt;n&gt; result;                                                 \
+<span class="lineNum">     166 </span>                :            :     BOOST_PP_REPEAT_1(n, BOOST_PYTHON_ASSIGN_NAME, _)                           \
+<span class="lineNum">     167 </span>                :            :     return result;                                                              \
+<span class="lineNum">     168 </span>                :            : }
+<span class="lineNum">     169 </span>                :            : #  define BOOST_PP_LOCAL_LIMITS (2, BOOST_PYTHON_MAX_ARITY)
+<span class="lineNum">     170 </span>                :            : #  include BOOST_PP_LOCAL_ITERATE()
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            : }} // namespace boost::python
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :            : # endif // KEYWORDS_DWA2002323_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

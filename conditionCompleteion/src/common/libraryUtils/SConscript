@@ -1,0 +1,42 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "libraryUtils",
+        #srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		file_handler.cpp
+		helper.cpp
+		info_file_sorter.cpp
+		job_manager.cpp
+		journal.cpp
+		library_py_binding.cpp
+		lock_manager.cpp
+		object_storage_log_setup.cpp
+		osd_logger_initialize.cpp
+		record_structure.cpp
+		serialize.cpp
+		md5sum.cpp
+		stats.cpp
+		statManager.cpp
+		osdStatGather.cpp
+		statFactory.cpp
+		pyStatManager.cpp
+	"""),
+        targetType = context.TYPE_DLL,
+        libs = context.split("""
+                #any external libs  that you may need.
+        """),
+        # only in case of unit test dir
+        #wholeLibs = context.split("""
+        #       gmock
+        #""")
+        requiredLibs = context.split("""
+		cool
+		boost_python
+		coolNet
+		statGather
+        """)
+)
+

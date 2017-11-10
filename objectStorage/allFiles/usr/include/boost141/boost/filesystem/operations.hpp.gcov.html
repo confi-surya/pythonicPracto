@@ -1,0 +1,1269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/filesystem/operations.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/filesystem</a> - operations.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntry">137</td>
+            <td class="headerCovTableEntryLo">20.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">48</td>
+            <td class="headerCovTableEntryLo">10.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //  boost/filesystem/operations.hpp  -----------------------------------------//
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : //  Copyright 2002-2005 Beman Dawes
+<span class="lineNum">       4 </span>                :            : //  Copyright 2002 Jan Langer
+<span class="lineNum">       5 </span>                :            : //  Copyright 2001 Dietmar Kuehl                                        
+<span class="lineNum">       6 </span>                :            : //  
+<span class="lineNum">       7 </span>                :            : //  Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       8 </span>                :            : //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : //  See library home page at http://www.boost.org/libs/filesystem
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : //----------------------------------------------------------------------------// 
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #ifndef BOOST_FILESYSTEM_OPERATIONS_HPP
+<span class="lineNum">      15 </span>                :            : #define BOOST_FILESYSTEM_OPERATIONS_HPP
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #include &lt;boost/filesystem/path.hpp&gt;
+<span class="lineNum">      18 </span>                :            : #include &lt;boost/detail/scoped_enum_emulation.hpp&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/utility/enable_if.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/iterator.hpp&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/cstdint.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;utility&gt; // for pair
+<span class="lineNum">      29 </span>                :            : #include &lt;ctime&gt;
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : #ifdef BOOST_WINDOWS_API
+<span class="lineNum">      32 </span>                :            : #  include &lt;fstream&gt;
+<span class="lineNum">      33 </span>                :            : #  if !defined(_WIN32_WINNT) || _WIN32_WINNT &gt;= 0x0500
+<span class="lineNum">      34 </span>                :            : #    define BOOST_FS_HARD_LINK // Default for Windows 2K or later 
+<span class="lineNum">      35 </span>                :            : #  endif
+<span class="lineNum">      36 </span>                :            : #endif
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : #include &lt;boost/config/abi_prefix.hpp&gt; // must be the last #include
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : # ifdef BOOST_NO_STDC_NAMESPACE
+<span class="lineNum">      41 </span>                :            :     namespace std { using ::time_t; }
+<span class="lineNum">      42 </span>                :            : # endif
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : //----------------------------------------------------------------------------//
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :            : namespace boost
+<span class="lineNum">      47 </span>                :            : {
+<span class="lineNum">      48 </span>                :            :   namespace filesystem
+<span class="lineNum">      49 </span>                :            :   {
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            : // typedef boost::filesystem::path Path; needs to be in namespace boost::filesystem
+<span class="lineNum">      52 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">      53 </span>                :            : #   define BOOST_FS_FUNC(BOOST_FS_TYPE) \
+<span class="lineNum">      54 </span>                :            :       template&lt;class Path&gt; typename boost::enable_if&lt;is_basic_path&lt;Path&gt;, \
+<span class="lineNum">      55 </span>                :            :       BOOST_FS_TYPE&gt;::type
+<span class="lineNum">      56 </span>                :            : #   define BOOST_INLINE_FS_FUNC(BOOST_FS_TYPE) \
+<span class="lineNum">      57 </span>                :            :       template&lt;class Path&gt; inline typename boost::enable_if&lt;is_basic_path&lt;Path&gt;, \
+<span class="lineNum">      58 </span>                :            :       BOOST_FS_TYPE&gt;::type
+<span class="lineNum">      59 </span>                :            : #   define BOOST_FS_TYPENAME typename
+<span class="lineNum">      60 </span>                :            : # else
+<span class="lineNum">      61 </span>                :            : #   define BOOST_FS_FUNC(BOOST_FS_TYPE) inline BOOST_FS_TYPE
+<span class="lineNum">      62 </span>                :            : #   define BOOST_INLINE_FS_FUNC(BOOST_FS_TYPE) inline BOOST_FS_TYPE
+<span class="lineNum">      63 </span>                :            :     typedef boost::filesystem::path Path;
+<span class="lineNum">      64 </span>                :            : #   define BOOST_FS_TYPENAME
+<span class="lineNum">      65 </span>                :            : # endif
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :     template&lt;class Path&gt; class basic_directory_iterator;</span>
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :            :     // BOOST_FILESYSTEM_NARROW_ONLY needs this:
+<span class="lineNum">      70 </span>                :            :     typedef basic_directory_iterator&lt;path&gt; directory_iterator;
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :            :     template&lt;class Path&gt; class basic_directory_entry;
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            :     enum file_type
+<span class="lineNum">      75 </span>                :            :     { 
+<span class="lineNum">      76 </span>                :            :       status_unknown,
+<span class="lineNum">      77 </span>                :            :       file_not_found,
+<span class="lineNum">      78 </span>                :            :       regular_file,
+<span class="lineNum">      79 </span>                :            :       directory_file,
+<span class="lineNum">      80 </span>                :            :       // the following will never be reported by some operating or file systems
+<span class="lineNum">      81 </span>                :            :       symlink_file,
+<span class="lineNum">      82 </span>                :            :       block_file,
+<span class="lineNum">      83 </span>                :            :       character_file,
+<span class="lineNum">      84 </span>                :            :       fifo_file,
+<span class="lineNum">      85 </span>                :            :       socket_file,
+<span class="lineNum">      86 </span>                :            :       type_unknown // file does exist, but isn't one of the above types or
+<span class="lineNum">      87 </span>                :            :                    // we don't have strong enough permission to find its type
+<span class="lineNum">      88 </span>                :            :     };
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :            :     class file_status
+<span class="lineNum">      91 </span>                :            :     {
+<span class="lineNum">      92 </span>                :            :     public:
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :       explicit file_status( file_type v = status_unknown ) : m_value(v) {}</span>
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>                :            :       void type( file_type v )  { m_value = v; }
+<span class="lineNum">      96 </span>                :<span class="lineCov">       2618 :       file_type type() const    { return m_value; }</span>
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :            :     private:
+<span class="lineNum">      99 </span>                :            :       // the internal representation is unspecified so that additional state
+<span class="lineNum">     100 </span>                :            :       // information such as permissions can be added in the future; this
+<span class="lineNum">     101 </span>                :            :       // implementation just uses status_type as the internal representation
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            :       file_type m_value;
+<span class="lineNum">     104 </span>                :            :     };
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :     inline bool status_known( file_status f ) { return f.type() != status_unknown; }</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">       1236 :     inline bool exists( file_status f )       { return f.type() != status_unknown &amp;&amp; f.type() != file_not_found; }</span>
+<span class="lineNum">     108 </span>                :<span class="lineNoCov">          0 :     inline bool is_regular_file(file_status f){ return f.type() == regular_file; }</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">        146 :     inline bool is_directory( file_status f ) { return f.type() == directory_file; }</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :     inline bool is_symlink( file_status f )   { return f.type() == symlink_file; }</span>
+<span class="lineNum">     111 </span>                :            :     inline bool is_other( file_status f )     { return exists(f) &amp;&amp; !is_regular_file(f) &amp;&amp; !is_directory(f) &amp;&amp; !is_symlink(f); }
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     114 </span>                :            :     inline bool is_regular( file_status f )   { return f.type() == regular_file; }
+<span class="lineNum">     115 </span>                :            : # endif
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :            :     struct space_info
+<span class="lineNum">     118 </span>                :            :     {
+<span class="lineNum">     119 </span>                :            :       // all values are byte counts
+<span class="lineNum">     120 </span>                :            :       boost::uintmax_t capacity;
+<span class="lineNum">     121 </span>                :            :       boost::uintmax_t free;      // &lt;= capacity
+<span class="lineNum">     122 </span>                :            :       boost::uintmax_t available; // &lt;= free
+<span class="lineNum">     123 </span>                :            :     };
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :     namespace detail
+<span class="lineNum">     126 </span>                :            :     {
+<span class="lineNum">     127 </span>                :            :       typedef std::pair&lt; system::error_code, bool &gt;
+<span class="lineNum">     128 </span>                :            :         query_pair;
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :       typedef std::pair&lt; system::error_code, boost::uintmax_t &gt;
+<span class="lineNum">     131 </span>                :            :         uintmax_pair;
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            :       typedef std::pair&lt; system::error_code, std::time_t &gt;
+<span class="lineNum">     134 </span>                :            :         time_pair;
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :       typedef std::pair&lt; system::error_code, space_info &gt;
+<span class="lineNum">     137 </span>                :            :         space_pair;
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :       template&lt; class Path &gt;
+<span class="lineNum">     140 </span>                :            :       struct directory_pair
+<span class="lineNum">     141 </span>                :            :       {
+<span class="lineNum">     142 </span>                :            :         typedef std::pair&lt; system::error_code,
+<span class="lineNum">     143 </span>                :            :           typename Path::external_string_type &gt; type;
+<span class="lineNum">     144 </span>                :            :       };
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :            : #   ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     147 </span>                :            :       BOOST_FILESYSTEM_DECL bool
+<span class="lineNum">     148 </span>                :            :         symbolic_link_exists_api( const std::string &amp; ); // deprecated
+<span class="lineNum">     149 </span>                :            : #   endif
+<span class="lineNum">     150 </span>                :            : 
+<span class="lineNum">     151 </span>                :            :       BOOST_FILESYSTEM_DECL file_status
+<span class="lineNum">     152 </span>                :            :         status_api( const std::string &amp; ph, system::error_code &amp; ec );
+<span class="lineNum">     153 </span>                :            : #   ifndef BOOST_WINDOWS_API
+<span class="lineNum">     154 </span>                :            :       BOOST_FILESYSTEM_DECL file_status
+<span class="lineNum">     155 </span>                :            :         symlink_status_api( const std::string &amp; ph, system::error_code &amp; ec );
+<span class="lineNum">     156 </span>                :            : #   endif
+<span class="lineNum">     157 </span>                :            :       BOOST_FILESYSTEM_DECL query_pair
+<span class="lineNum">     158 </span>                :            :         is_empty_api( const std::string &amp; ph );
+<span class="lineNum">     159 </span>                :            :       BOOST_FILESYSTEM_DECL query_pair
+<span class="lineNum">     160 </span>                :            :         equivalent_api( const std::string &amp; ph1, const std::string &amp; ph2 );
+<span class="lineNum">     161 </span>                :            :       BOOST_FILESYSTEM_DECL uintmax_pair
+<span class="lineNum">     162 </span>                :            :         file_size_api( const std::string &amp; ph );
+<span class="lineNum">     163 </span>                :            :       BOOST_FILESYSTEM_DECL space_pair
+<span class="lineNum">     164 </span>                :            :         space_api( const std::string &amp; ph );
+<span class="lineNum">     165 </span>                :            :       BOOST_FILESYSTEM_DECL time_pair 
+<span class="lineNum">     166 </span>                :            :         last_write_time_api( const std::string &amp; ph );
+<span class="lineNum">     167 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     168 </span>                :            :         last_write_time_api( const std::string &amp; ph, std::time_t new_value );
+<span class="lineNum">     169 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     170 </span>                :            :         get_current_path_api( std::string &amp; ph );
+<span class="lineNum">     171 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     172 </span>                :            :         set_current_path_api( const std::string &amp; ph );
+<span class="lineNum">     173 </span>                :            :       BOOST_FILESYSTEM_DECL query_pair
+<span class="lineNum">     174 </span>                :            :         create_directory_api( const std::string &amp; ph );
+<span class="lineNum">     175 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     176 </span>                :            :         create_hard_link_api( const std::string &amp; to_ph,
+<span class="lineNum">     177 </span>                :            :           const std::string &amp; from_ph );
+<span class="lineNum">     178 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     179 </span>                :            :         create_symlink_api( const std::string &amp; to_ph,
+<span class="lineNum">     180 </span>                :            :           const std::string &amp; from_ph );
+<span class="lineNum">     181 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     182 </span>                :            :         remove_api( const std::string &amp; ph );
+<span class="lineNum">     183 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     184 </span>                :            :         rename_api( const std::string &amp; from, const std::string &amp; to );
+<span class="lineNum">     185 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     186 </span>                :            :         copy_file_api( const std::string &amp; from, const std::string &amp; to, bool fail_if_exists );
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :            : #   if defined(BOOST_WINDOWS_API)
+<span class="lineNum">     189 </span>                :            :       
+<span class="lineNum">     190 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     191 </span>                :            :         get_full_path_name_api( const std::string &amp; ph, std::string &amp; target );
+<span class="lineNum">     192 </span>                :            : 
+<span class="lineNum">     193 </span>                :            : #     if !defined(BOOST_FILESYSTEM_NARROW_ONLY)
+<span class="lineNum">     194 </span>                :            : 
+<span class="lineNum">     195 </span>                :            :       BOOST_FILESYSTEM_DECL  boost::filesystem::file_status
+<span class="lineNum">     196 </span>                :            :         status_api( const std::wstring &amp; ph, system::error_code &amp; ec );
+<span class="lineNum">     197 </span>                :            :       BOOST_FILESYSTEM_DECL query_pair 
+<span class="lineNum">     198 </span>                :            :         is_empty_api( const std::wstring &amp; ph );
+<span class="lineNum">     199 </span>                :            :       BOOST_FILESYSTEM_DECL query_pair
+<span class="lineNum">     200 </span>                :            :         equivalent_api( const std::wstring &amp; ph1, const std::wstring &amp; ph2 );
+<span class="lineNum">     201 </span>                :            :       BOOST_FILESYSTEM_DECL uintmax_pair 
+<span class="lineNum">     202 </span>                :            :         file_size_api( const std::wstring &amp; ph );
+<span class="lineNum">     203 </span>                :            :       BOOST_FILESYSTEM_DECL space_pair 
+<span class="lineNum">     204 </span>                :            :         space_api( const std::wstring &amp; ph );
+<span class="lineNum">     205 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     206 </span>                :            :         get_full_path_name_api( const std::wstring &amp; ph, std::wstring &amp; target );
+<span class="lineNum">     207 </span>                :            :       BOOST_FILESYSTEM_DECL time_pair 
+<span class="lineNum">     208 </span>                :            :         last_write_time_api( const std::wstring &amp; ph );
+<span class="lineNum">     209 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     210 </span>                :            :         last_write_time_api( const std::wstring &amp; ph, std::time_t new_value );
+<span class="lineNum">     211 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code 
+<span class="lineNum">     212 </span>                :            :         get_current_path_api( std::wstring &amp; ph );
+<span class="lineNum">     213 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code 
+<span class="lineNum">     214 </span>                :            :         set_current_path_api( const std::wstring &amp; ph );
+<span class="lineNum">     215 </span>                :            :       BOOST_FILESYSTEM_DECL query_pair
+<span class="lineNum">     216 </span>                :            :         create_directory_api( const std::wstring &amp; ph );
+<span class="lineNum">     217 </span>                :            : # ifdef BOOST_FS_HARD_LINK
+<span class="lineNum">     218 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     219 </span>                :            :         create_hard_link_api( const std::wstring &amp; existing_ph,
+<span class="lineNum">     220 </span>                :            :           const std::wstring &amp; new_ph );
+<span class="lineNum">     221 </span>                :            : # endif
+<span class="lineNum">     222 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     223 </span>                :            :         create_symlink_api( const std::wstring &amp; to_ph,
+<span class="lineNum">     224 </span>                :            :           const std::wstring &amp; from_ph );
+<span class="lineNum">     225 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     226 </span>                :            :         remove_api( const std::wstring &amp; ph );
+<span class="lineNum">     227 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     228 </span>                :            :         rename_api( const std::wstring &amp; from, const std::wstring &amp; to );
+<span class="lineNum">     229 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     230 </span>                :            :         copy_file_api( const std::wstring &amp; from, const std::wstring &amp; to, bool fail_if_exists );
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :            : #     endif
+<span class="lineNum">     233 </span>                :            : #   endif
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     236 </span>                :            :       bool remove_aux( const Path &amp; ph, file_status f );
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     239 </span>                :            :       unsigned long remove_all_aux( const Path &amp; ph, file_status f );
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :            :     } // namespace detail
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            : //  operations functions  ----------------------------------------------------//
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :            :     //  The non-template overloads enable automatic conversion from std and
+<span class="lineNum">     246 </span>                :            :     //  C-style strings. See basic_path constructors. The enable_if for the
+<span class="lineNum">     247 </span>                :            :     //  templates implements the famous &quot;do-the-right-thing&quot; rule.
+<span class="lineNum">     248 </span>                :            : 
+<span class="lineNum">     249 </span>                :            : //  query functions  ---------------------------------------------------------//
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :     BOOST_INLINE_FS_FUNC(file_status)
+<span class="lineNum">     252 </span>                :            :     status( const Path &amp; ph, system::error_code &amp; ec )
+<span class="lineNum">     253 </span>                :            :       { return detail::status_api( ph.external_file_string(), ec ); }
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :            :     BOOST_FS_FUNC(file_status)
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :     status( const Path &amp; ph )</span>
+<span class="lineNum">     257 </span>                :            :     { 
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :       system::error_code ec;</span>
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :       file_status result( detail::status_api( ph.external_file_string(), ec ) );</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :       if ( ec )</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     262 </span>                :            :         &quot;boost::filesystem::status&quot;, ph, ec ) );
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :       return result;</span>
+<span class="lineNum">     264 </span>                :            :     }
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>                :            :     BOOST_INLINE_FS_FUNC(file_status)
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :     symlink_status( const Path &amp; ph, system::error_code &amp; ec )</span>
+<span class="lineNum">     268 </span>                :            : #   ifdef BOOST_WINDOWS_API
+<span class="lineNum">     269 </span>                :            :       { return detail::status_api( ph.external_file_string(), ec ); }
+<span class="lineNum">     270 </span>                :            : #   else
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :       { return detail::symlink_status_api( ph.external_file_string(), ec ); }</span>
+<span class="lineNum">     272 </span>                :            : #   endif
+<span class="lineNum">     273 </span>                :            : 
+<span class="lineNum">     274 </span>                :            :     BOOST_FS_FUNC(file_status)
+<span class="lineNum">     275 </span>                :            :     symlink_status( const Path &amp; ph )
+<span class="lineNum">     276 </span>                :            :     { 
+<span class="lineNum">     277 </span>                :            :       system::error_code ec;
+<span class="lineNum">     278 </span>                :            :       file_status result( symlink_status( ph, ec ) );
+<span class="lineNum">     279 </span>                :            :       if ( ec )
+<span class="lineNum">     280 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     281 </span>                :            :         &quot;boost::filesystem::symlink_status&quot;, ph, ec ) );
+<span class="lineNum">     282 </span>                :            :       return result;
+<span class="lineNum">     283 </span>                :            :     }
+<span class="lineNum">     284 </span>                :            : 
+<span class="lineNum">     285 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     286 </span>                :            :     inline bool symbolic_link_exists( const path &amp; ph )
+<span class="lineNum">     287 </span>                :            :       { return is_symlink( symlink_status(ph) ); }
+<span class="lineNum">     288 </span>                :            : # endif
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :<span class="lineCov">       1238 :     BOOST_FS_FUNC(bool) exists( const Path &amp; ph )</span>
+<span class="lineNum">     291 </span>                :            :     { 
+<span class="lineNum">     292 </span>                :<span class="lineCov">       1238 :       system::error_code ec;</span>
+<span class="lineNum">     293 </span>                :<span class="lineCov">       1238 :       file_status result( detail::status_api( ph.external_file_string(), ec ) );</span>
+<span class="lineNum">     294 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 1236 times"> + </span>]:<span class="lineCov">       1238 :       if ( ec )</span>
+<span class="lineNum">     295 </span>                :<span class="lineCov">          2 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     296 </span>                :            :           &quot;boost::filesystem::exists&quot;, ph, ec ) );
+<span class="lineNum">     297 </span>                :<span class="lineCov">       1236 :       return exists( result );</span>
+<span class="lineNum">     298 </span>                :            :     }
+<span class="lineNum">     299 </span>                :            : 
+<span class="lineNum">     300 </span>                :<span class="lineCov">        146 :     BOOST_FS_FUNC(bool) is_directory( const Path &amp; ph )</span>
+<span class="lineNum">     301 </span>                :            :     { 
+<span class="lineNum">     302 </span>                :<span class="lineCov">        146 :       system::error_code ec;</span>
+<span class="lineNum">     303 </span>                :<span class="lineCov">        146 :       file_status result( detail::status_api( ph.external_file_string(), ec ) );</span>
+<span class="lineNum">     304 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 146 times"> + </span>]:<span class="lineCov">        146 :       if ( ec )</span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     306 </span>                :            :           &quot;boost::filesystem::is_directory&quot;, ph, ec ) );
+<span class="lineNum">     307 </span>                :<span class="lineCov">        146 :       return is_directory( result );</span>
+<span class="lineNum">     308 </span>                :            :     }
+<span class="lineNum">     309 </span>                :            : 
+<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :     BOOST_FS_FUNC(bool) is_regular_file( const Path &amp; ph )</span>
+<span class="lineNum">     311 </span>                :            :     { 
+<span class="lineNum">     312 </span>                :<span class="lineNoCov">          0 :       system::error_code ec;</span>
+<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :       file_status result( detail::status_api( ph.external_file_string(), ec ) );</span>
+<span class="lineNum">     314 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( ec )</span>
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     316 </span>                :            :           &quot;boost::filesystem::is_regular_file&quot;, ph, ec ) );
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :       return is_regular_file( result );</span>
+<span class="lineNum">     318 </span>                :            :     }
+<span class="lineNum">     319 </span>                :            : 
+<span class="lineNum">     320 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     321 </span>                :            :     BOOST_FS_FUNC(bool) is_regular( const Path &amp; ph )
+<span class="lineNum">     322 </span>                :            :     { 
+<span class="lineNum">     323 </span>                :            :       system::error_code ec;
+<span class="lineNum">     324 </span>                :            :       file_status result( detail::status_api( ph.external_file_string(), ec ) );
+<span class="lineNum">     325 </span>                :            :       if ( ec )
+<span class="lineNum">     326 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     327 </span>                :            :           &quot;boost::filesystem::is_regular&quot;, ph, ec ) );
+<span class="lineNum">     328 </span>                :            :       return is_regular( result );
+<span class="lineNum">     329 </span>                :            :     }
+<span class="lineNum">     330 </span>                :            : # endif
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :            :     BOOST_FS_FUNC(bool) is_other( const Path &amp; ph )
+<span class="lineNum">     333 </span>                :            :     { 
+<span class="lineNum">     334 </span>                :            :       system::error_code ec;
+<span class="lineNum">     335 </span>                :            :       file_status result( detail::status_api( ph.external_file_string(), ec ) );
+<span class="lineNum">     336 </span>                :            :       if ( ec )
+<span class="lineNum">     337 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     338 </span>                :            :           &quot;boost::filesystem::is_other&quot;, ph, ec ) );
+<span class="lineNum">     339 </span>                :            :       return is_other( result );
+<span class="lineNum">     340 </span>                :            :     }
+<span class="lineNum">     341 </span>                :            : 
+<span class="lineNum">     342 </span>                :            :     BOOST_FS_FUNC(bool) is_symlink(
+<span class="lineNum">     343 </span>                :            : #   ifdef BOOST_WINDOWS_API
+<span class="lineNum">     344 </span>                :            :       const Path &amp; )
+<span class="lineNum">     345 </span>                :            :     {
+<span class="lineNum">     346 </span>                :            :       return false;
+<span class="lineNum">     347 </span>                :            : #   else
+<span class="lineNum">     348 </span>                :            :       const Path &amp; ph)
+<span class="lineNum">     349 </span>                :            :     {
+<span class="lineNum">     350 </span>                :            :       system::error_code ec;
+<span class="lineNum">     351 </span>                :            :       file_status result( detail::symlink_status_api( ph.external_file_string(), ec ) );
+<span class="lineNum">     352 </span>                :            :       if ( ec )
+<span class="lineNum">     353 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     354 </span>                :            :           &quot;boost::filesystem::is_symlink&quot;, ph, ec ) );
+<span class="lineNum">     355 </span>                :            :       return is_symlink( result );
+<span class="lineNum">     356 </span>                :            : #   endif
+<span class="lineNum">     357 </span>                :            :     }
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :            :     // VC++ 7.0 and earlier has a serious namespace bug that causes a clash
+<span class="lineNum">     360 </span>                :            :     // between boost::filesystem::is_empty and the unrelated type trait
+<span class="lineNum">     361 </span>                :            :     // boost::is_empty.
+<span class="lineNum">     362 </span>                :            : 
+<span class="lineNum">     363 </span>                :            : # if !defined( BOOST_MSVC ) || BOOST_MSVC &gt; 1300
+<span class="lineNum">     364 </span>                :            :     BOOST_FS_FUNC(bool) is_empty( const Path &amp; ph )
+<span class="lineNum">     365 </span>                :            : # else
+<span class="lineNum">     366 </span>                :            :     BOOST_FS_FUNC(bool) _is_empty( const Path &amp; ph )
+<span class="lineNum">     367 </span>                :            : # endif
+<span class="lineNum">     368 </span>                :            :     {
+<span class="lineNum">     369 </span>                :            :       detail::query_pair result(
+<span class="lineNum">     370 </span>                :            :         detail::is_empty_api( ph.external_file_string() ) );
+<span class="lineNum">     371 </span>                :            :       if ( result.first )
+<span class="lineNum">     372 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     373 </span>                :            :           &quot;boost::filesystem::is_empty&quot;, ph, result.first ) );
+<span class="lineNum">     374 </span>                :            :       return result.second;
+<span class="lineNum">     375 </span>                :            :     }
+<span class="lineNum">     376 </span>                :            : 
+<span class="lineNum">     377 </span>                :            :     BOOST_FS_FUNC(bool) equivalent( const Path &amp; ph1, const Path &amp; ph2 )
+<span class="lineNum">     378 </span>                :            :     {
+<span class="lineNum">     379 </span>                :            :       detail::query_pair result( detail::equivalent_api(
+<span class="lineNum">     380 </span>                :            :         ph1.external_file_string(), ph2.external_file_string() ) );
+<span class="lineNum">     381 </span>                :            :       if ( result.first )
+<span class="lineNum">     382 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     383 </span>                :            :           &quot;boost::filesystem::equivalent&quot;, ph1, ph2, result.first ) );
+<span class="lineNum">     384 </span>                :            :       return result.second;
+<span class="lineNum">     385 </span>                :            :     }
+<span class="lineNum">     386 </span>                :            : 
+<span class="lineNum">     387 </span>                :<span class="lineNoCov">          0 :     BOOST_FS_FUNC(boost::uintmax_t) file_size( const Path &amp; ph )</span>
+<span class="lineNum">     388 </span>                :            :     {
+<span class="lineNum">     389 </span>                :            :       detail::uintmax_pair result
+<span class="lineNum">     390 </span>                :<span class="lineNoCov">          0 :         ( detail::file_size_api( ph.external_file_string() ) );</span>
+<span class="lineNum">     391 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( result.first )</span>
+<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     393 </span>                :            :           &quot;boost::filesystem::file_size&quot;, ph, result.first ) );
+<span class="lineNum">     394 </span>                :<span class="lineNoCov">          0 :       return result.second;</span>
+<span class="lineNum">     395 </span>                :            :     }
+<span class="lineNum">     396 </span>                :            : 
+<span class="lineNum">     397 </span>                :            :     BOOST_FS_FUNC(space_info) space( const Path &amp; ph )
+<span class="lineNum">     398 </span>                :            :     {
+<span class="lineNum">     399 </span>                :            :       detail::space_pair result
+<span class="lineNum">     400 </span>                :            :         ( detail::space_api( ph.external_file_string() ) );
+<span class="lineNum">     401 </span>                :            :       if ( result.first )
+<span class="lineNum">     402 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     403 </span>                :            :           &quot;boost::filesystem::space&quot;, ph, result.first ) );
+<span class="lineNum">     404 </span>                :            :       return result.second;
+<span class="lineNum">     405 </span>                :            :     }
+<span class="lineNum">     406 </span>                :            : 
+<span class="lineNum">     407 </span>                :            :     BOOST_FS_FUNC(std::time_t) last_write_time( const Path &amp; ph )
+<span class="lineNum">     408 </span>                :            :     {
+<span class="lineNum">     409 </span>                :            :       detail::time_pair result
+<span class="lineNum">     410 </span>                :            :         ( detail::last_write_time_api( ph.external_file_string() ) );
+<span class="lineNum">     411 </span>                :            :       if ( result.first )
+<span class="lineNum">     412 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     413 </span>                :            :           &quot;boost::filesystem::last_write_time&quot;, ph, result.first ) );
+<span class="lineNum">     414 </span>                :            :       return result.second;
+<span class="lineNum">     415 </span>                :            :     }
+<span class="lineNum">     416 </span>                :            : 
+<span class="lineNum">     417 </span>                :            : 
+<span class="lineNum">     418 </span>                :            : //  operations  --------------------------------------------------------------//
+<span class="lineNum">     419 </span>                :            : 
+<span class="lineNum">     420 </span>                :<span class="lineCov">        337 :     BOOST_FS_FUNC(bool) create_directory( const Path &amp; dir_ph )</span>
+<span class="lineNum">     421 </span>                :            :     {
+<span class="lineNum">     422 </span>                :            :       detail::query_pair result(
+<span class="lineNum">     423 </span>                :<span class="lineCov">        337 :         detail::create_directory_api( dir_ph.external_directory_string() ) );</span>
+<span class="lineNum">     424 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 337 times"> + </span>]:<span class="lineCov">        337 :       if ( result.first )</span>
+<span class="lineNum">     425 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     426 </span>                :            :           &quot;boost::filesystem::create_directory&quot;,
+<span class="lineNum">     427 </span>                :            :           dir_ph, result.first ) );
+<span class="lineNum">     428 </span>                :<span class="lineCov">        337 :       return result.second;</span>
+<span class="lineNum">     429 </span>                :            :     }
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :            : #if !defined(BOOST_WINDOWS_API) || defined(BOOST_FS_HARD_LINK)
+<span class="lineNum">     432 </span>                :            :     BOOST_FS_FUNC(void)
+<span class="lineNum">     433 </span>                :            :     create_hard_link( const Path &amp; to_ph, const Path &amp; from_ph )
+<span class="lineNum">     434 </span>                :            :     {
+<span class="lineNum">     435 </span>                :            :       system::error_code ec( 
+<span class="lineNum">     436 </span>                :            :         detail::create_hard_link_api(
+<span class="lineNum">     437 </span>                :            :           to_ph.external_file_string(),
+<span class="lineNum">     438 </span>                :            :           from_ph.external_file_string() ) );
+<span class="lineNum">     439 </span>                :            :       if ( ec )
+<span class="lineNum">     440 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     441 </span>                :            :           &quot;boost::filesystem::create_hard_link&quot;,
+<span class="lineNum">     442 </span>                :            :           to_ph, from_ph, ec ) );
+<span class="lineNum">     443 </span>                :            :     }
+<span class="lineNum">     444 </span>                :            : 
+<span class="lineNum">     445 </span>                :            :     BOOST_FS_FUNC(system::error_code)
+<span class="lineNum">     446 </span>                :            :     create_hard_link( const Path &amp; to_ph, const Path &amp; from_ph,
+<span class="lineNum">     447 </span>                :            :       system::error_code &amp; ec )
+<span class="lineNum">     448 </span>                :            :     {
+<span class="lineNum">     449 </span>                :            :       ec = detail::create_hard_link_api(
+<span class="lineNum">     450 </span>                :            :             to_ph.external_file_string(),
+<span class="lineNum">     451 </span>                :            :             from_ph.external_file_string() );
+<span class="lineNum">     452 </span>                :            :       return ec;
+<span class="lineNum">     453 </span>                :            :     }
+<span class="lineNum">     454 </span>                :            : #endif
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>                :            :     BOOST_FS_FUNC(void)
+<span class="lineNum">     457 </span>                :            :     create_symlink( const Path &amp; to_ph, const Path &amp; from_ph )
+<span class="lineNum">     458 </span>                :            :     {
+<span class="lineNum">     459 </span>                :            :       system::error_code ec( 
+<span class="lineNum">     460 </span>                :            :         detail::create_symlink_api(
+<span class="lineNum">     461 </span>                :            :           to_ph.external_file_string(),
+<span class="lineNum">     462 </span>                :            :           from_ph.external_file_string() ) );
+<span class="lineNum">     463 </span>                :            :       if ( ec )
+<span class="lineNum">     464 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     465 </span>                :            :           &quot;boost::filesystem::create_symlink&quot;,
+<span class="lineNum">     466 </span>                :            :           to_ph, from_ph, ec ) );
+<span class="lineNum">     467 </span>                :            :     }
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            :     BOOST_FS_FUNC(system::error_code)
+<span class="lineNum">     470 </span>                :            :     create_symlink( const Path &amp; to_ph, const Path &amp; from_ph,
+<span class="lineNum">     471 </span>                :            :       system::error_code &amp; ec )
+<span class="lineNum">     472 </span>                :            :     {
+<span class="lineNum">     473 </span>                :            :       ec = detail::create_symlink_api(
+<span class="lineNum">     474 </span>                :            :              to_ph.external_file_string(),
+<span class="lineNum">     475 </span>                :            :              from_ph.external_file_string() );
+<span class="lineNum">     476 </span>                :            :       return ec;
+<span class="lineNum">     477 </span>                :            :     }
+<span class="lineNum">     478 </span>                :            : 
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :     BOOST_FS_FUNC(bool) remove( const Path &amp; ph )</span>
+<span class="lineNum">     480 </span>                :            :     {
+<span class="lineNum">     481 </span>                :<span class="lineNoCov">          0 :       system::error_code ec;</span>
+<span class="lineNum">     482 </span>                :<span class="lineNoCov">          0 :       file_status f = symlink_status( ph, ec );</span>
+<span class="lineNum">     483 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( ec )</span>
+<span class="lineNum">     484 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     485 </span>                :            :           &quot;boost::filesystem::remove&quot;, ph, ec ) );
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :       return detail::remove_aux( ph, f );</span>
+<span class="lineNum">     487 </span>                :            :     }
+<span class="lineNum">     488 </span>                :            : 
+<span class="lineNum">     489 </span>                :            :     BOOST_FS_FUNC(unsigned long) remove_all( const Path &amp; ph )
+<span class="lineNum">     490 </span>                :            :     {
+<span class="lineNum">     491 </span>                :            :       system::error_code ec;
+<span class="lineNum">     492 </span>                :            :       file_status f = symlink_status( ph, ec );
+<span class="lineNum">     493 </span>                :            :       if ( ec )
+<span class="lineNum">     494 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     495 </span>                :            :           &quot;boost::filesystem::remove_all&quot;, ph, ec ) );
+<span class="lineNum">     496 </span>                :            :       return exists( f ) ? detail::remove_all_aux( ph, f ) : 0;
+<span class="lineNum">     497 </span>                :            :     }
+<span class="lineNum">     498 </span>                :            : 
+<span class="lineNum">     499 </span>                :<span class="lineCov">        130 :     BOOST_FS_FUNC(void) rename( const Path &amp; from_path, const Path &amp; to_path )</span>
+<span class="lineNum">     500 </span>                :            :     {
+<span class="lineNum">     501 </span>                :            :       system::error_code ec( detail::rename_api(
+<span class="lineNum">     502 </span>                :            :         from_path.external_directory_string(),
+<span class="lineNum">     503 </span>                :<span class="lineCov">        130 :         to_path.external_directory_string() ) );</span>
+<span class="lineNum">     504 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 130 times"> + </span>]:<span class="lineCov">        130 :       if ( ec )</span>
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     506 </span>                :            :           &quot;boost::filesystem::rename&quot;,
+<span class="lineNum">     507 </span>                :            :           from_path, to_path, ec ) );
+<span class="lineNum">     508 </span>                :            :     }
+<span class="lineNum">     509 </span>                :            : 
+<span class="lineNum">     510 </span>                :            :     BOOST_SCOPED_ENUM_START(copy_option)
+<span class="lineNum">     511 </span>                :            :       { fail_if_exists, overwrite_if_exists };
+<span class="lineNum">     512 </span>                :            :     BOOST_SCOPED_ENUM_END
+<span class="lineNum">     513 </span>                :            : 
+<span class="lineNum">     514 </span>                :            :     BOOST_FS_FUNC(void) copy_file( const Path &amp; from_path, const Path &amp; to_path,
+<span class="lineNum">     515 </span>                :            :       BOOST_SCOPED_ENUM(copy_option) option = copy_option::fail_if_exists )
+<span class="lineNum">     516 </span>                :            :     {
+<span class="lineNum">     517 </span>                :            :       system::error_code ec( detail::copy_file_api(
+<span class="lineNum">     518 </span>                :            :         from_path.external_directory_string(),
+<span class="lineNum">     519 </span>                :            :         to_path.external_directory_string(), option == copy_option::fail_if_exists ) );
+<span class="lineNum">     520 </span>                :            :       if ( ec )
+<span class="lineNum">     521 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     522 </span>                :            :           &quot;boost::filesystem::copy_file&quot;,
+<span class="lineNum">     523 </span>                :            :           from_path, to_path, ec ) );
+<span class="lineNum">     524 </span>                :            :     }
+<span class="lineNum">     525 </span>                :            : 
+<span class="lineNum">     526 </span>                :            :     template&lt; class Path &gt;
+<span class="lineNum">     527 </span>                :            :     Path current_path()
+<span class="lineNum">     528 </span>                :            :     {
+<span class="lineNum">     529 </span>                :            :       typename Path::external_string_type ph;
+<span class="lineNum">     530 </span>                :            :       system::error_code ec( detail::get_current_path_api( ph ) );
+<span class="lineNum">     531 </span>                :            :       if ( ec )
+<span class="lineNum">     532 </span>                :            :           boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     533 </span>                :            :             &quot;boost::filesystem::current_path&quot;, ec ) );
+<span class="lineNum">     534 </span>                :            :       return Path( Path::traits_type::to_internal( ph ) );
+<span class="lineNum">     535 </span>                :            :     }
+<span class="lineNum">     536 </span>                :            : 
+<span class="lineNum">     537 </span>                :            :     BOOST_FS_FUNC(void) current_path( const Path &amp; ph )
+<span class="lineNum">     538 </span>                :            :     {
+<span class="lineNum">     539 </span>                :            :       system::error_code ec( detail::set_current_path_api(
+<span class="lineNum">     540 </span>                :            :         ph.external_directory_string() ) );
+<span class="lineNum">     541 </span>                :            :       if ( ec )
+<span class="lineNum">     542 </span>                :            :           boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     543 </span>                :            :             &quot;boost::filesystem::current_path&quot;, ph, ec ) );
+<span class="lineNum">     544 </span>                :            :     }
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :     template&lt; class Path &gt;
+<span class="lineNum">     547 </span>                :            :     const Path &amp; initial_path()
+<span class="lineNum">     548 </span>                :            :     {
+<span class="lineNum">     549 </span>                :            :       static Path init_path;
+<span class="lineNum">     550 </span>                :            :       if ( init_path.empty() ) init_path = current_path&lt;Path&gt;();
+<span class="lineNum">     551 </span>                :            :       return init_path;
+<span class="lineNum">     552 </span>                :            :     }
+<span class="lineNum">     553 </span>                :            : 
+<span class="lineNum">     554 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     555 </span>                :            :     // legacy support
+<span class="lineNum">     556 </span>                :            :     inline path current_path()  // overload supports pre-i18n apps
+<span class="lineNum">     557 </span>                :            :       { return current_path&lt;boost::filesystem::path&gt;(); }
+<span class="lineNum">     558 </span>                :            :     inline const path &amp; initial_path() // overload supports pre-i18n apps
+<span class="lineNum">     559 </span>                :            :       { return initial_path&lt;boost::filesystem::path&gt;(); }
+<span class="lineNum">     560 </span>                :            : # endif
+<span class="lineNum">     561 </span>                :            : 
+<span class="lineNum">     562 </span>                :            :     BOOST_FS_FUNC(Path) system_complete( const Path &amp; ph )
+<span class="lineNum">     563 </span>                :            :     {
+<span class="lineNum">     564 </span>                :            : # ifdef BOOST_WINDOWS_API
+<span class="lineNum">     565 </span>                :            :       if ( ph.empty() ) return ph;
+<span class="lineNum">     566 </span>                :            :       BOOST_FS_TYPENAME Path::external_string_type sys_ph;
+<span class="lineNum">     567 </span>                :            :       system::error_code ec( detail::get_full_path_name_api( ph.external_file_string(),
+<span class="lineNum">     568 </span>                :            :               sys_ph ) );
+<span class="lineNum">     569 </span>                :            :       if ( ec )
+<span class="lineNum">     570 </span>                :            :           boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     571 </span>                :            :             &quot;boost::filesystem::system_complete&quot;, ph, ec ) );
+<span class="lineNum">     572 </span>                :            :       return Path( Path::traits_type::to_internal( sys_ph ) );
+<span class="lineNum">     573 </span>                :            : # else
+<span class="lineNum">     574 </span>                :            :       return (ph.empty() || ph.is_complete())
+<span class="lineNum">     575 </span>                :            :         ? ph : current_path&lt;Path&gt;() / ph;
+<span class="lineNum">     576 </span>                :            : # endif
+<span class="lineNum">     577 </span>                :            :     }
+<span class="lineNum">     578 </span>                :            : 
+<span class="lineNum">     579 </span>                :            :     BOOST_FS_FUNC(Path)
+<span class="lineNum">     580 </span>                :            :     complete( const Path &amp; ph,
+<span class="lineNum">     581 </span>                :            :       const Path &amp; base/* = initial_path&lt;Path&gt;() */)
+<span class="lineNum">     582 </span>                :            :     {
+<span class="lineNum">     583 </span>                :            :       BOOST_ASSERT( base.is_complete()
+<span class="lineNum">     584 </span>                :            :         &amp;&amp; (ph.is_complete() || !ph.has_root_name())
+<span class="lineNum">     585 </span>                :            :         &amp;&amp; &quot;boost::filesystem::complete() precondition not met&quot; );
+<span class="lineNum">     586 </span>                :            : #   ifdef BOOST_WINDOWS_PATH
+<span class="lineNum">     587 </span>                :            :       if (ph.empty() || ph.is_complete()) return ph;
+<span class="lineNum">     588 </span>                :            :       if ( !ph.has_root_name() )
+<span class="lineNum">     589 </span>                :            :         return ph.has_root_directory()
+<span class="lineNum">     590 </span>                :            :           ? Path( base.root_name() ) / ph
+<span class="lineNum">     591 </span>                :            :           : base / ph;
+<span class="lineNum">     592 </span>                :            :       return base / ph;
+<span class="lineNum">     593 </span>                :            : #   else
+<span class="lineNum">     594 </span>                :            :       return (ph.empty() || ph.is_complete()) ? ph : base / ph;
+<span class="lineNum">     595 </span>                :            : #   endif
+<span class="lineNum">     596 </span>                :            :     }
+<span class="lineNum">     597 </span>                :            : 
+<span class="lineNum">     598 </span>                :            :     // VC++ 7.1 had trouble with default arguments, so separate one argument
+<span class="lineNum">     599 </span>                :            :     // signatures are provided as workarounds; the effect is the same.
+<span class="lineNum">     600 </span>                :            :     BOOST_FS_FUNC(Path) complete( const Path &amp; ph )
+<span class="lineNum">     601 </span>                :            :       { return complete( ph, initial_path&lt;Path&gt;() ); }
+<span class="lineNum">     602 </span>                :            : 
+<span class="lineNum">     603 </span>                :            :     BOOST_FS_FUNC(void)
+<span class="lineNum">     604 </span>                :            :     last_write_time( const Path &amp; ph, const std::time_t new_time )
+<span class="lineNum">     605 </span>                :            :     {
+<span class="lineNum">     606 </span>                :            :       system::error_code ec( detail::last_write_time_api( ph.external_file_string(),
+<span class="lineNum">     607 </span>                :            :           new_time ) );
+<span class="lineNum">     608 </span>                :            :       if ( ec )
+<span class="lineNum">     609 </span>                :            :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;(
+<span class="lineNum">     610 </span>                :            :           &quot;boost::filesystem::last_write_time&quot;, ph, ec ) );
+<span class="lineNum">     611 </span>                :            :     }
+<span class="lineNum">     612 </span>                :            : 
+<span class="lineNum">     613 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">     614 </span>                :            : 
+<span class="lineNum">     615 </span>                :            :     // &quot;do-the-right-thing&quot; overloads  ---------------------------------------//
+<span class="lineNum">     616 </span>                :            : 
+<span class="lineNum">     617 </span>                :<span class="lineNoCov">          0 :     inline file_status status( const path &amp; ph )</span>
+<span class="lineNum">     618 </span>                :<span class="lineNoCov">          0 :       { return status&lt;path&gt;( ph ); }</span>
+<span class="lineNum">     619 </span>                :            :     inline file_status status( const wpath &amp; ph )
+<span class="lineNum">     620 </span>                :            :       { return status&lt;wpath&gt;( ph ); }
+<span class="lineNum">     621 </span>                :            : 
+<span class="lineNum">     622 </span>                :            :     inline file_status status( const path &amp; ph, system::error_code &amp; ec )
+<span class="lineNum">     623 </span>                :            :       { return status&lt;path&gt;( ph, ec ); }
+<span class="lineNum">     624 </span>                :            :     inline file_status status( const wpath &amp; ph, system::error_code &amp; ec )
+<span class="lineNum">     625 </span>                :            :       { return status&lt;wpath&gt;( ph, ec ); }
+<span class="lineNum">     626 </span>                :            : 
+<span class="lineNum">     627 </span>                :            :     inline file_status symlink_status( const path &amp; ph )
+<span class="lineNum">     628 </span>                :            :       { return symlink_status&lt;path&gt;( ph ); }
+<span class="lineNum">     629 </span>                :            :     inline file_status symlink_status( const wpath &amp; ph )
+<span class="lineNum">     630 </span>                :            :       { return symlink_status&lt;wpath&gt;( ph ); }
+<span class="lineNum">     631 </span>                :            : 
+<span class="lineNum">     632 </span>                :<span class="lineNoCov">          0 :     inline file_status symlink_status( const path &amp; ph, system::error_code &amp; ec )</span>
+<span class="lineNum">     633 </span>                :<span class="lineNoCov">          0 :       { return symlink_status&lt;path&gt;( ph, ec ); }</span>
+<span class="lineNum">     634 </span>                :            :     inline file_status symlink_status( const wpath &amp; ph, system::error_code &amp; ec )
+<span class="lineNum">     635 </span>                :            :       { return symlink_status&lt;wpath&gt;( ph, ec ); }
+<span class="lineNum">     636 </span>                :            : 
+<span class="lineNum">     637 </span>                :<span class="lineCov">       1238 :     inline bool exists( const path &amp; ph ) { return exists&lt;path&gt;( ph ); }</span>
+<span class="lineNum">     638 </span>                :            :     inline bool exists( const wpath &amp; ph ) { return exists&lt;wpath&gt;( ph ); }
+<span class="lineNum">     639 </span>                :            : 
+<span class="lineNum">     640 </span>                :<span class="lineCov">        146 :     inline bool is_directory( const path &amp; ph )</span>
+<span class="lineNum">     641 </span>                :<span class="lineCov">        146 :       { return is_directory&lt;path&gt;( ph ); }</span>
+<span class="lineNum">     642 </span>                :            :     inline bool is_directory( const wpath &amp; ph )
+<span class="lineNum">     643 </span>                :            :       { return is_directory&lt;wpath&gt;( ph ); }
+<span class="lineNum">     644 </span>                :            :  
+<span class="lineNum">     645 </span>                :<span class="lineNoCov">          0 :     inline bool is_regular_file( const path &amp; ph )</span>
+<span class="lineNum">     646 </span>                :<span class="lineNoCov">          0 :       { return is_regular_file&lt;path&gt;( ph ); }</span>
+<span class="lineNum">     647 </span>                :            :     inline bool is_regular_file( const wpath &amp; ph )
+<span class="lineNum">     648 </span>                :            :       { return is_regular_file&lt;wpath&gt;( ph ); }
+<span class="lineNum">     649 </span>                :            : 
+<span class="lineNum">     650 </span>                :            : # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">     651 </span>                :            :     inline bool is_regular( const path &amp; ph )
+<span class="lineNum">     652 </span>                :            :       { return is_regular&lt;path&gt;( ph ); }
+<span class="lineNum">     653 </span>                :            :     inline bool is_regular( const wpath &amp; ph )
+<span class="lineNum">     654 </span>                :            :       { return is_regular&lt;wpath&gt;( ph ); }
+<span class="lineNum">     655 </span>                :            : # endif
+<span class="lineNum">     656 </span>                :            : 
+<span class="lineNum">     657 </span>                :            :     inline bool is_other( const path &amp; ph )
+<span class="lineNum">     658 </span>                :            :       { return is_other&lt;path&gt;( ph ); }
+<span class="lineNum">     659 </span>                :            :     inline bool is_other( const wpath &amp; ph )
+<span class="lineNum">     660 </span>                :            :       { return is_other&lt;wpath&gt;( ph ); }
+<span class="lineNum">     661 </span>                :            : 
+<span class="lineNum">     662 </span>                :            :     inline bool is_symlink( const path &amp; ph )
+<span class="lineNum">     663 </span>                :            :       { return is_symlink&lt;path&gt;( ph ); }
+<span class="lineNum">     664 </span>                :            :     inline bool is_symlink( const wpath &amp; ph )
+<span class="lineNum">     665 </span>                :            :       { return is_symlink&lt;wpath&gt;( ph ); }
+<span class="lineNum">     666 </span>                :            : 
+<span class="lineNum">     667 </span>                :            :     inline bool is_empty( const path &amp; ph )
+<span class="lineNum">     668 </span>                :            :       { return boost::filesystem::is_empty&lt;path&gt;( ph ); }
+<span class="lineNum">     669 </span>                :            :     inline bool is_empty( const wpath &amp; ph )
+<span class="lineNum">     670 </span>                :            :       { return boost::filesystem::is_empty&lt;wpath&gt;( ph ); }
+<span class="lineNum">     671 </span>                :            : 
+<span class="lineNum">     672 </span>                :            :     inline bool equivalent( const path &amp; ph1, const path &amp; ph2 )
+<span class="lineNum">     673 </span>                :            :       { return equivalent&lt;path&gt;( ph1, ph2 ); }
+<span class="lineNum">     674 </span>                :            :     inline bool equivalent( const wpath &amp; ph1, const wpath &amp; ph2 )
+<span class="lineNum">     675 </span>                :            :       { return equivalent&lt;wpath&gt;( ph1, ph2 ); }
+<span class="lineNum">     676 </span>                :            : 
+<span class="lineNum">     677 </span>                :<span class="lineNoCov">          0 :     inline boost::uintmax_t file_size( const path &amp; ph )</span>
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :       { return file_size&lt;path&gt;( ph ); }</span>
+<span class="lineNum">     679 </span>                :            :     inline boost::uintmax_t file_size( const wpath &amp; ph )
+<span class="lineNum">     680 </span>                :            :       { return file_size&lt;wpath&gt;( ph ); }
+<span class="lineNum">     681 </span>                :            : 
+<span class="lineNum">     682 </span>                :            :     inline space_info space( const path &amp; ph )
+<span class="lineNum">     683 </span>                :            :       { return space&lt;path&gt;( ph ); }
+<span class="lineNum">     684 </span>                :            :     inline space_info space( const wpath &amp; ph )
+<span class="lineNum">     685 </span>                :            :       { return space&lt;wpath&gt;( ph ); }
+<span class="lineNum">     686 </span>                :            : 
+<span class="lineNum">     687 </span>                :            :     inline std::time_t last_write_time( const path &amp; ph )
+<span class="lineNum">     688 </span>                :            :       { return last_write_time&lt;path&gt;( ph ); }
+<span class="lineNum">     689 </span>                :            :     inline std::time_t last_write_time( const wpath &amp; ph )
+<span class="lineNum">     690 </span>                :            :       { return last_write_time&lt;wpath&gt;( ph ); }
+<span class="lineNum">     691 </span>                :            : 
+<span class="lineNum">     692 </span>                :<span class="lineCov">        337 :     inline bool create_directory( const path &amp; dir_ph )</span>
+<span class="lineNum">     693 </span>                :<span class="lineCov">        337 :       { return create_directory&lt;path&gt;( dir_ph ); }</span>
+<span class="lineNum">     694 </span>                :            :     inline bool create_directory( const wpath &amp; dir_ph )
+<span class="lineNum">     695 </span>                :            :       { return create_directory&lt;wpath&gt;( dir_ph ); }
+<span class="lineNum">     696 </span>                :            : 
+<span class="lineNum">     697 </span>                :            : #if !defined(BOOST_WINDOWS_API) || defined(BOOST_FS_HARD_LINK)
+<span class="lineNum">     698 </span>                :            :     inline void create_hard_link( const path &amp; to_ph,
+<span class="lineNum">     699 </span>                :            :       const path &amp; from_ph )
+<span class="lineNum">     700 </span>                :            :       { return create_hard_link&lt;path&gt;( to_ph, from_ph ); }
+<span class="lineNum">     701 </span>                :            :     inline void create_hard_link( const wpath &amp; to_ph,
+<span class="lineNum">     702 </span>                :            :       const wpath &amp; from_ph )
+<span class="lineNum">     703 </span>                :            :       { return create_hard_link&lt;wpath&gt;( to_ph, from_ph ); }
+<span class="lineNum">     704 </span>                :            : 
+<span class="lineNum">     705 </span>                :            :     inline system::error_code create_hard_link( const path &amp; to_ph,
+<span class="lineNum">     706 </span>                :            :       const path &amp; from_ph, system::error_code &amp; ec )
+<span class="lineNum">     707 </span>                :            :       { return create_hard_link&lt;path&gt;( to_ph, from_ph, ec ); }
+<span class="lineNum">     708 </span>                :            :     inline system::error_code create_hard_link( const wpath &amp; to_ph,
+<span class="lineNum">     709 </span>                :            :       const wpath &amp; from_ph, system::error_code &amp; ec )
+<span class="lineNum">     710 </span>                :            :       { return create_hard_link&lt;wpath&gt;( to_ph, from_ph, ec ); }
+<span class="lineNum">     711 </span>                :            : #endif
+<span class="lineNum">     712 </span>                :            :     
+<span class="lineNum">     713 </span>                :            :     inline void create_symlink( const path &amp; to_ph,
+<span class="lineNum">     714 </span>                :            :       const path &amp; from_ph )
+<span class="lineNum">     715 </span>                :            :       { return create_symlink&lt;path&gt;( to_ph, from_ph ); }
+<span class="lineNum">     716 </span>                :            :     inline void create_symlink( const wpath &amp; to_ph,
+<span class="lineNum">     717 </span>                :            :       const wpath &amp; from_ph )
+<span class="lineNum">     718 </span>                :            :       { return create_symlink&lt;wpath&gt;( to_ph, from_ph ); }
+<span class="lineNum">     719 </span>                :            : 
+<span class="lineNum">     720 </span>                :            :     inline system::error_code create_symlink( const path &amp; to_ph,
+<span class="lineNum">     721 </span>                :            :       const path &amp; from_ph, system::error_code &amp; ec )
+<span class="lineNum">     722 </span>                :            :       { return create_symlink&lt;path&gt;( to_ph, from_ph, ec ); }
+<span class="lineNum">     723 </span>                :            :     inline system::error_code create_symlink( const wpath &amp; to_ph,
+<span class="lineNum">     724 </span>                :            :       const wpath &amp; from_ph, system::error_code &amp; ec )
+<span class="lineNum">     725 </span>                :            :       { return create_symlink&lt;wpath&gt;( to_ph, from_ph, ec ); }
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :<span class="lineNoCov">          0 :     inline bool remove( const path &amp; ph )</span>
+<span class="lineNum">     728 </span>                :<span class="lineNoCov">          0 :       { return remove&lt;path&gt;( ph ); }</span>
+<span class="lineNum">     729 </span>                :            :     inline bool remove( const wpath &amp; ph )
+<span class="lineNum">     730 </span>                :            :       { return remove&lt;wpath&gt;( ph ); }
+<span class="lineNum">     731 </span>                :            : 
+<span class="lineNum">     732 </span>                :            :     inline unsigned long remove_all( const path &amp; ph )
+<span class="lineNum">     733 </span>                :            :       { return remove_all&lt;path&gt;( ph ); }
+<span class="lineNum">     734 </span>                :            :     inline unsigned long remove_all( const wpath &amp; ph )
+<span class="lineNum">     735 </span>                :            :       { return remove_all&lt;wpath&gt;( ph ); }
+<span class="lineNum">     736 </span>                :            : 
+<span class="lineNum">     737 </span>                :<span class="lineCov">        130 :     inline void rename( const path &amp; from_path, const path &amp; to_path )</span>
+<span class="lineNum">     738 </span>                :<span class="lineCov">        130 :       { return rename&lt;path&gt;( from_path, to_path ); }</span>
+<span class="lineNum">     739 </span>                :            :     inline void rename( const wpath &amp; from_path, const wpath &amp; to_path )
+<span class="lineNum">     740 </span>                :            :       { return rename&lt;wpath&gt;( from_path, to_path ); }
+<span class="lineNum">     741 </span>                :            : 
+<span class="lineNum">     742 </span>                :            :     inline void copy_file( const path &amp; from_path, const path &amp; to_path )
+<span class="lineNum">     743 </span>                :            :       { return copy_file&lt;path&gt;( from_path, to_path ); }
+<span class="lineNum">     744 </span>                :            :     inline void copy_file( const wpath &amp; from_path, const wpath &amp; to_path )
+<span class="lineNum">     745 </span>                :            :       { return copy_file&lt;wpath&gt;( from_path, to_path ); }
+<span class="lineNum">     746 </span>                :            : 
+<span class="lineNum">     747 </span>                :            :     inline path system_complete( const path &amp; ph )
+<span class="lineNum">     748 </span>                :            :       { return system_complete&lt;path&gt;( ph ); }
+<span class="lineNum">     749 </span>                :            :     inline wpath system_complete( const wpath &amp; ph )
+<span class="lineNum">     750 </span>                :            :       { return system_complete&lt;wpath&gt;( ph ); }
+<span class="lineNum">     751 </span>                :            : 
+<span class="lineNum">     752 </span>                :            :     inline path complete( const path &amp; ph,
+<span class="lineNum">     753 </span>                :            :       const path &amp; base/* = initial_path&lt;path&gt;()*/ )
+<span class="lineNum">     754 </span>                :            :       { return complete&lt;path&gt;( ph, base ); }
+<span class="lineNum">     755 </span>                :            :     inline wpath complete( const wpath &amp; ph,
+<span class="lineNum">     756 </span>                :            :       const wpath &amp; base/* = initial_path&lt;wpath&gt;()*/ )
+<span class="lineNum">     757 </span>                :            :       { return complete&lt;wpath&gt;( ph, base ); }
+<span class="lineNum">     758 </span>                :            : 
+<span class="lineNum">     759 </span>                :            :     inline path complete( const path &amp; ph )
+<span class="lineNum">     760 </span>                :            :       { return complete&lt;path&gt;( ph, initial_path&lt;path&gt;() ); }
+<span class="lineNum">     761 </span>                :            :     inline wpath complete( const wpath &amp; ph )
+<span class="lineNum">     762 </span>                :            :       { return complete&lt;wpath&gt;( ph, initial_path&lt;wpath&gt;() ); }
+<span class="lineNum">     763 </span>                :            : 
+<span class="lineNum">     764 </span>                :            :     inline void last_write_time( const path &amp; ph, const std::time_t new_time )
+<span class="lineNum">     765 </span>                :            :       { last_write_time&lt;path&gt;( ph, new_time ); }
+<span class="lineNum">     766 </span>                :            :     inline void last_write_time( const wpath &amp; ph, const std::time_t new_time )
+<span class="lineNum">     767 </span>                :            :       { last_write_time&lt;wpath&gt;( ph, new_time ); }
+<span class="lineNum">     768 </span>                :            : 
+<span class="lineNum">     769 </span>                :            :     inline void current_path( const path &amp; ph )
+<span class="lineNum">     770 </span>                :            :       { current_path&lt;path&gt;( ph ); }
+<span class="lineNum">     771 </span>                :            :     inline void current_path( const wpath &amp; ph )
+<span class="lineNum">     772 </span>                :            :       { current_path&lt;wpath&gt;( ph ); }
+<span class="lineNum">     773 </span>                :            : 
+<span class="lineNum">     774 </span>                :            : # endif // ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">     775 </span>                :            : 
+<span class="lineNum">     776 </span>                :            :     namespace detail
+<span class="lineNum">     777 </span>                :            :     {
+<span class="lineNum">     778 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     779 </span>                :<span class="lineNoCov">          0 :       bool remove_aux( const Path &amp; ph, file_status f )</span>
+<span class="lineNum">     780 </span>                :            :       {
+<span class="lineNum">     781 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if ( exists( f ) )</span>
+<span class="lineNum">     782 </span>                :            :         {
+<span class="lineNum">     783 </span>                :<span class="lineNoCov">          0 :           system::error_code ec = remove_api( ph.external_file_string() );</span>
+<span class="lineNum">     784 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :           if ( ec )</span>
+<span class="lineNum">     785 </span>                :<span class="lineNoCov">          0 :             boost::throw_exception( basic_filesystem_error&lt;Path&gt;(</span>
+<span class="lineNum">     786 </span>                :            :               &quot;boost::filesystem::remove&quot;, ph, ec ) );
+<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 :           return true;</span>
+<span class="lineNum">     788 </span>                :            :         }
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     790 </span>                :            :       }
+<span class="lineNum">     791 </span>                :            : 
+<span class="lineNum">     792 </span>                :            :       template&lt;class Path&gt;
+<span class="lineNum">     793 </span>                :            :       unsigned long remove_all_aux( const Path &amp; ph, file_status f )
+<span class="lineNum">     794 </span>                :            :       {
+<span class="lineNum">     795 </span>                :            :         static const boost::filesystem::basic_directory_iterator&lt;Path&gt; end_itr;
+<span class="lineNum">     796 </span>                :            :         unsigned long count = 1;
+<span class="lineNum">     797 </span>                :            :         if ( !boost::filesystem::is_symlink( f ) // don't recurse symbolic links
+<span class="lineNum">     798 </span>                :            :           &amp;&amp; boost::filesystem::is_directory( f ) )
+<span class="lineNum">     799 </span>                :            :         {
+<span class="lineNum">     800 </span>                :            :           for ( boost::filesystem::basic_directory_iterator&lt;Path&gt; itr( ph );
+<span class="lineNum">     801 </span>                :            :                 itr != end_itr; ++itr )
+<span class="lineNum">     802 </span>                :            :           {
+<span class="lineNum">     803 </span>                :            :             boost::system::error_code ec;
+<span class="lineNum">     804 </span>                :            :             boost::filesystem::file_status fn = boost::filesystem::symlink_status( itr-&gt;path(), ec );
+<span class="lineNum">     805 </span>                :            :             if ( ec )
+<span class="lineNum">     806 </span>                :            :               boost::throw_exception( basic_filesystem_error&lt;Path&gt;( 
+<span class="lineNum">     807 </span>                :            :                 &quot;boost::filesystem:remove_all&quot;, ph, ec ) );
+<span class="lineNum">     808 </span>                :            :             count += remove_all_aux( itr-&gt;path(), fn );
+<span class="lineNum">     809 </span>                :            :           }
+<span class="lineNum">     810 </span>                :            :         }
+<span class="lineNum">     811 </span>                :            :         remove_aux( ph, f );
+<span class="lineNum">     812 </span>                :            :         return count;
+<span class="lineNum">     813 </span>                :            :       }
+<span class="lineNum">     814 </span>                :            : 
+<span class="lineNum">     815 </span>                :            : //  test helper  -------------------------------------------------------------//
+<span class="lineNum">     816 </span>                :            : 
+<span class="lineNum">     817 </span>                :            :     // not part of the documented interface because false positives are possible;
+<span class="lineNum">     818 </span>                :            :     // there is no law that says that an OS that has large stat.st_size
+<span class="lineNum">     819 </span>                :            :     // actually supports large file sizes.
+<span class="lineNum">     820 </span>                :            :       BOOST_FILESYSTEM_DECL bool possible_large_file_size_support();
+<span class="lineNum">     821 </span>                :            : 
+<span class="lineNum">     822 </span>                :            : //  directory_iterator helpers  ----------------------------------------------//
+<span class="lineNum">     823 </span>                :            : 
+<span class="lineNum">     824 </span>                :            : //    forwarding functions avoid need for BOOST_FILESYSTEM_DECL for class
+<span class="lineNum">     825 </span>                :            : //    basic_directory_iterator, and so avoid iterator_facade DLL template
+<span class="lineNum">     826 </span>                :            : //    problems. They also overload to the proper external path character type.
+<span class="lineNum">     827 </span>                :            : 
+<span class="lineNum">     828 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     829 </span>                :            :         dir_itr_first( void *&amp; handle,
+<span class="lineNum">     830 </span>                :            : #if       defined(BOOST_POSIX_API)
+<span class="lineNum">     831 </span>                :            :             void *&amp; buffer,
+<span class="lineNum">     832 </span>                :            : #endif
+<span class="lineNum">     833 </span>                :            :           const std::string &amp; dir_path,
+<span class="lineNum">     834 </span>                :            :           std::string &amp; target, file_status &amp; fs, file_status &amp; symlink_fs );
+<span class="lineNum">     835 </span>                :            :       // eof: return==0 &amp;&amp; handle==0
+<span class="lineNum">     836 </span>                :            : 
+<span class="lineNum">     837 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     838 </span>                :            :         dir_itr_increment( void *&amp; handle,
+<span class="lineNum">     839 </span>                :            : #if       defined(BOOST_POSIX_API)
+<span class="lineNum">     840 </span>                :            :             void *&amp; buffer,
+<span class="lineNum">     841 </span>                :            : #endif
+<span class="lineNum">     842 </span>                :            :           std::string &amp; target, file_status &amp; fs, file_status &amp; symlink_fs );
+<span class="lineNum">     843 </span>                :            :       // eof: return==0 &amp;&amp; handle==0
+<span class="lineNum">     844 </span>                :            : 
+<span class="lineNum">     845 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     846 </span>                :            :         dir_itr_close( void *&amp; handle
+<span class="lineNum">     847 </span>                :            : #if       defined(BOOST_POSIX_API)
+<span class="lineNum">     848 </span>                :            :             , void *&amp; buffer
+<span class="lineNum">     849 </span>                :            : #endif
+<span class="lineNum">     850 </span>                :            :           );
+<span class="lineNum">     851 </span>                :            :       // Effects: none if handle==0, otherwise close handle, set handle=0
+<span class="lineNum">     852 </span>                :            : 
+<span class="lineNum">     853 </span>                :            : #     if defined(BOOST_WINDOWS_API) &amp;&amp; !defined(BOOST_FILESYSTEM_NARROW_ONLY)
+<span class="lineNum">     854 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     855 </span>                :            :         dir_itr_first( void *&amp; handle, const std::wstring &amp; ph,
+<span class="lineNum">     856 </span>                :            :           std::wstring &amp; target, file_status &amp; fs, file_status &amp; symlink_fs );
+<span class="lineNum">     857 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code
+<span class="lineNum">     858 </span>                :            :         dir_itr_increment( void *&amp; handle, std::wstring &amp; target,
+<span class="lineNum">     859 </span>                :            :           file_status &amp; fs, file_status &amp; symlink_fs );
+<span class="lineNum">     860 </span>                :            : #     endif
+<span class="lineNum">     861 </span>                :            : 
+<span class="lineNum">     862 </span>                :            :       template&lt; class Path &gt;
+<span class="lineNum">     863 </span>                :            :       class dir_itr_imp
+<span class="lineNum">     864 </span>                :            :       {
+<span class="lineNum">     865 </span>                :            :       public:  
+<span class="lineNum">     866 </span>                :            :         basic_directory_entry&lt;Path&gt; m_directory_entry;
+<span class="lineNum">     867 </span>                :            :         void *        m_handle;
+<span class="lineNum">     868 </span>                :            : #       ifdef BOOST_POSIX_API
+<span class="lineNum">     869 </span>                :            :           void *      m_buffer;  // see dir_itr_increment implementation
+<span class="lineNum">     870 </span>                :            : #       endif
+<span class="lineNum">     871 </span>                :<span class="lineNoCov">          0 :         dir_itr_imp() : m_handle(0)</span>
+<span class="lineNum">     872 </span>                :            : #       ifdef BOOST_POSIX_API
+<span class="lineNum">     873 </span>                :<span class="lineNoCov">          0 :           , m_buffer(0)</span>
+<span class="lineNum">     874 </span>                :            : #       endif
+<span class="lineNum">     875 </span>                :<span class="lineNoCov">          0 :         {}</span>
+<span class="lineNum">     876 </span>                :            : 
+<span class="lineNum">     877 </span>                :<span class="lineNoCov">          0 :         ~dir_itr_imp() { dir_itr_close( m_handle</span>
+<span class="lineNum">     878 </span>                :            : #if       defined(BOOST_POSIX_API)
+<span class="lineNum">     879 </span>                :            :             , m_buffer
+<span class="lineNum">     880 </span>                :            : #endif
+<span class="lineNum">     881 </span>                :            :           ); }
+<span class="lineNum">     882 </span>                :            :       };
+<span class="lineNum">     883 </span>                :            : 
+<span class="lineNum">     884 </span>                :            :       BOOST_FILESYSTEM_DECL system::error_code not_found_error();
+<span class="lineNum">     885 </span>                :            : 
+<span class="lineNum">     886 </span>                :            :     } // namespace detail
+<span class="lineNum">     887 </span>                :            : 
+<span class="lineNum">     888 </span>                :            : //  basic_directory_iterator  ------------------------------------------------//
+<span class="lineNum">     889 </span>                :            : 
+<span class="lineNum">     890 </span>                :            :     template&lt; class Path &gt;
+<span class="lineNum">     891 </span>                :            :     class basic_directory_iterator
+<span class="lineNum">     892 </span>                :            :       : public boost::iterator_facade&lt;
+<span class="lineNum">     893 </span>                :            :           basic_directory_iterator&lt;Path&gt;,
+<span class="lineNum">     894 </span>                :            :           basic_directory_entry&lt;Path&gt;,
+<span class="lineNum">     895 </span>                :            :           boost::single_pass_traversal_tag &gt;
+<span class="lineNum">     896 </span>                :            :     {
+<span class="lineNum">     897 </span>                :            :     public:
+<span class="lineNum">     898 </span>                :            :       typedef Path path_type;
+<span class="lineNum">     899 </span>                :            : 
+<span class="lineNum">     900 </span>                :<span class="lineNoCov">          0 :       basic_directory_iterator(){}  // creates the &quot;end&quot; iterator</span>
+<span class="lineNum">     901 </span>                :            : 
+<span class="lineNum">     902 </span>                :            :       explicit basic_directory_iterator( const Path &amp; dir_path );
+<span class="lineNum">     903 </span>                :            :       basic_directory_iterator( const Path &amp; dir_path, system::error_code &amp; ec );
+<span class="lineNum">     904 </span>                :            : 
+<span class="lineNum">     905 </span>                :            :     private:
+<span class="lineNum">     906 </span>                :            : 
+<span class="lineNum">     907 </span>                :            :       // shared_ptr provides shallow-copy semantics required for InputIterators.
+<span class="lineNum">     908 </span>                :            :       // m_imp.get()==0 indicates the end iterator.
+<span class="lineNum">     909 </span>                :            :       boost::shared_ptr&lt; detail::dir_itr_imp&lt; Path &gt; &gt;  m_imp;
+<span class="lineNum">     910 </span>                :            : 
+<span class="lineNum">     911 </span>                :            :       friend class boost::iterator_core_access;
+<span class="lineNum">     912 </span>                :            : 
+<span class="lineNum">     913 </span>                :            :       typename boost::iterator_facade&lt;
+<span class="lineNum">     914 </span>                :            :         basic_directory_iterator&lt;Path&gt;,
+<span class="lineNum">     915 </span>                :            :         basic_directory_entry&lt;Path&gt;,
+<span class="lineNum">     916 </span>                :<span class="lineNoCov">          0 :         boost::single_pass_traversal_tag &gt;::reference dereference() const </span>
+<span class="lineNum">     917 </span>                :            :       {
+<span class="lineNum">     918 </span>                :<span class="lineNoCov">          0 :         BOOST_ASSERT( m_imp.get() &amp;&amp; &quot;attempt to dereference end iterator&quot; );</span>
+<span class="lineNum">     919 </span>                :<span class="lineNoCov">          0 :         return m_imp-&gt;m_directory_entry;</span>
+<span class="lineNum">     920 </span>                :            :       }
+<span class="lineNum">     921 </span>                :            : 
+<span class="lineNum">     922 </span>                :            :       void increment();
+<span class="lineNum">     923 </span>                :            : 
+<span class="lineNum">     924 </span>                :<span class="lineNoCov">          0 :       bool equal( const basic_directory_iterator &amp; rhs ) const</span>
+<span class="lineNum">     925 </span>                :<span class="lineNoCov">          0 :         { return m_imp == rhs.m_imp; }</span>
+<span class="lineNum">     926 </span>                :            : 
+<span class="lineNum">     927 </span>                :            :       system::error_code m_init( const Path &amp; dir_path );
+<span class="lineNum">     928 </span>                :            :     };
+<span class="lineNum">     929 </span>                :            : 
+<span class="lineNum">     930 </span>                :            :     typedef basic_directory_iterator&lt; path &gt; directory_iterator;
+<span class="lineNum">     931 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">     932 </span>                :            :     typedef basic_directory_iterator&lt; wpath &gt; wdirectory_iterator;
+<span class="lineNum">     933 </span>                :            : # endif
+<span class="lineNum">     934 </span>                :            : 
+<span class="lineNum">     935 </span>                :            :     //  basic_directory_iterator implementation  ---------------------------//
+<span class="lineNum">     936 </span>                :            : 
+<span class="lineNum">     937 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">     938 </span>                :            :     system::error_code basic_directory_iterator&lt;Path&gt;::m_init(
+<span class="lineNum">     939 </span>                :<span class="lineNoCov">          0 :       const Path &amp; dir_path )</span>
+<span class="lineNum">     940 </span>                :            :     {
+<span class="lineNum">     941 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( dir_path.empty() )</span>
+<span class="lineNum">     942 </span>                :            :       {
+<span class="lineNum">     943 </span>                :<span class="lineNoCov">          0 :         m_imp.reset();</span>
+<span class="lineNum">     944 </span>                :<span class="lineNoCov">          0 :         return detail::not_found_error();</span>
+<span class="lineNum">     945 </span>                :            :       }
+<span class="lineNum">     946 </span>                :<span class="lineNoCov">          0 :       typename Path::external_string_type name;</span>
+<span class="lineNum">     947 </span>                :<span class="lineNoCov">          0 :       file_status fs, symlink_fs;</span>
+<span class="lineNum">     948 </span>                :            :       system::error_code ec( detail::dir_itr_first( m_imp-&gt;m_handle,
+<span class="lineNum">     949 </span>                :            : #if   defined(BOOST_POSIX_API)
+<span class="lineNum">     950 </span>                :            :         m_imp-&gt;m_buffer,
+<span class="lineNum">     951 </span>                :            : #endif
+<span class="lineNum">     952 </span>                :            :         dir_path.external_directory_string(),
+<span class="lineNum">     953 </span>                :<span class="lineNoCov">          0 :         name, fs, symlink_fs ) );</span>
+<span class="lineNum">     954 </span>                :            : 
+<span class="lineNum">     955 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( ec )</span>
+<span class="lineNum">     956 </span>                :            :       {
+<span class="lineNum">     957 </span>                :<span class="lineNoCov">          0 :         m_imp.reset();</span>
+<span class="lineNum">     958 </span>                :<span class="lineNoCov">          0 :         return ec;</span>
+<span class="lineNum">     959 </span>                :            :       }
+<span class="lineNum">     960 </span>                :            :       
+<span class="lineNum">     961 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( m_imp-&gt;m_handle == 0 ) m_imp.reset(); // eof, so make end iterator</span>
+<span class="lineNum">     962 </span>                :            :       else // not eof
+<span class="lineNum">     963 </span>                :            :       {
+<span class="lineNum">     964 </span>                :<span class="lineNoCov">          0 :         m_imp-&gt;m_directory_entry.assign( dir_path</span>
+<span class="lineNum">     965 </span>                :            :           / Path::traits_type::to_internal( name ), fs, symlink_fs );
+<span class="lineNum">     966 </span>[<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span>:<span class="lineNoCov">          0 :         if ( name[0] == dot&lt;Path&gt;::value // dot or dot-dot</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 8 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span>]
+<span class="lineNum">     967 </span>                :            :           &amp;&amp; (name.size() == 1
+<span class="lineNum">     968 </span>                :            :             || (name[1] == dot&lt;Path&gt;::value
+<span class="lineNum">     969 </span>                :            :               &amp;&amp; name.size() == 2)) )
+<span class="lineNum">     970 </span>                :<span class="lineNoCov">          0 :           {  increment(); }</span>
+<span class="lineNum">     971 </span>                :            :       }
+<span class="lineNum">     972 </span>                :<span class="lineNoCov">          0 :       return boost::system::error_code();</span>
+<span class="lineNum">     973 </span>                :            :     }
+<span class="lineNum">     974 </span>                :            : 
+<span class="lineNum">     975 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">     976 </span>                :            :     basic_directory_iterator&lt;Path&gt;::basic_directory_iterator(
+<span class="lineNum">     977 </span>                :<span class="lineNoCov">          0 :       const Path &amp; dir_path )</span>
+<span class="lineNum">     978 </span>                :<span class="lineNoCov">          0 :       : m_imp( new detail::dir_itr_imp&lt;Path&gt; )</span>
+<span class="lineNum">     979 </span>                :            :     {
+<span class="lineNum">     980 </span>                :<span class="lineNoCov">          0 :       system::error_code ec( m_init(dir_path) );</span>
+<span class="lineNum">     981 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if ( ec )</span>
+<span class="lineNum">     982 </span>                :            :       {
+<span class="lineNum">     983 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception( basic_filesystem_error&lt;Path&gt;( </span>
+<span class="lineNum">     984 </span>                :            :           &quot;boost::filesystem::basic_directory_iterator constructor&quot;,
+<span class="lineNum">     985 </span>                :            :           dir_path, ec ) );
+<span class="lineNum">     986 </span>                :            :       }
+<span class="lineNum">     987 </span>                :            :     }
+<span class="lineNum">     988 </span>                :            : 
+<span class="lineNum">     989 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">     990 </span>                :            :     basic_directory_iterator&lt;Path&gt;::basic_directory_iterator(
+<span class="lineNum">     991 </span>                :            :       const Path &amp; dir_path, system::error_code &amp; ec )
+<span class="lineNum">     992 </span>                :            :       : m_imp( new detail::dir_itr_imp&lt;Path&gt; )
+<span class="lineNum">     993 </span>                :            :     {
+<span class="lineNum">     994 </span>                :            :       ec = m_init(dir_path);
+<span class="lineNum">     995 </span>                :            :     }
+<span class="lineNum">     996 </span>                :            : 
+<span class="lineNum">     997 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">     998 </span>                :<span class="lineNoCov">          0 :     void basic_directory_iterator&lt;Path&gt;::increment()</span>
+<span class="lineNum">     999 </span>                :            :     {
+<span class="lineNum">    1000 </span>                :<span class="lineNoCov">          0 :       BOOST_ASSERT( m_imp.get() &amp;&amp; &quot;attempt to increment end iterator&quot; );</span>
+<span class="lineNum">    1001 </span>                :<span class="lineNoCov">          0 :       BOOST_ASSERT( m_imp-&gt;m_handle != 0 &amp;&amp; &quot;internal program error&quot; );</span>
+<span class="lineNum">    1002 </span>                :            :       
+<span class="lineNum">    1003 </span>                :<span class="lineNoCov">          0 :       typename Path::external_string_type name;</span>
+<span class="lineNum">    1004 </span>                :<span class="lineNoCov">          0 :       file_status fs, symlink_fs;</span>
+<span class="lineNum">    1005 </span>                :<span class="lineNoCov">          0 :       system::error_code ec;</span>
+<span class="lineNum">    1006 </span>                :            : 
+<span class="lineNum">    1007 </span>                :<span class="lineNoCov">          0 :       for (;;)</span>
+<span class="lineNum">    1008 </span>                :            :       {
+<span class="lineNum">    1009 </span>                :<span class="lineNoCov">          0 :         ec = detail::dir_itr_increment( m_imp-&gt;m_handle,</span>
+<span class="lineNum">    1010 </span>                :            : #if     defined(BOOST_POSIX_API)
+<span class="lineNum">    1011 </span>                :            :           m_imp-&gt;m_buffer,
+<span class="lineNum">    1012 </span>                :            : #endif
+<span class="lineNum">    1013 </span>                :            :           name, fs, symlink_fs );
+<span class="lineNum">    1014 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if ( ec )</span>
+<span class="lineNum">    1015 </span>                :            :         {
+<span class="lineNum">    1016 </span>                :<span class="lineNoCov">          0 :           boost::throw_exception( basic_filesystem_error&lt;Path&gt;(  </span>
+<span class="lineNum">    1017 </span>                :            :             &quot;boost::filesystem::basic_directory_iterator increment&quot;,
+<span class="lineNum">    1018 </span>                :            :             m_imp-&gt;m_directory_entry.path().parent_path(), ec ) );
+<span class="lineNum">    1019 </span>                :            :         }
+<span class="lineNum">    1020 </span>                :<span class="lineNoCov">          0 :         if ( m_imp-&gt;m_handle == 0 ) { m_imp.reset(); return; } // eof, make end</span>
+<span class="lineNum">    1021 </span>[<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span>:<span class="lineNoCov">          0 :         if ( !(name[0] == dot&lt;Path&gt;::value // !(dot or dot-dot)</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 8 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 12 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span>]
+<span class="lineNum">    1022 </span>                :            :           &amp;&amp; (name.size() == 1
+<span class="lineNum">    1023 </span>                :            :             || (name[1] == dot&lt;Path&gt;::value
+<span class="lineNum">    1024 </span>                :            :               &amp;&amp; name.size() == 2))) )
+<span class="lineNum">    1025 </span>                :            :         {
+<span class="lineNum">    1026 </span>                :<span class="lineNoCov">          0 :           m_imp-&gt;m_directory_entry.replace_filename(</span>
+<span class="lineNum">    1027 </span>                :            :             Path::traits_type::to_internal( name ), fs, symlink_fs );
+<span class="lineNum">    1028 </span>                :<span class="lineNoCov">          0 :           return;</span>
+<span class="lineNum">    1029 </span>                :            :         }
+<span class="lineNum">    1030 </span>                :            :       }
+<span class="lineNum">    1031 </span>                :            :     }
+<span class="lineNum">    1032 </span>                :            : 
+<span class="lineNum">    1033 </span>                :            :     //  basic_directory_entry  -----------------------------------------------//
+<span class="lineNum">    1034 </span>                :            :     
+<span class="lineNum">    1035 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1036 </span>                :            :     class basic_directory_entry
+<span class="lineNum">    1037 </span>                :            :     {
+<span class="lineNum">    1038 </span>                :            :     public:
+<span class="lineNum">    1039 </span>                :            :       typedef Path path_type;
+<span class="lineNum">    1040 </span>                :            :       typedef typename Path::string_type string_type;
+<span class="lineNum">    1041 </span>                :            : 
+<span class="lineNum">    1042 </span>                :            :       // compiler generated copy-ctor, copy assignment, and destructor apply
+<span class="lineNum">    1043 </span>                :            : 
+<span class="lineNum">    1044 </span>                :<span class="lineNoCov">          0 :       basic_directory_entry() {}</span>
+<span class="lineNum">    1045 </span>                :            :       explicit basic_directory_entry( const path_type &amp; p,
+<span class="lineNum">    1046 </span>                :            :         file_status st = file_status(), file_status symlink_st=file_status() )
+<span class="lineNum">    1047 </span>                :            :         : m_path(p), m_status(st), m_symlink_status(symlink_st)
+<span class="lineNum">    1048 </span>                :            :         {}
+<span class="lineNum">    1049 </span>                :            : 
+<span class="lineNum">    1050 </span>                :            :       void assign( const path_type &amp; p,
+<span class="lineNum">    1051 </span>                :<span class="lineNoCov">          0 :         file_status st, file_status symlink_st )</span>
+<span class="lineNum">    1052 </span>                :<span class="lineNoCov">          0 :         { m_path = p; m_status = st; m_symlink_status = symlink_st; }</span>
+<span class="lineNum">    1053 </span>                :            : 
+<span class="lineNum">    1054 </span>                :            :       void replace_filename( const string_type &amp; s,
+<span class="lineNum">    1055 </span>                :<span class="lineNoCov">          0 :         file_status st, file_status symlink_st )</span>
+<span class="lineNum">    1056 </span>                :            :       {
+<span class="lineNum">    1057 </span>                :<span class="lineNoCov">          0 :         m_path.remove_filename();</span>
+<span class="lineNum">    1058 </span>                :<span class="lineNoCov">          0 :         m_path /= s;</span>
+<span class="lineNum">    1059 </span>                :<span class="lineNoCov">          0 :         m_status = st;</span>
+<span class="lineNum">    1060 </span>                :<span class="lineNoCov">          0 :         m_symlink_status = symlink_st;</span>
+<span class="lineNum">    1061 </span>                :            :       }
+<span class="lineNum">    1062 </span>                :            : 
+<span class="lineNum">    1063 </span>                :            : #   ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">    1064 </span>                :            :       void replace_leaf( const string_type &amp; s,
+<span class="lineNum">    1065 </span>                :            :         file_status st, file_status symlink_st )
+<span class="lineNum">    1066 </span>                :            :           { replace_filename( s, st, symlink_st ); }
+<span class="lineNum">    1067 </span>                :            : #   endif
+<span class="lineNum">    1068 </span>                :            : 
+<span class="lineNum">    1069 </span>                :<span class="lineNoCov">          0 :       const Path &amp;  path() const { return m_path; }</span>
+<span class="lineNum">    1070 </span>                :            :       file_status   status() const;
+<span class="lineNum">    1071 </span>                :            :       file_status   status( system::error_code &amp; ec ) const;
+<span class="lineNum">    1072 </span>                :            :       file_status   symlink_status() const;
+<span class="lineNum">    1073 </span>                :            :       file_status   symlink_status( system::error_code &amp; ec ) const;
+<span class="lineNum">    1074 </span>                :            : 
+<span class="lineNum">    1075 </span>                :            :       // conversion simplifies the most common use of basic_directory_entry
+<span class="lineNum">    1076 </span>                :            :       operator const path_type &amp;() const { return m_path; }
+<span class="lineNum">    1077 </span>                :            : 
+<span class="lineNum">    1078 </span>                :            : #   ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+<span class="lineNum">    1079 </span>                :            :       // deprecated functions preserve common use cases in legacy code
+<span class="lineNum">    1080 </span>                :            :       typename Path::string_type filename() const
+<span class="lineNum">    1081 </span>                :            :       {
+<span class="lineNum">    1082 </span>                :            :         return path().filename();
+<span class="lineNum">    1083 </span>                :            :       }
+<span class="lineNum">    1084 </span>                :            :       typename Path::string_type leaf() const
+<span class="lineNum">    1085 </span>                :            :       {
+<span class="lineNum">    1086 </span>                :            :         return path().filename();
+<span class="lineNum">    1087 </span>                :            :       }
+<span class="lineNum">    1088 </span>                :            :       typename Path::string_type string() const
+<span class="lineNum">    1089 </span>                :            :       {
+<span class="lineNum">    1090 </span>                :            :         return path().string();
+<span class="lineNum">    1091 </span>                :            :       }
+<span class="lineNum">    1092 </span>                :            : #   endif
+<span class="lineNum">    1093 </span>                :            : 
+<span class="lineNum">    1094 </span>                :            :     private:
+<span class="lineNum">    1095 </span>                :            :       path_type             m_path;
+<span class="lineNum">    1096 </span>                :            :       mutable file_status  m_status;           // stat()-like
+<span class="lineNum">    1097 </span>                :            :       mutable file_status  m_symlink_status;   // lstat()-like
+<span class="lineNum">    1098 </span>                :            :         // note: m_symlink_status is not used by Windows implementation
+<span class="lineNum">    1099 </span>                :            : 
+<span class="lineNum">    1100 </span>                :            :     }; // basic_directory_status
+<span class="lineNum">    1101 </span>                :            : 
+<span class="lineNum">    1102 </span>                :            :     typedef basic_directory_entry&lt;path&gt; directory_entry;
+<span class="lineNum">    1103 </span>                :            : # ifndef BOOST_FILESYSTEM_NARROW_ONLY
+<span class="lineNum">    1104 </span>                :            :     typedef basic_directory_entry&lt;wpath&gt; wdirectory_entry;
+<span class="lineNum">    1105 </span>                :            : # endif
+<span class="lineNum">    1106 </span>                :            : 
+<span class="lineNum">    1107 </span>                :            :     //  basic_directory_entry implementation  --------------------------------//
+<span class="lineNum">    1108 </span>                :            : 
+<span class="lineNum">    1109 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1110 </span>                :            :     file_status
+<span class="lineNum">    1111 </span>                :<span class="lineNoCov">          0 :     basic_directory_entry&lt;Path&gt;::status() const</span>
+<span class="lineNum">    1112 </span>                :            :     {
+<span class="lineNum">    1113 </span>                :<span class="lineNoCov">          0 :       if ( !status_known( m_status ) )</span>
+<span class="lineNum">    1114 </span>                :            :       {
+<span class="lineNum">    1115 </span>                :            : #     ifndef BOOST_WINDOWS_API
+<span class="lineNum">    1116 </span>                :<span class="lineNoCov">          0 :         if ( status_known( m_symlink_status )</span>
+<span class="lineNum">    1117 </span>                :            :           &amp;&amp; !is_symlink( m_symlink_status ) )
+<span class="lineNum">    1118 </span>                :<span class="lineNoCov">          0 :           { m_status = m_symlink_status; }</span>
+<span class="lineNum">    1119 </span>                :<span class="lineNoCov">          0 :         else { m_status = boost::filesystem::status( m_path ); }</span>
+<span class="lineNum">    1120 </span>                :            : #     else
+<span class="lineNum">    1121 </span>                :            :         m_status = boost::filesystem::status( m_path );
+<span class="lineNum">    1122 </span>                :            : #     endif
+<span class="lineNum">    1123 </span>                :            :       }
+<span class="lineNum">    1124 </span>                :<span class="lineNoCov">          0 :       return m_status;</span>
+<span class="lineNum">    1125 </span>                :            :     }
+<span class="lineNum">    1126 </span>                :            : 
+<span class="lineNum">    1127 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1128 </span>                :            :     file_status
+<span class="lineNum">    1129 </span>                :            :     basic_directory_entry&lt;Path&gt;::status( system::error_code &amp; ec ) const
+<span class="lineNum">    1130 </span>                :            :     {
+<span class="lineNum">    1131 </span>                :            :       if ( !status_known( m_status ) )
+<span class="lineNum">    1132 </span>                :            :       {
+<span class="lineNum">    1133 </span>                :            : #     ifndef BOOST_WINDOWS_API
+<span class="lineNum">    1134 </span>                :            :         if ( status_known( m_symlink_status )
+<span class="lineNum">    1135 </span>                :            :           &amp;&amp; !is_symlink( m_symlink_status ) )
+<span class="lineNum">    1136 </span>                :            :           { ec = boost::system::error_code();; m_status = m_symlink_status; }
+<span class="lineNum">    1137 </span>                :            :         else { m_status = boost::filesystem::status( m_path, ec ); }
+<span class="lineNum">    1138 </span>                :            : #     else
+<span class="lineNum">    1139 </span>                :            :         m_status = boost::filesystem::status( m_path, ec );
+<span class="lineNum">    1140 </span>                :            : #     endif
+<span class="lineNum">    1141 </span>                :            :       }
+<span class="lineNum">    1142 </span>                :            :       else ec = boost::system::error_code();;
+<span class="lineNum">    1143 </span>                :            :       return m_status;
+<span class="lineNum">    1144 </span>                :            :     }
+<span class="lineNum">    1145 </span>                :            : 
+<span class="lineNum">    1146 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1147 </span>                :            :     file_status
+<span class="lineNum">    1148 </span>                :            :     basic_directory_entry&lt;Path&gt;::symlink_status() const
+<span class="lineNum">    1149 </span>                :            :     {
+<span class="lineNum">    1150 </span>                :            : #   ifndef BOOST_WINDOWS_API
+<span class="lineNum">    1151 </span>                :            :       if ( !status_known( m_symlink_status ) )
+<span class="lineNum">    1152 </span>                :            :         { m_symlink_status = boost::filesystem::symlink_status( m_path ); }
+<span class="lineNum">    1153 </span>                :            :       return m_symlink_status;
+<span class="lineNum">    1154 </span>                :            : #   else
+<span class="lineNum">    1155 </span>                :            :       return status();
+<span class="lineNum">    1156 </span>                :            : #   endif
+<span class="lineNum">    1157 </span>                :            :     }
+<span class="lineNum">    1158 </span>                :            : 
+<span class="lineNum">    1159 </span>                :            :     template&lt;class Path&gt;
+<span class="lineNum">    1160 </span>                :            :     file_status
+<span class="lineNum">    1161 </span>                :            :     basic_directory_entry&lt;Path&gt;::symlink_status( system::error_code &amp; ec ) const
+<span class="lineNum">    1162 </span>                :            :     {
+<span class="lineNum">    1163 </span>                :            : #   ifndef BOOST_WINDOWS_API
+<span class="lineNum">    1164 </span>                :            :       if ( !status_known( m_symlink_status ) )
+<span class="lineNum">    1165 </span>                :            :         { m_symlink_status = boost::filesystem::symlink_status( m_path, ec ); }
+<span class="lineNum">    1166 </span>                :            :       else ec = boost::system::error_code();;
+<span class="lineNum">    1167 </span>                :            :       return m_symlink_status;
+<span class="lineNum">    1168 </span>                :            : #   else
+<span class="lineNum">    1169 </span>                :            :       return status( ec );
+<span class="lineNum">    1170 </span>                :            : #   endif
+<span class="lineNum">    1171 </span>                :            :     }
+<span class="lineNum">    1172 </span>                :            :   } // namespace filesystem
+<span class="lineNum">    1173 </span>                :            : } // namespace boost
+<span class="lineNum">    1174 </span>                :            : 
+<span class="lineNum">    1175 </span>                :            : #undef BOOST_FS_FUNC
+<span class="lineNum">    1176 </span>                :            : 
+<span class="lineNum">    1177 </span>                :            : 
+<span class="lineNum">    1178 </span>                :            : #include &lt;boost/config/abi_suffix.hpp&gt; // pops abi_prefix.hpp pragmas
+<span class="lineNum">    1179 </span>                :            : #endif // BOOST_FILESYSTEM_OPERATIONS_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

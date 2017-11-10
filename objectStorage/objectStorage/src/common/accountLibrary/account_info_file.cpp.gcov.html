@@ -1,0 +1,572 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/accountLibrary/account_info_file.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/accountLibrary</a> - account_info_file.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">163</td>
+            <td class="headerCovTableEntry">233</td>
+            <td class="headerCovTableEntryLo">70.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">73</td>
+            <td class="headerCovTableEntry">110</td>
+            <td class="headerCovTableEntryLo">66.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &quot;accountLibrary/account_info_file.h&quot;
+<span class="lineNum">       2 </span>                :            : #include &quot;accountLibrary/account_record_iterator.h&quot;
+<span class="lineNum">       3 </span>                :            : #include &lt;boost/lexical_cast.hpp&gt;
+<span class="lineNum">       4 </span>                :            : #include &lt;boost/lambda/bind.hpp&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;boost/lambda/lambda.hpp&gt;
+<span class="lineNum">       6 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">       7 </span>                :            : #include &lt;cool/debug.h&gt;
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : namespace accountInfoFile
+<span class="lineNum">      10 </span>                :            : {
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : AccountInfoFile::AccountInfoFile(
+<span class="lineNum">      13 </span>                :            :                                 boost::shared_ptr&lt;Reader&gt; reader, boost::shared_ptr&lt;Writer&gt; writer,
+<span class="lineNum">      14 </span>                :<span class="lineCov">        376 :                                 boost::shared_ptr&lt;lockManager::Mutex&gt; mutex):</span>
+<span class="lineNum">      15 </span>                :<span class="lineCov">        376 :                                 reader(reader), writer(writer), mutex(mutex)</span>
+<span class="lineNum">      16 </span>                :            : {
+<span class="lineNum">      17 </span>                :            :         ;
+<span class="lineNum">      18 </span>                :            : }
+<span class="lineNum">      19 </span>                :            : //UNCOVERED_CODE_BEGIN:
+<span class="lineNum">      20 </span>                :            : AccountInfoFile::AccountInfoFile(boost::shared_ptr&lt;Reader&gt; reader, boost::shared_ptr&lt;lockManager::Mutex&gt; mutex): 
+<span class="lineNum">      21 </span>                :            :                 reader(reader), mutex(mutex)
+<span class="lineNum">      22 </span>                :            : {
+<span class="lineNum">      23 </span>                :            :         ;
+<span class="lineNum">      24 </span>                :            : }
+<span class="lineNum">      25 </span>                :            : //UNCOVERED_CODE_END
+<span class="lineNum">      26 </span>                :<span class="lineCov">         78 : void AccountInfoFile::create_account(boost::shared_ptr&lt;recordStructure::AccountStat&gt; account_stat)</span>
+<span class="lineNum">      27 </span>                :            : {
+<span class="lineNum">      28 </span>                :<span class="lineCov">         78 :         OSDLOG(DEBUG, &quot;calling AccountInfoFile::create_account with AccountStat( account : &quot;</span>
+<span class="lineNum">      29 </span>                :            :                         &lt;&lt;account_stat-&gt;account        &lt;&lt;&quot;, created_at : &quot;&lt;&lt;account_stat-&gt;created_at&lt;&lt;&quot;, put_timestamp : &quot;
+<span class="lineNum">      30 </span>                :            :                         &lt;&lt;account_stat-&gt;put_timestamp&lt;&lt;&quot;, delete_timestamp : &quot;&lt;&lt;account_stat-&gt;delete_timestamp
+<span class="lineNum">      31 </span>                :            :                         &lt;&lt;&quot;, container_count : &quot;&lt;&lt;account_stat-&gt;container_count&lt;&lt;&quot;, object_count : &quot;
+<span class="lineNum">      32 </span>                :            :                         &lt;&lt;account_stat-&gt;object_count&lt;&lt;&quot;, bytes_used : &quot;&lt;&lt;account_stat-&gt;bytes_used&lt;&lt;&quot;, hash : &quot;
+<span class="lineNum">      33 </span>                :            :                         &lt;&lt;account_stat-&gt;hash&lt;&lt;&quot;, id : &quot;&lt;&lt;account_stat-&gt;id&lt;&lt;&quot;, status : &quot;&lt;&lt; account_stat-&gt;status
+<span class="lineNum">      34 </span>                :            :                         &lt;&lt;&quot;, status_changed_at : &quot;&lt;&lt;account_stat-&gt;status_changed_at &lt;&lt;&quot; )&quot;);
+<span class="lineNum">      35 </span>                :            :                         //&lt;&lt;&quot;, metadata : &quot;&lt;&lt;account_stat-&gt;metadata&lt;&lt;&quot; )&quot;);
+<span class="lineNum">      36 </span>                :<span class="lineCov">         78 :         this-&gt;trailer_block.reset(new TrailerBlock(0));</span>
+<span class="lineNum">      37 </span>                :<span class="lineCov">        156 :         this-&gt;writer-&gt;write_file(account_stat, this-&gt;trailer_block);</span>
+<span class="lineNum">      38 </span>                :            : }
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :<span class="lineCov">         15 : boost::shared_ptr&lt;recordStructure::AccountStat&gt; AccountInfoFile::get_account_stat()</span>
+<span class="lineNum">      42 </span>                :            : {
+<span class="lineNum">      43 </span>                :<span class="lineCov">         15 :         this-&gt;read_stat_trailer();</span>
+<span class="lineNum">      44 </span>                :<span class="lineCov">         15 :         return this-&gt;stat_block;</span>
+<span class="lineNum">      45 </span>                :            : }
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :<span class="lineCov">         25 : void AccountInfoFile::set_account_stat(boost::shared_ptr&lt;recordStructure::AccountStat&gt; account_stat, bool second_put_case)</span>
+<span class="lineNum">      48 </span>                :            : {
+<span class="lineNum">      49 </span>                :            : 
+<span class="lineNum">      50 </span>                :<span class="lineCov">         25 :                 OSDLOG(DEBUG, &quot;In AccountInfoFile::set_container_stat&quot;);</span>
+<span class="lineNum">      51 </span>                :<span class="lineCov">         25 :                 uint64_t total_meta_length = 0 ;</span>
+<span class="lineNum">      52 </span>                :<span class="lineCov">         25 :                 uint64_t total_meta_keys = 0 ;</span>
+<span class="lineNum">      53 </span>                :<span class="lineCov">         25 :                 uint64_t total_acl_length = 0 ;</span>
+<span class="lineNum">      54 </span>                :<span class="lineCov">         25 :                 uint64_t total_system_meta_length = 0;</span>
+<span class="lineNum">      55 </span>                :            : 
+<span class="lineNum">      56 </span>                :<span class="lineCov">         25 :                 this-&gt;read_stat_trailer();</span>
+<span class="lineNum">      57 </span>        [<span class="branchCov" title="Branch 8 was taken 25 times"> + </span><span class="branchCov" title="Branch 9 was taken 25 times"> + </span>]:<span class="lineCov">         50 :                 for(std::map&lt;std::string, std::string&gt;::const_iterator it = account_stat-&gt;metadata.begin(); it != account_stat-&gt;metadata.end(); ++it)</span>
+<span class="lineNum">      58 </span>                :            :                 {
+<span class="lineNum">      59 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 25 times"> + </span>]:<span class="lineCov">         25 :                                 if (it-&gt;second == accountInfoFile::META_DELETE)</span>
+<span class="lineNum">      60 </span>                :            :                                 {
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;stat_block-&gt;metadata.erase(it-&gt;first);</span>
+<span class="lineNum">      62 </span>                :            :                                 }
+<span class="lineNum">      63 </span>                :            :                                 else
+<span class="lineNum">      64 </span>                :            :                                 {
+<span class="lineNum">      65 </span>                :<span class="lineCov">         25 :                                                 this-&gt;stat_block-&gt;metadata[it-&gt;first] = it-&gt;second;</span>
+<span class="lineNum">      66 </span>                :            :                                 }
+<span class="lineNum">      67 </span>                :            :                 }
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>        [<span class="branchCov" title="Branch 8 was taken 26 times"> + </span><span class="branchCov" title="Branch 9 was taken 25 times"> + </span>]:<span class="lineCov">         51 :                 for(std::map&lt;std::string, std::string&gt;::const_iterator it = this-&gt;stat_block-&gt;metadata.begin();                                                                     it != this-&gt;stat_block-&gt;metadata.end(); ++it)</span>
+<span class="lineNum">      70 </span>                :            :                 {
+<span class="lineNum">      71 </span>                :<span class="lineCov">         26 :                                 if (boost::regex_match(it-&gt;first, accountInfoFile::META_PATTERN)){</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">          1 :                                                 total_meta_length += it-&gt;first.length();</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">          1 :                                                 total_meta_length += it-&gt;second.length();</span>
+<span class="lineNum">      74 </span>                :<span class="lineCov">          1 :                                                 total_meta_keys += 1;</span>
+<span class="lineNum">      75 </span>                :            :                                 }
+<span class="lineNum">      76 </span>                :<span class="lineCov">         25 :                                 else if(boost::regex_match(it-&gt;first, accountInfoFile::ACL_PATTERN)){</span>
+<span class="lineNum">      77 </span>                :<span class="lineNoCov">          0 :                                                 total_acl_length += it-&gt;first.length() + it-&gt;second.length();</span>
+<span class="lineNum">      78 </span>                :            :                                 }
+<span class="lineNum">      79 </span>                :<span class="lineCov">         25 :                                 else if(boost::regex_match(it-&gt;first, accountInfoFile::SYSTEM_META_PATTERN)){</span>
+<span class="lineNum">      80 </span>                :<span class="lineNoCov">          0 :                                                 total_system_meta_length += it-&gt;first.length() + it-&gt;second.length();</span>
+<span class="lineNum">      81 </span>                :            :                                 }
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :            :                 }
+<span class="lineNum">      84 </span>                :<span class="lineCov">         25 :         OSDLOG(DEBUG, &quot;Total meta length : &quot; &lt;&lt; total_meta_length &lt;&lt; &quot; Total meta keys : &quot;&lt;&lt;total_meta_keys</span>
+<span class="lineNum">      85 </span>                :            :                                                                                 &lt;&lt;&quot;Total ACL length : &quot;&lt;&lt;total_acl_length&lt;&lt;&quot;Total system meta length :&quot;&lt;&lt;total_system_meta_length);
+<span class="lineNum">      86 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 25 times"> + </span>]:<span class="lineCov">         25 :                 if(total_meta_length &gt; accountInfoFile::MAX_META_LENGTH)</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :                                 throw OSDException::MetaSizeException();</span>
+<span class="lineNum">      88 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 25 times"> + </span>]:<span class="lineCov">         25 :                 if(total_meta_keys &gt; accountInfoFile::MAX_META_KEYS)</span>
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :                                 throw OSDException::MetaCountException();</span>
+<span class="lineNum">      90 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 25 times"> + </span>]:<span class="lineCov">         25 :                 if(total_acl_length &gt; accountInfoFile::MAX_ACL_LENGTH)</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :                                 throw OSDException::ACLMetaSizeException();</span>
+<span class="lineNum">      92 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 25 times"> + </span>]:<span class="lineCov">         25 :                 if(total_system_meta_length &gt; accountInfoFile::MAX_SYSTEM_META_LENGTH)</span>
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 :                                 throw OSDException::SystemMetaSizeException();</span>
+<span class="lineNum">      94 </span>                :            : 
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 0 was taken 22 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">         25 :                 if (second_put_case)</span>
+<span class="lineNum">      96 </span>                :            :                 {
+<span class="lineNum">      97 </span>                :<span class="lineCov">         22 :                                 this-&gt;stat_block-&gt;put_timestamp = account_stat-&gt;put_timestamp;</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">         22 :                                 OSDLOG(DEBUG, &quot;Second account PUT case, put_time_stamp is updated in stat.&quot;);</span>
+<span class="lineNum">      99 </span>                :            :                 }
+<span class="lineNum">     100 </span>                :<span class="lineCov">         25 :                 this-&gt;writer-&gt;write_file(this-&gt;stat_block, this-&gt;trailer_block);</span>
+<span class="lineNum">     101 </span>                :            : }
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            : 
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :<span class="lineCov">        163 : void AccountInfoFile::add_container(boost::shared_ptr&lt;recordStructure::ContainerRecord&gt; container_record)</span>
+<span class="lineNum">     106 </span>                :            : {
+<span class="lineNum">     107 </span>                :<span class="lineCov">        163 :         std::list&lt;recordStructure::ContainerRecord&gt; list;</span>
+<span class="lineNum">     108 </span>                :<span class="lineCov">        326 :         list.push_back(*container_record);</span>
+<span class="lineNum">     109 </span>                :<span class="lineCov">        164 :         this-&gt;add_container_internal(list);</span>
+<span class="lineNum">     110 </span>                :            : }
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :<span class="lineCov">        169 : void AccountInfoFile::add_container_internal(std::list&lt;recordStructure::ContainerRecord&gt; container_records)</span>
+<span class="lineNum">     113 </span>                :            : {
+<span class="lineNum">     114 </span>                :<span class="lineCov">        169 :         OSDLOG(DEBUG, &quot;calling add_container_internal&quot;);</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">        169 :         this-&gt;read_stat_trailer();</span>
+<span class="lineNum">     116 </span>                :            :         
+<span class="lineNum">     117 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 168 times"> + </span>]:<span class="lineCov">        168 :         if (this-&gt;trailer_block-&gt;unsorted_record &gt;= MAX_UNSORTED_RECORD)</span>
+<span class="lineNum">     118 </span>                :            :         {
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Max unsorted record limit reached : &quot;&lt;&lt;MAX_UNSORTED_RECORD&lt;&lt;&quot;, Compaction starting...&quot;);</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :                 this-&gt;compaction();</span>
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :                 this-&gt;read_stat_trailer();</span>
+<span class="lineNum">     122 </span>                :            :         }
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :<span class="lineCov">        168 :         this-&gt;static_data_block.reset(new StaticDataBlock);</span>
+<span class="lineNum">     125 </span>                :<span class="lineCov">        336 :         this-&gt;non_static_data_block.reset(new NonStaticDataBlock);</span>
+<span class="lineNum">     126 </span>                :            :         
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 4 was taken 168 times"> + </span><span class="branchCov" title="Branch 5 was taken 168 times"> + </span>]:<span class="lineCov">        672 :         for(std::list&lt;recordStructure::ContainerRecord&gt;::iterator container_record = container_records.begin(); container_record != container_records.end(); container_record++)</span>
+<span class="lineNum">     128 </span>                :            :         {
+<span class="lineNum">     129 </span>                :<span class="lineCov">        168 :                 this-&gt;static_data_block-&gt;add(container_record-&gt;ROWID, container_record-&gt;name);</span>
+<span class="lineNum">     130 </span>                :            :                 this-&gt;non_static_data_block-&gt;add(
+<span class="lineNum">     131 </span>                :            :                                 container_record-&gt;hash,
+<span class="lineNum">     132 </span>                :            :                                 container_record-&gt;put_timestamp,
+<span class="lineNum">     133 </span>                :            :                                 container_record-&gt;delete_timestamp,
+<span class="lineNum">     134 </span>                :            :                                 container_record-&gt;object_count,
+<span class="lineNum">     135 </span>                :            :                                 container_record-&gt;bytes_used,
+<span class="lineNum">     136 </span>                :<span class="lineCov">        336 :                                 container_record-&gt;deleted);</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">        168 :                 this-&gt;stat_block-&gt;container_count++;</span>
+<span class="lineNum">     138 </span>                :<span class="lineCov">        168 :                 this-&gt;stat_block-&gt;bytes_used += container_record-&gt;bytes_used;</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">        168 :                 this-&gt;stat_block-&gt;object_count += container_record-&gt;object_count;</span>
+<span class="lineNum">     140 </span>                :            :         }
+<span class="lineNum">     141 </span>                :            : 
+<span class="lineNum">     142 </span>                :<span class="lineCov">        168 :         this-&gt;trailer_block-&gt;unsorted_record += static_data_block-&gt;get_size();</span>
+<span class="lineNum">     143 </span>                :            :         this-&gt;writer-&gt;write_static_data_block(this-&gt;static_data_block, this-&gt;non_static_data_block,
+<span class="lineNum">     144 </span>                :<span class="lineCov">        168 :                                                 this-&gt;stat_block, this-&gt;trailer_block);</span>
+<span class="lineNum">     145 </span>                :<span class="lineCov">        168 :         OSDLOG(DEBUG, &quot;exiting add_container_internal&quot;);</span>
+<span class="lineNum">     146 </span>                :            : }
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :<span class="lineCov">         59 : void AccountInfoFile::delete_container(boost::shared_ptr&lt;recordStructure::ContainerRecord&gt; container_record)</span>
+<span class="lineNum">     150 </span>                :            : {
+<span class="lineNum">     151 </span>                :<span class="lineCov">         59 :         std::list&lt;recordStructure::ContainerRecord&gt; list;</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">        118 :         container_record-&gt;bytes_used = 0;</span>
+<span class="lineNum">     153 </span>                :<span class="lineCov">         59 :         container_record-&gt;object_count = 0;</span>
+<span class="lineNum">     154 </span>                :<span class="lineCov">         59 :         container_record-&gt;deleted = true;</span>
+<span class="lineNum">     155 </span>                :<span class="lineCov">         59 :         list.push_back(*container_record);</span>
+<span class="lineNum">     156 </span>                :<span class="lineCov">         59 :         this-&gt;update_container(list);</span>
+<span class="lineNum">     157 </span>                :            : }
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            : bool AccountInfoFile::update_record(recordStructure::ContainerRecord &amp; source, 
+<span class="lineNum">     160 </span>                :<span class="lineCov">         64 :                 NonStaticDataBlockBuilder::NonStaticBlock_ &amp; target)</span>
+<span class="lineNum">     161 </span>                :            : {
+<span class="lineNum">     162 </span>                :<span class="lineCov">         64 :         OSDLOG(DEBUG, &quot;update_container, container hash(name) &quot;</span>
+<span class="lineNum">     163 </span>                :            :                 &lt;&lt;source.get_hash()&lt;&lt;&quot;(&quot;&lt;&lt;source.get_name()&lt;&lt;&quot;)&quot;
+<span class="lineNum">     164 </span>                :            :                 &lt;&lt;&quot;entry is present in info-file.&quot;)
+<span class="lineNum">     165 </span>                :<span class="lineCov">         64 :         if(!source.get_deleted()) // delete entry from updater</span>
+<span class="lineNum">     166 </span>                :            :         {
+<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          4 :                 if(target.deleted) // source is not deleted then update case</span>
+<span class="lineNum">     168 </span>                :            :                 {
+<span class="lineNum">     169 </span>                :<span class="lineCov">          2 :                         return false;</span>
+<span class="lineNum">     170 </span>                :            :                 }
+<span class="lineNum">     171 </span>                :            :         }
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :         // update non-static record
+<span class="lineNum">     174 </span>                :            :         //memset(&amp;target, 0, sizeof(target));//memset is not required .Use old values if you dnt want to update the record
+<span class="lineNum">     175 </span>                :            :         memcpy(target.hash, source.get_hash().c_str(),
+<span class="lineNum">     176 </span>        [<span class="branchCov" title="Branch 1 was taken 62 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         62 :                         source.hash.length() &gt; HASH_LENGTH ? HASH_LENGTH : source.hash.length());</span>
+<span class="lineNum">     177 </span>                :            : //      memcpy(target.put_timestamp, source.get_put_timestamp().c_str(),
+<span class="lineNum">     178 </span>                :            : //                      source.get_put_timestamp().length() &gt; TIMESTAMP_LENGTH ? TIMESTAMP_LENGTH : source.put_timestamp.length());//dnt update put time stamp
+<span class="lineNum">     179 </span>                :            :         memcpy(target.delete_timestamp, source.get_delete_timestamp().c_str(),
+<span class="lineNum">     180 </span>[<span class="branchCov" title="Branch 2 was taken 62 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 11 was taken 62 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span><span class="branchNoExec" title="Block containing branch 13 was never executed"> # </span>:<span class="lineCov">        124 :                         source.get_delete_timestamp().length() &gt; TIMESTAMP_LENGTH ? TIMESTAMP_LENGTH : source.get_delete_timestamp().length());</span>
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Block containing branch 14 was never executed"> # </span>]
+<span class="lineNum">     181 </span>                :<span class="lineCov">         62 :         target.object_count = source.get_object_count();</span>
+<span class="lineNum">     182 </span>                :<span class="lineCov">         62 :         target.bytes_used = source.get_bytes_used();</span>
+<span class="lineNum">     183 </span>                :<span class="lineCov">         62 :         target.deleted = source.get_deleted();</span>
+<span class="lineNum">     184 </span>                :<span class="lineCov">         62 :         return true;</span>
+<span class="lineNum">     185 </span>                :            : }
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :<span class="lineCov">         69 : void AccountInfoFile::update_container(std::list&lt;recordStructure::ContainerRecord&gt; container_records)</span>
+<span class="lineNum">     188 </span>                :            : {
+<span class="lineNum">     189 </span>                :<span class="lineCov">         69 :         this-&gt;read_stat_trailer();</span>
+<span class="lineNum">     190 </span>                :            :         //uint64_t put_time_stamp;
+<span class="lineNum">     191 </span>                :<span class="lineCov">         69 :         uint64_t max_read_count = MAX_READ_NON_STATIC_RECORD;</span>
+<span class="lineNum">     192 </span>                :<span class="lineCov">         69 :         OSDLOG(DEBUG, &quot;update_container, unsorted_record: &quot;</span>
+<span class="lineNum">     193 </span>                :            :                 &lt;&lt; this-&gt;trailer_block-&gt;unsorted_record);
+<span class="lineNum">     194 </span>                :            : 
+<span class="lineNum">     195 </span>                :<span class="lineCov">         69 :         std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt; blocks(max_read_count);</span>
+<span class="lineNum">     196 </span>                :            :         // check unsorted_record
+<span class="lineNum">     197 </span>                :<span class="lineCov">        138 :         blocks.resize(this-&gt;trailer_block-&gt;unsorted_record);</span>
+<span class="lineNum">     198 </span>                :            :         //this-&gt;non_static_data_block = this-&gt;reader-&gt;read_non_static_data_block(this-&gt;trailer_block-&gt;sorted_record,
+<span class="lineNum">     199 </span>                :            :         //              this-&gt;trailer_block-&gt;unsorted_record);
+<span class="lineNum">     200 </span>                :            :         this-&gt;reader-&gt;read_non_static_data_block(&amp;blocks[0],
+<span class="lineNum">     201 </span>                :<span class="lineCov">         69 :                         this-&gt;trailer_block-&gt;sorted_record, this-&gt;trailer_block-&gt;unsorted_record);</span>
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :<span class="lineCov">         69 :         std::list&lt;recordStructure::ContainerRecord&gt;::iterator container_record_iter = container_records.begin();</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">         69 :         bool modified = false;</span>
+<span class="lineNum">     205 </span>                :<span class="lineCov">         69 :         OSDLOG(DEBUG, &quot;update_container, looking entries in unsorted non-static data part&quot;);</span>
+<span class="lineNum">     206 </span>[<span class="branchCov" title="Branch 2 was taken 69 times"> + </span><span class="branchCov" title="Branch 3 was taken 69 times"> + </span><span class="branchCov" title="Branch 5 was taken 69 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 69 times"> + </span>:<span class="lineCov">        207 :         while(container_record_iter != container_records.end() &amp;&amp; container_records.size())</span>
+<span class="lineNum">         </span>            <span class="branchCov" title="Branch 8 was taken 69 times"> + </span>]
+<span class="lineNum">     207 </span>                :            :         {
+<span class="lineNum">     208 </span>                :            :                 std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt;::reverse_iterator iter =
+<span class="lineNum">     209 </span>                :            :                                 std::find_if(blocks.rbegin(), blocks.rend(),
+<span class="lineNum">     210 </span>                :            :                                         boost::lambda::bind(::strcmp,
+<span class="lineNum">     211 </span>                :            :                                                 boost::lambda::bind(&amp;NonStaticDataBlockBuilder::NonStaticBlock_::hash, boost::lambda::_1),
+<span class="lineNum">     212 </span>                :<span class="lineCov">         69 :                                                 container_record_iter-&gt;hash.c_str()) == 0);</span>
+<span class="lineNum">     213 </span>        [<span class="branchCov" title="Branch 2 was taken 64 times"> + </span><span class="branchCov" title="Branch 3 was taken 5 times"> + </span>]:<span class="lineCov">         69 :                 if(iter != blocks.rend())</span>
+<span class="lineNum">     214 </span>                :            :                 {
+<span class="lineNum">     215 </span>                :<span class="lineCov">         64 :                         OSDLOG(DEBUG, &quot;update_container, container hash(name) &quot;</span>
+<span class="lineNum">     216 </span>                :            :                                 &lt;&lt;container_record_iter-&gt;get_hash()&lt;&lt;&quot;(&quot;&lt;&lt;container_record_iter-&gt;get_name()&lt;&lt;&quot;)&quot;
+<span class="lineNum">     217 </span>                :            :                                 &lt;&lt;&quot;entry is present in info-file.&quot;)
+<span class="lineNum">     218 </span>        [<span class="branchCov" title="Branch 3 was taken 62 times"> + </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span>]:<span class="lineCov">         64 :                         if(this-&gt;update_record(*container_record_iter, *iter)) //is_updated then do</span>
+<span class="lineNum">     219 </span>                :            :                         {
+<span class="lineNum">     220 </span>                :<span class="lineCov">         62 :                                 modified = true;</span>
+<span class="lineNum">     221 </span>                :<span class="lineCov">         62 :                                 container_records.erase(container_record_iter++);</span>
+<span class="lineNum">     222 </span>                :<span class="lineCov">         62 :                                 OSDLOG(DEBUG, &quot;update_container, entry is updated&quot;);</span>
+<span class="lineNum">     223 </span>                :            :                         }
+<span class="lineNum">     224 </span>                :            :                         else  //addition-case
+<span class="lineNum">     225 </span>                :            :                         {
+<span class="lineNum">     226 </span>                :<span class="lineCov">          2 :                                 OSDLOG(INFO, &quot;update_container, addition case for &quot;</span>
+<span class="lineNum">     227 </span>                :            :                                         &lt;&lt; container_record_iter-&gt;get_name());
+<span class="lineNum">     228 </span>                :<span class="lineCov">          2 :                                 container_record_iter++;</span>
+<span class="lineNum">     229 </span>                :            :                         }
+<span class="lineNum">     230 </span>                :            :                 }
+<span class="lineNum">     231 </span>                :            :                 else
+<span class="lineNum">     232 </span>                :            :                 {
+<span class="lineNum">     233 </span>                :<span class="lineCov">          5 :                         container_record_iter++;</span>
+<span class="lineNum">     234 </span>                :            :                 }
+<span class="lineNum">     235 </span>                :            :         }
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 0 was taken 62 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">         69 :         if(modified)</span>
+<span class="lineNum">     237 </span>                :            :         {
+<span class="lineNum">     238 </span>                :<span class="lineCov">         62 :                 OSDLOG(DEBUG, &quot;update_container, non static data block is writing..&quot;)</span>
+<span class="lineNum">     239 </span>                :            :                 writer-&gt;write_non_static_data_block(&amp;blocks[0], this-&gt;trailer_block,
+<span class="lineNum">     240 </span>                :<span class="lineCov">         62 :                                 this-&gt;trailer_block-&gt;sorted_record, this-&gt;trailer_block-&gt;unsorted_record);</span>
+<span class="lineNum">     241 </span>                :            :         }
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :<span class="lineCov">         69 :         this-&gt;stat_block-&gt;container_count = 0;</span>
+<span class="lineNum">     244 </span>                :<span class="lineCov">         69 :         this-&gt;stat_block-&gt;object_count = 0;</span>
+<span class="lineNum">     245 </span>                :<span class="lineCov">         69 :         this-&gt;stat_block-&gt;bytes_used = 0;</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">         69 :         std::set&lt;std::string&gt; hash_set;</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">         69 :         std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt;::reverse_iterator riter = blocks.rbegin();</span>
+<span class="lineNum">     248 </span>        [<span class="branchCov" title="Branch 3 was taken 1391 times"> + </span><span class="branchCov" title="Branch 4 was taken 69 times"> + </span>]:<span class="lineCov">       1460 :         for(; riter != blocks.rend(); riter ++)</span>
+<span class="lineNum">     249 </span>                :            :         {
+<span class="lineNum">     250 </span>        [<span class="branchCov" title="Branch 9 was taken 1209 times"> + </span><span class="branchCov" title="Branch 10 was taken 182 times"> + </span>]:<span class="lineCov">       1391 :                 if(hash_set.find(riter-&gt;hash) != hash_set.end())</span>
+<span class="lineNum">     251 </span>                :            :                 {
+<span class="lineNum">     252 </span>                :<span class="lineCov">       1209 :                         continue;</span>
+<span class="lineNum">     253 </span>                :            :                 }
+<span class="lineNum">     254 </span>                :<span class="lineCov">        182 :                 hash_set.insert(riter-&gt;hash);</span>
+<span class="lineNum">     255 </span>        [<span class="branchCov" title="Branch 1 was taken 54 times"> + </span><span class="branchCov" title="Branch 2 was taken 128 times"> + </span>]:<span class="lineCov">        364 :                 if(!riter-&gt;deleted)</span>
+<span class="lineNum">     256 </span>                :            :                 {
+<span class="lineNum">     257 </span>                :<span class="lineCov">         54 :                         this-&gt;stat_block-&gt;container_count ++;</span>
+<span class="lineNum">     258 </span>                :<span class="lineCov">         54 :                         this-&gt;stat_block-&gt;object_count += riter-&gt;object_count;</span>
+<span class="lineNum">     259 </span>                :<span class="lineCov">         54 :                         this-&gt;stat_block-&gt;bytes_used += riter-&gt;bytes_used;</span>
+<span class="lineNum">     260 </span>                :            :                 }
+<span class="lineNum">     261 </span>                :            :         }
+<span class="lineNum">     262 </span>                :            : 
+<span class="lineNum">     263 </span>                :<span class="lineCov">         69 :         uint64_t rest_count = this-&gt;trailer_block-&gt;sorted_record;</span>
+<span class="lineNum">     264 </span>                :<span class="lineCov">         69 :         uint64_t current_start_position = 0;</span>
+<span class="lineNum">     265 </span>                :<span class="lineCov">         69 :         OSDLOG(DEBUG, &quot;update_container, looking entries in sorted non-static data part&quot;);</span>
+<span class="lineNum">     266 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 69 times"> + </span>]:<span class="lineCov">        138 :         while(rest_count != 0)</span>
+<span class="lineNum">     267 </span>                :            :         {
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :                 uint64_t count = std::min(max_read_count, rest_count);</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :                 blocks.resize(count);</span>
+<span class="lineNum">     270 </span>                :<span class="lineNoCov">          0 :                 this-&gt;reader-&gt;read_non_static_data_block(&amp;blocks[0], current_start_position, count);</span>
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :                 std::list&lt;recordStructure::ContainerRecord&gt;::iterator container_record_iter = container_records.begin();</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :                 modified = false;</span>
+<span class="lineNum">     274 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 while(container_record_iter != container_records.end())</span>
+<span class="lineNum">     275 </span>                :            :                 {
+<span class="lineNum">     276 </span>                :            :                         std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt;::iterator iter =
+<span class="lineNum">     277 </span>                :            :                                         std::find_if(blocks.begin(), blocks.end(),
+<span class="lineNum">     278 </span>                :            :                                                 boost::lambda::bind(::strcmp,
+<span class="lineNum">     279 </span>                :            :                                                 boost::lambda::bind(&amp;NonStaticDataBlockBuilder::NonStaticBlock_::hash, boost::lambda::_1),
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :                                                 container_record_iter-&gt;hash.c_str()) == 0);</span>
+<span class="lineNum">     281 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if(iter != blocks.end())</span>
+<span class="lineNum">     282 </span>                :            :                         {
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;update_container, container hash(name) &quot;</span>
+<span class="lineNum">     284 </span>                :            :                                                 &lt;&lt;container_record_iter-&gt;get_hash()&lt;&lt;&quot;(&quot;&lt;&lt;container_record_iter-&gt;get_name()&lt;&lt;&quot;)&quot;
+<span class="lineNum">     285 </span>                :            :                                                 &lt;&lt;&quot;entry is present in info-file.&quot;)
+<span class="lineNum">     286 </span>        [<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :                                 if (this-&gt;update_record(*container_record_iter, *iter))</span>
+<span class="lineNum">     287 </span>                :            :                                 {
+<span class="lineNum">     288 </span>                :<span class="lineNoCov">          0 :                                         modified = true;</span>
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :                                         container_records.erase(container_record_iter++);</span>
+<span class="lineNum">     290 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(DEBUG, &quot;update_container, entry is updated&quot;);</span>
+<span class="lineNum">     291 </span>                :            :                                 }
+<span class="lineNum">     292 </span>                :            :                                 else
+<span class="lineNum">     293 </span>                :            :                                 {
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;update_container, addition case for &quot;</span>
+<span class="lineNum">     295 </span>                :            :                                                                                 &lt;&lt; container_record_iter-&gt;get_name());
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :                                         container_record_iter++;</span>
+<span class="lineNum">     297 </span>                :            :                                 }
+<span class="lineNum">     298 </span>                :            :                         }
+<span class="lineNum">     299 </span>                :            :                         else
+<span class="lineNum">     300 </span>                :            :                         {
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :                                 container_record_iter++;</span>
+<span class="lineNum">     302 </span>                :            :                         }
+<span class="lineNum">     303 </span>                :            :                 }
+<span class="lineNum">     304 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (modified)</span>
+<span class="lineNum">     305 </span>                :            :                 {
+<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :                         writer-&gt;write_non_static_data_block(&amp;blocks[0], this-&gt;trailer_block, current_start_position, count);</span>
+<span class="lineNum">     307 </span>                :            :                 }
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :                 current_start_position += count;</span>
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :                 rest_count -= count;</span>
+<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :                 std::vector&lt;NonStaticDataBlockBuilder::NonStaticBlock_&gt;::iterator iter = blocks.begin();</span>
+<span class="lineNum">     311 </span>        [<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 for(; iter != blocks.end(); iter ++)</span>
+<span class="lineNum">     312 </span>                :            :                 {
+<span class="lineNum">     313 </span>        [<span class="branchNoExec" title="Block containing branch 9 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if(hash_set.find(iter-&gt;hash) != hash_set.end())</span>
+<span class="lineNum">     314 </span>                :            :                         {
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :                                 continue;</span>
+<span class="lineNum">     316 </span>                :            :                         }
+<span class="lineNum">     317 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         if(!iter-&gt;deleted)</span>
+<span class="lineNum">     318 </span>                :            :                         {
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;stat_block-&gt;container_count ++;</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;stat_block-&gt;object_count += iter-&gt;object_count;</span>
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;stat_block-&gt;bytes_used += iter-&gt;bytes_used;</span>
+<span class="lineNum">     322 </span>                :            :                         }
+<span class="lineNum">     323 </span>                :            :                 }
+<span class="lineNum">     324 </span>                :            :         }
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :<span class="lineCov">         69 :         OSDLOG(DEBUG, &quot;update_container, new entries count &quot;&lt;&lt;container_records.size());</span>
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :            :         //re-set of container records having addition or already deleted entries(donothing)
+<span class="lineNum">     329 </span>                :<span class="lineCov">         69 :         container_record_iter = container_records.begin();</span>
+<span class="lineNum">     330 </span>        [<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchCov" title="Branch 3 was taken 69 times"> + </span>]:<span class="lineCov">        145 :         while(container_record_iter!=container_records.end())</span>
+<span class="lineNum">     331 </span>                :            :         {
+<span class="lineNum">     332 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 6 times"> + </span>]:<span class="lineCov">          7 :                 if (container_record_iter-&gt;get_deleted()) //deleted entry from updater : entry is already deleted by compaction</span>
+<span class="lineNum">     333 </span>                :            :                 {
+<span class="lineNum">     334 </span>                :<span class="lineCov">          1 :                         container_records.erase(container_record_iter++);</span>
+<span class="lineNum">     335 </span>                :            :                 }
+<span class="lineNum">     336 </span>                :            :                 else
+<span class="lineNum">     337 </span>                :            :                 {
+<span class="lineNum">     338 </span>                :<span class="lineCov">          6 :                         container_record_iter++;</span>
+<span class="lineNum">     339 </span>                :            :                 }
+<span class="lineNum">     340 </span>                :            :         }
+<span class="lineNum">     341 </span>                :            : 
+<span class="lineNum">     342 </span>                :<span class="lineCov">         69 :         OSDLOG(INFO, &quot;update_container, stat block is writing..&quot;&lt;&lt;&quot; container_count:&quot;</span>
+<span class="lineNum">     343 </span>                :            :                         &lt;&lt; this-&gt;stat_block-&gt;container_count&lt;&lt;&quot;byte used:&quot;&lt;&lt;this-&gt;stat_block-&gt;bytes_used
+<span class="lineNum">     344 </span>                :            :                         &lt;&lt;&quot;object count:&quot;&lt;&lt; this-&gt;stat_block-&gt;object_count);
+<span class="lineNum">     345 </span>                :<span class="lineCov">         69 :         writer-&gt;write_stat_trailer_block(this-&gt;stat_block, this-&gt;trailer_block);</span>
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchCov" title="Branch 2 was taken 63 times"> + </span>]:<span class="lineCov">         69 :         if(!container_records.empty())</span>
+<span class="lineNum">     348 </span>                :            :         {
+<span class="lineNum">     349 </span>                :            :                 
+<span class="lineNum">     350 </span>                :<span class="lineCov">          6 :                 OSDLOG(INFO, &quot;update_container, add container entries, count &quot;&lt;&lt;container_records.size());</span>
+<span class="lineNum">     351 </span>                :<span class="lineCov">          6 :                 this-&gt;add_container_internal(container_records);</span>
+<span class="lineNum">     352 </span>                :            :         }
+<span class="lineNum">     353 </span>                :            : }
+<span class="lineNum">     354 </span>                :            : 
+<span class="lineNum">     355 </span>                :            : std::list&lt;recordStructure::ContainerRecord&gt; AccountInfoFile::list_container(uint64_t const count, std::string const &amp;marker, 
+<span class="lineNum">     356 </span>                :<span class="lineCov">         26 :                                                         std::string const &amp;end_marker, std::string const &amp;prefix, std::string const &amp;delimiter)</span>
+<span class="lineNum">     357 </span>                :            : {
+<span class="lineNum">     358 </span>                :<span class="lineCov">         26 :         OSDLOG(INFO, &quot;Account Info-File: Listing is starting with, start marke: &quot;&lt;&lt;marker&lt;&lt;&quot; end marker: &quot;&lt;&lt;end_marker&lt;&lt;&quot; prefix: &quot;&lt;&lt;prefix&lt;&lt;&quot; delimiter: &quot;&lt;&lt;delimiter);</span>
+<span class="lineNum">     359 </span>                :<span class="lineCov">         26 :         std::vector&lt;InfoFileIterator *&gt; iters;</span>
+<span class="lineNum">     360 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 25 times"> + </span>]:<span class="lineCov">         52 :         SortedAccountInfoIterator sorted(this-&gt;reader, marker &gt; prefix ? marker : prefix);</span>
+<span class="lineNum">     361 </span>                :<span class="lineCov">         26 :         iters.push_back(&amp;sorted);</span>
+<span class="lineNum">     362 </span>                :<span class="lineCov">         26 :         UnsortedAccountInfoIterator unsorted(this-&gt;reader);</span>
+<span class="lineNum">     363 </span>                :<span class="lineCov">         26 :         iters.push_back(&amp;unsorted);</span>
+<span class="lineNum">     364 </span>  [<span class="branchCov" title="Branch 1 was taken 22 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 25 times"> + </span>]:<span class="lineCov">         26 :         InfoFileSorter sorter(iters, marker &gt; prefix ? marker : prefix, end_marker, marker &gt;= prefix ? false : true );</span>
+<span class="lineNum">     365 </span>                :<span class="lineCov">         26 :         std::list&lt;recordStructure::ContainerRecord&gt; records;</span>
+<span class="lineNum">     366 </span>                :            :         InfoFileRecord const * record;
+<span class="lineNum">     367 </span>                :            : 
+<span class="lineNum">     368 </span>                :<span class="lineCov">         52 :         char prev_path[256 + prefix.length()];</span>
+<span class="lineNum">     369 </span>                :<span class="lineCov">         26 :         prev_path[0] = '\0';</span>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>        [<span class="branchCov" title="Branch 1 was taken 285 times"> + </span><span class="branchCov" title="Branch 2 was taken 21 times"> + </span>]:<span class="lineCov">        332 :         while((record = sorter.next()) != NULL)</span>
+<span class="lineNum">     372 </span>                :            :         {
+<span class="lineNum">     373 </span>[<span class="branchCov" title="Branch 0 was taken 285 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 283 times"> + </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span>:<span class="lineCov">        285 :                 if (count != 0 &amp;&amp; records.size() &gt;= count)</span>
+<span class="lineNum">         </span>            <span class="branchCov" title="Branch 6 was taken 283 times"> + </span>]
+<span class="lineNum">     374 </span>                :            :                 {
+<span class="lineNum">     375 </span>                :<span class="lineCov">          2 :                         break;</span>
+<span class="lineNum">     376 </span>                :            :                 }
+<span class="lineNum">     377 </span>        [<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchCov" title="Branch 5 was taken 280 times"> + </span>]:<span class="lineCov">        283 :                 if (::strncmp(prefix.c_str(), record-&gt;get_name(), prefix.length()))</span>
+<span class="lineNum">     378 </span>                :            :                 {
+<span class="lineNum">     379 </span>                :<span class="lineCov">          3 :                                 break;</span>
+<span class="lineNum">     380 </span>                :            :                 }
+<span class="lineNum">     381 </span>        [<span class="branchCov" title="Branch 1 was taken 54 times"> + </span><span class="branchCov" title="Branch 2 was taken 226 times"> + </span>]:<span class="lineCov">        280 :                 if (!delimiter.empty())</span>
+<span class="lineNum">     382 </span>                :            :                 {
+<span class="lineNum">     383 </span>                :            :                         // TODO delimiter; what kind of information is required???
+<span class="lineNum">     384 </span>                :            :                         // The below, just skip if record has same path name before delimiter.
+<span class="lineNum">     385 </span>                :<span class="lineCov">         54 :                         int32_t len = ::strlen(prev_path);</span>
+<span class="lineNum">     386 </span>                :<span class="lineCov">         54 :                         char const * name = record-&gt;get_name();</span>
+<span class="lineNum">     387 </span>  [<span class="branchCov" title="Branch 0 was taken 21 times"> + </span><span class="branchCov" title="Branch 1 was taken 33 times"> + </span><span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchCov" title="Branch 4 was taken 15 times"> + </span>]:<span class="lineCov">         54 :                         if (len &amp;&amp; ::strncmp(prev_path, name, len) == 0)</span>
+<span class="lineNum">     388 </span>                :            :                         {
+<span class="lineNum">     389 </span>                :            :                                         //std::cout &lt;&lt; &quot;same path: &quot; &lt;&lt; name &lt;&lt; std::endl;
+<span class="lineNum">     390 </span>                :<span class="lineCov">         15 :                                         continue;</span>
+<span class="lineNum">     391 </span>                :            :                         }
+<span class="lineNum">     392 </span>                :<span class="lineCov">         39 :                         ::strncpy(prev_path, prefix.c_str(), prefix.length());</span>
+<span class="lineNum">     393 </span>        [<span class="branchCov" title="Branch 1 was taken 305 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        305 :                         for (int32_t i = prefix.length(); i &lt; 256; i++)</span>
+<span class="lineNum">     394 </span>                :            :                         {
+<span class="lineNum">     395 </span>        [<span class="branchCov" title="Branch 0 was taken 32 times"> + </span><span class="branchCov" title="Branch 1 was taken 273 times"> + </span>]:<span class="lineCov">        305 :                                         if (name[i] == '\0')</span>
+<span class="lineNum">     396 </span>                :            :                                         {
+<span class="lineNum">     397 </span>                :            :                                                         // No delimiter found
+<span class="lineNum">     398 </span>                :<span class="lineCov">         32 :                                                         prev_path[0] = '\0';</span>
+<span class="lineNum">     399 </span>                :<span class="lineCov">         32 :                                                         break;</span>
+<span class="lineNum">     400 </span>                :            :                                         }
+<span class="lineNum">     401 </span>        [<span class="branchCov" title="Branch 3 was taken 7 times"> + </span><span class="branchCov" title="Branch 4 was taken 266 times"> + </span>]:<span class="lineCov">        273 :                                         if (::strncmp(&amp;name[i], delimiter.c_str(), delimiter.length()) == 0)</span>
+<span class="lineNum">     402 </span>                :            :                                         {
+<span class="lineNum">     403 </span>                :<span class="lineCov">          7 :                                                         ::strcpy(&amp;prev_path[i], delimiter.c_str());</span>
+<span class="lineNum">     404 </span>                :<span class="lineCov">          7 :                                                         break;</span>
+<span class="lineNum">     405 </span>                :            :                                         }
+<span class="lineNum">     406 </span>                :<span class="lineCov">        266 :                                         prev_path[i] = name[i];</span>
+<span class="lineNum">     407 </span>                :            :                         }
+<span class="lineNum">     408 </span>                :            :                 }
+<span class="lineNum">     409 </span>        [<span class="branchCov" title="Branch 1 was taken 172 times"> + </span><span class="branchCov" title="Branch 2 was taken 93 times"> + </span>]:<span class="lineCov">        265 :                 if(!record-&gt;is_deleted())</span>
+<span class="lineNum">     410 </span>                :            :                 {
+<span class="lineNum">     411 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 172 times"> + </span>]:<span class="lineCov">        172 :                         AccountInfoFileRecord const * typed_record = dynamic_cast&lt;AccountInfoFileRecord const *&gt;(record);</span>
+<span class="lineNum">     412 </span>        [<span class="branchCov" title="Branch 0 was taken 172 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">        172 :                         if (typed_record)</span>
+<span class="lineNum">     413 </span>                :            :                         {
+<span class="lineNum">     414 </span>                :<span class="lineCov">        172 :                                 records.push_back(typed_record-&gt;get_object_record());</span>
+<span class="lineNum">     415 </span>                :            :                         }
+<span class="lineNum">     416 </span>                :            :                 }
+<span class="lineNum">     417 </span>                :            :         }
+<span class="lineNum">     418 </span>                :<span class="lineCov">         26 :         return records;</span>
+<span class="lineNum">     419 </span>                :            : }
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :<span class="lineNoCov">          0 : void AccountInfoFile::compaction()</span>
+<span class="lineNum">     422 </span>                :            : {
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Account Info-File: Compaction is starting&quot;);</span>
+<span class="lineNum">     424 </span>                :<span class="lineNoCov">          0 :         this-&gt;read_stat_trailer();</span>
+<span class="lineNum">     425 </span>                :<span class="lineNoCov">          0 :         this-&gt;stat_block-&gt;container_count = 0;</span>
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :         this-&gt;stat_block-&gt;object_count = 0;</span>
+<span class="lineNum">     427 </span>                :<span class="lineNoCov">          0 :         this-&gt;stat_block-&gt;bytes_used = 0;</span>
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :         uint64_t total_size = this-&gt;trailer_block-&gt;sorted_record + this-&gt;trailer_block-&gt;unsorted_record;</span>
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :         this-&gt;trailer_block.reset(new accountInfoFile::TrailerBlock(total_size));</span>
+<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :         this-&gt;writer-&gt;begin_compaction(this-&gt;trailer_block, total_size);</span>
+<span class="lineNum">     431 </span>                :            : 
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;InfoFileIterator *&gt; iters;</span>
+<span class="lineNum">     433 </span>                :<span class="lineNoCov">          0 :         SortedAccountInfoIterator sorted(this-&gt;reader);</span>
+<span class="lineNum">     434 </span>                :<span class="lineNoCov">          0 :         iters.push_back(&amp;sorted);</span>
+<span class="lineNum">     435 </span>                :<span class="lineNoCov">          0 :         UnsortedAccountInfoIterator unsorted(this-&gt;reader);</span>
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :         iters.push_back(&amp;unsorted);</span>
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :         InfoFileSorter sorter(iters);</span>
+<span class="lineNum">     438 </span>                :            : 
+<span class="lineNum">     439 </span>                :<span class="lineNoCov">          0 :         uint64_t count = 0;</span>
+<span class="lineNum">     440 </span>                :            :         //std::vector&lt;DataBlockBuilder::DataIndexRecord&gt; diRecords;
+<span class="lineNum">     441 </span>                :            :         InfoFileRecord const * record;
+<span class="lineNum">     442 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         while((record = sorter.next()) != NULL)</span>
+<span class="lineNum">     443 </span>                :            :         {
+<span class="lineNum">     444 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if(!record-&gt;is_deleted())</span>
+<span class="lineNum">     445 </span>                :            :                 {
+<span class="lineNum">     446 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :                         AccountInfoFileRecord const * typed_record = dynamic_cast&lt;AccountInfoFileRecord const *&gt;(record);</span>
+<span class="lineNum">     447 </span>                :<span class="lineNoCov">          0 :                         StaticDataBlockBuilder::StaticBlock_ const * static_record = typed_record-&gt;get_static_record();</span>
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :                         NonStaticDataBlockBuilder::NonStaticBlock_ const * non_static_record = typed_record-&gt;get_non_static_record();</span>
+<span class="lineNum">     449 </span>                :<span class="lineNoCov">          0 :                         this-&gt;trailer_block-&gt;sorted_record ++;</span>
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :                         this-&gt;stat_block-&gt;container_count ++;</span>
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :                         this-&gt;stat_block-&gt;object_count += non_static_record-&gt;object_count;</span>
+<span class="lineNum">     452 </span>                :<span class="lineNoCov">          0 :                         this-&gt;stat_block-&gt;bytes_used += non_static_record-&gt;bytes_used;</span>
+<span class="lineNum">     453 </span>                :<span class="lineNoCov">          0 :                         this-&gt;writer-&gt;write_record(static_record, non_static_record);</span>
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>                :<span class="lineNoCov">          0 :                         count ++;</span>
+<span class="lineNum">     456 </span>                :            :                         /*if ((count % objectStorage::DATA_INDEX_INTERVAL) == 0)
+<span class="lineNum">     457 </span>                :            :                         {
+<span class="lineNum">     458 </span>                :            :                                 diRecords.push_back(DataBlockBuilder::DataIndexRecord(typed_record-&gt;get_name()));
+<span class="lineNum">     459 </span>                :            :                         }*/
+<span class="lineNum">     460 </span>                :            :                 }
+<span class="lineNum">     461 </span>                :            :         }
+<span class="lineNum">     462 </span>                :<span class="lineNoCov">          0 :         this-&gt;writer-&gt;flush_record();</span>
+<span class="lineNum">     463 </span>                :            :         /*if (!diRecords.empty())
+<span class="lineNum">     464 </span>                :            :         {
+<span class="lineNum">     465 </span>                :            :                 this-&gt;writer-&gt;write_data_index_block(this-&gt;trailer, diRecords);
+<span class="lineNum">     466 </span>                :            :         }*/
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :         this-&gt;writer-&gt;write_file(this-&gt;stat_block, this-&gt;trailer_block);</span>
+<span class="lineNum">     468 </span>                :<span class="lineNoCov">          0 :         this-&gt;writer-&gt;finish_compaction();</span>
+<span class="lineNum">     469 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Account Info-File: Compaction is completed&quot;);</span>
+<span class="lineNum">     470 </span>                :<span class="lineNoCov">          0 :         this-&gt;reader-&gt;reopen();</span>
+<span class="lineNum">     471 </span>                :            : }
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :<span class="lineCov">        278 : void AccountInfoFile::read_stat_trailer()</span>
+<span class="lineNum">     474 </span>                :            : {
+<span class="lineNum">     475 </span>                :            :         boost::tuple&lt;boost::shared_ptr&lt;recordStructure::AccountStat&gt;,
+<span class="lineNum">     476 </span>                :<span class="lineCov">        278 :         boost::shared_ptr&lt;TrailerBlock&gt; &gt; blocks_tuple = this-&gt;reader-&gt;read_stat_trailer_block();</span>
+<span class="lineNum">     477 </span>                :<span class="lineCov">        277 :         this-&gt;trailer_block = blocks_tuple.get&lt;1&gt;();</span>
+<span class="lineNum">     478 </span>                :<span class="lineCov">        277 :         this-&gt;stat_block = blocks_tuple.get&lt;0&gt;();</span>
+<span class="lineNum">     479 </span>                :            : }
+<span class="lineNum">     480 </span>                :            : 
+<span class="lineNum">     481 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

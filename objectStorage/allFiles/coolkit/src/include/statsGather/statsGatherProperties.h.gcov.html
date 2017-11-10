@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - coolkit/src/include/statsGather/statsGatherProperties.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">coolkit/src/include/statsGather</a> - statsGatherProperties.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : /*
+<span class="lineNum">       2 </span>                :            :  * Interface for the statistics gathering.
+<span class="lineNum">       3 </span>                :            :  */
+<span class="lineNum">       4 </span>                :            : 
+<span class="lineNum">       5 </span>                :            : #ifndef STATGATHERPROPERTIES_H_
+<span class="lineNum">       6 </span>                :            : #define STATGATHERPROPERTIES_H_
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">       9 </span>                :            : #include &lt;propConfig/propConfig.h&gt;
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : namespace cool
+<span class="lineNum">      12 </span>                :            : {
+<span class="lineNum">      13 </span>                :            : namespace stats
+<span class="lineNum">      14 </span>                :            : {
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : typedef std::map&lt;std::string, std::string&gt; StatisticsAdditionalInfo;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #define OPERATOR_EQUAL_COMPARE_ST(fieldName) \
+<span class="lineNum">      19 </span>                :            :         do { if (!(this-&gt;fieldName == other.fieldName)) { return false; }; } while (0)
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : class StatsGatherProperties: public propConfig::PropertyGroup
+<span class="lineNum">      22 </span>                :            : {
+<span class="lineNum">      23 </span>                :            :         REPLACEABLE_PROPERTY(StatsGatherProperties, std::string, productVersionTag);
+<span class="lineNum">      24 </span>                :            :         REPLACEABLE_PROPERTY(StatsGatherProperties, std::string, baseStatisticsDirectory);
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, journalWriteFailureRestartLimit, 1);</span>
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, journalLimitOfUncompressedDataInFileB, 50 * 1024 * 1024);</span>
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, defaultRequestingTimeOffsetMs, 10000);</span>
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, journalUnsavedDataMemoryLimitB, 10 * 1024 * 1024);</span>
+<span class="lineNum">      29 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, double, compactFileReserveFactor, 5);</span>
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, compactFileReserveSpaceB, 3 * 1024 * 1024);</span>
+<span class="lineNum">      31 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, activeStorageManagerTasksLimit, 5);</span>
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, storageManagerSpaceLimitB, 800 * 1024 * 1024);</span>
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, storageManagerSpaceLimitReserveB, 2 * 1024 * 1024);</span>
+<span class="lineNum">      35 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, storageManagerFileLimit, 5000);</span>
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, storageManagerFileReserve, 1);</span>
+<span class="lineNum">      37 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, storageManagerTargetFreeSpace, 20 * 1024 * 1024);</span>
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, storageManagerTargetFreeFiles, 3);</span>
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, storageManagerScanTaskIntervalS, 300);</span>
+<span class="lineNum">      41 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, deleteDefaultFileSizeB, 2 * 1024 * 1024);</span>
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, minimalJournalDataSizeEnable, 1 * 1024 * 1024);</span>
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint64, maximalJournalDataSizeEnable, 20 * 1024 * 1024);</span>
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, storageManagerTaskFailExpireS, 7200);</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, disableStatisticsWrites, 0);</span>
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, readFragmentForParseBytes, 250 * 1024);</span>
+<span class="lineNum">      49 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, allowCompactTasks, 1);</span>
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, allowFTProblemOnDroppedValues, 1);</span>
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, waitForStartWritesCall, 0);</span>
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, afterShutDownExtraWriteAttempts, 2);</span>
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :         REPLACEABLE_PROPERTY_WITH_DEFAULT_VALUE(StatsGatherProperties, uint32, writeMergeMaxPacks, 5);</span>
+<span class="lineNum">      55 </span>                :            : public:
+<span class="lineNum">      56 </span>                :            :         virtual std::string verify() const;
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            :         StatsGatherProperties(
+<span class="lineNum">      59 </span>                :            :                 std::string const &amp; productVersionTag,
+<span class="lineNum">      60 </span>                :            :                 std::string const &amp; baseStatisticsDirectory,
+<span class="lineNum">      61 </span>                :            :                 uint32 journalWriteFailureRestartLimit = journalWriteFailureRestartLimitDefaultValue(),
+<span class="lineNum">      62 </span>                :            :                 uint64 journalLimitOfUncompressedDataInFileB = journalLimitOfUncompressedDataInFileBDefaultValue(),
+<span class="lineNum">      63 </span>                :            :                 uint32 defaultRequestingTimeOffsetMs = defaultRequestingTimeOffsetMsDefaultValue(),
+<span class="lineNum">      64 </span>                :            :                 uint64 journalUnsavedDataMemoryLimitB = journalUnsavedDataMemoryLimitBDefaultValue(),
+<span class="lineNum">      65 </span>                :            :                 double compactFileReserveFactor = compactFileReserveFactorDefaultValue(),
+<span class="lineNum">      66 </span>                :            :                 uint64 compactFileReserveSpaceB = compactFileReserveSpaceBDefaultValue(),
+<span class="lineNum">      67 </span>                :            :                 uint32 activeStorageManagerTasksLimit = activeStorageManagerTasksLimitDefaultValue(),
+<span class="lineNum">      68 </span>                :            :                 uint64 storageManagerSpaceLimitB = storageManagerSpaceLimitBDefaultValue(),
+<span class="lineNum">      69 </span>                :            :                 uint64 storageManagerSpaceLimitReserveB = storageManagerSpaceLimitReserveBDefaultValue(),
+<span class="lineNum">      70 </span>                :            :                 uint32 storageManagerFileLimit = storageManagerFileLimitDefaultValue(),
+<span class="lineNum">      71 </span>                :            :                 uint32 storageManagerFileReserve = storageManagerFileReserveDefaultValue(),
+<span class="lineNum">      72 </span>                :            :                 uint64 storageManagerTargetFreeSpace = storageManagerTargetFreeSpaceDefaultValue(),
+<span class="lineNum">      73 </span>                :            :                 uint32 storageManagerTargetFreeFiles = storageManagerTargetFreeFilesDefaultValue(),
+<span class="lineNum">      74 </span>                :            :                 uint32 storageManagerScanTaskIntervalS = storageManagerScanTaskIntervalSDefaultValue(),
+<span class="lineNum">      75 </span>                :            :                 uint64 deleteDefaultFileSizeB = deleteDefaultFileSizeBDefaultValue(),
+<span class="lineNum">      76 </span>                :            :                 uint64 minimalJournalDataSizeEnable = minimalJournalDataSizeEnableDefaultValue(),
+<span class="lineNum">      77 </span>                :            :                 uint64 maximalJournalDataSizeEnable = maximalJournalDataSizeEnableDefaultValue(),
+<span class="lineNum">      78 </span>                :            :                 uint32 storageManagerTaskFailExpireS = storageManagerTaskFailExpireSDefaultValue(),
+<span class="lineNum">      79 </span>                :            :                 uint32 disableStatisticsWrites = disableStatisticsWritesDefaultValue(),
+<span class="lineNum">      80 </span>                :            :                 uint32 readFragmentForParseBytes = readFragmentForParseBytesDefaultValue(),
+<span class="lineNum">      81 </span>                :            :                 uint32 allowCompactTasks = allowCompactTasksDefaultValue(),
+<span class="lineNum">      82 </span>                :            :                 uint32 allowFTProblemOnDroppedValues = allowFTProblemOnDroppedValuesDefaultValue(),
+<span class="lineNum">      83 </span>                :            :                 uint32 waitForStartWritesCall = waitForStartWritesCallDefaultValue(),
+<span class="lineNum">      84 </span>                :            :                 uint32 afterShutDownExtraWriteAttempts = afterShutDownExtraWriteAttemptsDefaultValue(),
+<span class="lineNum">      85 </span>                :            :                 uint32 writeMergeMaxPacks = writeMergeMaxPacksDefaultValue()
+<span class="lineNum">      86 </span>                :<span class="lineNoCov">          0 :         ):</span>
+<span class="lineNum">      87 </span>                :            :                 productVersionTag(productVersionTag),
+<span class="lineNum">      88 </span>                :            :                 baseStatisticsDirectory(baseStatisticsDirectory),
+<span class="lineNum">      89 </span>                :            :                 journalWriteFailureRestartLimit(journalWriteFailureRestartLimit),
+<span class="lineNum">      90 </span>                :            :                 journalLimitOfUncompressedDataInFileB(journalLimitOfUncompressedDataInFileB),
+<span class="lineNum">      91 </span>                :            :                 defaultRequestingTimeOffsetMs(defaultRequestingTimeOffsetMs),
+<span class="lineNum">      92 </span>                :            :                 journalUnsavedDataMemoryLimitB(journalUnsavedDataMemoryLimitB),
+<span class="lineNum">      93 </span>                :            :                 compactFileReserveFactor(compactFileReserveFactor),
+<span class="lineNum">      94 </span>                :            :                 compactFileReserveSpaceB(compactFileReserveSpaceB),
+<span class="lineNum">      95 </span>                :            :                 activeStorageManagerTasksLimit(activeStorageManagerTasksLimit),
+<span class="lineNum">      96 </span>                :            :                 storageManagerSpaceLimitB(storageManagerSpaceLimitB),
+<span class="lineNum">      97 </span>                :            :                 storageManagerSpaceLimitReserveB(storageManagerSpaceLimitReserveB),
+<span class="lineNum">      98 </span>                :            :                 storageManagerFileLimit(storageManagerFileLimit),
+<span class="lineNum">      99 </span>                :            :                 storageManagerFileReserve(storageManagerFileReserve),
+<span class="lineNum">     100 </span>                :            :                 storageManagerTargetFreeSpace(storageManagerTargetFreeSpace),
+<span class="lineNum">     101 </span>                :            :                 storageManagerTargetFreeFiles(storageManagerTargetFreeFiles),
+<span class="lineNum">     102 </span>                :            :                 storageManagerScanTaskIntervalS(storageManagerScanTaskIntervalS),
+<span class="lineNum">     103 </span>                :            :                 deleteDefaultFileSizeB(deleteDefaultFileSizeB),
+<span class="lineNum">     104 </span>                :            :                 minimalJournalDataSizeEnable(minimalJournalDataSizeEnable),
+<span class="lineNum">     105 </span>                :            :                 maximalJournalDataSizeEnable(maximalJournalDataSizeEnable),
+<span class="lineNum">     106 </span>                :            :                 storageManagerTaskFailExpireS(storageManagerTaskFailExpireS),
+<span class="lineNum">     107 </span>                :            :                 disableStatisticsWrites(disableStatisticsWrites),
+<span class="lineNum">     108 </span>                :            :                 readFragmentForParseBytes(readFragmentForParseBytes),
+<span class="lineNum">     109 </span>                :            :                 allowCompactTasks(allowCompactTasks),
+<span class="lineNum">     110 </span>                :            :                 allowFTProblemOnDroppedValues(allowFTProblemOnDroppedValues),
+<span class="lineNum">     111 </span>                :            :                 waitForStartWritesCall(waitForStartWritesCall),
+<span class="lineNum">     112 </span>                :            :                 afterShutDownExtraWriteAttempts(afterShutDownExtraWriteAttempts),
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :                 writeMergeMaxPacks(writeMergeMaxPacks)</span>
+<span class="lineNum">     114 </span>                :            :         {
+<span class="lineNum">     115 </span>                :            :         }
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :            :         static StatsGatherProperties TestCreate(std::string const &amp; statisticsDirectoryName = &quot;stats&quot;);
+<span class="lineNum">     118 </span>                :            :         static StatisticsAdditionalInfo StatisticsAdditionalInfoTestCreate(
+<span class="lineNum">     119 </span>                :            :                 string const &amp; networkAddress = &quot;192.168.1.1:10101&quot;,
+<span class="lineNum">     120 </span>                :            :                 bool isProxy = false );
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :         bool operator== (StatsGatherProperties const &amp; other)  const
+<span class="lineNum">     124 </span>                :            :         {
+<span class="lineNum">     125 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(productVersionTag);
+<span class="lineNum">     126 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(baseStatisticsDirectory);
+<span class="lineNum">     127 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(journalWriteFailureRestartLimit);
+<span class="lineNum">     128 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(journalLimitOfUncompressedDataInFileB);
+<span class="lineNum">     129 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(defaultRequestingTimeOffsetMs);
+<span class="lineNum">     130 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(journalUnsavedDataMemoryLimitB);
+<span class="lineNum">     131 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(compactFileReserveFactor);
+<span class="lineNum">     132 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(compactFileReserveSpaceB);
+<span class="lineNum">     133 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(activeStorageManagerTasksLimit);
+<span class="lineNum">     134 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerSpaceLimitB);
+<span class="lineNum">     135 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerSpaceLimitReserveB);
+<span class="lineNum">     136 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerFileLimit);
+<span class="lineNum">     137 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerFileReserve);
+<span class="lineNum">     138 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerTargetFreeSpace);
+<span class="lineNum">     139 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerTargetFreeFiles);
+<span class="lineNum">     140 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerScanTaskIntervalS);
+<span class="lineNum">     141 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(deleteDefaultFileSizeB);
+<span class="lineNum">     142 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(minimalJournalDataSizeEnable);
+<span class="lineNum">     143 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(maximalJournalDataSizeEnable);
+<span class="lineNum">     144 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(storageManagerTaskFailExpireS);
+<span class="lineNum">     145 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(disableStatisticsWrites);
+<span class="lineNum">     146 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(readFragmentForParseBytes);
+<span class="lineNum">     147 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(allowCompactTasks);
+<span class="lineNum">     148 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(allowFTProblemOnDroppedValues);
+<span class="lineNum">     149 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(waitForStartWritesCall);
+<span class="lineNum">     150 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(afterShutDownExtraWriteAttempts);
+<span class="lineNum">     151 </span>                :            :                 OPERATOR_EQUAL_COMPARE_ST(writeMergeMaxPacks);
+<span class="lineNum">     152 </span>                :            :                 return true;
+<span class="lineNum">     153 </span>                :            :         }
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            : };
+<span class="lineNum">     156 </span>                :            : 
+<span class="lineNum">     157 </span>                :            : #undef OPERATOR_EQUAL_COMPARE_ST
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            : }
+<span class="lineNum">     160 </span>                :            : }
+<span class="lineNum">     161 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

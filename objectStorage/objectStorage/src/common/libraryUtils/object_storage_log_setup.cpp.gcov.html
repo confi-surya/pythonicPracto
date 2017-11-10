@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/libraryUtils/object_storage_log_setup.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/libraryUtils</a> - object_storage_log_setup.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntry">55</td>
+            <td class="headerCovTableEntryLo">49.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">56</td>
+            <td class="headerCovTableEntryLo">14.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : /*****************************************************************************/
+<span class="lineNum">       2 </span>                :            : /**
+<span class="lineNum">       3 </span>                :            :   * $Id$
+<span class="lineNum">       4 </span>                :            :   *
+<span class="lineNum">       5 </span>                :            :   * object_storage_log_setup.cpp
+<span class="lineNum">       6 </span>                :            :   *
+<span class="lineNum">       7 </span>                :            :   * 
+<span class="lineNum">       8 </span>                :            :   *
+<span class="lineNum">       9 </span>                :            :   */
+<span class="lineNum">      10 </span>                :            : /************************************************************************************/
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : #include &lt;pwd.h&gt;
+<span class="lineNum">      13 </span>                :            : #include &lt;sys/stat.h&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;boost/filesystem/operations.hpp&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;unistd.h&gt; 
+<span class="lineNum">      16 </span>                :            : #include &lt;cool/misc.h&gt;
+<span class="lineNum">      17 </span>                :            : #include &quot;libraryUtils/object_storage_log_setup.h&quot;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : using namespace object_storage_log_setup;
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :<span class="lineCov">          6 : LogSetupTool::LogSetupTool(std::string log_name):</span>
+<span class="lineNum">      22 </span>                :<span class="lineCov">          6 :         enable_logs(true)</span>
+<span class="lineNum">      23 </span>                :            : {
+<span class="lineNum">      24 </span>                :<span class="lineCov">          6 :         cool::SharedPtr&lt;config_file::LogConfig&gt; config = this-&gt;get_config();</span>
+<span class="lineNum">      25 </span>                :<span class="lineCov">          6 :         this-&gt;log_dir = config-&gt;log_dirValue();</span>
+<span class="lineNum">      26 </span>                :<span class="lineCov">          6 :         this-&gt;log_config_file = config-&gt;log_config_fileValue();</span>
+<span class="lineNum">      27 </span>  [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineCov">          6 :         if(log_name.compare(&quot;container-library&quot;) == 0 )</span>
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 :                 this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;container_library_log_fileValue();</span>
+<span class="lineNum">      29 </span>  [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineCov">          6 :         else if(log_name.compare(&quot;account-library&quot;) == 0 )</span>
+<span class="lineNum">      30 </span>                :<span class="lineCov">          6 :                 this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;account_library_log_fileValue();</span>
+<span class="lineNum">      31 </span>  [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if(log_name.compare(&quot;object-library&quot;) == 0 )</span>
+<span class="lineNum">      32 </span>                :<span class="lineNoCov">          0 :                 this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;object_library_log_fileValue();</span>
+<span class="lineNum">      33 </span>  [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if(log_name.compare(&quot;osm&quot;) == 0 )</span>
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :                 this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;osm_log_fileValue();</span>
+<span class="lineNum">      35 </span>  [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if(log_name.compare(&quot;proxy-monitoring&quot;) == 0 )</span>
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 :                 this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;proxy_monitoring_log_fileValue();</span>
+<span class="lineNum">      37 </span>  [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if(log_name.compare(&quot;account-updater-monitoring&quot;) == 0 ) </span>
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 :                 this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;account_updater_monitoring_log_fileValue();</span>
+<span class="lineNum">      39 </span>  [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 5 was never executed"> # </span>]:<span class="lineNoCov">          0 :         else if(log_name.compare(&quot;containerchildserver-library&quot;) == 0)</span>
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :                this-&gt;log_file = config-&gt;log_dirValue() + &quot;/&quot; + config-&gt;containerchildserver_library_log_fileValue();</span>
+<span class="lineNum">      41 </span>                :            : }
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineCov">          6 : cool::SharedPtr&lt;config_file::LogConfig&gt; LogSetupTool::get_config()</span>
+<span class="lineNum">      44 </span>                :            : {
+<span class="lineNum">      45 </span>                :<span class="lineCov">          6 :         cool::config::ConfigurationBuilder&lt;config_file::LogConfig&gt; config_file_builder;</span>
+<span class="lineNum">      46 </span>                :<span class="lineCov">          6 :         char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);</span>
+<span class="lineNum">      47 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          6 :         if (osd_config_dir)</span>
+<span class="lineNum">      48 </span>                :<span class="lineCov">          6 :                 config_file_builder.readFromFile(std::string(osd_config_dir).append(&quot;/log.conf&quot;));</span>
+<span class="lineNum">      49 </span>                :            :         else
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :                 config_file_builder.readFromFile(&quot;/opt/HYDRAstor/objectStorage/configFiles/product/libConfig/log.conf&quot;);</span>
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineCov">          6 :         return config_file_builder.buildConfiguration();</span>
+<span class="lineNum">      53 </span>                :            : }
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :<span class="lineCov">          6 : void LogSetupTool::initializeLogSystem()</span>
+<span class="lineNum">      56 </span>                :            : {
+<span class="lineNum">      57 </span>                :<span class="lineCov">          6 :         this-&gt;verifyAndTryToCorrectRMLSettings();</span>
+<span class="lineNum">      58 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          6 :         if (this-&gt;enable_logs)</span>
+<span class="lineNum">      59 </span>                :            :         {
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :                 if (::setenv(&quot;MAIN_LOG_FILE&quot;, this-&gt;log_file.c_str(), 1) != 0)</span>
+<span class="lineNum">      61 </span>                :            :                 {
+<span class="lineNum">      62 </span>                :<span class="lineNoCov">          0 :                         SYSLOG (&quot;Unable to execute setenv()&quot;);</span>
+<span class="lineNum">      63 </span>                :            :                 }
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :                 this-&gt;log_system.reset(new cool::InitLog(this-&gt;log_config_file));</span>
+<span class="lineNum">      65 </span>                :            :         }
+<span class="lineNum">      66 </span>                :            : }
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 : void LogSetupTool::changeOwnerForRMLLogFileAndDir() const</span>
+<span class="lineNum">      69 </span>                :            : {
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 :         struct passwd const * const passwdRecord = ::getpwnam(&quot;hydragui&quot;);</span>
+<span class="lineNum">      71 </span>                :            :         // Changing log directory ownership
+<span class="lineNum">      72 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (::chown(this-&gt;log_dir.c_str(), passwdRecord-&gt;pw_uid, passwdRecord-&gt;pw_gid) == -1)</span>
+<span class="lineNum">      73 </span>                :            :         {
+<span class="lineNum">      74 </span>                :<span class="lineNoCov">          0 :                 SYSLOG (&quot;Could not change owner of the Log Dir: &quot; &lt;&lt; this-&gt;log_dir);</span>
+<span class="lineNum">      75 </span>                :            :         }
+<span class="lineNum">      76 </span>                :            :         // Changing log file ownership
+<span class="lineNum">      77 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (::chown(this-&gt;log_file.c_str(), passwdRecord-&gt;pw_uid, passwdRecord-&gt;pw_gid) == -1)</span>
+<span class="lineNum">      78 </span>                :            :         {
+<span class="lineNum">      79 </span>                :<span class="lineNoCov">          0 :                 SYSLOG (&quot;Could not change owner of the Log File: &quot; &lt;&lt; this-&gt;log_file);</span>
+<span class="lineNum">      80 </span>                :            :         }
+<span class="lineNum">      81 </span>                :            : }
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :<span class="lineCov">          6 : void LogSetupTool::verifyForWritePermission()</span>
+<span class="lineNum">      84 </span>                :            : {
+<span class="lineNum">      85 </span>[<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchNoExec" title="Block containing branch 6 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 7 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 10 was never executed"> # </span>:<span class="lineCov">          6 :         if ((::access(this-&gt;log_dir.c_str(), W_OK) != 0)</span>
+<span class="lineNum">         </span>      <span class="branchNoExec" title="Block containing branch 11 was never executed"> # </span><span class="branchCov" title="Branch 12 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">      86 </span>                :            :                                                 || (::access(this-&gt;log_file.c_str(), F_OK) == 0 &amp;&amp; ::access(this-&gt;log_file.c_str(), W_OK) != 0))
+<span class="lineNum">      87 </span>                :            :         {
+<span class="lineNum">      88 </span>                :<span class="lineCov">          6 :                 SYSLOG(&quot;Disabling remote management logs for objectStorage due to system error# &quot; &lt;&lt; errno);</span>
+<span class="lineNum">      89 </span>                :<span class="lineCov">          6 :                 this-&gt;enable_logs = false;</span>
+<span class="lineNum">      90 </span>                :            :         }
+<span class="lineNum">      91 </span>                :            : }
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :<span class="lineCov">          6 : void LogSetupTool::verifyLogDirExistenceAndCreate()</span>
+<span class="lineNum">      94 </span>                :            : {
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :         if (boost::filesystem::exists(this-&gt;log_dir))</span>
+<span class="lineNum">      96 </span>                :            :         {
+<span class="lineNum">      97 </span>                :<span class="lineCov">          6 :                 this-&gt;verifyForWritePermission();</span>
+<span class="lineNum">      98 </span>                :            :         }
+<span class="lineNum">      99 </span>                :            :         else
+<span class="lineNum">     100 </span>                :            :         {
+<span class="lineNum">     101 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (::mkdir(this-&gt;log_dir.c_str(),S_IRWXU | S_IRWXG) == -1)</span>
+<span class="lineNum">     102 </span>                :            :                 {
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 :                         SYSLOG (&quot;Could not create Log Dir: &quot; &lt;&lt; this-&gt;log_dir &lt;&lt; &quot; system error #&quot; &lt;&lt; errno);</span>
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :                         this-&gt;enable_logs = false;</span>
+<span class="lineNum">     105 </span>                :            :                 }
+<span class="lineNum">     106 </span>                :            :         }
+<span class="lineNum">     107 </span>                :            : }
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :<span class="lineCov">          6 : void LogSetupTool::verifyAndTryToCorrectRMLSettings()</span>
+<span class="lineNum">     110 </span>                :            : {
+<span class="lineNum">     111 </span>                :<span class="lineCov">          6 :         this-&gt;verifyLogDirExistenceAndCreate();</span>
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">          6 :         if (this-&gt;enable_logs)</span>
+<span class="lineNum">     114 </span>                :            :         {
+<span class="lineNum">     115 </span>        [<span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (!boost::filesystem::exists(this-&gt;log_config_file))</span>
+<span class="lineNum">     116 </span>                :            :                 {
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :                         SYSLOG (&quot;INI file for remote management logs doesn't exists: &quot; &lt;&lt; this-&gt;log_config_file);</span>
+<span class="lineNum">     118 </span>                :            :                 }
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>  [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 4 was never executed"> # </span>]:<span class="lineNoCov">          0 :                 if (::getuid() == 0 &amp;&amp; !this-&gt;test_mode)</span>
+<span class="lineNum">     121 </span>                :            :                 {
+<span class="lineNum">     122 </span>                :            :                         //his-&gt;changeOwnerForRMLLogFileAndDir();
+<span class="lineNum">     123 </span>                :            :                 }
+<span class="lineNum">     124 </span>                :            :         }
+<span class="lineNum">     125 </span>                :            : }
+<span class="lineNum">     126 </span>                :            : 
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 : LogSetupTool::~LogSetupTool() throw()</span>
+<span class="lineNum">     128 </span>                :            : {
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

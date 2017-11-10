@@ -1,0 +1,979 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - coolkit/src/include/cool/exceptions.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">coolkit/src/include/cool</a> - exceptions.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : /*
+<span class="lineNum">       2 </span>                :            :  * $Id$
+<span class="lineNum">       3 </span>                :            :  *
+<span class="lineNum">       4 </span>                :            :  * Standard exception classes.
+<span class="lineNum">       5 </span>                :            :  *
+<span class="lineNum">       6 </span>                :            :  * Copyright (c) 2003 NEC Laboratories, Inc. All rights reserved.
+<span class="lineNum">       7 </span>                :            :  */
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : #ifndef _COOL_EXCEPTIONS_H
+<span class="lineNum">      10 </span>                :            : #define _COOL_EXCEPTIONS_H
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : #include &lt;errno.h&gt;
+<span class="lineNum">      13 </span>                :            : #include &lt;sstream&gt;
+<span class="lineNum">      14 </span>                :            : #include &lt;ostream&gt;
+<span class="lineNum">      15 </span>                :            : #include &lt;list&gt;
+<span class="lineNum">      16 </span>                :            : #include &lt;boost/shared_ptr.hpp&gt;
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;cool/types.h&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;cool/macros.h&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;cool/string.h&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;cool/tricks.h&quot;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : namespace cool
+<span class="lineNum">      24 </span>                :            : {
+<span class="lineNum">      25 </span>                :            :         using std::list;
+<span class="lineNum">      26 </span>                :            :         using std::stringstream;
+<span class="lineNum">      27 </span>                :            :         using std::ostream;
+<span class="lineNum">      28 </span>                :            :         using boost::shared_ptr;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            :         string backtrace();
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            :         //============================================================================
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            :         /**
+<span class="lineNum">      35 </span>                :            :          * Standard base exception class. All exception classes should
+<span class="lineNum">      36 </span>                :            :          * derive from this one.
+<span class="lineNum">      37 </span>                :            :          *
+<span class="lineNum">      38 </span>                :            :          * DO NOT THROW Exception and it's derived classes directly
+<span class="lineNum">      39 </span>                :            :          * using throw clause -- use THROW macro instead.
+<span class="lineNum">      40 </span>                :            :          *
+<span class="lineNum">      41 </span>                :            :          * @see THROW
+<span class="lineNum">      42 </span>                :            :          * @see OptException
+<span class="lineNum">      43 </span>                :            :          *
+<span class="lineNum">      44 </span>                :            :          * @author grzes
+<span class="lineNum">      45 </span>                :            :          */
+<span class="lineNum">      46 </span>                :            :         class Exception : public Printable
+<span class="lineNum">      47 </span>                :            :         {
+<span class="lineNum">      48 </span>                :            :         public:
+<span class="lineNum">      49 </span>                :            : 
+<span class="lineNum">      50 </span>                :            :                 /**
+<span class="lineNum">      51 </span>                :            :                  * Constructs Exception object.
+<span class="lineNum">      52 </span>                :            :                  *
+<span class="lineNum">      53 </span>                :            :                  * initialize() is called by THROW or THROW_CAUSE macros to
+<span class="lineNum">      54 </span>                :            :                  * include various optional information about the exception.
+<span class="lineNum">      55 </span>                :            :                  *
+<span class="lineNum">      56 </span>                :            :                  * Users DO NOT have to call initialize() directly!
+<span class="lineNum">      57 </span>                :            :                  *
+<span class="lineNum">      58 </span>                :            :                  * Note, this class and derived classes should be created and
+<span class="lineNum">      59 </span>                :            :                  * via THROW or THROW_CAUSE macros only.
+<span class="lineNum">      60 </span>                :            :                  *
+<span class="lineNum">      61 </span>                :            :                  * @see initialize
+<span class="lineNum">      62 </span>                :            :                  */
+<span class="lineNum">      63 </span>                :            :                 Exception();
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            :                 /**
+<span class="lineNum">      66 </span>                :            :                  * The destructor.
+<span class="lineNum">      67 </span>                :            :                  */
+<span class="lineNum">      68 </span>                :            :                 virtual ~Exception();
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :                 /**
+<span class="lineNum">      71 </span>                :            :                  * Get exception class name.
+<span class="lineNum">      72 </span>                :            :                  *
+<span class="lineNum">      73 </span>                :            :                  * @return
+<span class="lineNum">      74 </span>                :            :                  */
+<span class="lineNum">      75 </span>                :            :                 virtual string getName() const;
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :            :                 /**
+<span class="lineNum">      78 </span>                :            :                  * Return formatted message consisting of: exception
+<span class="lineNum">      79 </span>                :            :                  * class name, description and (optional) error
+<span class="lineNum">      80 </span>                :            :                  * string.
+<span class="lineNum">      81 </span>                :            :                  *
+<span class="lineNum">      82 </span>                :            :                  * @return The formatted message.
+<span class="lineNum">      83 </span>                :            :                  */
+<span class="lineNum">      84 </span>                :            :                 virtual string getMessage() const;
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :            :                 /**
+<span class="lineNum">      87 </span>                :            :                  * Get fully formatted error message consisting of: exception
+<span class="lineNum">      88 </span>                :            :                  * class name, description, (optional) error string,
+<span class="lineNum">      89 </span>                :            :                  * filename and line information.
+<span class="lineNum">      90 </span>                :            :                  *
+<span class="lineNum">      91 </span>                :            :                  * If withCauses flag is true the messages for nested
+<span class="lineNum">      92 </span>                :            :                  * exception, i.e. causes will be appended, each on new
+<span class="lineNum">      93 </span>                :            :                  * line to the resulting message.
+<span class="lineNum">      94 </span>                :            :                  *
+<span class="lineNum">      95 </span>                :            :                  * @param withCauses Adds causes messages if true.
+<span class="lineNum">      96 </span>                :            :                  *
+<span class="lineNum">      97 </span>                :            :                  * @return The formatted message.
+<span class="lineNum">      98 </span>                :            :                  */
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :            :                 virtual string getFullMessage(bool withCauses = true) const;
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :            :                 /**
+<span class="lineNum">     103 </span>                :            :                  * Return line number.
+<span class="lineNum">     104 </span>                :            :                  *
+<span class="lineNum">     105 </span>                :            :                  */
+<span class="lineNum">     106 </span>                :            :                 int32 getLineNo() const;
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            :                 /**
+<span class="lineNum">     109 </span>                :            :                  * Return the source filename the exception has
+<span class="lineNum">     110 </span>                :            :                  * been thrown at.
+<span class="lineNum">     111 </span>                :            :                  *
+<span class="lineNum">     112 </span>                :            :                  */
+<span class="lineNum">     113 </span>                :            :                 string getFilename() const;
+<span class="lineNum">     114 </span>                :            : 
+<span class="lineNum">     115 </span>                :            :                 /**
+<span class="lineNum">     116 </span>                :            :                  * Return the description string.
+<span class="lineNum">     117 </span>                :            :                  */
+<span class="lineNum">     118 </span>                :            :                 string getDescription() const;
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :                 /**
+<span class="lineNum">     121 </span>                :            :                  * Returns backtrace.
+<span class="lineNum">     122 </span>                :            :                  */
+<span class="lineNum">     123 </span>                :            :                 string getBacktrace() const;
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            :                 /**
+<span class="lineNum">     126 </span>                :            :                  * Initializes Exception object.
+<span class="lineNum">     127 </span>                :            :                  *
+<span class="lineNum">     128 </span>                :            :                  * Users do NOT have to call initialize() directly!
+<span class="lineNum">     129 </span>                :            :                  *
+<span class="lineNum">     130 </span>                :            :                  * @param name
+<span class="lineNum">     131 </span>                :            :                  * @param description
+<span class="lineNum">     132 </span>                :            :                  * @param cause
+<span class="lineNum">     133 </span>                :            :                  * @param filename
+<span class="lineNum">     134 </span>                :            :                  * @param lineNo
+<span class="lineNum">     135 </span>                :            :                  * @param backtrace
+<span class="lineNum">     136 </span>                :            :                  *
+<span class="lineNum">     137 </span>                :            :                  * @see THROW
+<span class="lineNum">     138 </span>                :            :                  */
+<span class="lineNum">     139 </span>                :            :                 virtual void initialize(string const&amp; name,
+<span class="lineNum">     140 </span>                :            :                                                                 string const&amp; description = &quot;&quot;,
+<span class="lineNum">     141 </span>                :            :                                                                 Exception const* cause = NULL,
+<span class="lineNum">     142 </span>                :            :                                                                 string const&amp; filename = &quot;&quot;,
+<span class="lineNum">     143 </span>                :            :                                                                 int32 lineNo = -1,
+<span class="lineNum">     144 </span>                :            :                                                                 string backtrace = &quot;&quot;);
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :            :                 void initialize(string const&amp; name,
+<span class="lineNum">     147 </span>                :            :                                                 ostream const&amp; ss,
+<span class="lineNum">     148 </span>                :            :                                                 Exception const* cause = NULL,
+<span class="lineNum">     149 </span>                :            :                                                 string const&amp; filename = &quot;&quot;,
+<span class="lineNum">     150 </span>                :            :                                                 int32 lineNo = -1,
+<span class="lineNum">     151 </span>                :            :                                                 string backtrace = &quot;&quot;);
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>                :            :                 virtual ostream&amp; print(ostream&amp; strm) const;
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            :         private:
+<span class="lineNum">     156 </span>                :            :                 string name;
+<span class="lineNum">     157 </span>                :            :                 string description;
+<span class="lineNum">     158 </span>                :            :                 string filename;
+<span class="lineNum">     159 </span>                :            :                 int32 lineNo;
+<span class="lineNum">     160 </span>                :            :                 string backtrace;
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            :                 typedef list&lt;string&gt; CauseMsgList;
+<span class="lineNum">     163 </span>                :            :                 CauseMsgList causeMsgList;
+<span class="lineNum">     164 </span>                :            :         };
+<span class="lineNum">     165 </span>                :            : 
+<span class="lineNum">     166 </span>                :            :         //============================================================================
+<span class="lineNum">     167 </span>                :            : 
+<span class="lineNum">     168 </span>                :            :         /**
+<span class="lineNum">     169 </span>                :            :          * Envelope class for Exception classes. 
+<span class="lineNum">     170 </span>                :            :          * This class is similar to ExceptionHolder, except
+<span class="lineNum">     171 </span>                :            :          * it does not require to contain an Exception.
+<span class="lineNum">     172 </span>                :            :          * 
+<span class="lineNum">     173 </span>                :            :          * Generally ExceptionHolder is preferable over
+<span class="lineNum">     174 </span>                :            :          * OptException. 
+<span class="lineNum">     175 </span>                :            :          *
+<span class="lineNum">     176 </span>                :            :          * @author grzes
+<span class="lineNum">     177 </span>                :            :          */
+<span class="lineNum">     178 </span>                :            :         class OptException : public Printable
+<span class="lineNum">     179 </span>                :            :         {
+<span class="lineNum">     180 </span>                :            :         public:
+<span class="lineNum">     181 </span>                :            :                 OptException();
+<span class="lineNum">     182 </span>                :            :                 
+<span class="lineNum">     183 </span>                :            :                 template &lt;typename TExc&gt;
+<span class="lineNum">     184 </span>                :            :                 explicit OptException(TExc const&amp; exc);
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            :                 /**
+<span class="lineNum">     187 </span>                :            :                  * Sets the exception. Use EXCEPTION macro to create argument
+<span class="lineNum">     188 </span>                :            :                  * for this function. This will allow to include file/line
+<span class="lineNum">     189 </span>                :            :                  * information.
+<span class="lineNum">     190 </span>                :            :                  *
+<span class="lineNum">     191 </span>                :            :                  * Example:
+<span class="lineNum">     192 </span>                :            :                  *
+<span class="lineNum">     193 </span>                :            :                  * OptException oe;
+<span class="lineNum">     194 </span>                :            :                  * oe.set(EXCEPTION(IoException, &quot;something bad happend&quot;));
+<span class="lineNum">     195 </span>                :            :                  *
+<span class="lineNum">     196 </span>                :            :                  * @param TExc
+<span class="lineNum">     197 </span>                :            :                  * @param exc
+<span class="lineNum">     198 </span>                :            :                  * @see EXCEPTION
+<span class="lineNum">     199 </span>                :            :                  */
+<span class="lineNum">     200 </span>                :            :                 template &lt;typename TExc&gt;
+<span class="lineNum">     201 </span>                :            :                 void set(TExc const&amp; exc);
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            :                 /**
+<span class="lineNum">     204 </span>                :            :                  * Returns true if an exception has been set or false
+<span class="lineNum">     205 </span>                :            :                  * otherwise.
+<span class="lineNum">     206 </span>                :            :                  */
+<span class="lineNum">     207 </span>                :            :                 bool isSet() const;
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :            :                 /**
+<span class="lineNum">     210 </span>                :            :                  * Throws the underlying exception if present, otherwise
+<span class="lineNum">     211 </span>                :            :                  * no-op.
+<span class="lineNum">     212 </span>                :            :                  */
+<span class="lineNum">     213 </span>                :            :                 void throwIfAny() const;
+<span class="lineNum">     214 </span>                :            : 
+<span class="lineNum">     215 </span>                :            :                 /**
+<span class="lineNum">     216 </span>                :            :                  * Clears the underlying exception.
+<span class="lineNum">     217 </span>                :            :                  */
+<span class="lineNum">     218 </span>                :            :                 void clear();
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>                :            :                 /**
+<span class="lineNum">     221 </span>                :            :                  * Prints the underlying exception on an ostream.
+<span class="lineNum">     222 </span>                :            :                  */
+<span class="lineNum">     223 </span>                :            :                 virtual ostream&amp; print(ostream&amp; strm) const;
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>                :            :                 /**
+<span class="lineNum">     226 </span>                :            :                  * Returns reference to contained Exception object.
+<span class="lineNum">     227 </span>                :            :                  * 
+<span class="lineNum">     228 </span>                :            :                  * Fails with an assertion if does not have exception.
+<span class="lineNum">     229 </span>                :            :                  */
+<span class="lineNum">     230 </span>                :            :                 Exception const&amp; getException() const;
+<span class="lineNum">     231 </span>                :            : 
+<span class="lineNum">     232 </span>                :            :         private:
+<span class="lineNum">     233 </span>                :            :                 class ExceptionCapsule;
+<span class="lineNum">     234 </span>                :            :                 template &lt;typename TExc&gt; class ExceptionCapsuleImpl;
+<span class="lineNum">     235 </span>                :            : 
+<span class="lineNum">     236 </span>                :            :                 shared_ptr&lt;ExceptionCapsule&gt; exceptionCapsulePtr;
+<span class="lineNum">     237 </span>                :            :         };
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>                :            :         //============================================================================
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :            :         /**
+<span class="lineNum">     242 </span>                :            :          * Envelope class for Exception classes. 
+<span class="lineNum">     243 </span>                :            :          * 
+<span class="lineNum">     244 </span>                :            :          * It is used to pass exception between thread boundaries,
+<span class="lineNum">     245 </span>                :            :          * e.g. in callback functions with retaining the actual 
+<span class="lineNum">     246 </span>                :            :          * exception type.
+<span class="lineNum">     247 </span>                :            :          *
+<span class="lineNum">     248 </span>                :            :          * @author grzes
+<span class="lineNum">     249 </span>                :            :          */
+<span class="lineNum">     250 </span>                :            :         class ExceptionHolder : public Printable
+<span class="lineNum">     251 </span>                :            :         {
+<span class="lineNum">     252 </span>                :            :         public:
+<span class="lineNum">     253 </span>                :            :                 /**
+<span class="lineNum">     254 </span>                :            :                  * Creates ExceptionHolder with an Exception instance.
+<span class="lineNum">     255 </span>                :            :                  * 
+<span class="lineNum">     256 </span>                :            :                  * Preferably use EXCEPTION macro to create instances 
+<span class="lineNum">     257 </span>                :            :                  * of ExceptionHolder. Example:
+<span class="lineNum">     258 </span>                :            :                  *
+<span class="lineNum">     259 </span>                :            :                  * makeExceptionHolder(EXCEPTION(IoException, 
+<span class="lineNum">     260 </span>                :            :                  *                     &quot;something bad happend&quot;));
+<span class="lineNum">     261 </span>                :            :                  * 
+<span class="lineNum">     262 </span>                :            :                  * Note, if ExceptionHolder is created in a catch
+<span class="lineNum">     263 </span>                :            :                  * handler the exception type may not be retained -
+<span class="lineNum">     264 </span>                :            :                  * the type will be equivalent to the type in the
+<span class="lineNum">     265 </span>                :            :                  * catch handler. However, the description and
+<span class="lineNum">     266 </span>                :            :                  * the name of the original type will be retained.
+<span class="lineNum">     267 </span>                :            :                  * Example:
+<span class="lineNum">     268 </span>                :            :                  * 
+<span class="lineNum">     269 </span>                :            :                  * try
+<span class="lineNum">     270 </span>                :            :                  * {
+<span class="lineNum">     271 </span>                :            :                  *              THROW(IoExcecption, &quot;problem&quot;);
+<span class="lineNum">     272 </span>                :            :                  * }
+<span class="lineNum">     273 </span>                :            :                  * catch (Exception&amp; e)
+<span class="lineNum">     274 </span>                :            :                  * {
+<span class="lineNum">     275 </span>                :            :                  *              // ExceptionHolder will contain Exception,
+<span class="lineNum">     276 </span>                :            :                  *              // not IoException
+<span class="lineNum">     277 </span>                :            :                  *              ExceptionHolder eh(e);
+<span class="lineNum">     278 </span>                :            :                  * 
+<span class="lineNum">     279 </span>                :            :                  *              try
+<span class="lineNum">     280 </span>                :            :                  *              {
+<span class="lineNum">     281 </span>                :            :                  *                      eh.throwIt();
+<span class="lineNum">     282 </span>                :            :                  *              }
+<span class="lineNum">     283 </span>                :            :                  *              catch (IoException&amp; e)
+<span class="lineNum">     284 </span>                :            :                  *              {
+<span class="lineNum">     285 </span>                :            :                  *                      // we'll not get here
+<span class="lineNum">     286 </span>                :            :                  *              }
+<span class="lineNum">     287 </span>                :            :                  *              catch (Exception&amp; e)
+<span class="lineNum">     288 </span>                :            :                  *              {
+<span class="lineNum">     289 </span>                :            :                  *                      // but here
+<span class="lineNum">     290 </span>                :            :                  *              }
+<span class="lineNum">     291 </span>                :            :                  * }
+<span class="lineNum">     292 </span>                :            :                  * 
+<span class="lineNum">     293 </span>                :            :                  *
+<span class="lineNum">     294 </span>                :            :                  * @param TExc
+<span class="lineNum">     295 </span>                :            :                  * @param exc
+<span class="lineNum">     296 </span>                :            :                  * @see EXCEPTION
+<span class="lineNum">     297 </span>                :            :                  */
+<span class="lineNum">     298 </span>                :            :                 template &lt;typename TExc&gt;
+<span class="lineNum">     299 </span>                :            :                 ExceptionHolder(TExc const&amp; exc);
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :                 /**
+<span class="lineNum">     303 </span>                :            :                  * Creates instance initializing it from an OptException.
+<span class="lineNum">     304 </span>                :            :                  */
+<span class="lineNum">     305 </span>                :            :                 ExceptionHolder(OptException const&amp; optExc);
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :            :                 /**
+<span class="lineNum">     308 </span>                :            :                  * Throws the underlying exception.
+<span class="lineNum">     309 </span>                :            :                  */
+<span class="lineNum">     310 </span>                :            :                 void throwIt() const;
+<span class="lineNum">     311 </span>                :            : 
+<span class="lineNum">     312 </span>                :            :                 /**
+<span class="lineNum">     313 </span>                :            :                  * Prints the underlying exception on an ostream.
+<span class="lineNum">     314 </span>                :            :                  */
+<span class="lineNum">     315 </span>                :            :                 virtual ostream&amp; print(ostream&amp; strm) const;
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>                :            :                 /**
+<span class="lineNum">     318 </span>                :            :                  * Returns reference to contained Exception object.
+<span class="lineNum">     319 </span>                :            :                  */
+<span class="lineNum">     320 </span>                :            :                 Exception const&amp; getException() const;
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :                 /**
+<span class="lineNum">     323 </span>                :            :                  * Returns reference to contained OptException
+<span class="lineNum">     324 </span>                :            :                  */
+<span class="lineNum">     325 </span>                :            :         OptException getOptException() const;
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :            :         private:
+<span class="lineNum">     328 </span>                :            :                 /**
+<span class="lineNum">     329 </span>                :            :                  * Not available.
+<span class="lineNum">     330 </span>                :            :                  */
+<span class="lineNum">     331 </span>                :            :                 ExceptionHolder&amp; operator=(ExceptionHolder const&amp;);
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :            :                 OptException optExc;
+<span class="lineNum">     334 </span>                :            :         };
+<span class="lineNum">     335 </span>                :            : 
+<span class="lineNum">     336 </span>                :            :         //============================================================================
+<span class="lineNum">     337 </span>                :            :         /**
+<span class="lineNum">     338 </span>                :            :          * Throw new exception. The cl paramater specifies the
+<span class="lineNum">     339 </span>                :            :          * exception class, the desc is the description,
+<span class="lineNum">     340 </span>                :            :          * i.e. context-specific message.
+<span class="lineNum">     341 </span>                :            :          *
+<span class="lineNum">     342 </span>                :            :          * Note, that type of the exception should be implied by
+<span class="lineNum">     343 </span>                :            :          * the class name, not the description. For example,
+<span class="lineNum">     344 </span>                :            :          * don't throw same exception class to report memory
+<span class="lineNum">     345 </span>                :            :          * allocation problem and I/O error. A good of a description
+<span class="lineNum">     346 </span>                :            :          * for e.g. IoException would be:
+<span class="lineNum">     347 </span>                :            :          * &quot;read() failed when reading from file foo.txt&quot;.
+<span class="lineNum">     348 </span>                :            :          *
+<span class="lineNum">     349 </span>                :            :          * Use oss stream (ostringstream) to produce meaningful
+<span class="lineNum">     350 </span>                :            :          * exceptions descriptions. E.g:
+<span class="lineNum">     351 </span>                :            :          *
+<span class="lineNum">     352 </span>                :            :          * string filename;
+<span class="lineNum">     353 </span>                :            :          * ...
+<span class="lineNum">     354 </span>                :            :          * THROW(IoException, &quot;read() failed when reading from &quot; &lt;&lt; filename);
+<span class="lineNum">     355 </span>                :            :          *
+<span class="lineNum">     356 </span>                :            :          * @see Exception
+<span class="lineNum">     357 </span>                :            :          * @see THROW_ERR
+<span class="lineNum">     358 </span>                :            :          * @see THROW_CAUSE
+<span class="lineNum">     359 </span>                :            :          * @see oss
+<span class="lineNum">     360 </span>                :            :          * @see ostringstream
+<span class="lineNum">     361 </span>                :            :          *
+<span class="lineNum">     362 </span>                :            :          * @author grzes
+<span class="lineNum">     363 </span>                :            :          *
+<span class="lineNum">     364 </span>                :            :          * params: cl, desc, __VA_ARGS__
+<span class="lineNum">     365 </span>                :            :          */
+<span class="lineNum">     366 </span>                :            :         #define THROW(cl, desc, ...) \
+<span class="lineNum">     367 </span>                :            :         { \
+<span class="lineNum">     368 </span>                :            :                 cl ex = cl(__VA_ARGS__); \
+<span class="lineNum">     369 </span>                :            :                 cool::oss tmp__; \
+<span class="lineNum">     370 </span>                :            :                 tmp__ &lt;&lt; desc; \
+<span class="lineNum">     371 </span>                :            :                 ex.initialize(std::string(MAKE_STR(cl)), tmp__.str(), NULL, __FILE__, __LINE__, cool::backtrace()); \
+<span class="lineNum">     372 </span>                :            :                 throw ex; \
+<span class="lineNum">     373 </span>                :            :         }
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :            :         // params: cond, cl, desc, __VA_ARGS__ (as passed to THROW)
+<span class="lineNum">     376 </span>                :            :         #define THROW_IF(cond, ...) \
+<span class="lineNum">     377 </span>                :            :         { \
+<span class="lineNum">     378 </span>                :            :                 if (unlikely(cond)) \
+<span class="lineNum">     379 </span>                :            :                 { \
+<span class="lineNum">     380 </span>                :            :                         THROW(__VA_ARGS__); \
+<span class="lineNum">     381 </span>                :            :                 } \
+<span class="lineNum">     382 </span>                :            :         }
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :            :         /**
+<span class="lineNum">     385 </span>                :            :          * Inline friendly variant of THROW.
+<span class="lineNum">     386 </span>                :            :          * 
+<span class="lineNum">     387 </span>                :            :          * Regular macros affect inline optimization on gcc (4.0.2). Stream formatting (eg. &quot;foo&quot; &lt;&lt; 123)
+<span class="lineNum">     388 </span>                :            :          * negatively impacts the compiler to inline.* &quot;Inline friendly&quot; macros delegate the stream
+<span class="lineNum">     389 </span>                :            :          * formating to a separate function (static in a local class), which effectively eliminates the 
+<span class="lineNum">     390 </span>                :            :          * problem.
+<span class="lineNum">     391 </span>                :            :          * 
+<span class="lineNum">     392 </span>                :            :          * Unlike the variant without underscore, it does not take stream like formating expression
+<span class="lineNum">     393 </span>                :            :          * (e.g. &quot;foo &quot; &lt;&lt; 123). Instead, takes variable number of arguments that internally are 
+<span class="lineNum">     394 </span>                :            :          * concatenated, using stream formatting - everything passed must be supported by operator&lt;&lt;.
+<span class="lineNum">     395 </span>                :            :          * 
+<span class="lineNum">     396 </span>                :            :          * For example:
+<span class="lineNum">     397 </span>                :            :          * 
+<span class="lineNum">     398 </span>                :            :          * int32 i;
+<span class="lineNum">     399 </span>                :            :          * MACRO(arg, &quot;foo &quot; &lt;&lt; 123 &lt;&lt; &quot; bar&quot; &lt;&lt; i);
+<span class="lineNum">     400 </span>                :            :          * 
+<span class="lineNum">     401 </span>                :            :          *  would be written as
+<span class="lineNum">     402 </span>                :            :          *  
+<span class="lineNum">     403 </span>                :            :          * int32 i;
+<span class="lineNum">     404 </span>                :            :          * _MACRO(arg, &quot;foo &quot;, 123, &quot; bar&quot;, _VAR(i));
+<span class="lineNum">     405 </span>                :            :          * 
+<span class="lineNum">     406 </span>                :            :          * are equivalent, however the latter case will yield code should be optimizable better by
+<span class="lineNum">     407 </span>                :            :          * gcc.
+<span class="lineNum">     408 </span>                :            :          * 
+<span class="lineNum">     409 </span>                :            :          * Note, local variables need to be enclosed in _VAR macro.  Global or static variables
+<span class="lineNum">     410 </span>                :            :          * or constants can appear &quot;as typed&quot;, and do not need the _VAR macro.  If converting
+<span class="lineNum">     411 </span>                :            :          * code and you forget _VAR, then you will get a compiler error
+<span class="lineNum">     412 </span>                :            :          *
+<span class="lineNum">     413 </span>                :            :          * &quot;error: use of parameter from containing function&quot;
+<span class="lineNum">     414 </span>                :            :          *
+<span class="lineNum">     415 </span>                :            :          * that points out the variable you should enclose in _VAR.
+<span class="lineNum">     416 </span>                :            :          *
+<span class="lineNum">     417 </span>                :            :          * More complex things, like evaluated expressions are also supported, via
+<span class="lineNum">     418 </span>                :            :          * other tagging mechanisms:  see tricks.h macros LX (local expression) and
+<span class="lineNum">     419 </span>                :            :          * IX (internal expression).
+<span class="lineNum">     420 </span>                :            :          *
+<span class="lineNum">     421 </span>                :            :          * As an example of logging an evaluated expression, you might desire to write:
+<span class="lineNum">     422 </span>                :            :          * \verbatim
+<span class="lineNum">     423 </span>                :            :          * _DLOG(2, &quot; Session access mode is &quot;
+<span class="lineNum">     424 </span>                :            :          *        , LX( char const *sMode=( session.getSessionMode()==hydra::v2::READ_ONLY?
+<span class="lineNum">     425 </span>                :            :          *                                  &quot;R/O&quot; : &quot;R/W&quot; ) )
+<span class="lineNum">     426 </span>                :            :          *        , _VAR(sMode)
+<span class="lineNum">     427 </span>                :            :          *        , &quot;, numeric value &quot;
+<span class="lineNum">     428 </span>                :            :          *      )
+<span class="lineNum">     429 </span>                :            :          * \endverbatim
+<span class="lineNum">     430 </span>                :            :          * It does not matter very much where the LX `local expression' is placed, since
+<span class="lineNum">     431 </span>                :            :          * the macro strips all LX and IX things before starting to generate code. I.e.,
+<span class="lineNum">     432 </span>                :            :          * the LX could equally well have been anywhere after the `_DLOG(2,' in the above
+<span class="lineNum">     433 </span>                :            :          * example.  LX is also useful to define a local variable holding some return
+<span class="lineNum">     434 </span>                :            :          * value, that is passed via _VAR.
+<span class="lineNum">     435 </span>                :            :          * 
+<span class="lineNum">     436 </span>                :            :          * A gcc ICE that is still around may occur if you use \c _VAR(this-&gt;xxx) where this
+<span class="lineNum">     437 </span>                :            :          * is a template function.  This ICE happens when using 'typeof' within templates
+<span class="lineNum">     438 </span>                :            :          * sometimes.  You can work around it by explicitly supplying the type of this-&gt;xxx
+<span class="lineNum">     439 </span>                :            :          * within an \c &quot;LX( Xxxtype const &amp;thisXxx = this-&gt;xxx ), _VAR(thisXxx)&quot; replacement
+<span class="lineNum">     440 </span>                :            :          * (Ugly, because you have to look up and type the actual type of this-&gt;xxx).
+<span class="lineNum">     441 </span>                :            :          *
+<span class="lineNum">     442 </span>                :            :          * In some cases, it may not be possible to work around this g++ bug (yet --
+<span class="lineNum">     443 </span>                :            :          * language standardization may supply `auto' or `typeof' or `decltype'
+<span class="lineNum">     444 </span>                :            :          * officially someday --- just use the inlined macros until then!)
+<span class="lineNum">     445 </span>                :            :          *
+<span class="lineNum">     446 </span>                :            :          */
+<span class="lineNum">     447 </span>                :            :         #define _THROW(cl, ...) COOL_INLINE_FRIENDLY(THROW, 1, 1, cl, __VA_ARGS__ )
+<span class="lineNum">     448 </span>                :            : 
+<span class="lineNum">     449 </span>                :            :         /**
+<span class="lineNum">     450 </span>                :            :          * Throws an exception. Includes the current error
+<span class="lineNum">     451 </span>                :            :          * information (errno variable) in the exception description.
+<span class="lineNum">     452 </span>                :            :          *
+<span class="lineNum">     453 </span>                :            :          * @see THROW
+<span class="lineNum">     454 </span>                :            :          * @see THROW_ERR1
+<span class="lineNum">     455 </span>                :            :          *
+<span class="lineNum">     456 </span>                :            :          * @author grzes
+<span class="lineNum">     457 </span>                :            :          */
+<span class="lineNum">     458 </span>                :            :         #define THROW_ERR(cl, desc) \
+<span class="lineNum">     459 </span>                :            :         {  \
+<span class="lineNum">     460 </span>                :            :                 cl ex; \
+<span class="lineNum">     461 </span>                :            :                 int32 const savedErr = errno; \
+<span class="lineNum">     462 </span>                :            :                 cool::oss tmp__; \
+<span class="lineNum">     463 </span>                :            :                 tmp__ &lt;&lt; desc; \
+<span class="lineNum">     464 </span>                :            :                 ex.initialize(std::string(MAKE_STR(cl)), cool::sysError(tmp__.str(), savedErr), NULL, __FILE__, __LINE__, cool::backtrace()); \
+<span class="lineNum">     465 </span>                :            :                 throw ex; \
+<span class="lineNum">     466 </span>                :            :         }
+<span class="lineNum">     467 </span>                :            : 
+<span class="lineNum">     468 </span>                :            :         #define THROW_ERR_IF(cond, c1, desc)\
+<span class="lineNum">     469 </span>                :            :         { \
+<span class="lineNum">     470 </span>                :            :                 if (unlikely(cond)) \
+<span class="lineNum">     471 </span>                :            :                 { \
+<span class="lineNum">     472 </span>                :            :                         THROW_ERR(c1, desc); \
+<span class="lineNum">     473 </span>                :            :                 } \
+<span class="lineNum">     474 </span>                :            :         }
+<span class="lineNum">     475 </span>                :            : 
+<span class="lineNum">     476 </span>                :            :         /**
+<span class="lineNum">     477 </span>                :            :          * Inline friendly variant of THROW_ERR.
+<span class="lineNum">     478 </span>                :            :          * 
+<span class="lineNum">     479 </span>                :            :          * @see _THROW
+<span class="lineNum">     480 </span>                :            :          */
+<span class="lineNum">     481 </span>                :            :     #define _THROW_ERR(cl, ...) COOL_INLINE_FRIENDLY(THROW_ERR, 1, 1, cl, __VA_ARGS__ )
+<span class="lineNum">     482 </span>                :            : 
+<span class="lineNum">     483 </span>                :            :         /**
+<span class="lineNum">     484 </span>                :            :          * Similiar to THROW_ERR, but takes the error value as
+<span class="lineNum">     485 </span>                :            :          * an extra argument as opposed to taking it from errno
+<span class="lineNum">     486 </span>                :            :          * variable.
+<span class="lineNum">     487 </span>                :            :          *
+<span class="lineNum">     488 </span>                :            :          * @see THROW
+<span class="lineNum">     489 </span>                :            :          * @see THROW_ERR
+<span class="lineNum">     490 </span>                :            :          *
+<span class="lineNum">     491 </span>                :            :          * @author grzes
+<span class="lineNum">     492 </span>                :            :          */
+<span class="lineNum">     493 </span>                :            :         #define THROW_ERR1(cl, desc, err) \
+<span class="lineNum">     494 </span>                :            :         { \
+<span class="lineNum">     495 </span>                :            :                 cl ex; \
+<span class="lineNum">     496 </span>                :            :                 int32 const savedErr = (err); \
+<span class="lineNum">     497 </span>                :            :                 cool::oss tmp__; \
+<span class="lineNum">     498 </span>                :            :                 tmp__ &lt;&lt; desc; \
+<span class="lineNum">     499 </span>                :            :                 ex.initialize(std::string(MAKE_STR(cl)), sysError(tmp__.str(), savedErr), NULL, __FILE__, __LINE__, cool::backtrace()); \
+<span class="lineNum">     500 </span>                :            :                 throw ex; \
+<span class="lineNum">     501 </span>                :            :         }
+<span class="lineNum">     502 </span>                :            : 
+<span class="lineNum">     503 </span>                :            :         /**
+<span class="lineNum">     504 </span>                :            :          * Inline friendly variant of THROW_ERR1.
+<span class="lineNum">     505 </span>                :            :          * 
+<span class="lineNum">     506 </span>                :            :          * @see _THROW
+<span class="lineNum">     507 </span>                :            :          */
+<span class="lineNum">     508 </span>                :            :     #define _THROW_ERR1(cl, err, ...) COOL_INLINE_FRIENDLY(THROW_ERR1, 2, 1, cl, CT(err), __VA_ARGS__ )
+<span class="lineNum">     509 </span>                :            : 
+<span class="lineNum">     510 </span>                :            :         /**
+<span class="lineNum">     511 </span>                :            :          * Throws exception with a &quot;cause&quot;. This is useful if
+<span class="lineNum">     512 </span>                :            :          * an exception is being thrown as a result of an exception
+<span class="lineNum">     513 </span>                :            :          * caught from an inner layer and the inner layer's exception
+<span class="lineNum">     514 </span>                :            :          * should not be exposed.
+<span class="lineNum">     515 </span>                :            :          *
+<span class="lineNum">     516 </span>                :            :          * The original exception (cause) description and information
+<span class="lineNum">     517 </span>                :            :          * is retained in the new exception.
+<span class="lineNum">     518 </span>                :            :          *
+<span class="lineNum">     519 </span>                :            :          * @see THROW
+<span class="lineNum">     520 </span>                :            :          * @author grzes
+<span class="lineNum">     521 </span>                :            :          */
+<span class="lineNum">     522 </span>                :            :         #define THROW_CAUSE(cl, desc, cause) \
+<span class="lineNum">     523 </span>                :            :         { \
+<span class="lineNum">     524 </span>                :            :                 cl ex; \
+<span class="lineNum">     525 </span>                :            :                 cool::oss tmp__; \
+<span class="lineNum">     526 </span>                :            :                 tmp__ &lt;&lt; desc; \
+<span class="lineNum">     527 </span>                :            :                 ex.initialize(std::string(MAKE_STR(cl)), tmp__.str(), (&amp;cause), __FILE__, __LINE__, cool::backtrace()); \
+<span class="lineNum">     528 </span>                :            :                 throw ex; \
+<span class="lineNum">     529 </span>                :            :         }
+<span class="lineNum">     530 </span>                :            : 
+<span class="lineNum">     531 </span>                :            :         /**
+<span class="lineNum">     532 </span>                :            :          * Inline friendly variant of THROW_CAUSE.
+<span class="lineNum">     533 </span>                :            :          * 
+<span class="lineNum">     534 </span>                :            :          * @see _THROW
+<span class="lineNum">     535 </span>                :            :          */
+<span class="lineNum">     536 </span>                :            :     #define _THROW_CAUSE(cl, cause, ...) COOL_INLINE_FRIENDLY(THROW_CAUSE, 2, 1, cl, CT(cause), __VA_ARGS__ )
+<span class="lineNum">     537 </span>                :            : 
+<span class="lineNum">     538 </span>                :            :         /**
+<span class="lineNum">     539 </span>                :            :          * Returns an initialized exception (with class, description
+<span class="lineNum">     540 </span>                :            :          * and file/line information). This is useful in conjunction
+<span class="lineNum">     541 </span>                :            :          * with OptException::set function.
+<span class="lineNum">     542 </span>                :            :          *
+<span class="lineNum">     543 </span>                :            :          * @see OptException
+<span class="lineNum">     544 </span>                :            :          * @see THROW
+<span class="lineNum">     545 </span>                :            :          * @author grzes
+<span class="lineNum">     546 </span>                :            :          */
+<span class="lineNum">     547 </span>                :            :         #define EXCEPTION(cl, desc) cool::makeException&lt;cl&gt;(MAKE_STR(cl), cool::ostreamToString(cool::oss() &lt;&lt; &quot;&quot; &lt;&lt; desc), __FILE__, __LINE__, cool::backtrace())
+<span class="lineNum">     548 </span>                :            : 
+<span class="lineNum">     549 </span>                :            :         /**
+<span class="lineNum">     550 </span>                :            :          * THROW_ERR equivalent for EXCEPTION.
+<span class="lineNum">     551 </span>                :            :          */
+<span class="lineNum">     552 </span>                :            :         #define EXCEPTION_ERR(cl, desc) cool::makeException&lt;cl&gt;(MAKE_STR(cl), sysError(cool::oss() &lt;&lt; desc), __FILE__, __LINE__, cool::backtrace())
+<span class="lineNum">     553 </span>                :            : 
+<span class="lineNum">     554 </span>                :            :         /**
+<span class="lineNum">     555 </span>                :            :          * THROW_ERR1 equivalent for EXCEPTION.
+<span class="lineNum">     556 </span>                :            :          */
+<span class="lineNum">     557 </span>                :            :         #define EXCEPTION_ERR1(cl, desc, err) cool::makeException&lt;cl&gt;(MAKE_STR(cl), sysError((oss() &lt;&lt; desc), (err)), _FILE__, __LINE__, cool::backtrace())
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            :         /**
+<span class="lineNum">     560 </span>                :            :          * THROW_CAUSE equivalent for EXCEPTION.
+<span class="lineNum">     561 </span>                :            :          */
+<span class="lineNum">     562 </span>                :            :         #define EXCEPTION_CAUSE(cl, desc, cause) cool::makeException&lt;cl&gt;(MAKE_STR(cl), sysError(cool::oss() &lt;&lt; desc), __FILE__, __LINE__, cool::backtrace(), (&amp;cause))
+<span class="lineNum">     563 </span>                :            : 
+<span class="lineNum">     564 </span>                :            :         //============================================================================
+<span class="lineNum">     565 </span>                :            : 
+<span class="lineNum">     566 </span>                :            :         /**
+<span class="lineNum">     567 </span>                :            :          * A non-IO error returned by the operating system.
+<span class="lineNum">     568 </span>                :            :          */
+<span class="lineNum">     569 </span>                :            :         class SystemException : public Exception
+<span class="lineNum">     570 </span>                :            :         {
+<span class="lineNum">     571 </span>                :            :         };
+<span class="lineNum">     572 </span>                :            : 
+<span class="lineNum">     573 </span>                :            :         /**
+<span class="lineNum">     574 </span>                :            :          * An error related to an I/O operation. All I/O related exception types should derive from this type.
+<span class="lineNum">     575 </span>                :            :          */
+<span class="lineNum">     576 </span>                :            :         class IoException : public Exception
+<span class="lineNum">     577 </span>                :            :         {
+<span class="lineNum">     578 </span>                :            :         };
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>                :            :         /**
+<span class="lineNum">     581 </span>                :            :          * Indicates end-of-stream or end-of-file condition.
+<span class="lineNum">     582 </span>                :            :          */
+<span class="lineNum">     583 </span>                :            :         class EofException : public IoException
+<span class="lineNum">     584 </span>                :            :         {
+<span class="lineNum">     585 </span>                :            :         };
+<span class="lineNum">     586 </span>                :            : 
+<span class="lineNum">     587 </span>                :            :         /**
+<span class="lineNum">     588 </span>                :            :          * Indicate device out of space condition.
+<span class="lineNum">     589 </span>                :            :          */
+<span class="lineNum">     590 </span>                :            :         class OutOfSpaceException : public IoException
+<span class="lineNum">     591 </span>                :            :         {
+<span class="lineNum">     592 </span>                :            :         };
+<span class="lineNum">     593 </span>                :            : 
+<span class="lineNum">     594 </span>                :            :         /**
+<span class="lineNum">     595 </span>                :            :          * A memory allocation failed.
+<span class="lineNum">     596 </span>                :            :          */
+<span class="lineNum">     597 </span>                :            :         class NotEnoughMemoryException : public Exception
+<span class="lineNum">     598 </span>                :            :         {
+<span class="lineNum">     599 </span>                :            :         };
+<span class="lineNum">     600 </span>                :            : 
+<span class="lineNum">     601 </span>                :            :         /**
+<span class="lineNum">     602 </span>                :            :          * An internal, unrecoverable exception.
+<span class="lineNum">     603 </span>                :            :          */
+<span class="lineNum">     604 </span>                :            :         class InternalException : public Exception
+<span class="lineNum">     605 </span>                :            :         {
+<span class="lineNum">     606 </span>                :            :         };
+<span class="lineNum">     607 </span>                :            : 
+<span class="lineNum">     608 </span>                :            :         /**
+<span class="lineNum">     609 </span>                :            :          * An exception related to parsing.
+<span class="lineNum">     610 </span>                :            :          */
+<span class="lineNum">     611 </span>                :            :     class ParseException : public Exception
+<span class="lineNum">     612 </span>                :            :         {
+<span class="lineNum">     613 </span>                :            :         };
+<span class="lineNum">     614 </span>                :            : 
+<span class="lineNum">     615 </span>                :            :         /**
+<span class="lineNum">     616 </span>                :            :          * Attempt to open non-existing file or device.
+<span class="lineNum">     617 </span>                :            :          */
+<span class="lineNum">     618 </span>                :            :     class FileDoesNotExistException : public IoException
+<span class="lineNum">     619 </span>                :            :         {
+<span class="lineNum">     620 </span>                :            :         };
+<span class="lineNum">     621 </span>                :            : 
+<span class="lineNum">     622 </span>                :            :         // typo, for backward copatibility
+<span class="lineNum">     623 </span>                :            :         typedef FileDoesNotExistException FileDoesNotExistsException;
+<span class="lineNum">     624 </span>                :            : 
+<span class="lineNum">     625 </span>                :            :         /**
+<span class="lineNum">     626 </span>                :            :          * Attempt to create and exclusively open a file.
+<span class="lineNum">     627 </span>                :            :          */
+<span class="lineNum">     628 </span>                :            :         class FileAlreadyExistException : public IoException
+<span class="lineNum">     629 </span>                :            :         {
+<span class="lineNum">     630 </span>                :            :         };
+<span class="lineNum">     631 </span>                :            : 
+<span class="lineNum">     632 </span>                :            :         /**
+<span class="lineNum">     633 </span>                :            :          * Error while rebuilding data (for example data veryfication fails)
+<span class="lineNum">     634 </span>                :            :          */
+<span class="lineNum">     635 </span>                :            :         class DataException : public IoException
+<span class="lineNum">     636 </span>                :            :         {
+<span class="lineNum">     637 </span>                :            :         };
+<span class="lineNum">     638 </span>                :            : 
+<span class="lineNum">     639 </span>                :            :         /**
+<span class="lineNum">     640 </span>                :            :          * Indicates that a lookup on a container fails.
+<span class="lineNum">     641 </span>                :            :          * Use judicously. In many cases an assertion is more
+<span class="lineNum">     642 </span>                :            :          * appropriate.
+<span class="lineNum">     643 </span>                :            :          */
+<span class="lineNum">     644 </span>                :            :     class NoSuchElementException : public Exception
+<span class="lineNum">     645 </span>                :            :         {
+<span class="lineNum">     646 </span>                :            :         };
+<span class="lineNum">     647 </span>                :            : 
+<span class="lineNum">     648 </span>                :            :         /**
+<span class="lineNum">     649 </span>                :            :          * Indicates that an element already exists in a
+<span class="lineNum">     650 </span>                :            :          * container.
+<span class="lineNum">     651 </span>                :            :          * Use judicously. In many cases an assertion is more
+<span class="lineNum">     652 </span>                :            :          * appropriate.
+<span class="lineNum">     653 </span>                :            :          */
+<span class="lineNum">     654 </span>                :            :         class ElementAlreadyExistsException : public Exception
+<span class="lineNum">     655 </span>                :            :         {
+<span class="lineNum">     656 </span>                :            :         };
+<span class="lineNum">     657 </span>                :            : 
+<span class="lineNum">     658 </span>                :            :         /**
+<span class="lineNum">     659 </span>                :            :          * Indicates a logical error in an application. Intended use is
+<span class="lineNum">     660 </span>                :            :          * for errors that are communicated to the human user thru 
+<span class="lineNum">     661 </span>                :            :          * console or GUI.
+<span class="lineNum">     662 </span>                :            :          */
+<span class="lineNum">     663 </span>                :            :         class Error : public Exception
+<span class="lineNum">     664 </span>                :            :         {
+<span class="lineNum">     665 </span>                :            :         };
+<span class="lineNum">     666 </span>                :            : 
+<span class="lineNum">     667 </span>                :            :         /**
+<span class="lineNum">     668 </span>                :            :          * Indicates that a data format is not supported.
+<span class="lineNum">     669 </span>                :            :          */
+<span class="lineNum">     670 </span>                :            :         class UnsupportedDataFormatException : public Exception
+<span class="lineNum">     671 </span>                :            :         {
+<span class="lineNum">     672 </span>                :            :         };
+<span class="lineNum">     673 </span>                :            : 
+<span class="lineNum">     674 </span>                :            :         /**
+<span class="lineNum">     675 </span>                :            :          * Indicates that a data format is not support.
+<span class="lineNum">     676 </span>                :            :          */
+<span class="lineNum">     677 </span>                :            :         class UnsupportedDataFormatVersionException : public Exception
+<span class="lineNum">     678 </span>                :            :         {
+<span class="lineNum">     679 </span>                :            :         };
+<span class="lineNum">     680 </span>                :            : 
+<span class="lineNum">     681 </span>                :            :         /**
+<span class="lineNum">     682 </span>                :            :          * Indicates corrupted data.
+<span class="lineNum">     683 </span>                :            :          */
+<span class="lineNum">     684 </span>                :            :         class DataCorruptionException : public Exception
+<span class="lineNum">     685 </span>                :            :         {
+<span class="lineNum">     686 </span>                :            :         };
+<span class="lineNum">     687 </span>                :            : 
+<span class="lineNum">     688 </span>                :            :         //============================================================================
+<span class="lineNum">     689 </span>                :            :         //
+<span class="lineNum">     690 </span>                :            :         // IMPLEMENTATION below
+<span class="lineNum">     691 </span>                :            :         //
+<span class="lineNum">     692 </span>                :            :         //============================================================================
+<span class="lineNum">     693 </span>                :            : 
+<span class="lineNum">     694 </span>                :            :         // INTERNAL - do not use!
+<span class="lineNum">     695 </span>                :            :         // errno can be a macro (is in glibc)
+<span class="lineNum">     696 </span>                :            :         string sysError(string const&amp; description, int32 error = errno);
+<span class="lineNum">     697 </span>                :            :         char * getErrorString(int32 const error, char * buf, size_t const buflen); // returned pointer is valid as long as buf is valid; no ownership passed with return value
+<span class="lineNum">     698 </span>                :            : 
+<span class="lineNum">     699 </span>                :            :         // INTERNAL - do not use!
+<span class="lineNum">     700 </span>                :            :         // errno can be a macro (is in glibc)
+<span class="lineNum">     701 </span>                :            :         string sysError(ostream const&amp; stream, int32 error = errno);
+<span class="lineNum">     702 </span>                :            : 
+<span class="lineNum">     703 </span>                :            :         // INTERNAL - do not use!
+<span class="lineNum">     704 </span>                :            :         template &lt;typename TExc&gt;
+<span class="lineNum">     705 </span>                :            :         TExc makeException(string className, string desc, string file, uint32 lineNo, string backtrace,
+<span class="lineNum">     706 </span>                :            :                                            Exception const* cause = NULL)
+<span class="lineNum">     707 </span>                :            :         {
+<span class="lineNum">     708 </span>                :            :                 TExc ex;
+<span class="lineNum">     709 </span>                :            :                 ex.initialize(className, desc, cause, file, lineNo, backtrace);
+<span class="lineNum">     710 </span>                :            :                 return ex;
+<span class="lineNum">     711 </span>                :            :         }
+<span class="lineNum">     712 </span>                :            : 
+<span class="lineNum">     713 </span>                :            :         //============================================================================
+<span class="lineNum">     714 </span>                :            :         // OptException
+<span class="lineNum">     715 </span>                :            :         //============================================================================
+<span class="lineNum">     716 </span>                :            : 
+<span class="lineNum">     717 </span>                :            :         class OptException::ExceptionCapsule : public Printable
+<span class="lineNum">     718 </span>                :            :         {
+<span class="lineNum">     719 </span>                :            :         public:
+<span class="lineNum">     720 </span>                :            :                 virtual void throwException() const = 0;
+<span class="lineNum">     721 </span>                :            : 
+<span class="lineNum">     722 </span>                :            :                 virtual ~ExceptionCapsule() {};
+<span class="lineNum">     723 </span>                :            : 
+<span class="lineNum">     724 </span>                :            :                 virtual Exception const&amp; getException() const = 0;
+<span class="lineNum">     725 </span>                :            :         };
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :            :         template &lt;typename TExc&gt;
+<span class="lineNum">     728 </span>                :            :         class OptException::ExceptionCapsuleImpl : public ExceptionCapsule
+<span class="lineNum">     729 </span>                :            :         {
+<span class="lineNum">     730 </span>                :            :         public:
+<span class="lineNum">     731 </span>                :            :                 ExceptionCapsuleImpl(TExc const&amp; exc):
+<span class="lineNum">     732 </span>                :            :                         exc(exc)
+<span class="lineNum">     733 </span>                :            :                 {
+<span class="lineNum">     734 </span>                :            :                 }
+<span class="lineNum">     735 </span>                :            : 
+<span class="lineNum">     736 </span>                :            :                 virtual void throwException() const
+<span class="lineNum">     737 </span>                :            :                 {
+<span class="lineNum">     738 </span>                :            :                         throw this-&gt;exc;
+<span class="lineNum">     739 </span>                :            :                 }
+<span class="lineNum">     740 </span>                :            : 
+<span class="lineNum">     741 </span>                :            :                 virtual ostream&amp; print(ostream&amp; strm) const
+<span class="lineNum">     742 </span>                :            :                 {
+<span class="lineNum">     743 </span>                :            :                         return this-&gt;exc.print(strm);
+<span class="lineNum">     744 </span>                :            :                 }
+<span class="lineNum">     745 </span>                :            : 
+<span class="lineNum">     746 </span>                :            :                 Exception const&amp; getException() const
+<span class="lineNum">     747 </span>                :            :                 {
+<span class="lineNum">     748 </span>                :            :                         return this-&gt;exc;
+<span class="lineNum">     749 </span>                :            :                 }
+<span class="lineNum">     750 </span>                :            : 
+<span class="lineNum">     751 </span>                :            :                 TExc const exc;
+<span class="lineNum">     752 </span>                :            :         };
+<span class="lineNum">     753 </span>                :            : 
+<span class="lineNum">     754 </span>                :            :         inline OptException::OptException()
+<span class="lineNum">     755 </span>                :            :         {
+<span class="lineNum">     756 </span>                :            :         }
+<span class="lineNum">     757 </span>                :            :         
+<span class="lineNum">     758 </span>                :            :         template &lt;typename TExc&gt;
+<span class="lineNum">     759 </span>                :            :         inline OptException::OptException(TExc const&amp; exc) : exceptionCapsulePtr(new ExceptionCapsuleImpl&lt;TExc&gt;(exc))
+<span class="lineNum">     760 </span>                :            :         {
+<span class="lineNum">     761 </span>                :            :         }
+<span class="lineNum">     762 </span>                :            : 
+<span class="lineNum">     763 </span>                :            :         template &lt;typename TExc&gt;
+<span class="lineNum">     764 </span>                :            :         inline void OptException::set(TExc const&amp; exc)
+<span class="lineNum">     765 </span>                :            :         {
+<span class="lineNum">     766 </span>                :            :                 this-&gt;exceptionCapsulePtr.reset(new ExceptionCapsuleImpl&lt;TExc&gt;(exc));
+<span class="lineNum">     767 </span>                :            :         }
+<span class="lineNum">     768 </span>                :            : 
+<span class="lineNum">     769 </span>                :            :         inline bool OptException::isSet() const
+<span class="lineNum">     770 </span>                :            :         {
+<span class="lineNum">     771 </span>                :            :                 return this-&gt;exceptionCapsulePtr;
+<span class="lineNum">     772 </span>                :            :         }
+<span class="lineNum">     773 </span>                :            : 
+<span class="lineNum">     774 </span>                :            :         inline void OptException::clear()
+<span class="lineNum">     775 </span>                :            :         {
+<span class="lineNum">     776 </span>                :            :                 this-&gt;exceptionCapsulePtr.reset();
+<span class="lineNum">     777 </span>                :            :         }
+<span class="lineNum">     778 </span>                :            : 
+<span class="lineNum">     779 </span>                :            :         inline void OptException::throwIfAny() const
+<span class="lineNum">     780 </span>                :            :         {
+<span class="lineNum">     781 </span>                :            :                 if (this-&gt;exceptionCapsulePtr)
+<span class="lineNum">     782 </span>                :            :                 {
+<span class="lineNum">     783 </span>                :            :                         this-&gt;exceptionCapsulePtr-&gt;throwException();
+<span class="lineNum">     784 </span>                :            :                 }
+<span class="lineNum">     785 </span>                :            :         }
+<span class="lineNum">     786 </span>                :            : 
+<span class="lineNum">     787 </span>                :            :         //============================================================================
+<span class="lineNum">     788 </span>                :            :         // ExceptionHolder
+<span class="lineNum">     789 </span>                :            :         //============================================================================
+<span class="lineNum">     790 </span>                :            : 
+<span class="lineNum">     791 </span>                :            :         template &lt;typename TExc&gt;
+<span class="lineNum">     792 </span>                :            :         inline ExceptionHolder::ExceptionHolder(TExc const&amp; exc)
+<span class="lineNum">     793 </span>                :            :         {
+<span class="lineNum">     794 </span>                :            :                 this-&gt;optExc.set(exc);
+<span class="lineNum">     795 </span>                :            :         }
+<span class="lineNum">     796 </span>                :            : 
+<span class="lineNum">     797 </span>                :            :         inline ExceptionHolder::ExceptionHolder(OptException const&amp; optExc):
+<span class="lineNum">     798 </span>                :            :                 optExc(optExc)
+<span class="lineNum">     799 </span>                :            :         {
+<span class="lineNum">     800 </span>                :            :         }
+<span class="lineNum">     801 </span>                :            : 
+<span class="lineNum">     802 </span>                :            :         inline void ExceptionHolder::throwIt() const
+<span class="lineNum">     803 </span>                :            :         {
+<span class="lineNum">     804 </span>                :            :                 this-&gt;optExc.throwIfAny();
+<span class="lineNum">     805 </span>                :            :         }
+<span class="lineNum">     806 </span>                :            : 
+<span class="lineNum">     807 </span>                :<span class="lineNoCov">          0 :         inline ostream&amp; ExceptionHolder::print(ostream&amp; strm) const</span>
+<span class="lineNum">     808 </span>                :            :         {
+<span class="lineNum">     809 </span>                :<span class="lineNoCov">          0 :                 return this-&gt;optExc.print(strm);</span>
+<span class="lineNum">     810 </span>                :            :         }
+<span class="lineNum">     811 </span>                :            : 
+<span class="lineNum">     812 </span>                :            :         inline Exception const&amp; ExceptionHolder::getException() const
+<span class="lineNum">     813 </span>                :            :         {
+<span class="lineNum">     814 </span>                :            :                 return this-&gt;optExc.getException();
+<span class="lineNum">     815 </span>                :            :         }
+<span class="lineNum">     816 </span>                :            :         
+<span class="lineNum">     817 </span>                :            :     inline OptException ExceptionHolder::getOptException() const
+<span class="lineNum">     818 </span>                :            :         {
+<span class="lineNum">     819 </span>                :            :                 return this-&gt;optExc;
+<span class="lineNum">     820 </span>                :            :         }
+<span class="lineNum">     821 </span>                :            : 
+<span class="lineNum">     822 </span>                :            :         //============================================================================
+<span class="lineNum">     823 </span>                :            : 
+<span class="lineNum">     824 </span>                :            :         /**
+<span class="lineNum">     825 </span>                :            :          * @deprecated Use DASSERT/PASSERT instead!
+<span class="lineNum">     826 </span>                :            :          */
+<span class="lineNum">     827 </span>                :            :         class RuntimeException : public Exception
+<span class="lineNum">     828 </span>                :            :         {
+<span class="lineNum">     829 </span>                :            :         };
+<span class="lineNum">     830 </span>                :            : 
+<span class="lineNum">     831 </span>                :            :         /**
+<span class="lineNum">     832 </span>                :            :          * @deprecated Use DASSERT/PASSERT instead!
+<span class="lineNum">     833 </span>                :            :          */
+<span class="lineNum">     834 </span>                :            :         class NotImplementedException : public RuntimeException
+<span class="lineNum">     835 </span>                :            :         {
+<span class="lineNum">     836 </span>                :            :         };
+<span class="lineNum">     837 </span>                :            : 
+<span class="lineNum">     838 </span>                :            :         /**
+<span class="lineNum">     839 </span>                :            :          * @deprecated Use DASSERT/PASSERT instead!
+<span class="lineNum">     840 </span>                :            :          */
+<span class="lineNum">     841 </span>                :            :         class IllegalArgumentException : public RuntimeException
+<span class="lineNum">     842 </span>                :            :         {
+<span class="lineNum">     843 </span>                :            :         };
+<span class="lineNum">     844 </span>                :            : 
+<span class="lineNum">     845 </span>                :            :         /**
+<span class="lineNum">     846 </span>                :            :          * @deprecated Use DASSERT/PASSERT instead!
+<span class="lineNum">     847 </span>                :            :          */
+<span class="lineNum">     848 </span>                :            :         class IllegalStateException : public RuntimeException
+<span class="lineNum">     849 </span>                :            :         {
+<span class="lineNum">     850 </span>                :            :         };
+<span class="lineNum">     851 </span>                :            : 
+<span class="lineNum">     852 </span>                :            :         /**
+<span class="lineNum">     853 </span>                :            :          * @deprecated Use DASSERT/PASSERT instead!
+<span class="lineNum">     854 </span>                :            :          */
+<span class="lineNum">     855 </span>                :            :     class IndexOutOfBoundsException : public RuntimeException
+<span class="lineNum">     856 </span>                :            :         {
+<span class="lineNum">     857 </span>                :            :         };
+<span class="lineNum">     858 </span>                :            : 
+<span class="lineNum">     859 </span>                :            : 
+<span class="lineNum">     860 </span>                :            :         /**
+<span class="lineNum">     861 </span>                :            :          * To be used in an exception handler.
+<span class="lineNum">     862 </span>                :            :          * Prints the exception with appropriate method (cool::Exception, std::exception) by
+<span class="lineNum">     863 </span>                :            :          * rethrowing it and catching locally.
+<span class="lineNum">     864 </span>                :            :          *
+<span class="lineNum">     865 </span>                :            :          * @author welnicki
+<span class="lineNum">     866 </span>                :            :          */
+<span class="lineNum">     867 </span>                :            :         void printCaughtException(std::ostream &amp;);
+<span class="lineNum">     868 </span>                :            :         
+<span class="lineNum">     869 </span>                :            :         class CaughtExceptionPrinter : public Printable
+<span class="lineNum">     870 </span>                :            :         {
+<span class="lineNum">     871 </span>                :            :         public:
+<span class="lineNum">     872 </span>                :            :                 /**
+<span class="lineNum">     873 </span>                :            :                  * Prints caught exception to the stream using printCaughtException function.
+<span class="lineNum">     874 </span>                :            :                  *
+<span class="lineNum">     875 </span>                :            :                  * Example usage:
+<span class="lineNum">     876 </span>                :            :                  *
+<span class="lineNum">     877 </span>                :            :                  * try
+<span class="lineNum">     878 </span>                :            :                  * {
+<span class="lineNum">     879 </span>                :            :                  *     throw 12;
+<span class="lineNum">     880 </span>                :            :                  * }
+<span class="lineNum">     881 </span>                :            :                  * catch (...)
+<span class="lineNum">     882 </span>                :            :                  * {
+<span class="lineNum">     883 </span>                :            :                  *     LOG(ERROR, &quot;Caught something: &quot; &lt;&lt; cool::CaughtExceptionPrinter());
+<span class="lineNum">     884 </span>                :            :                  * }
+<span class="lineNum">     885 </span>                :            :                  */
+<span class="lineNum">     886 </span>                :            :                 virtual std::ostream&amp; print(std::ostream &amp;s) const;
+<span class="lineNum">     887 </span>                :            :         };
+<span class="lineNum">     888 </span>                :            : 
+<span class="lineNum">     889 </span>                :            : } // end of namespace cool
+<span class="lineNum">     890 </span>                :            : 
+<span class="lineNum">     891 </span>                :            : #endif // _COOL_EXCEPTIONS_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

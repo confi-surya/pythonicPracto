@@ -1,0 +1,544 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/asio/detail/reactor_op_queue.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/asio/detail</a> - reactor_op_queue.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">122</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //
+<span class="lineNum">       2 </span>                :            : // reactor_op_queue.hpp
+<span class="lineNum">       3 </span>                :            : // ~~~~~~~~~~~~~~~~~~~~
+<span class="lineNum">       4 </span>                :            : //
+<span class="lineNum">       5 </span>                :            : // Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+<span class="lineNum">       6 </span>                :            : //
+<span class="lineNum">       7 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       8 </span>                :            : // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>                :            : //
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : #ifndef BOOST_ASIO_DETAIL_REACTOR_OP_QUEUE_HPP
+<span class="lineNum">      12 </span>                :            : #define BOOST_ASIO_DETAIL_REACTOR_OP_QUEUE_HPP
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #if defined(_MSC_VER) &amp;&amp; (_MSC_VER &gt;= 1200)
+<span class="lineNum">      15 </span>                :            : # pragma once
+<span class="lineNum">      16 </span>                :            : #endif // defined(_MSC_VER) &amp;&amp; (_MSC_VER &gt;= 1200)
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &lt;boost/asio/detail/push_options.hpp&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;boost/asio/detail/push_options.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;memory&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/asio/detail/pop_options.hpp&gt;
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : #include &lt;boost/asio/error.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/asio/detail/handler_alloc_helpers.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;boost/asio/detail/hash_map.hpp&gt;
+<span class="lineNum">      27 </span>                :            : #include &lt;boost/asio/detail/noncopyable.hpp&gt;
+<span class="lineNum">      28 </span>                :            : 
+<span class="lineNum">      29 </span>                :            : namespace boost {
+<span class="lineNum">      30 </span>                :            : namespace asio {
+<span class="lineNum">      31 </span>                :            : namespace detail {
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : template &lt;typename Descriptor&gt;
+<span class="lineNum">      34 </span>                :            : class reactor_op_queue
+<span class="lineNum">      35 </span>                :            :   : private noncopyable
+<span class="lineNum">      36 </span>                :            : {
+<span class="lineNum">      37 </span>                :            : public:
+<span class="lineNum">      38 </span>                :            :   // Constructor.
+<span class="lineNum">      39 </span>                :<span class="lineNoCov">          0 :   reactor_op_queue()</span>
+<span class="lineNum">      40 </span>                :            :     : operations_(),
+<span class="lineNum">      41 </span>                :            :       cancelled_operations_(0),
+<span class="lineNum">      42 </span>                :<span class="lineNoCov">          0 :       complete_operations_(0)</span>
+<span class="lineNum">      43 </span>                :            :   {
+<span class="lineNum">      44 </span>                :            :   }
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :            :   // Add a new operation to the queue. Returns true if this is the only
+<span class="lineNum">      47 </span>                :            :   // operation for the given descriptor, in which case the reactor's event
+<span class="lineNum">      48 </span>                :            :   // demultiplexing function call may need to be interrupted and restarted.
+<span class="lineNum">      49 </span>                :            :   template &lt;typename Operation&gt;
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :   bool enqueue_operation(Descriptor descriptor, Operation operation)</span>
+<span class="lineNum">      51 </span>                :            :   {
+<span class="lineNum">      52 </span>                :            :     // Allocate and construct an object to wrap the handler.
+<span class="lineNum">      53 </span>                :            :     typedef handler_alloc_traits&lt;Operation, op&lt;Operation&gt; &gt; alloc_traits;
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :     raw_handler_ptr&lt;alloc_traits&gt; raw_ptr(operation);</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :     handler_ptr&lt;alloc_traits&gt; ptr(raw_ptr, descriptor, operation);</span>
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :            :     typedef typename operation_map::iterator iterator;
+<span class="lineNum">      58 </span>                :            :     typedef typename operation_map::value_type value_type;
+<span class="lineNum">      59 </span>                :            :     std::pair&lt;iterator, bool&gt; entry =
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :       operations_.insert(value_type(descriptor, ptr.get()));</span>
+<span class="lineNum">      61 </span>                :<span class="lineNoCov">          0 :     if (entry.second)</span>
+<span class="lineNum">      62 </span>                :            :     {
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 :       ptr.release();</span>
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :       return true;</span>
+<span class="lineNum">      65 </span>                :            :     }
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :<span class="lineNoCov">          0 :     op_base* current_op = entry.first-&gt;second;</span>
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 :     while (current_op-&gt;next_)</span>
+<span class="lineNum">      69 </span>                :<span class="lineNoCov">          0 :       current_op = current_op-&gt;next_;</span>
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 :     current_op-&gt;next_ = ptr.release();</span>
+<span class="lineNum">      71 </span>                :            : 
+<span class="lineNum">      72 </span>                :<span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      73 </span>                :            :   }
+<span class="lineNum">      74 </span>                :            : 
+<span class="lineNum">      75 </span>                :            :   // Cancel all operations associated with the descriptor. Any operations
+<span class="lineNum">      76 </span>                :            :   // pending for the descriptor will be notified that they have been cancelled
+<span class="lineNum">      77 </span>                :            :   // next time perform_cancellations is called. Returns true if any operations
+<span class="lineNum">      78 </span>                :            :   // were cancelled, in which case the reactor's event demultiplexing function
+<span class="lineNum">      79 </span>                :            :   // may need to be interrupted and restarted.
+<span class="lineNum">      80 </span>                :<span class="lineNoCov">          0 :   bool cancel_operations(Descriptor descriptor)</span>
+<span class="lineNum">      81 </span>                :            :   {
+<span class="lineNum">      82 </span>                :<span class="lineNoCov">          0 :     typename operation_map::iterator i = operations_.find(descriptor);</span>
+<span class="lineNum">      83 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :     if (i != operations_.end())</span>
+<span class="lineNum">      84 </span>                :            :     {
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :       op_base* last_op = i-&gt;second;</span>
+<span class="lineNum">      86 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :       while (last_op-&gt;next_)</span>
+<span class="lineNum">      87 </span>                :<span class="lineNoCov">          0 :         last_op = last_op-&gt;next_;</span>
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :       last_op-&gt;next_ = cancelled_operations_;</span>
+<span class="lineNum">      89 </span>                :<span class="lineNoCov">          0 :       cancelled_operations_ = i-&gt;second;</span>
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :       operations_.erase(i);</span>
+<span class="lineNum">      91 </span>                :<span class="lineNoCov">          0 :       return true;</span>
+<span class="lineNum">      92 </span>                :            :     }
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :<span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      95 </span>                :            :   }
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :            :   // Whether there are no operations in the queue.
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 :   bool empty() const</span>
+<span class="lineNum">      99 </span>                :            :   {
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :     return operations_.empty();</span>
+<span class="lineNum">     101 </span>                :            :   }
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :            :   // Determine whether there are any operations associated with the descriptor.
+<span class="lineNum">     104 </span>                :<span class="lineNoCov">          0 :   bool has_operation(Descriptor descriptor) const</span>
+<span class="lineNum">     105 </span>                :            :   {
+<span class="lineNum">     106 </span>                :<span class="lineNoCov">          0 :     return operations_.find(descriptor) != operations_.end();</span>
+<span class="lineNum">     107 </span>                :            :   }
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :            :   // Perform the first operation corresponding to the descriptor. Returns true
+<span class="lineNum">     110 </span>                :            :   // if there are more operations queued for the descriptor.
+<span class="lineNum">     111 </span>                :            :   bool perform_operation(Descriptor descriptor,
+<span class="lineNum">     112 </span>                :<span class="lineNoCov">          0 :       const boost::system::error_code&amp; result)</span>
+<span class="lineNum">     113 </span>                :            :   {
+<span class="lineNum">     114 </span>                :<span class="lineNoCov">          0 :     typename operation_map::iterator i = operations_.find(descriptor);</span>
+<span class="lineNum">     115 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :     if (i != operations_.end())</span>
+<span class="lineNum">     116 </span>                :            :     {
+<span class="lineNum">     117 </span>                :<span class="lineNoCov">          0 :       op_base* this_op = i-&gt;second;</span>
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :       i-&gt;second = this_op-&gt;next_;</span>
+<span class="lineNum">     119 </span>                :<span class="lineNoCov">          0 :       this_op-&gt;next_ = complete_operations_;</span>
+<span class="lineNum">     120 </span>                :<span class="lineNoCov">          0 :       complete_operations_ = this_op;</span>
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :       bool done = this_op-&gt;perform(result);</span>
+<span class="lineNum">     122 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :       if (done)</span>
+<span class="lineNum">     123 </span>                :            :       {
+<span class="lineNum">     124 </span>                :            :         // Operation has finished.
+<span class="lineNum">     125 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (i-&gt;second)</span>
+<span class="lineNum">     126 </span>                :            :         {
+<span class="lineNum">     127 </span>                :<span class="lineNoCov">          0 :           return true;</span>
+<span class="lineNum">     128 </span>                :            :         }
+<span class="lineNum">     129 </span>                :            :         else
+<span class="lineNum">     130 </span>                :            :         {
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :           operations_.erase(i);</span>
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :           return false;</span>
+<span class="lineNum">     133 </span>                :            :         }
+<span class="lineNum">     134 </span>                :            :       }
+<span class="lineNum">     135 </span>                :            :       else
+<span class="lineNum">     136 </span>                :            :       {
+<span class="lineNum">     137 </span>                :            :         // Operation wants to be called again. Leave it at the front of the
+<span class="lineNum">     138 </span>                :            :         // queue for this descriptor, and remove from the completed list.
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :         complete_operations_ = this_op-&gt;next_;</span>
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :         this_op-&gt;next_ = i-&gt;second;</span>
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :         i-&gt;second = this_op;</span>
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     143 </span>                :            :       }
+<span class="lineNum">     144 </span>                :            :     }
+<span class="lineNum">     145 </span>                :<span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">     146 </span>                :            :   }
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            :   // Perform all operations corresponding to the descriptor.
+<span class="lineNum">     149 </span>                :            :   void perform_all_operations(Descriptor descriptor,
+<span class="lineNum">     150 </span>                :<span class="lineNoCov">          0 :       const boost::system::error_code&amp; result)</span>
+<span class="lineNum">     151 </span>                :            :   {
+<span class="lineNum">     152 </span>                :<span class="lineNoCov">          0 :     typename operation_map::iterator i = operations_.find(descriptor);</span>
+<span class="lineNum">     153 </span>        [<span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 3 was never executed"> # </span>]:<span class="lineNoCov">          0 :     if (i != operations_.end())</span>
+<span class="lineNum">     154 </span>                :            :     {
+<span class="lineNum">     155 </span>        [<span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 2 was never executed"> # </span>]:<span class="lineNoCov">          0 :       while (i-&gt;second)</span>
+<span class="lineNum">     156 </span>                :            :       {
+<span class="lineNum">     157 </span>                :<span class="lineNoCov">          0 :         op_base* this_op = i-&gt;second;</span>
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :         i-&gt;second = this_op-&gt;next_;</span>
+<span class="lineNum">     159 </span>                :<span class="lineNoCov">          0 :         this_op-&gt;next_ = complete_operations_;</span>
+<span class="lineNum">     160 </span>                :<span class="lineNoCov">          0 :         complete_operations_ = this_op;</span>
+<span class="lineNum">     161 </span>                :<span class="lineNoCov">          0 :         bool done = this_op-&gt;perform(result);</span>
+<span class="lineNum">     162 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :         if (!done)</span>
+<span class="lineNum">     163 </span>                :            :         {
+<span class="lineNum">     164 </span>                :            :           // Operation has not finished yet, so leave at front of queue, and
+<span class="lineNum">     165 </span>                :            :           // remove from the completed list.
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :           complete_operations_ = this_op-&gt;next_;</span>
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :           this_op-&gt;next_ = i-&gt;second;</span>
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :           i-&gt;second = this_op;</span>
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :           return;</span>
+<span class="lineNum">     170 </span>                :            :         }
+<span class="lineNum">     171 </span>                :            :       }
+<span class="lineNum">     172 </span>                :<span class="lineNoCov">          0 :       operations_.erase(i);</span>
+<span class="lineNum">     173 </span>                :            :     }
+<span class="lineNum">     174 </span>                :            :   }
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :            :   // Fill a descriptor set with the descriptors corresponding to each active
+<span class="lineNum">     177 </span>                :            :   // operation.
+<span class="lineNum">     178 </span>                :            :   template &lt;typename Descriptor_Set&gt;
+<span class="lineNum">     179 </span>                :            :   void get_descriptors(Descriptor_Set&amp; descriptors)
+<span class="lineNum">     180 </span>                :            :   {
+<span class="lineNum">     181 </span>                :            :     typename operation_map::iterator i = operations_.begin();
+<span class="lineNum">     182 </span>                :            :     while (i != operations_.end())
+<span class="lineNum">     183 </span>                :            :     {
+<span class="lineNum">     184 </span>                :            :       Descriptor descriptor = i-&gt;first;
+<span class="lineNum">     185 </span>                :            :       ++i;
+<span class="lineNum">     186 </span>                :            :       if (!descriptors.set(descriptor))
+<span class="lineNum">     187 </span>                :            :       {
+<span class="lineNum">     188 </span>                :            :         boost::system::error_code ec(error::fd_set_failure);
+<span class="lineNum">     189 </span>                :            :         perform_all_operations(descriptor, ec);
+<span class="lineNum">     190 </span>                :            :       }
+<span class="lineNum">     191 </span>                :            :     }
+<span class="lineNum">     192 </span>                :            :   }
+<span class="lineNum">     193 </span>                :            : 
+<span class="lineNum">     194 </span>                :            :   // Perform the operations corresponding to the ready file descriptors
+<span class="lineNum">     195 </span>                :            :   // contained in the given descriptor set.
+<span class="lineNum">     196 </span>                :            :   template &lt;typename Descriptor_Set&gt;
+<span class="lineNum">     197 </span>                :            :   void perform_operations_for_descriptors(const Descriptor_Set&amp; descriptors,
+<span class="lineNum">     198 </span>                :            :       const boost::system::error_code&amp; result)
+<span class="lineNum">     199 </span>                :            :   {
+<span class="lineNum">     200 </span>                :            :     typename operation_map::iterator i = operations_.begin();
+<span class="lineNum">     201 </span>                :            :     while (i != operations_.end())
+<span class="lineNum">     202 </span>                :            :     {
+<span class="lineNum">     203 </span>                :            :       typename operation_map::iterator op_iter = i++;
+<span class="lineNum">     204 </span>                :            :       if (descriptors.is_set(op_iter-&gt;first))
+<span class="lineNum">     205 </span>                :            :       {
+<span class="lineNum">     206 </span>                :            :         op_base* this_op = op_iter-&gt;second;
+<span class="lineNum">     207 </span>                :            :         op_iter-&gt;second = this_op-&gt;next_;
+<span class="lineNum">     208 </span>                :            :         this_op-&gt;next_ = complete_operations_;
+<span class="lineNum">     209 </span>                :            :         complete_operations_ = this_op;
+<span class="lineNum">     210 </span>                :            :         bool done = this_op-&gt;perform(result);
+<span class="lineNum">     211 </span>                :            :         if (done)
+<span class="lineNum">     212 </span>                :            :         {
+<span class="lineNum">     213 </span>                :            :           if (!op_iter-&gt;second)
+<span class="lineNum">     214 </span>                :            :             operations_.erase(op_iter);
+<span class="lineNum">     215 </span>                :            :         }
+<span class="lineNum">     216 </span>                :            :         else
+<span class="lineNum">     217 </span>                :            :         {
+<span class="lineNum">     218 </span>                :            :           // Operation has not finished yet, so leave at front of queue, and
+<span class="lineNum">     219 </span>                :            :           // remove from the completed list.
+<span class="lineNum">     220 </span>                :            :           complete_operations_ = this_op-&gt;next_;
+<span class="lineNum">     221 </span>                :            :           this_op-&gt;next_ = op_iter-&gt;second;
+<span class="lineNum">     222 </span>                :            :           op_iter-&gt;second = this_op;
+<span class="lineNum">     223 </span>                :            :         }
+<span class="lineNum">     224 </span>                :            :       }
+<span class="lineNum">     225 </span>                :            :     }
+<span class="lineNum">     226 </span>                :            :   }
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :            :   // Perform any pending cancels for operations.
+<span class="lineNum">     229 </span>                :<span class="lineNoCov">          0 :   void perform_cancellations()</span>
+<span class="lineNum">     230 </span>                :            :   {
+<span class="lineNum">     231 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :     while (cancelled_operations_)</span>
+<span class="lineNum">     232 </span>                :            :     {
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :       op_base* this_op = cancelled_operations_;</span>
+<span class="lineNum">     234 </span>                :<span class="lineNoCov">          0 :       cancelled_operations_ = this_op-&gt;next_;</span>
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :       this_op-&gt;next_ = complete_operations_;</span>
+<span class="lineNum">     236 </span>                :<span class="lineNoCov">          0 :       complete_operations_ = this_op;</span>
+<span class="lineNum">     237 </span>                :<span class="lineNoCov">          0 :       this_op-&gt;perform(boost::asio::error::operation_aborted);</span>
+<span class="lineNum">     238 </span>                :            :     }
+<span class="lineNum">     239 </span>                :            :   }
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :            :   // Complete all operations that are waiting to be completed.
+<span class="lineNum">     242 </span>                :<span class="lineNoCov">          0 :   void complete_operations()</span>
+<span class="lineNum">     243 </span>                :            :   {
+<span class="lineNum">     244 </span>        [<span class="branchNoExec" title="Block containing branch 0 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 1 was never executed"> # </span>]:<span class="lineNoCov">          0 :     while (complete_operations_)</span>
+<span class="lineNum">     245 </span>                :            :     {
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :       op_base* next_op = complete_operations_-&gt;next_;</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :       complete_operations_-&gt;next_ = 0;</span>
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :       complete_operations_-&gt;complete();</span>
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :       complete_operations_ = next_op;</span>
+<span class="lineNum">     250 </span>                :            :     }
+<span class="lineNum">     251 </span>                :            :   }
+<span class="lineNum">     252 </span>                :            : 
+<span class="lineNum">     253 </span>                :            :   // Destroy all operations owned by the queue.
+<span class="lineNum">     254 </span>                :<span class="lineNoCov">          0 :   void destroy_operations()</span>
+<span class="lineNum">     255 </span>                :            :   {
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :     while (cancelled_operations_)</span>
+<span class="lineNum">     257 </span>                :            :     {
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :       op_base* next_op = cancelled_operations_-&gt;next_;</span>
+<span class="lineNum">     259 </span>                :<span class="lineNoCov">          0 :       cancelled_operations_-&gt;next_ = 0;</span>
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :       cancelled_operations_-&gt;destroy();</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :       cancelled_operations_ = next_op;</span>
+<span class="lineNum">     262 </span>                :            :     }
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :     while (complete_operations_)</span>
+<span class="lineNum">     265 </span>                :            :     {
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :       op_base* next_op = complete_operations_-&gt;next_;</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :       complete_operations_-&gt;next_ = 0;</span>
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :       complete_operations_-&gt;destroy();</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :       complete_operations_ = next_op;</span>
+<span class="lineNum">     270 </span>                :            :     }
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>                :<span class="lineNoCov">          0 :     typename operation_map::iterator i = operations_.begin();</span>
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :     while (i != operations_.end())</span>
+<span class="lineNum">     274 </span>                :            :     {
+<span class="lineNum">     275 </span>                :<span class="lineNoCov">          0 :       typename operation_map::iterator op_iter = i++;</span>
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :       op_base* curr_op = op_iter-&gt;second;</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :       operations_.erase(op_iter);</span>
+<span class="lineNum">     278 </span>                :<span class="lineNoCov">          0 :       while (curr_op)</span>
+<span class="lineNum">     279 </span>                :            :       {
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :         op_base* next_op = curr_op-&gt;next_;</span>
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :         curr_op-&gt;next_ = 0;</span>
+<span class="lineNum">     282 </span>                :<span class="lineNoCov">          0 :         curr_op-&gt;destroy();</span>
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :         curr_op = next_op;</span>
+<span class="lineNum">     284 </span>                :            :       }
+<span class="lineNum">     285 </span>                :            :     }
+<span class="lineNum">     286 </span>                :            :   }
+<span class="lineNum">     287 </span>                :            : 
+<span class="lineNum">     288 </span>                :            : private:
+<span class="lineNum">     289 </span>                :            :   // Base class for reactor operations. A function pointer is used instead of
+<span class="lineNum">     290 </span>                :            :   // virtual functions to avoid the associated overhead.
+<span class="lineNum">     291 </span>                :            :   class op_base
+<span class="lineNum">     292 </span>                :            :   {
+<span class="lineNum">     293 </span>                :            :   public:
+<span class="lineNum">     294 </span>                :            :     // Get the descriptor associated with the operation.
+<span class="lineNum">     295 </span>                :            :     Descriptor descriptor() const
+<span class="lineNum">     296 </span>                :            :     {
+<span class="lineNum">     297 </span>                :            :       return descriptor_;
+<span class="lineNum">     298 </span>                :            :     }
+<span class="lineNum">     299 </span>                :            : 
+<span class="lineNum">     300 </span>                :            :     // Perform the operation.
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :     bool perform(const boost::system::error_code&amp; result)</span>
+<span class="lineNum">     302 </span>                :            :     {
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :       result_ = result;</span>
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :       return perform_func_(this, result_, bytes_transferred_);</span>
+<span class="lineNum">     305 </span>                :            :     }
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :            :     // Destroy the operation and post the handler.
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :     void complete()</span>
+<span class="lineNum">     309 </span>                :            :     {
+<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :       complete_func_(this, result_, bytes_transferred_);</span>
+<span class="lineNum">     311 </span>                :            :     }
+<span class="lineNum">     312 </span>                :            : 
+<span class="lineNum">     313 </span>                :            :     // Destroy the operation.
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :     void destroy()</span>
+<span class="lineNum">     315 </span>                :            :     {
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :       destroy_func_(this);</span>
+<span class="lineNum">     317 </span>                :            :     }
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :            :   protected:
+<span class="lineNum">     320 </span>                :            :     typedef bool (*perform_func_type)(op_base*,
+<span class="lineNum">     321 </span>                :            :         boost::system::error_code&amp;, std::size_t&amp;);
+<span class="lineNum">     322 </span>                :            :     typedef void (*complete_func_type)(op_base*,
+<span class="lineNum">     323 </span>                :            :         const boost::system::error_code&amp;, std::size_t);
+<span class="lineNum">     324 </span>                :            :     typedef void (*destroy_func_type)(op_base*);
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            :     // Construct an operation for the given descriptor.
+<span class="lineNum">     327 </span>                :            :     op_base(perform_func_type perform_func, complete_func_type complete_func,
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :         destroy_func_type destroy_func, Descriptor descriptor)</span>
+<span class="lineNum">     329 </span>                :            :       : perform_func_(perform_func),
+<span class="lineNum">     330 </span>                :            :         complete_func_(complete_func),
+<span class="lineNum">     331 </span>                :            :         destroy_func_(destroy_func),
+<span class="lineNum">     332 </span>                :            :         descriptor_(descriptor),
+<span class="lineNum">     333 </span>                :            :         result_(),
+<span class="lineNum">     334 </span>                :            :         bytes_transferred_(0),
+<span class="lineNum">     335 </span>                :<span class="lineNoCov">          0 :         next_(0)</span>
+<span class="lineNum">     336 </span>                :            :     {
+<span class="lineNum">     337 </span>                :            :     }
+<span class="lineNum">     338 </span>                :            : 
+<span class="lineNum">     339 </span>                :            :     // Prevent deletion through this type.
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :     ~op_base()</span>
+<span class="lineNum">     341 </span>                :            :     {
+<span class="lineNum">     342 </span>                :            :     }
+<span class="lineNum">     343 </span>                :            : 
+<span class="lineNum">     344 </span>                :            :   private:
+<span class="lineNum">     345 </span>                :            :     friend class reactor_op_queue&lt;Descriptor&gt;;
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>                :            :     // The function to be called to perform the operation.
+<span class="lineNum">     348 </span>                :            :     perform_func_type perform_func_;
+<span class="lineNum">     349 </span>                :            : 
+<span class="lineNum">     350 </span>                :            :     // The function to be called to delete the operation and post the handler.
+<span class="lineNum">     351 </span>                :            :     complete_func_type complete_func_;
+<span class="lineNum">     352 </span>                :            : 
+<span class="lineNum">     353 </span>                :            :     // The function to be called to delete the operation.
+<span class="lineNum">     354 </span>                :            :     destroy_func_type destroy_func_;
+<span class="lineNum">     355 </span>                :            : 
+<span class="lineNum">     356 </span>                :            :     // The descriptor associated with the operation.
+<span class="lineNum">     357 </span>                :            :     Descriptor descriptor_;
+<span class="lineNum">     358 </span>                :            : 
+<span class="lineNum">     359 </span>                :            :     // The result of the operation.
+<span class="lineNum">     360 </span>                :            :     boost::system::error_code result_;
+<span class="lineNum">     361 </span>                :            : 
+<span class="lineNum">     362 </span>                :            :     // The number of bytes transferred in the operation.
+<span class="lineNum">     363 </span>                :            :     std::size_t bytes_transferred_;
+<span class="lineNum">     364 </span>                :            : 
+<span class="lineNum">     365 </span>                :            :     // The next operation for the same file descriptor.
+<span class="lineNum">     366 </span>                :            :     op_base* next_;
+<span class="lineNum">     367 </span>                :            :   };
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :            :   // Adaptor class template for operations.
+<span class="lineNum">     370 </span>                :            :   template &lt;typename Operation&gt;
+<span class="lineNum">     371 </span>                :            :   class op
+<span class="lineNum">     372 </span>                :            :     : public op_base
+<span class="lineNum">     373 </span>                :            :   {
+<span class="lineNum">     374 </span>                :            :   public:
+<span class="lineNum">     375 </span>                :            :     // Constructor.
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 :     op(Descriptor descriptor, Operation operation)</span>
+<span class="lineNum">     377 </span>                :            :       : op_base(&amp;op&lt;Operation&gt;::do_perform, &amp;op&lt;Operation&gt;::do_complete,
+<span class="lineNum">     378 </span>                :            :           &amp;op&lt;Operation&gt;::do_destroy, descriptor),
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 :         operation_(operation)</span>
+<span class="lineNum">     380 </span>                :            :     {
+<span class="lineNum">     381 </span>                :            :     }
+<span class="lineNum">     382 </span>                :            : 
+<span class="lineNum">     383 </span>                :            :     // Perform the operation.
+<span class="lineNum">     384 </span>                :            :     static bool do_perform(op_base* base,
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :         boost::system::error_code&amp; result, std::size_t&amp; bytes_transferred)</span>
+<span class="lineNum">     386 </span>                :            :     {
+<span class="lineNum">     387 </span>                :            :       return static_cast&lt;op&lt;Operation&gt;*&gt;(base)-&gt;operation_.perform(
+<span class="lineNum">     388 </span>                :<span class="lineNoCov">          0 :           result, bytes_transferred);</span>
+<span class="lineNum">     389 </span>                :            :     }
+<span class="lineNum">     390 </span>                :            : 
+<span class="lineNum">     391 </span>                :            :     // Destroy the operation and post the handler.
+<span class="lineNum">     392 </span>                :            :     static void do_complete(op_base* base,
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :         const boost::system::error_code&amp; result, std::size_t bytes_transferred)</span>
+<span class="lineNum">     394 </span>                :            :     {
+<span class="lineNum">     395 </span>                :            :       // Take ownership of the operation object.
+<span class="lineNum">     396 </span>                :            :       typedef op&lt;Operation&gt; this_type;
+<span class="lineNum">     397 </span>                :<span class="lineNoCov">          0 :       this_type* this_op(static_cast&lt;this_type*&gt;(base));</span>
+<span class="lineNum">     398 </span>                :            :       typedef handler_alloc_traits&lt;Operation, this_type&gt; alloc_traits;
+<span class="lineNum">     399 </span>                :<span class="lineNoCov">          0 :       handler_ptr&lt;alloc_traits&gt; ptr(this_op-&gt;operation_, this_op);</span>
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :            :       // Make a copy of the error_code and the operation so that the memory can
+<span class="lineNum">     402 </span>                :            :       // be deallocated before the upcall is made.
+<span class="lineNum">     403 </span>                :<span class="lineNoCov">          0 :       boost::system::error_code ec(result);</span>
+<span class="lineNum">     404 </span>                :<span class="lineNoCov">          0 :       Operation operation(this_op-&gt;operation_);</span>
+<span class="lineNum">     405 </span>                :            : 
+<span class="lineNum">     406 </span>                :            :       // Free the memory associated with the operation.
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :       ptr.reset();</span>
+<span class="lineNum">     408 </span>                :            : 
+<span class="lineNum">     409 </span>                :            :       // Make the upcall.
+<span class="lineNum">     410 </span>                :<span class="lineNoCov">          0 :       operation.complete(ec, bytes_transferred);</span>
+<span class="lineNum">     411 </span>                :            :     }
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :            :     // Destroy the operation.
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :     static void do_destroy(op_base* base)</span>
+<span class="lineNum">     415 </span>                :            :     {
+<span class="lineNum">     416 </span>                :            :       // Take ownership of the operation object.
+<span class="lineNum">     417 </span>                :            :       typedef op&lt;Operation&gt; this_type;
+<span class="lineNum">     418 </span>                :<span class="lineNoCov">          0 :       this_type* this_op(static_cast&lt;this_type*&gt;(base));</span>
+<span class="lineNum">     419 </span>                :            :       typedef handler_alloc_traits&lt;Operation, this_type&gt; alloc_traits;
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 :       handler_ptr&lt;alloc_traits&gt; ptr(this_op-&gt;operation_, this_op);</span>
+<span class="lineNum">     421 </span>                :            : 
+<span class="lineNum">     422 </span>                :            :       // A sub-object of the operation may be the true owner of the memory
+<span class="lineNum">     423 </span>                :            :       // associated with the operation. Consequently, a local copy of the
+<span class="lineNum">     424 </span>                :            :       // operation is required to ensure that any owning sub-object remains
+<span class="lineNum">     425 </span>                :            :       // valid until after we have deallocated the memory here.
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :       Operation operation(this_op-&gt;operation_);</span>
+<span class="lineNum">     427 </span>                :            :       (void)operation;
+<span class="lineNum">     428 </span>                :            : 
+<span class="lineNum">     429 </span>                :            :       // Free the memory associated with the operation.
+<span class="lineNum">     430 </span>                :<span class="lineNoCov">          0 :       ptr.reset();</span>
+<span class="lineNum">     431 </span>                :            :     }
+<span class="lineNum">     432 </span>                :            : 
+<span class="lineNum">     433 </span>                :            :   private:
+<span class="lineNum">     434 </span>                :            :     Operation operation_;
+<span class="lineNum">     435 </span>                :            :   };
+<span class="lineNum">     436 </span>                :            : 
+<span class="lineNum">     437 </span>                :            :   // The type for a map of operations.
+<span class="lineNum">     438 </span>                :            :   typedef hash_map&lt;Descriptor, op_base*&gt; operation_map;
+<span class="lineNum">     439 </span>                :            : 
+<span class="lineNum">     440 </span>                :            :   // The operations that are currently executing asynchronously.
+<span class="lineNum">     441 </span>                :            :   operation_map operations_;
+<span class="lineNum">     442 </span>                :            : 
+<span class="lineNum">     443 </span>                :            :   // The list of operations that have been cancelled.
+<span class="lineNum">     444 </span>                :            :   op_base* cancelled_operations_;
+<span class="lineNum">     445 </span>                :            : 
+<span class="lineNum">     446 </span>                :            :   // The list of operations waiting to be completed.
+<span class="lineNum">     447 </span>                :            :   op_base* complete_operations_;
+<span class="lineNum">     448 </span>                :            : };
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :            : } // namespace detail
+<span class="lineNum">     451 </span>                :            : } // namespace asio
+<span class="lineNum">     452 </span>                :            : } // namespace boost
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :            : #include &lt;boost/asio/detail/pop_options.hpp&gt;
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>                :            : #endif // BOOST_ASIO_DETAIL_REACTOR_OP_QUEUE_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

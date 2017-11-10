@@ -1,0 +1,102 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "OsmServiceDaemon",
+        #srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		main.cpp
+		main_thread_handler.cpp
+		msg_parser.cpp
+		hfs_checker.cpp
+		listener.cpp
+		service_config_reader.cpp
+		file_handler.cpp
+		osm_timer.cpp
+		osm_info_file.cpp
+		ring_file.cpp
+		utils.cpp
+		../globalLeader/gl_msg_handler.cpp
+		../globalLeader/cluster_recovery_component.cpp
+		../globalLeader/global_leader.cpp
+		../globalLeader/journal_library.cpp
+		../globalLeader/journal_writer.cpp
+		../globalLeader/journal_reader.cpp
+		../globalLeader/monitoring.cpp
+		../globalLeader/component_manager.cpp
+		../globalLeader/state_change_initiator.cpp
+		../globalLeader/component_balancing.cpp
+		../localLeader/election_manager.cpp
+		../localLeader/monitoring_manager.cpp
+		../localLeader/monitor_status_map.cpp
+		../localLeader/election_identifier.cpp 
+		../localLeader/recovery_handler.cpp
+		../localLeader/service_startup_manager.cpp
+		../localLeader/ll_msg_handler.cpp
+		../localLeader/local_leader.cpp
+		../../communication/stubs.cpp
+		../../libraryUtils/record_structure.cpp
+		../../libraryUtils/serialize.cpp
+		../../libraryUtils/file_handler.cpp
+		../../libraryUtils/object_storage_log_setup.cpp
+		../../libraryUtils/osd_logger_initialize.cpp
+	"""),
+        targetType = context.TYPE_EXE,
+        libs = context.split("""
+                #any external libs  that you may need.
+		libraryUtils
+		communication
+        """),
+        # only in case of unit test dir
+        #wholeLibs = context.split("""
+        #       gmock
+        #""")
+        requiredLibs = context.split("""
+		boost_python-mt
+		boost_python
+		python2.6
+		raryUtils
+		cool
+		coolNet
+		boost_thread
+		boost_thread-mt
+		boost_system
+		pthread
+        """)
+)
+
+context.module(
+        name = "OsmService",
+        #srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		ring_file.cpp
+		ring_py_binding.cpp
+		../../libraryUtils/record_structure.cpp
+		../../libraryUtils/serialize.cpp
+		../../libraryUtils/file_handler.cpp
+		../../libraryUtils/object_storage_log_setup.cpp
+		../../libraryUtils/osd_logger_initialize.cpp
+	"""),
+        targetType = context.TYPE_DLL,
+        libs = context.split("""
+                #any external libs  that you may need.
+		libraryUtils
+        """),
+        # only in case of unit test dir
+        #wholeLibs = context.split("""
+        #       gmock
+        #""")
+        requiredLibs = context.split("""
+		boost_python-mt
+		boost_python
+		python2.6
+		cool
+		coolNet
+		#boost_thread
+		#boost_thread-mt
+		boost_system
+		pthread
+        """)
+)
+

@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/osm/localLeader/unitTest/monitor_statusTest.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/localLeader/unitTest</a> - monitor_statusTest.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #define GTEST_USE_OWN_TR1_TUPLE 0
+<span class="lineNum">       2 </span>                :            : #include &quot;gmock/gmock.h&quot;
+<span class="lineNum">       3 </span>                :            : #include &quot;gtest/gtest.h&quot;
+<span class="lineNum">       4 </span>                :            : #include &quot;libraryUtils/object_storage_exception.h&quot;
+<span class="lineNum">       5 </span>                :            : #include &quot;osm/localLeader/monitor_status_map.h&quot;
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : namespace MonitorStatusMapTest
+<span class="lineNum">       8 </span>                :            : {
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :<span class="lineNoCov">          0 : TEST(MonitorStatusMapTest, MonitorStatusMapTest)</span>
+<span class="lineNum">      11 </span>                :            : {
+<span class="lineNum">      12 </span>                :<span class="lineNoCov">          0 :         uint64_t STRM_TIMEOUT = 120;</span>
+<span class="lineNum">      13 </span>                :<span class="lineNoCov">          0 :         uint64_t HRBT_TIMEOUT = 30;</span>
+<span class="lineNum">      14 </span>                :<span class="lineNoCov">          0 :         uint16_t gap = 300;</span>
+<span class="lineNum">      15 </span>                :<span class="lineNoCov">          0 :         uint8_t count = 3;</span>
+<span class="lineNum">      16 </span>                :<span class="lineNoCov">          0 :         int fd = 4;</span>
+<span class="lineNum">      17 </span>                :<span class="lineNoCov">          0 :         MonitorStatusMap status_map(STRM_TIMEOUT, HRBT_TIMEOUT, gap, count);    </span>
+<span class="lineNum">      18 </span>                :            :         
+<span class="lineNum">      19 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm_obj;</span>
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 :         comm_obj = status_map.get_comm_obj();</span>
+<span class="lineNum">      22 </span>                :            :         
+<span class="lineNum">      23 </span>                :<span class="lineNoCov">          0 :         status_map.set_comm_obj(comm_obj);</span>
+<span class="lineNum">      24 </span>                :<span class="lineNoCov">          0 :         status_map.set_fd(fd);</span>
+<span class="lineNum">      25 </span>                :<span class="lineNoCov">          0 :         int val = status_map.get_fd();</span>
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;fd is = &quot;&lt;&lt; val);</span>
+<span class="lineNum">      27 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(val, 4);</span>
+<span class="lineNum">      28 </span>                :<span class="lineNoCov">          0 :         status_map.set_ip_addr(&quot;192.168.101.1&quot;);</span>
+<span class="lineNum">      29 </span>                :<span class="lineNoCov">          0 :         std::string s = status_map.get_ip_addr();</span>
+<span class="lineNum">      30 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot; IP ADDR IS  &quot; &lt;&lt; s);</span>
+<span class="lineNum">      31 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(s, &quot;192.168.101.1&quot;);</span>
+<span class="lineNum">      32 </span>                :<span class="lineNoCov">          0 :         status_map.set_port(61005);</span>
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :         val = status_map.get_port();</span>
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;PORT is = &quot;&lt;&lt; val);</span>
+<span class="lineNum">      35 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(val, 61005);</span>
+<span class="lineNum">      36 </span>                :<span class="lineNoCov">          0 :         status_map.set_msg_type(OSDException::OSDMsgTypeInMap::STRM);</span>
+<span class="lineNum">      37 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(status_map.get_msg_type(),  OSDException::OSDMsgTypeInMap::STRM);</span>
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 :         status_map.set_retry_count(count);</span>
+<span class="lineNum">      39 </span>                :<span class="lineNoCov">          0 :         val = status_map.get_retry_count();</span>
+<span class="lineNum">      40 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;RETRY COUNT is = &quot;&lt;&lt; val);</span>
+<span class="lineNum">      41 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(val, 3);</span>
+<span class="lineNum">      42 </span>                :            : //      OSDLOG(DEBUG, &quot;STRM COUNT is = &quot;&lt;&lt; status_map.get_strm_timeout());
+<span class="lineNum">      43 </span>                :            : //      OSDLOG(DEBUG, &quot;HRBT COUNT is = &quot;&lt;&lt; status_map.get_hrbt_timeout());
+<span class="lineNum">      44 </span>                :<span class="lineNoCov">          0 :         uint64_t h = status_map.get_strm_timeout();</span>
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(h, STRM_TIMEOUT);</span>
+<span class="lineNum">      46 </span>                :<span class="lineNoCov">          0 :         h = status_map.get_hrbt_timeout();</span>
+<span class="lineNum">      47 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(h, HRBT_TIMEOUT);</span>
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 :         status_map.update_last_update_time();</span>
+<span class="lineNum">      49 </span>                :            :         time_t ts;
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :         ts = status_map.get_last_update_time();</span>
+<span class="lineNum">      51 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TIME is = &quot;&lt;&lt; ts);</span>
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :         status_map.set_service_status(OSDException::OSDServiceStatus::RUN);</span>
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(status_map.get_service_status(), 3);</span>
+<span class="lineNum">      54 </span>                :<span class="lineNoCov">          0 :         status_map.set_heartbeat_count(count);</span>
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :         status_map.set_timeout(30);</span>
+<span class="lineNum">      56 </span>                :<span class="lineNoCov">          0 :         ts = status_map.get_timeout();</span>
+<span class="lineNum">      57 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;TIMEOUT is = &quot;&lt;&lt; ts);</span>
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(ts, 90);</span>
+<span class="lineNum">      59 </span>                :<span class="lineNoCov">          0 :         ASSERT_EQ(status_map.get_retry_time_gap(), 300);</span>
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>                :            : }
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

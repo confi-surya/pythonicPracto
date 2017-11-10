@@ -1,0 +1,306 @@
+package network_messages;
+
+enum NodeStatusEnum {
+		RUNNING = 10;
+		STOPPING = 20;
+		STOP = 30;
+		REGISTERED = 40;
+		FAILED = 50;
+		RECOVERED = 60;
+		RETIRING = 70;
+		RETIRED = 80;
+		NODE_STOPPING = 90;
+		INVALID_NODE = 100;
+		NEW = 110;
+		RETIRING_FAILED = 120;
+		RETIRED_RECOVERED = 130;
+  		IN_LOCAL_NODE_REC = 140;
+		NODE_STOPPED = 150;
+		TRANSITION_STATE = 160;
+		REJOINING = 170;
+	}
+
+message service_obj{
+	optional string service_id = 1;
+	required string ip = 2;
+	required int32 port = 3;
+}
+
+message errorStatus{
+	required int32 code = 1;
+	required string msg = 2;
+}
+
+message heartBeat{
+	required string msg = 1;
+	required string service_id = 2;
+	required int32 sequence = 3;
+	optional int32 hfs_stat = 4;
+}
+
+message heartBeatAck{
+	required string msg = 1;
+	required int32 sequence = 2;
+	optional int32 node_stat = 3;
+} 
+
+message StopProxyAck{
+	required errorStatus err = 1;
+}
+
+message BlockRequestAck{
+	required bool status = 1;
+}
+
+message TransferComponentsAck{
+	message pair{
+		required int32 component = 1;
+		required bool status = 2;
+	}
+	repeated pair comp_status_list = 2;
+	required bool final_status = 3;
+}
+
+message GetServiceComponentAck{
+	repeated int32 component_list = 1;
+	required errorStatus err = 2;
+}
+
+message GetServiceComponent{
+	required string service_id = 1;
+}
+
+message GetGlobalMap{
+	required string service_id = 1;
+}
+
+message GlobalMapInfo{
+	message service{
+		repeated service_obj service_list = 1;
+		optional float version = 2;
+	}
+	required service container = 1;
+	required service account = 2;
+	required service updater = 3;
+	required service object = 4;
+	required float version = 5;
+	required bool status = 6;
+}
+
+message LocalLeaderStartMonitoring{
+	required string service_id = 1;
+}
+
+message LocalLeaderStartMonitoringAck{
+	required string service_id = 1;
+	required bool status = 2;
+}
+
+message OsdStartMonitoring{
+	required string service_id = 1;
+	required int32 port = 2;
+	required string ip = 3;
+
+}
+
+message OsdStartMonitoringAck{
+	required string service_id = 1;
+	required errorStatus error = 2;
+}
+
+message RecvProcStartMonitoring{
+	required string proc_id = 1;
+}
+
+message RecvProcStartMonitoringAck{
+	message entry{
+		required service_obj service = 1;
+		repeated int32 component_list = 2;
+	}
+	repeated entry service_name = 1;
+	optional service_obj source_service = 2;
+	required bool status = 3;
+}
+
+message CompTransferInfo{
+	required string service_id = 1;
+	message pair{
+		required int32 component = 1;
+		required service_obj dest_service = 2;
+	}
+	repeated pair component_service_pair = 2;
+
+}
+
+message CompTranferFinalStat{	// add "s" in the message name "CompTran's'ferFinalStat"
+	required string service_id = 1;
+	message pair{
+		required int32 component = 1;
+		required bool status = 2;
+	}
+	repeated pair comp_status_list = 2;
+
+	required bool final_status = 3;
+}
+
+message TransferComp{
+	message pair{
+		required service_obj dest_service = 1;
+		repeated int32 component = 2;
+	}
+	repeated pair service_comp_list = 1;
+	
+}
+
+message NodeAdditionCli{
+	repeated service_obj node_list = 1;
+}
+
+
+message NodeAdditionCliAck{
+	message pair{
+		required errorStatus status = 1;
+		required service_obj node = 2;
+	}
+	repeated pair node_ack_list = 1;
+}
+
+message NodeAdditionGl{
+	required string service_id = 1;
+}
+
+message NodeAdditionGlAck{
+	required errorStatus status = 1;
+	repeated service_obj service_list = 2;
+}
+
+message NodeStopLL{
+	required service_obj node = 1;
+}
+
+message NodeStopLLAck{
+	required string node_id = 1;
+	required errorStatus status = 2;
+	required int32 node_status = 3;
+}
+
+message NodeRetire{
+	required service_obj node = 1;
+}
+
+message NodeRetireAck{
+	required string node_id = 1;
+	required errorStatus status = 2;
+}
+
+message NodeDeletionCli{
+	required service_obj node = 1;
+}
+
+message NodeDeletionCliAck{
+	required string node_id = 1;
+	required errorStatus status = 2;
+}
+
+message NodeSystemStopCli{
+	required string node_id = 1;
+}
+
+message LocalNodeStatus{
+	required string node_id = 1;
+}
+
+message NodeStatus{
+	required service_obj node = 1;
+}
+
+message NodeStatusAck{
+	required NodeStatusEnum status = 1 [default = INVALID_NODE];
+}
+
+message NodeStopCli{
+	required string node_id = 1;
+}
+
+message NodeStopCliAck{
+	required errorStatus status = 1;
+}
+
+message StopServices{
+	required string service_id = 1;
+}
+
+message StopServicesAck{
+	required errorStatus status = 1;
+}
+
+message NodeFailover{
+	required string node_id = 1;
+	required errorStatus status = 2;
+}
+
+message NodeFailoverAck{
+	required errorStatus status = 2;
+}
+
+message TakeGlOwnership{
+	required string old_gl_id = 1;
+	required string new_gl_id = 2;
+}
+
+message TakeGlOwnershipAck{
+	required string new_gl_id = 1;
+	required errorStatus status = 2;
+}
+
+message GetObjectVersion{
+	required string service_id = 1;
+}
+
+message GetObjectVersionAck{
+	required string service_id = 1;
+	required uint64 object_version = 2;
+        required bool status = 3;
+}
+
+message NodeRejoinAfterRecovery{
+	required string node_id = 1;
+	required string node_ip = 2;
+	required int32 node_port = 3;
+}
+
+message NodeRejoinAfterRecoveryAck{
+	required string node_id = 1;
+	required errorStatus status = 2;
+}
+
+message GetClusterStatus{
+	required string service_id = 1;
+}
+
+message GetClusterStatusAck{
+	message pair{
+		required string node_id = 1;
+		required NodeStatusEnum status_enum = 2;
+	}
+ 	repeated pair node_status_list = 1;
+	required errorStatus status = 2;
+}
+
+message UpdateContainer{
+	required string meta_file_path = 1;
+	required string operation = 2;
+}
+
+message ReleaseTransactionLock{
+	required string lock = 1;
+	required string operation = 2;
+}
+
+message StatusAck{
+	optional bool status = 1;
+}
+
+message NodeAdditionFinalAck{
+	required bool status = 1;
+}

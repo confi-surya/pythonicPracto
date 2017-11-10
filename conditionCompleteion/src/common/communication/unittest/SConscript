@@ -1,0 +1,77 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "communication",
+        #srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		../callback.cpp
+		../communication_helper.cpp
+		../communication.cpp
+		../message_type_enum.pb.cc
+		../message_binding.pb.cc
+		../message.cpp
+		../msg_external_interface.cpp
+		../message_format_handler.cpp
+		../message_result_wrapper.cpp
+		../message_interface_handlers.cpp
+		../stubs.cpp
+		../http_handler.cpp
+#		http_ut2.cpp
+		main.cpp
+		basic_communication_constructor_test.cpp
+#		communicationtest.cpp
+#		messages_heartbeat.cpp
+#		messages_heartbeatack.cpp
+#		messages_getglobalmap.cpp
+#		messages_globalmapinfo.cpp
+#		messages_TakeGlOwnershipAck.cpp
+#		messages_CompTransferInfo.cpp
+#		messages_localLeader_start_monitoring_ack.cpp
+#		communication_test.cpp
+#		messages_osd_start_monitoring.cpp
+#		node_addition_gl.cpp
+#		local_leader_start_monitoring.cpp
+#		Recv_Proc_Start_Monitoring.cpp
+#		local_node_status.cpp
+#		get_Version_Id.cpp
+#		Get_Version_ID_Ack.cpp
+#		Block_Requests_Ack.cpp
+#		NodeStopCli.cpp
+#		messages_TakeGlOwnership.cpp
+#		message_GetServiceComponent.cpp
+#		message_GetServiceComponentAck.cpp
+#		message_OsdStartMonitoringAck.cpp
+#		message_CompTransferFinalStat.cpp
+#		message_NodeAdditionGlAck.cpp
+#		message_NodeAdditionCli.cpp
+#		messages_NodeAdditionCliAck.cpp
+#		messages_NodeRetire.cpp
+#		messages_NodeRetireAck.cpp
+#		messages_StopServicesAck.cpp
+#		messages_NodeStatus.cpp
+#		messages_NodeSystemStopCli.cpp
+#		messages_NodeStopCliAck.cpp
+#		messages_NodeFailover.cpp
+#		messages_NodeFailoverAck.cpp
+#		messages_TransferComponentsAck.cpp
+"""),
+        targetType = context.TYPE_EXE,
+        libs = context.split("""
+                #any external libs  that you may need.
+		protobuf
+		libraryUtils
+        """),
+        # only in case of unit test dir
+        wholeLibs = context.split("""
+               gmock
+	#	gtest
+        """),
+        requiredLibs = context.split("""
+		boost_thread-mt
+		boost_system-mt
+		python2.6
+		pthread
+        """)
+)

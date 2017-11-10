@@ -1,0 +1,1 @@
+g++ message_format_handler_ut2.cpp ../message_format_asynchronous.cpp ../message.cpp ../communication.cpp ../communication_helper.cpp ../message_binding.pb.cc ../stubs.cpp -I /usr/include/boost141/ -I ../../../include/ -lboost_system-mt -lboost_thread -lprotobuf -L /usr/lib64/boost141/ -lboost_thread-mt

@@ -1,0 +1,981 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/common/osm/globalLeader/monitoring.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/common/osm/globalLeader</a> - monitoring.cpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">391</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #include &lt;iostream&gt;
+<span class="lineNum">       2 </span>                :            : #include &lt;stdlib.h&gt;
+<span class="lineNum">       3 </span>                :            : #include &lt;set&gt;
+<span class="lineNum">       4 </span>                :            : #include &lt;unistd.h&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;boost/foreach.hpp&gt;
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : #include &quot;communication/callback.h&quot;
+<span class="lineNum">       8 </span>                :            : #include &quot;osm/osmServer/msg_handler.h&quot;
+<span class="lineNum">       9 </span>                :            : #include &quot;communication/message_type_enum.pb.h&quot;
+<span class="lineNum">      10 </span>                :            : #include &quot;osm/globalLeader/state_change_initiator.h&quot;
+<span class="lineNum">      11 </span>                :            : #include &quot;osm/globalLeader/monitoring.h&quot;
+<span class="lineNum">      12 </span>                :            : #include &quot;osm/osmServer/osm_info_file.h&quot;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : using namespace objectStorage;
+<span class="lineNum">      15 </span>                :            : namespace gl_monitoring
+<span class="lineNum">      16 </span>                :            : {
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : HealthMonitoringRecord::HealthMonitoringRecord(
+<span class="lineNum">      19 </span>                :            :         int msg_type,
+<span class="lineNum">      20 </span>                :            :         time_t last_updated_time,
+<span class="lineNum">      21 </span>                :            :         int status,
+<span class="lineNum">      22 </span>                :            :         int timeout,
+<span class="lineNum">      23 </span>                :            :         int hrbt_failure_count,
+<span class="lineNum">      24 </span>                :            :         int hfs_stat,
+<span class="lineNum">      25 </span>                :            :         int node_state
+<span class="lineNum">      26 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">      27 </span>                :            :         msg_type(msg_type),
+<span class="lineNum">      28 </span>                :            :         last_updated_time(last_updated_time),
+<span class="lineNum">      29 </span>                :            :         status(status),
+<span class="lineNum">      30 </span>                :            :         timeout(timeout),
+<span class="lineNum">      31 </span>                :            :         failure_count(0),
+<span class="lineNum">      32 </span>                :            :         hrbt_failure_count(hrbt_failure_count),
+<span class="lineNum">      33 </span>                :            :         hfs_stat(hfs_stat),
+<span class="lineNum">      34 </span>                :<span class="lineNoCov">          0 :         node_state(node_state)</span>
+<span class="lineNum">      35 </span>                :            : {
+<span class="lineNum">      36 </span>                :            : }
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_node_state(int node_state)</span>
+<span class="lineNum">      39 </span>                :            : {
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : }
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_hfs_stat(int hfs_stat)</span>
+<span class="lineNum">      44 </span>                :            : {
+<span class="lineNum">      45 </span>                :<span class="lineNoCov">          0 :         this-&gt;hfs_stat = hfs_stat;</span>
+<span class="lineNum">      46 </span>                :            : }
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :<span class="lineNoCov">          0 : int HealthMonitoringRecord::get_hfs_stat()</span>
+<span class="lineNum">      49 </span>                :            : {
+<span class="lineNum">      50 </span>                :<span class="lineNoCov">          0 :         return this-&gt;hfs_stat;</span>
+<span class="lineNum">      51 </span>                :            : }
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_hrbt_failure_count(int count)</span>
+<span class="lineNum">      54 </span>                :            : {
+<span class="lineNum">      55 </span>                :<span class="lineNoCov">          0 :         this-&gt;hrbt_failure_count = count;</span>
+<span class="lineNum">      56 </span>                :            : }
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::increment_failure_count()</span>
+<span class="lineNum">      59 </span>                :            : {
+<span class="lineNum">      60 </span>                :<span class="lineNoCov">          0 :         this-&gt;failure_count++;</span>
+<span class="lineNum">      61 </span>                :            : }
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 : int HealthMonitoringRecord::get_failure_count()</span>
+<span class="lineNum">      64 </span>                :            : {
+<span class="lineNum">      65 </span>                :<span class="lineNoCov">          0 :         return this-&gt;failure_count;</span>
+<span class="lineNum">      66 </span>                :            : }
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_expected_msg_type(int type)</span>
+<span class="lineNum">      69 </span>                :            : {
+<span class="lineNum">      70 </span>                :<span class="lineNoCov">          0 :         this-&gt;msg_type = type;</span>
+<span class="lineNum">      71 </span>                :            : }
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_timeout(int timeout_value)</span>
+<span class="lineNum">      74 </span>                :            : {
+<span class="lineNum">      75 </span>                :<span class="lineNoCov">          0 :         this-&gt;timeout = timeout_value;</span>
+<span class="lineNum">      76 </span>                :            : }
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>                :<span class="lineNoCov">          0 : int HealthMonitoringRecord::get_timeout()</span>
+<span class="lineNum">      79 </span>                :            : {
+<span class="lineNum">      80 </span>                :<span class="lineNoCov">          0 :         return (this-&gt;timeout*this-&gt;hrbt_failure_count);</span>
+<span class="lineNum">      81 </span>                :            : }
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :<span class="lineNoCov">          0 : int HealthMonitoringRecord::get_expected_msg_type()</span>
+<span class="lineNum">      84 </span>                :            : {
+<span class="lineNum">      85 </span>                :<span class="lineNoCov">          0 :         return this-&gt;msg_type;</span>
+<span class="lineNum">      86 </span>                :            : }
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 : time_t HealthMonitoringRecord::get_last_updated_time()</span>
+<span class="lineNum">      89 </span>                :            : {
+<span class="lineNum">      90 </span>                :<span class="lineNoCov">          0 :         return this-&gt;last_updated_time;</span>
+<span class="lineNum">      91 </span>                :            : }
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_last_updated_time(time_t last_updated_time)</span>
+<span class="lineNum">      94 </span>                :            : {
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :         this-&gt;last_updated_time = last_updated_time;</span>
+<span class="lineNum">      96 </span>                :            : }
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :<span class="lineNoCov">          0 : int HealthMonitoringRecord::get_status()</span>
+<span class="lineNum">      99 </span>                :            : {
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :         return this-&gt;status;</span>
+<span class="lineNum">     101 </span>                :            : }
+<span class="lineNum">     102 </span>                :            : 
+<span class="lineNum">     103 </span>                :<span class="lineNoCov">          0 : void HealthMonitoringRecord::set_status(int status)</span>
+<span class="lineNum">     104 </span>                :            : {
+<span class="lineNum">     105 </span>                :<span class="lineNoCov">          0 :         this-&gt;status = status;</span>
+<span class="lineNum">     106 </span>                :            : }
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>                :            : MonitoringThreadManager::MonitoringThreadManager(boost::shared_ptr&lt;Monitoring&gt; monitoring
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :         monitoring(monitoring)</span>
+<span class="lineNum">     111 </span>                :            : {
+<span class="lineNum">     112 </span>                :            :         /* One bucket and corresponding monitoring thread needs to be created in constructor too */
+<span class="lineNum">     113 </span>                :<span class="lineNoCov">          0 :         this-&gt;create_bucket();</span>
+<span class="lineNum">     114 </span>                :            : }
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :<span class="lineNoCov">          0 : bool MonitoringThreadManager::add_node_for_monitoring(boost::shared_ptr&lt;ServiceObject&gt; msg)</span>
+<span class="lineNum">     117 </span>                :            : {
+<span class="lineNum">     118 </span>                :<span class="lineNoCov">          0 :         return this-&gt;monitoring-&gt;add_entry_in_map(msg);</span>
+<span class="lineNum">     119 </span>                :            : }
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 : void MonitoringThreadManager::remove_node_from_monitoring(std::string node_id)</span>
+<span class="lineNum">     122 </span>                :            : {
+<span class="lineNum">     123 </span>                :<span class="lineNoCov">          0 :         this-&gt;monitoring-&gt;remove_node_from_monitoring(node_id);</span>
+<span class="lineNum">     124 </span>                :            : }
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :            : /* When STRM is rcvd from any LL */
+<span class="lineNum">     127 </span>                :            : void MonitoringThreadManager::monitor_service(
+<span class="lineNum">     128 </span>                :            :         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; strm_obj,
+<span class="lineNum">     129 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     131 </span>                :            : {
+<span class="lineNum">     132 </span>                :<span class="lineNoCov">          0 :         bool status = this-&gt;monitoring-&gt;update_map(strm_obj);</span>
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoringAck&gt; ll_strm_ack(new comm_messages::LocalLeaderStartMonitoringAck(strm_obj-&gt;get_service_id()));</span>
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :         if ( status )</span>
+<span class="lineNum">     135 </span>                :            :         {
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Map Updated&quot;);</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :                 if(this-&gt;bucket_fd_ratio.empty()) // TODO also check if bucket max limit reached</span>
+<span class="lineNum">     138 </span>                :            :                 {
+<span class="lineNum">     139 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;Creating Bucket&quot;);</span>
+<span class="lineNum">     140 </span>                :<span class="lineNoCov">          0 :                         this-&gt;create_bucket();</span>
+<span class="lineNum">     141 </span>                :            :                 }
+<span class="lineNum">     142 </span>                :<span class="lineNoCov">          0 :                 this-&gt;update_bucket(sync_comm);</span>
+<span class="lineNum">     143 </span>                :<span class="lineNoCov">          0 :                 ll_strm_ack-&gt;set_status(true);</span>
+<span class="lineNum">     144 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;STRM accepted for node: &quot; &lt;&lt; strm_obj-&gt;get_service_id() &lt;&lt; &quot;, sending status: &quot; &lt;&lt; ll_strm_ack-&gt;get_status());</span>
+<span class="lineNum">     145 </span>                :            :         }       
+<span class="lineNum">     146 </span>                :            :         else
+<span class="lineNum">     147 </span>                :            :         {
+<span class="lineNum">     148 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;STRM not  accepted for node: &quot; &lt;&lt; strm_obj-&gt;get_service_id());</span>
+<span class="lineNum">     149 </span>                :<span class="lineNoCov">          0 :                 ll_strm_ack-&gt;set_status(false);      </span>
+<span class="lineNum">     150 </span>                :            :         }
+<span class="lineNum">     151 </span>                :<span class="lineNoCov">          0 :         SuccessCallBack callback_obj;</span>
+<span class="lineNum">     152 </span>                :            :         MessageExternalInterface::sync_send_local_leader_start_monitoring_ack(
+<span class="lineNum">     153 </span>                :            :                                 ll_strm_ack.get(),
+<span class="lineNum">     154 </span>                :            :                                 sync_comm,
+<span class="lineNum">     155 </span>                :            :                                 boost::bind(&amp;SuccessCallBack::success_handler, &amp;callback_obj, _1),
+<span class="lineNum">     156 </span>                :            :                                 boost::bind(&amp;SuccessCallBack::failure_handler, &amp;callback_obj),
+<span class="lineNum">     157 </span>                :            :                                 30
+<span class="lineNum">     158 </span>                :<span class="lineNoCov">          0 :                         );</span>
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            : }
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :<span class="lineNoCov">          0 : void MonitoringThreadManager::create_bucket()</span>
+<span class="lineNum">     163 </span>                :            : {
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Creating bucket&quot;);</span>
+<span class="lineNum">     165 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr(new Bucket);</span>
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :         bucket_ptr-&gt;set_fd_limit(100);</span>
+<span class="lineNum">     167 </span>                :<span class="lineNoCov">          0 :         this-&gt;bucket_fd_ratio.push_back(std::tr1::tuple&lt;boost::shared_ptr&lt;Bucket&gt;, int64_t&gt;(bucket_ptr, 0));</span>
+<span class="lineNum">     168 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;MonitoringThread&gt; mon_thread_ptr(new MonitoringThread(this-&gt;monitoring, bucket_ptr));</span>
+<span class="lineNum">     169 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;boost::thread&gt; mon_thread(new boost::thread(&amp;MonitoringThread::run, mon_thread_ptr));</span>
+<span class="lineNum">     170 </span>                :<span class="lineNoCov">          0 :         this-&gt;mon_threads.push_back(mon_thread);</span>
+<span class="lineNum">     171 </span>                :            : }
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :<span class="lineNoCov">          0 : void MonitoringThreadManager::stop_all_mon_threads()</span>
+<span class="lineNum">     174 </span>                :            : {
+<span class="lineNum">     175 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;boost::shared_ptr&lt;boost::thread&gt; &gt;::iterator thread_it = this-&gt;mon_threads.begin();</span>
+<span class="lineNum">     176 </span>                :<span class="lineNoCov">          0 :         for ( ; thread_it != this-&gt;mon_threads.end(); ++thread_it )</span>
+<span class="lineNum">     177 </span>                :            :         {
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :                 (*thread_it)-&gt;interrupt();</span>
+<span class="lineNum">     179 </span>                :<span class="lineNoCov">          0 :                 (*thread_it)-&gt;join();</span>
+<span class="lineNum">     180 </span>                :            :         }
+<span class="lineNum">     181 </span>                :            : }
+<span class="lineNum">     182 </span>                :            : 
+<span class="lineNum">     183 </span>                :            : void MonitoringThreadManager::update_bucket(
+<span class="lineNum">     184 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; sync_comm
+<span class="lineNum">     185 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     186 </span>                :            : {
+<span class="lineNum">     187 </span>                :<span class="lineNoCov">          0 :         std::list&lt;std::tr1::tuple&lt;boost::shared_ptr&lt;Bucket&gt;, int64_t&gt; &gt;::iterator it = this-&gt;bucket_fd_ratio.begin();</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :         for (; it != this-&gt;bucket_fd_ratio.end(); ++it)</span>
+<span class="lineNum">     189 </span>                :            :         {
+<span class="lineNum">     190 </span>                :<span class="lineNoCov">          0 :                 if ((std::tr1::get&lt;0&gt;(*it))-&gt;get_fd_limit() &gt; std::tr1::get&lt;1&gt;(*it))</span>
+<span class="lineNum">     191 </span>                :            :                 {
+<span class="lineNum">     192 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;Breaking.... &quot;);</span>
+<span class="lineNum">     193 </span>                :<span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">     194 </span>                :            :                 }
+<span class="lineNum">     195 </span>                :            :         }
+<span class="lineNum">     196 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;bucket_fd_ratio.end())</span>
+<span class="lineNum">     197 </span>                :            :         {
+<span class="lineNum">     198 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Adding fd: &quot;&lt;&lt;sync_comm-&gt;get_fd()&lt;&lt;&quot; in bucket&quot;);</span>
+<span class="lineNum">     199 </span>                :<span class="lineNoCov">          0 :                 (std::tr1::get&lt;0&gt;(*it))-&gt;add_fd(sync_comm-&gt;get_fd(), sync_comm);</span>
+<span class="lineNum">     200 </span>                :            :         }
+<span class="lineNum">     201 </span>                :            : }
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            : MonitoringThread::MonitoringThread(
+<span class="lineNum">     204 </span>                :            :         boost::shared_ptr&lt;Monitoring&gt; monitoring,
+<span class="lineNum">     205 </span>                :            :         boost::shared_ptr&lt;Bucket&gt; bucket_ptr
+<span class="lineNum">     206 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">     207 </span>                :            :         monitoring(monitoring),
+<span class="lineNum">     208 </span>                :<span class="lineNoCov">          0 :         bucket(bucket_ptr)</span>
+<span class="lineNum">     209 </span>                :            : {
+<span class="lineNum">     210 </span>                :<span class="lineNoCov">          0 :         GLUtils util_obj;</span>
+<span class="lineNum">     211 </span>                :<span class="lineNoCov">          0 :         this-&gt;config_parser = util_obj.get_config();</span>
+<span class="lineNum">     212 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;New Monitoring thread created&quot;);</span>
+<span class="lineNum">     213 </span>                :            : }
+<span class="lineNum">     214 </span>                :            : 
+<span class="lineNum">     215 </span>                :<span class="lineNoCov">          0 : bool MonitoringThread::add_bucket(boost::shared_ptr&lt;Bucket&gt; bucket_ptr)</span>
+<span class="lineNum">     216 </span>                :            : {
+<span class="lineNum">     217 </span>                :<span class="lineNoCov">          0 :         this-&gt;bucket = bucket_ptr;</span>
+<span class="lineNum">     218 </span>                :<span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     219 </span>                :            : }
+<span class="lineNum">     220 </span>                :            : 
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 : boost::shared_ptr&lt;comm_messages::HeartBeat&gt; MonitoringThread::receive_heartbeat(int64_t fd)</span>
+<span class="lineNum">     222 </span>                :            : {
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm_obj = this-&gt;bucket-&gt;get_comm_obj(fd);</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;MessageResult&lt;comm_messages::HeartBeat&gt; &gt; hb_msg_wrap = MessageExternalInterface::sync_read_heartbeat(comm_obj, 20);</span>
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::HeartBeat&gt; hb;</span>
+<span class="lineNum">     226 </span>                :<span class="lineNoCov">          0 :         if(hb_msg_wrap-&gt;get_status() == true)</span>
+<span class="lineNum">     227 </span>                :            :         {
+<span class="lineNum">     228 </span>                :<span class="lineNoCov">          0 :                 hb.reset(hb_msg_wrap-&gt;get_message_object());</span>
+<span class="lineNum">     229 </span>                :            :         }
+<span class="lineNum">     230 </span>                :            :         else    //if any error(socket error or type error), remove fd from bucket
+<span class="lineNum">     231 </span>                :            :         {
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;removing fd from bucket&quot; &lt;&lt; fd);</span>
+<span class="lineNum">     233 </span>                :<span class="lineNoCov">          0 :                 this-&gt;bucket-&gt;remove_fd(fd);</span>
+<span class="lineNum">     234 </span>                :            :         }
+<span class="lineNum">     235 </span>                :<span class="lineNoCov">          0 :         return hb;</span>
+<span class="lineNum">     236 </span>                :            : }
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            : //UNCOVERED_CODE_BEGIN:
+<span class="lineNum">     239 </span>                :            : void MonitoringThread::close_all_sockets()
+<span class="lineNum">     240 </span>                :            : {
+<span class="lineNum">     241 </span>                :            :         std::set&lt;int64_t&gt; ll_fd_set = this-&gt;bucket-&gt;get_fd_list();
+<span class="lineNum">     242 </span>                :            :         BOOST_FOREACH(int64_t fd, ll_fd_set)
+<span class="lineNum">     243 </span>                :            :         {
+<span class="lineNum">     244 </span>                :            :                 close(fd);
+<span class="lineNum">     245 </span>                :            :         }
+<span class="lineNum">     246 </span>                :            : }
+<span class="lineNum">     247 </span>                :            : //UNCOVERED_CODE_END
+<span class="lineNum">     248 </span>                :            : 
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 : void MonitoringThread::run()</span>
+<span class="lineNum">     250 </span>                :            : {
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Starting hrbt receiver thread&quot;);</span>
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :         GLUtils utils_obj;</span>
+<span class="lineNum">     253 </span>                :            :         try
+<span class="lineNum">     254 </span>                :            :         {
+<span class="lineNum">     255 </span>                :<span class="lineNoCov">          0 :                 while(1)</span>
+<span class="lineNum">     256 </span>                :            :                 {
+<span class="lineNum">     257 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::sleep( boost::posix_time::seconds(5));      //TODO: Just for testing purpose</span>
+<span class="lineNum">     258 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::interruption_point();</span>
+<span class="lineNum">     259 </span>                :            :                         int error;
+<span class="lineNum">     260 </span>                :<span class="lineNoCov">          0 :                         std::set&lt;int64_t&gt; ll_fd_set = this-&gt;bucket-&gt;get_fd_list();</span>
+<span class="lineNum">     261 </span>                :<span class="lineNoCov">          0 :                         for (std::set&lt;int64_t&gt;::iterator it = ll_fd_set.begin(); it != ll_fd_set.end(); ++it) {</span>
+<span class="lineNum">     262 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;Elements in bucket&quot; &lt;&lt; *it);</span>
+<span class="lineNum">     263 </span>                :            :                         }
+<span class="lineNum">     264 </span>                :<span class="lineNoCov">          0 :                         if (ll_fd_set.empty())</span>
+<span class="lineNum">     265 </span>                :            :                         {
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :                                 continue;</span>
+<span class="lineNum">     267 </span>                :            :                         }
+<span class="lineNum">     268 </span>                :<span class="lineNoCov">          0 :                         std::set&lt;int64_t&gt; active_fds = utils_obj.selectOnSockets(ll_fd_set, error, this-&gt;config_parser-&gt;hrbt_select_timeoutValue());</span>
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :                         if ( error != 0 )</span>
+<span class="lineNum">     270 </span>                :            :                         {
+<span class="lineNum">     271 </span>                :            :                                 //OSDLOG(ERROR, &quot;Error while selecting on sockets: &quot; &lt;&lt; error);
+<span class="lineNum">     272 </span>                :            :                                 //check for fatal error else continue
+<span class="lineNum">     273 </span>                :            :                         }
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :                         for (std::set&lt;int64_t&gt;::iterator it = active_fds.begin(); it != active_fds.end(); ++it)</span>
+<span class="lineNum">     275 </span>                :            :                         {
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :                                 boost::shared_ptr&lt;comm_messages::HeartBeat&gt; msg(this-&gt;receive_heartbeat(*it));</span>
+<span class="lineNum">     277 </span>                :<span class="lineNoCov">          0 :                                 if(msg)</span>
+<span class="lineNum">     278 </span>                :            :                                 {
+<span class="lineNum">     279 </span>                :<span class="lineNoCov">          0 :                                         OSDLOG(INFO, &quot;Rcvd heartbeat from &quot; &lt;&lt; msg-&gt;get_service_id());</span>
+<span class="lineNum">     280 </span>                :            :                                         //if(!this-&gt;monitoring-&gt;update_time_in_map(msg-&gt;get_service_id())) //Node status is marked failed
+<span class="lineNum">     281 </span>                :<span class="lineNoCov">          0 :                                         if(!this-&gt;monitoring-&gt;update_time_in_map(msg-&gt;get_service_id(), msg-&gt;get_hfs_stat())) //Node status is marked failed</span>
+<span class="lineNum">     282 </span>                :            :                                         {
+<span class="lineNum">     283 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Node status is marked failed, removing fd from bucket&quot; &lt;&lt; *it);</span>
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;bucket-&gt;remove_fd(*it);</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :                                                 continue;</span>
+<span class="lineNum">     286 </span>                :            :                                         }
+<span class="lineNum">     287 </span>                :<span class="lineNoCov">          0 :                                         this-&gt;send_heartbeat_ack(*it, msg-&gt;get_sequence(), msg-&gt;get_service_id());</span>
+<span class="lineNum">     288 </span>                :            :                                 }
+<span class="lineNum">     289 </span>                :            :                         }
+<span class="lineNum">     290 </span>                :            :                 }
+<span class="lineNum">     291 </span>                :            :         }
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :         catch(const boost::thread_interrupted&amp;)</span>
+<span class="lineNum">     293 </span>                :            :         {
+<span class="lineNum">     294 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Closing Monitoring Thread&quot;);</span>
+<span class="lineNum">     295 </span>                :            :         }
+<span class="lineNum">     296 </span>                :            : }
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :<span class="lineNoCov">          0 : void MonitoringThread::send_heartbeat_ack(int64_t fd, uint32_t seq_no, std::string node_id)</span>
+<span class="lineNum">     299 </span>                :            : {
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :         int node_status = this-&gt;monitoring-&gt;get_node_status(node_id);</span>
+<span class="lineNum">     301 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::HeartBeatAck&gt; hb_ack(new comm_messages::HeartBeatAck(seq_no, node_status));</span>
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm_ptr = this-&gt;bucket-&gt;get_comm_obj(fd);</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :         SuccessCallBack callback_obj;</span>
+<span class="lineNum">     304 </span>                :            :         MessageExternalInterface::sync_send_heartbeat_ack(
+<span class="lineNum">     305 </span>                :            :                 hb_ack.get(),
+<span class="lineNum">     306 </span>                :            :                 comm_ptr,
+<span class="lineNum">     307 </span>                :            :                 boost::bind(&amp;SuccessCallBack::success_handler, &amp;callback_obj, _1),
+<span class="lineNum">     308 </span>                :            :                 boost::bind(&amp;SuccessCallBack::failure_handler, &amp;callback_obj),
+<span class="lineNum">     309 </span>                :            :                 30
+<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :                 );</span>
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :         OSDLOG(DEBUG, &quot;Sent hb ack to LL&quot;);</span>
+<span class="lineNum">     312 </span>                :            : }
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            : //Not needed anymore
+<span class="lineNum">     315 </span>                :            : /*
+<span class="lineNum">     316 </span>                :            : void MonitoringThread::update_time_in_map(std::string node_id)
+<span class="lineNum">     317 </span>                :            : {
+<span class="lineNum">     318 </span>                :            : //      this-&gt;monitoring-&gt;update_time_in_map(node_id);
+<span class="lineNum">     319 </span>                :            : }*/
+<span class="lineNum">     320 </span>                :            : 
+<span class="lineNum">     321 </span>                :<span class="lineNoCov">          0 : Monitoring::~Monitoring()</span>
+<span class="lineNum">     322 </span>                :            : {
+<span class="lineNum">     323 </span>                :            :         ;
+<span class="lineNum">     324 </span>                :            : }
+<span class="lineNum">     325 </span>                :            : 
+<span class="lineNum">     326 </span>                :            : /*cool::SharedPtr&lt;config_file::OsdServiceConfigFileParser&gt; get_osm_service_config()
+<span class="lineNum">     327 </span>                :            : {
+<span class="lineNum">     328 </span>                :            :         cool::config::ConfigurationBuilder&lt;config_file::OsdServiceConfigFileParser&gt; config_file_builder;
+<span class="lineNum">     329 </span>                :            :         char const * const osd_config_dir = ::getenv(&quot;OBJECT_STORAGE_CONFIG&quot;);
+<span class="lineNum">     330 </span>                :            :         if (osd_config_dir)
+<span class="lineNum">     331 </span>                :            :                 config_file_builder.readFromFile(std::string(osd_config_dir).append(&quot;/OsdServiceConfigFile.conf&quot;));
+<span class="lineNum">     332 </span>                :            :         else
+<span class="lineNum">     333 </span>                :            :                 config_file_builder.readFromFile(&quot;/opt/HYDRAstor/objectStorage/configFiles/product/libConfig/OsdServiceConfigFile.conf&quot;);
+<span class="lineNum">     334 </span>                :            :         return config_file_builder.buildConfiguration();
+<span class="lineNum">     335 </span>                :            : }*/
+<span class="lineNum">     336 </span>                :            : 
+<span class="lineNum">     337 </span>                :            : MonitoringImpl::MonitoringImpl(
+<span class="lineNum">     338 </span>                :            :         boost::shared_ptr&lt;osm_info_file_manager::NodeInfoFileWriteHandler&gt; node_info_file_writer
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 : ):</span>
+<span class="lineNum">     340 </span>                :<span class="lineNoCov">          0 :         node_info_file_writer(node_info_file_writer)</span>
+<span class="lineNum">     341 </span>                :            : {
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :         GLUtils util_obj;</span>
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :         cool::SharedPtr&lt;config_file::OsdServiceConfigFileParser&gt; parser_ptr = util_obj.get_osm_timeout_config();</span>
+<span class="lineNum">     344 </span>                :<span class="lineNoCov">          0 :         cool::SharedPtr&lt;config_file::OSMConfigFileParser&gt; osm_parser_ptr = util_obj.get_config();</span>
+<span class="lineNum">     345 </span>                :<span class="lineNoCov">          0 :         this-&gt;hrbt_failure_count = parser_ptr-&gt;ll_hrbt_failure_countValue();</span>
+<span class="lineNum">     346 </span>                :<span class="lineNoCov">          0 :         this-&gt;strm_failure_count = parser_ptr-&gt;ll_strm_failure_countValue();</span>
+<span class="lineNum">     347 </span>                :<span class="lineNoCov">          0 :         this-&gt;hrbt_timeout = parser_ptr-&gt;heartbeat_timeoutValue();</span>
+<span class="lineNum">     348 </span>                :<span class="lineNoCov">          0 :         this-&gt;strm_timeout = parser_ptr-&gt;ll_strm_timeoutValue();</span>
+<span class="lineNum">     349 </span>                :<span class="lineNoCov">          0 :         this-&gt;system_stop_file = osm_parser_ptr-&gt;system_stop_fileValue();</span>
+<span class="lineNum">     350 </span>                :<span class="lineNoCov">          0 :         this-&gt;system_stop = false;</span>
+<span class="lineNum">     351 </span>                :<span class="lineNoCov">          0 :         this-&gt;cluster_recovery_identification_count = 0;</span>
+<span class="lineNum">     352 </span>                :<span class="lineNoCov">          0 :         this-&gt;cluster_recovery_in_progress = false;</span>
+<span class="lineNum">     353 </span>                :            : }
+<span class="lineNum">     354 </span>                :            : 
+<span class="lineNum">     355 </span>                :            : 
+<span class="lineNum">     356 </span>                :<span class="lineNoCov">          0 : void MonitoringImpl::initialize_prepare_and_add_entry(boost::function&lt;bool(std::string, int)&gt; prepare_and_add_entry)</span>
+<span class="lineNum">     357 </span>                :            : {
+<span class="lineNum">     358 </span>                :<span class="lineNoCov">          0 :         this-&gt;prepare_and_add_entry = prepare_and_add_entry;</span>
+<span class="lineNum">     359 </span>                :            : }
+<span class="lineNum">     360 </span>                :            : 
+<span class="lineNum">     361 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::if_node_already_exists(std::string node_id)</span>
+<span class="lineNum">     362 </span>                :            : {
+<span class="lineNum">     363 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     364 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(node_id);</span>
+<span class="lineNum">     365 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     366 </span>                :            :         {
+<span class="lineNum">     367 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     368 </span>                :            :         }
+<span class="lineNum">     369 </span>                :            :         else
+<span class="lineNum">     370 </span>                :            :         {
+<span class="lineNum">     371 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     372 </span>                :            :         }
+<span class="lineNum">     373 </span>                :            : }
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :            : /* Only called when STRM is received from LL */
+<span class="lineNum">     376 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::update_map(boost::shared_ptr&lt;comm_messages::LocalLeaderStartMonitoring&gt; msg)</span>
+<span class="lineNum">     377 </span>                :            : {
+<span class="lineNum">     378 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Updating Active Node Map for service id: &quot; &lt;&lt; msg-&gt;get_service_id());</span>
+<span class="lineNum">     379 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     380 </span>                :            : 
+<span class="lineNum">     381 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(msg-&gt;get_service_id());</span>
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :         bool status = false;</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :         if ( it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     384 </span>                :            :         {
+<span class="lineNum">     385 </span>                :<span class="lineNoCov">          0 :                 if(it-&gt;second-&gt;get_status() == network_messages::NEW or it-&gt;second-&gt;get_status() == network_messages::RETIRING or (it-&gt;second-&gt;get_status() == network_messages::RETIRED and msg-&gt;get_type() == messageTypeEnum::typeEnums::LL_START_MONITORING))</span>
+<span class="lineNum">     386 </span>                :            :                 {
+<span class="lineNum">     387 </span>                :<span class="lineNoCov">          0 :                         status = false;</span>
+<span class="lineNum">     388 </span>                :            :                 }
+<span class="lineNum">     389 </span>                :<span class="lineNoCov">          0 :                 else if(msg-&gt;get_type() == messageTypeEnum::typeEnums::NODE_RETIRE)</span>
+<span class="lineNum">     390 </span>                :            :                 {
+<span class="lineNum">     391 </span>                :<span class="lineNoCov">          0 :                         if(it-&gt;second-&gt;get_status() == network_messages::FAILED)</span>
+<span class="lineNum">     392 </span>                :<span class="lineNoCov">          0 :                                 status = false;</span>
+<span class="lineNum">     393 </span>                :<span class="lineNoCov">          0 :                         else if(it-&gt;second-&gt;get_status() == network_messages::RECOVERED)</span>
+<span class="lineNum">     394 </span>                :            :                         {
+<span class="lineNum">     395 </span>                :<span class="lineNoCov">          0 :                                 status = true;</span>
+<span class="lineNum">     396 </span>                :<span class="lineNoCov">          0 :                                 it-&gt;second-&gt;set_status(network_messages::RETIRED);</span>
+<span class="lineNum">     397 </span>                :            :                         }
+<span class="lineNum">     398 </span>                :            :                         else
+<span class="lineNum">     399 </span>                :            :                         {
+<span class="lineNum">     400 </span>                :<span class="lineNoCov">          0 :                                 it-&gt;second-&gt;set_status(network_messages::RETIRING);</span>
+<span class="lineNum">     401 </span>                :<span class="lineNoCov">          0 :                                 status = false;</span>
+<span class="lineNum">     402 </span>                :            :                         }
+<span class="lineNum">     403 </span>                :            :                 }
+<span class="lineNum">     404 </span>                :            :                 else
+<span class="lineNum">     405 </span>                :            :                 {
+<span class="lineNum">     406 </span>                :            :                         time_t now;
+<span class="lineNum">     407 </span>                :<span class="lineNoCov">          0 :                         time(&amp;now);</span>
+<span class="lineNum">     408 </span>                :<span class="lineNoCov">          0 :                         it-&gt;second-&gt;set_last_updated_time(now);</span>
+<span class="lineNum">     409 </span>                :<span class="lineNoCov">          0 :                         it-&gt;second-&gt;set_expected_msg_type(HRBT);</span>
+<span class="lineNum">     410 </span>                :            : //                      it-&gt;second-&gt;set_comm_obj(sync_comm);
+<span class="lineNum">     411 </span>                :            :                         //it-&gt;second-&gt;set_status(RUNNING);
+<span class="lineNum">     412 </span>                :<span class="lineNoCov">          0 :                         it-&gt;second-&gt;set_timeout(this-&gt;hrbt_timeout);</span>
+<span class="lineNum">     413 </span>                :<span class="lineNoCov">          0 :                         it-&gt;second-&gt;set_hrbt_failure_count(this-&gt;hrbt_failure_count);</span>
+<span class="lineNum">     414 </span>                :<span class="lineNoCov">          0 :                         status = true;</span>
+<span class="lineNum">     415 </span>                :            :                 }
+<span class="lineNum">     416 </span>                :            :         }
+<span class="lineNum">     417 </span>                :<span class="lineNoCov">          0 :         return status;</span>
+<span class="lineNum">     418 </span>                :            : }
+<span class="lineNum">     419 </span>                :            : 
+<span class="lineNum">     420 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::register_status(std::string node_id, int operation, int status)</span>
+<span class="lineNum">     421 </span>                :            : {
+<span class="lineNum">     422 </span>                :<span class="lineNoCov">          0 :         bool mod_status = false;</span>
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :         if(!prepare_and_add_entry.empty())</span>
+<span class="lineNum">     424 </span>                :            :         {
+<span class="lineNum">     425 </span>                :<span class="lineNoCov">          0 :                 mod_status = prepare_and_add_entry(node_id, operation);</span>
+<span class="lineNum">     426 </span>                :<span class="lineNoCov">          0 :                 if(mod_status)</span>
+<span class="lineNum">     427 </span>                :            :                 {
+<span class="lineNum">     428 </span>                :<span class="lineNoCov">          0 :                         bool success = this-&gt;node_info_file_writer-&gt;update_record(node_id, status);</span>
+<span class="lineNum">     429 </span>                :<span class="lineNoCov">          0 :                         if ( success )</span>
+<span class="lineNum">     430 </span>                :            :                         {
+<span class="lineNum">     431 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Node Info File updated with status &quot; &lt;&lt; status &lt;&lt; &quot; for node &quot; &lt;&lt; node_id);</span>
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :                                 return true;</span>
+<span class="lineNum">     433 </span>                :            :                         }
+<span class="lineNum">     434 </span>                :            :                         else
+<span class="lineNum">     435 </span>                :            :                         {
+<span class="lineNum">     436 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(ERROR, &quot;Node Info File could not be opened for updating status for node &quot; &lt;&lt; node_id);</span>
+<span class="lineNum">     437 </span>                :<span class="lineNoCov">          0 :                                 return false;</span>
+<span class="lineNum">     438 </span>                :            :                         }
+<span class="lineNum">     439 </span>                :            :                 }
+<span class="lineNum">     440 </span>                :            :                 else
+<span class="lineNum">     441 </span>                :            :                 {
+<span class="lineNum">     442 </span>                :<span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">     443 </span>                :            :                 }
+<span class="lineNum">     444 </span>                :            :                 
+<span class="lineNum">     445 </span>                :            :         }
+<span class="lineNum">     446 </span>                :            :         else
+<span class="lineNum">     447 </span>                :            :         {
+<span class="lineNum">     448 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;Function pointer empty&quot;);</span>
+<span class="lineNum">     449 </span>                :            :         }
+<span class="lineNum">     450 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     451 </span>                :            : 
+<span class="lineNum">     452 </span>                :            : }
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :<span class="lineNoCov">          0 : int MonitoringImpl::get_node_status(std::string node_id)</span>
+<span class="lineNum">     455 </span>                :            : {
+<span class="lineNum">     456 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     457 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(node_id);</span>
+<span class="lineNum">     458 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     459 </span>                :            :         {
+<span class="lineNum">     460 </span>                :<span class="lineNoCov">          0 :                 return it-&gt;second-&gt;get_status();</span>
+<span class="lineNum">     461 </span>                :            :         }
+<span class="lineNum">     462 </span>                :            :         else
+<span class="lineNum">     463 </span>                :            :         {
+<span class="lineNum">     464 </span>                :<span class="lineNoCov">          0 :                 return network_messages::INVALID_NODE;</span>
+<span class="lineNum">     465 </span>                :            :         }
+<span class="lineNum">     466 </span>                :            : }
+<span class="lineNum">     467 </span>                :            : 
+<span class="lineNum">     468 </span>                :            : void MonitoringImpl::retrieve_node_status(
+<span class="lineNum">     469 </span>                :            :         boost::shared_ptr&lt;comm_messages::NodeStatus&gt; node_status_req,
+<span class="lineNum">     470 </span>                :            :         boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm_obj
+<span class="lineNum">     471 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     472 </span>                :            : {       
+<span class="lineNum">     473 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     474 </span>                :            :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = 
+<span class="lineNum">     475 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;active_node_map.find(node_status_req-&gt;get_node()-&gt;get_service_id());</span>
+<span class="lineNum">     476 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;comm_messages::NodeStatusAck&gt; node_status_ack;</span>
+<span class="lineNum">     477 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     478 </span>                :            :         {
+<span class="lineNum">     479 </span>                :<span class="lineNoCov">          0 :                 node_status_ack.reset(new comm_messages::NodeStatusAck(network_messages::NodeStatusEnum(it-&gt;second-&gt;get_status())));</span>
+<span class="lineNum">     480 </span>                :            :         }
+<span class="lineNum">     481 </span>                :            :         else
+<span class="lineNum">     482 </span>                :            :         {
+<span class="lineNum">     483 </span>                :<span class="lineNoCov">          0 :                 node_status_ack.reset(new comm_messages::NodeStatusAck(network_messages::NodeStatusEnum(network_messages::INVALID_NODE)));</span>
+<span class="lineNum">     484 </span>                :            : 
+<span class="lineNum">     485 </span>                :            :         }
+<span class="lineNum">     486 </span>                :<span class="lineNoCov">          0 :         SuccessCallBack callback_obj;</span>
+<span class="lineNum">     487 </span>                :            :         MessageExternalInterface::sync_send_node_status_ack(
+<span class="lineNum">     488 </span>                :            :                                 node_status_ack.get(),
+<span class="lineNum">     489 </span>                :            :                                 comm_obj,
+<span class="lineNum">     490 </span>                :            :                                 boost::bind(&amp;SuccessCallBack::success_handler, &amp;callback_obj, _1),
+<span class="lineNum">     491 </span>                :            :                                 boost::bind(&amp;SuccessCallBack::failure_handler, &amp;callback_obj),
+<span class="lineNum">     492 </span>                :            :                                 30
+<span class="lineNum">     493 </span>                :<span class="lineNoCov">          0 :                                 );</span>
+<span class="lineNum">     494 </span>                :            : 
+<span class="lineNum">     495 </span>                :            : }
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :            : void MonitoringImpl::get_nodes_status(
+<span class="lineNum">     498 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_registered,
+<span class="lineNum">     499 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_failed,
+<span class="lineNum">     500 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_retired,
+<span class="lineNum">     501 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_recovered
+<span class="lineNum">     502 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     503 </span>                :            : {
+<span class="lineNum">     504 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     505 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.begin();</span>
+<span class="lineNum">     506 </span>                :<span class="lineNoCov">          0 :         for(; it != this-&gt;active_node_map.end(); ++it)</span>
+<span class="lineNum">     507 </span>                :            :         {
+<span class="lineNum">     508 </span>                :<span class="lineNoCov">          0 :                 if(it-&gt;second-&gt;get_status() == network_messages::REGISTERED)</span>
+<span class="lineNum">     509 </span>                :            :                 {
+<span class="lineNum">     510 </span>                :<span class="lineNoCov">          0 :                         nodes_registered.push_back(it-&gt;first);</span>
+<span class="lineNum">     511 </span>                :            :                 }
+<span class="lineNum">     512 </span>                :<span class="lineNoCov">          0 :                 else if(it-&gt;second-&gt;get_status() == network_messages::FAILED or</span>
+<span class="lineNum">     513 </span>                :            :                         it-&gt;second-&gt;get_status() == network_messages::RETIRING_FAILED or
+<span class="lineNum">     514 </span>                :            :                         it-&gt;second-&gt;get_status() == network_messages::NODE_STOPPING) //Handling NODE_STOPPING same as FAILED
+<span class="lineNum">     515 </span>                :            :                 {
+<span class="lineNum">     516 </span>                :<span class="lineNoCov">          0 :                         nodes_failed.push_back(it-&gt;first);</span>
+<span class="lineNum">     517 </span>                :            :                 }
+<span class="lineNum">     518 </span>                :<span class="lineNoCov">          0 :                 else if(it-&gt;second-&gt;get_status() == network_messages::RETIRING)</span>
+<span class="lineNum">     519 </span>                :            :                 {
+<span class="lineNum">     520 </span>                :<span class="lineNoCov">          0 :                         nodes_retired.push_back(it-&gt;first);</span>
+<span class="lineNum">     521 </span>                :            :                 }
+<span class="lineNum">     522 </span>                :<span class="lineNoCov">          0 :                 else if(it-&gt;second-&gt;get_status() == network_messages::RECOVERED or</span>
+<span class="lineNum">     523 </span>                :            :                         it-&gt;second-&gt;get_status() == network_messages::NODE_STOPPED or
+<span class="lineNum">     524 </span>                :            :                         it-&gt;second-&gt;get_status() == network_messages::RETIRED or
+<span class="lineNum">     525 </span>                :            :                         it-&gt;second-&gt;get_status() == network_messages::RETIRED_RECOVERED
+<span class="lineNum">     526 </span>                :            :                         )
+<span class="lineNum">     527 </span>                :            :                 {
+<span class="lineNum">     528 </span>                :<span class="lineNoCov">          0 :                         nodes_recovered.push_back(it-&gt;first);</span>
+<span class="lineNum">     529 </span>                :            :                 }
+<span class="lineNum">     530 </span>                :            :         }
+<span class="lineNum">     531 </span>                :            : }
+<span class="lineNum">     532 </span>                :            : 
+<span class="lineNum">     533 </span>                :            : void MonitoringImpl::get_node_status_while_cluster_recovery(
+<span class="lineNum">     534 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_unknown,
+<span class="lineNum">     535 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_totally_failed,
+<span class="lineNum">     536 </span>                :            :         std::vector&lt;std::string&gt; &amp;nodes_in_stopping_state
+<span class="lineNum">     537 </span>                :<span class="lineNoCov">          0 : )</span>
+<span class="lineNum">     538 </span>                :            : {
+<span class="lineNum">     539 </span>                :<span class="lineNoCov">          0 :         nodes_unknown = this-&gt;unknown_status_nodes;</span>
+<span class="lineNum">     540 </span>                :<span class="lineNoCov">          0 :         nodes_totally_failed = this-&gt;totally_failed_node_list;</span>
+<span class="lineNum">     541 </span>                :<span class="lineNoCov">          0 :         nodes_in_stopping_state = this-&gt;stopping_nodes;</span>
+<span class="lineNum">     542 </span>                :            : 
+<span class="lineNum">     543 </span>                :            : }
+<span class="lineNum">     544 </span>                :            : 
+<span class="lineNum">     545 </span>                :<span class="lineNoCov">          0 : std::map&lt;std::string, network_messages::NodeStatusEnum&gt; MonitoringImpl::get_all_nodes_status()</span>
+<span class="lineNum">     546 </span>                :            : {
+<span class="lineNum">     547 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, network_messages::NodeStatusEnum&gt; ret;</span>
+<span class="lineNum">     548 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.begin();</span>
+<span class="lineNum">     549 </span>                :<span class="lineNoCov">          0 :         for(; it != this-&gt;active_node_map.end(); ++it)</span>
+<span class="lineNum">     550 </span>                :            :         {
+<span class="lineNum">     551 </span>                :<span class="lineNoCov">          0 :                 ret.insert(std::make_pair(it-&gt;first, static_cast&lt;network_messages::NodeStatusEnum&gt;(it-&gt;second-&gt;get_status())));</span>
+<span class="lineNum">     552 </span>                :            :         }
+<span class="lineNum">     553 </span>                :<span class="lineNoCov">          0 :         return ret;</span>
+<span class="lineNum">     554 </span>                :            : }
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :<span class="lineNoCov">          0 : void MonitoringImpl::monitor_for_recovery()             //Recovery Identifier Thread</span>
+<span class="lineNum">     557 </span>                :            : {
+<span class="lineNum">     558 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Starting Recovery Identifier Thread&quot;)</span>
+<span class="lineNum">     559 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it;</span>
+<span class="lineNum">     560 </span>                :            :         try
+<span class="lineNum">     561 </span>                :            :         {
+<span class="lineNum">     562 </span>                :<span class="lineNoCov">          0 :                 for ( it = this-&gt;active_node_map.begin(); it != this-&gt;active_node_map.end(); ++it )</span>
+<span class="lineNum">     563 </span>                :            :                 {
+<span class="lineNum">     564 </span>                :            :                         time_t now;
+<span class="lineNum">     565 </span>                :<span class="lineNoCov">          0 :                         time(&amp;now);</span>
+<span class="lineNum">     566 </span>                :<span class="lineNoCov">          0 :                         it-&gt;second-&gt;set_last_updated_time(now);</span>
+<span class="lineNum">     567 </span>                :            :                 }
+<span class="lineNum">     568 </span>                :            : 
+<span class="lineNum">     569 </span>                :<span class="lineNoCov">          0 :                 while(1)</span>
+<span class="lineNum">     570 </span>                :            :                 {
+<span class="lineNum">     571 </span>                :<span class="lineNoCov">          0 :                         int healthy_node_count = 0;</span>
+<span class="lineNum">     572 </span>                :<span class="lineNoCov">          0 :                         this-&gt;mtx.lock();</span>
+<span class="lineNum">     573 </span>                :<span class="lineNoCov">          0 :                         for ( it = this-&gt;active_node_map.begin(); it != this-&gt;active_node_map.end(); ++it )</span>
+<span class="lineNum">     574 </span>                :            :                         {
+<span class="lineNum">     575 </span>                :<span class="lineNoCov">          0 :                                 std::string node_id = it-&gt;first;</span>
+<span class="lineNum">     576 </span>                :            :                                 time_t now;
+<span class="lineNum">     577 </span>                :<span class="lineNoCov">          0 :                                 time(&amp;now);</span>
+<span class="lineNum">     578 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(DEBUG, &quot;HM: Last updated time diff: &quot; &lt;&lt; (now - it-&gt;second-&gt;get_last_updated_time()));</span>
+<span class="lineNum">     579 </span>                :<span class="lineNoCov">          0 :                                 if( ((now - it-&gt;second-&gt;get_last_updated_time()) &gt; it-&gt;second-&gt;get_timeout())</span>
+<span class="lineNum">     580 </span>                :            :                                         and ((it-&gt;second-&gt;get_status() != network_messages::FAILED)
+<span class="lineNum">     581 </span>                :            :                                         and (it-&gt;second-&gt;get_status() != network_messages::RECOVERED)
+<span class="lineNum">     582 </span>                :            :                                         and (it-&gt;second-&gt;get_status() != network_messages::REJOINING)
+<span class="lineNum">     583 </span>                :            :                                         and (it-&gt;second-&gt;get_status() != network_messages::RETIRED) 
+<span class="lineNum">     584 </span>                :            :                                         and (it-&gt;second-&gt;get_status() != network_messages::NODE_STOPPED)
+<span class="lineNum">     585 </span>                :            :                                         and (!cluster_recovery_in_progress))
+<span class="lineNum">     586 </span>                :            :                                 )
+<span class="lineNum">     587 </span>                :            :                                 {
+<span class="lineNum">     588 </span>                :<span class="lineNoCov">          0 :                                         if (!this-&gt;system_stop &amp;&amp; boost::filesystem::exists(this-&gt;system_stop_file))</span>
+<span class="lineNum">     589 </span>                :            :                                         {
+<span class="lineNum">     590 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;system_stop = true;</span>
+<span class="lineNum">     591 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;System Stop in Progress. Skipping node &quot; &lt;&lt; node_id &lt;&lt; &quot; for marking as FAILED&quot;); </span>
+<span class="lineNum">     592 </span>                :            :                                         }
+<span class="lineNum">     593 </span>                :<span class="lineNoCov">          0 :                                         else if (!this-&gt;system_stop &amp;&amp; !(boost::filesystem::exists(this-&gt;system_stop_file)))</span>
+<span class="lineNum">     594 </span>                :            :                                         {
+<span class="lineNum">     595 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;Setting status of node &quot; &lt;&lt; node_id &lt;&lt; &quot; as FAILED&quot;);</span>
+<span class="lineNum">     596 </span>                :            :                                                 bool reg;       //to ensure necessary changes are done in State Map and node info file
+<span class="lineNum">     597 </span>                :            :                                                 int state;
+<span class="lineNum">     598 </span>                :<span class="lineNoCov">          0 :                                                 if(it-&gt;second-&gt;get_status() == network_messages::RETIRING)</span>
+<span class="lineNum">     599 </span>                :            :                                                 {
+<span class="lineNum">     600 </span>                :<span class="lineNoCov">          0 :                                                         this-&gt;mtx.unlock();</span>
+<span class="lineNum">     601 </span>                :<span class="lineNoCov">          0 :                                                         reg = this-&gt;register_status(node_id, system_state::NODE_RECOVERY, network_messages::RETIRING_FAILED);</span>
+<span class="lineNum">     602 </span>                :<span class="lineNoCov">          0 :                                                         state = network_messages::RETIRING_FAILED;</span>
+<span class="lineNum">     603 </span>                :            :                                                 }
+<span class="lineNum">     604 </span>                :            :                                                 else
+<span class="lineNum">     605 </span>                :            :                                                 {
+<span class="lineNum">     606 </span>                :<span class="lineNoCov">          0 :                                                         this-&gt;mtx.unlock();</span>
+<span class="lineNum">     607 </span>                :<span class="lineNoCov">          0 :                                                         GLUtils util_obj;</span>
+<span class="lineNum">     608 </span>                :<span class="lineNoCov">          0 :                                                         std::string node_name = util_obj.get_node_id(node_id);</span>
+<span class="lineNum">     609 </span>                :<span class="lineNoCov">          0 :                                                         CLOG(SYSMSG::OSD_SERVICE_STOP, node_name.c_str());</span>
+<span class="lineNum">     610 </span>                :<span class="lineNoCov">          0 :                                                         reg = this-&gt;register_status(node_id, system_state::NODE_RECOVERY, network_messages::FAILED);</span>
+<span class="lineNum">     611 </span>                :<span class="lineNoCov">          0 :                                                         state = network_messages::FAILED;</span>
+<span class="lineNum">     612 </span>                :            :                                                 }
+<span class="lineNum">     613 </span>                :<span class="lineNoCov">          0 :                                                 this-&gt;mtx.lock();</span>
+<span class="lineNum">     614 </span>                :<span class="lineNoCov">          0 :                                                 if(reg)</span>
+<span class="lineNum">     615 </span>                :<span class="lineNoCov">          0 :                                                         it-&gt;second-&gt;set_status(state);</span>
+<span class="lineNum">     616 </span>                :            :                                         }
+<span class="lineNum">     617 </span>                :            :                                         else
+<span class="lineNum">     618 </span>                :            :                                         {
+<span class="lineNum">     619 </span>                :<span class="lineNoCov">          0 :                                                 OSDLOG(INFO, &quot;System Stop in Progress. Skipping node &quot; &lt;&lt; node_id &lt;&lt; &quot; for marking as FAILED&quot;); </span>
+<span class="lineNum">     620 </span>                :<span class="lineNoCov">          0 :                                                 if (!(boost::filesystem::exists(this-&gt;system_stop_file)))</span>
+<span class="lineNum">     621 </span>                :            :                                                 {
+<span class="lineNum">     622 </span>                :<span class="lineNoCov">          0 :                                                         this-&gt;system_stop = false;</span>
+<span class="lineNum">     623 </span>                :            :                                                 }
+<span class="lineNum">     624 </span>                :            :                                         }
+<span class="lineNum">     625 </span>                :            :                                         
+<span class="lineNum">     626 </span>                :            :                                 }
+<span class="lineNum">     627 </span>                :<span class="lineNoCov">          0 :                                 else if(it-&gt;second-&gt;get_status() == network_messages::REGISTERED or</span>
+<span class="lineNum">     628 </span>                :            :                                                                 it-&gt;second-&gt;get_status() == network_messages::TRANSITION_STATE
+<span class="lineNum">     629 </span>                :            :                                                                 or it-&gt;second-&gt;get_status() == network_messages::REJOINING)
+<span class="lineNum">     630 </span>                :            :                                 {
+<span class="lineNum">     631 </span>                :<span class="lineNoCov">          0 :                                         healthy_node_count+=1;</span>
+<span class="lineNum">     632 </span>                :            :                                 }
+<span class="lineNum">     633 </span>                :            :                         }
+<span class="lineNum">     634 </span>                :<span class="lineNoCov">          0 :                         if(healthy_node_count == 0 and !(this-&gt;active_node_map.empty()))</span>
+<span class="lineNum">     635 </span>                :            :                         {
+<span class="lineNum">     636 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;mtx.unlock();</span>
+<span class="lineNum">     637 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Healthy node count found 0 by Mon comp, initiating cluster recovery&quot;);</span>
+<span class="lineNum">     638 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;cluster_recovery_identification_count+=1;</span>
+<span class="lineNum">     639 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;initiate_cluster_recovery();</span>
+<span class="lineNum">     640 </span>                :            :                         }
+<span class="lineNum">     641 </span>                :<span class="lineNoCov">          0 :                         this-&gt;mtx.unlock();</span>
+<span class="lineNum">     642 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::interruption_point();</span>
+<span class="lineNum">     643 </span>                :<span class="lineNoCov">          0 :                         boost::this_thread::sleep(boost::posix_time::seconds(5));       //TODO: Just for testing purpose</span>
+<span class="lineNum">     644 </span>                :            :                 }
+<span class="lineNum">     645 </span>                :            :         }
+<span class="lineNum">     646 </span>                :<span class="lineNoCov">          0 :         catch(const boost::thread_interrupted&amp;)</span>
+<span class="lineNum">     647 </span>                :            :         {
+<span class="lineNum">     648 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Closing Recovery Identifier Thread&quot;);</span>
+<span class="lineNum">     649 </span>                :            :         }
+<span class="lineNum">     650 </span>                :            : }
+<span class="lineNum">     651 </span>                :            : 
+<span class="lineNum">     652 </span>                :<span class="lineNoCov">          0 : void MonitoringImpl::reset_cluster_recovery_details()</span>
+<span class="lineNum">     653 </span>                :            : {
+<span class="lineNum">     654 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     655 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Reseting cluster recovery related details in Monitoring Component&quot;);</span>
+<span class="lineNum">     656 </span>                :<span class="lineNoCov">          0 :         this-&gt;cluster_recovery_identification_count = 0;</span>
+<span class="lineNum">     657 </span>                :<span class="lineNoCov">          0 :         this-&gt;cluster_recovery_in_progress = false;</span>
+<span class="lineNum">     658 </span>                :<span class="lineNoCov">          0 :         std::vector&lt;std::string&gt;::iterator it = this-&gt;unknown_status_nodes.begin();</span>
+<span class="lineNum">     659 </span>                :<span class="lineNoCov">          0 :         for(; it != this-&gt;unknown_status_nodes.end(); ++it)</span>
+<span class="lineNum">     660 </span>                :            :         {
+<span class="lineNum">     661 </span>                :<span class="lineNoCov">          0 :                 std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator itr = this-&gt;active_node_map.find(*it);</span>
+<span class="lineNum">     662 </span>                :<span class="lineNoCov">          0 :                 if (itr != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     663 </span>                :            :                 {
+<span class="lineNum">     664 </span>                :<span class="lineNoCov">          0 :                         if (itr-&gt;second-&gt;get_status() == network_messages::TRANSITION_STATE)</span>
+<span class="lineNum">     665 </span>                :            :                         {
+<span class="lineNum">     666 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Reverting node state of &quot; &lt;&lt; *it &lt;&lt; &quot; into failed state from transition state.&quot;);</span>
+<span class="lineNum">     667 </span>                :<span class="lineNoCov">          0 :                                 itr-&gt;second-&gt;set_status(network_messages::FAILED);</span>
+<span class="lineNum">     668 </span>                :            :                         }
+<span class="lineNum">     669 </span>                :            :                 }
+<span class="lineNum">     670 </span>                :            :         }
+<span class="lineNum">     671 </span>                :<span class="lineNoCov">          0 :         this-&gt;unknown_status_nodes.clear();</span>
+<span class="lineNum">     672 </span>                :<span class="lineNoCov">          0 :         this-&gt;stopping_nodes.clear();</span>
+<span class="lineNum">     673 </span>                :<span class="lineNoCov">          0 :         this-&gt;totally_failed_node_list.clear();</span>
+<span class="lineNum">     674 </span>                :            : }
+<span class="lineNum">     675 </span>                :            : 
+<span class="lineNum">     676 </span>                :<span class="lineNoCov">          0 : void MonitoringImpl::initiate_cluster_recovery()</span>
+<span class="lineNum">     677 </span>                :            : {
+<span class="lineNum">     678 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it;</span>
+<span class="lineNum">     679 </span>                :            :         size_t failed_node_count;
+<span class="lineNum">     680 </span>                :<span class="lineNoCov">          0 :         this-&gt;mtx.lock();</span>
+<span class="lineNum">     681 </span>                :<span class="lineNoCov">          0 :         for ( it = this-&gt;active_node_map.begin(); it != this-&gt;active_node_map.end(); ++it )</span>
+<span class="lineNum">     682 </span>                :            :         {
+<span class="lineNum">     683 </span>                :<span class="lineNoCov">          0 :                 if (it-&gt;second-&gt;get_status() == network_messages::REJOINING)</span>
+<span class="lineNum">     684 </span>                :            :                 {
+<span class="lineNum">     685 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Aborting Cluster Recovery as node&quot;&lt;&lt; it-&gt;first &lt;&lt;&quot; is Rejoining in cluster&quot;);</span>
+<span class="lineNum">     686 </span>                :<span class="lineNoCov">          0 :                         this-&gt;totally_failed_node_list.clear();</span>
+<span class="lineNum">     687 </span>                :<span class="lineNoCov">          0 :                         this-&gt;unknown_status_nodes.clear();</span>
+<span class="lineNum">     688 </span>                :<span class="lineNoCov">          0 :                         return;</span>
+<span class="lineNum">     689 </span>                :            :                 }
+<span class="lineNum">     690 </span>                :<span class="lineNoCov">          0 :                 else if(it-&gt;second-&gt;get_status() == network_messages::FAILED or it-&gt;second-&gt;get_status() == network_messages::RECOVERED or it-&gt;second-&gt;get_status() == network_messages::NODE_STOPPING)</span>
+<span class="lineNum">     691 </span>                :            :                 {
+<span class="lineNum">     692 </span>                :<span class="lineNoCov">          0 :                         failed_node_count+= 1;</span>
+<span class="lineNum">     693 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(DEBUG, &quot;Node &quot; &lt;&lt; it-&gt;first &lt;&lt; &quot; has &quot; &lt;&lt; it-&gt;second-&gt;get_hfs_stat());</span>
+<span class="lineNum">     694 </span>                :<span class="lineNoCov">          0 :                         if(it-&gt;second-&gt;get_hfs_stat() != OSDException::OSDHfsStatus::NOT_READABILITY)</span>
+<span class="lineNum">     695 </span>                :            :                         {
+<span class="lineNum">     696 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, it-&gt;first &lt;&lt; &quot; has readability&quot;);</span>
+<span class="lineNum">     697 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;unknown_status_nodes.push_back(it-&gt;first);</span>
+<span class="lineNum">     698 </span>                :            :                         }
+<span class="lineNum">     699 </span>                :            :                         else
+<span class="lineNum">     700 </span>                :            :                         {
+<span class="lineNum">     701 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, it-&gt;first &lt;&lt; &quot; doesn't has readability&quot;);</span>
+<span class="lineNum">     702 </span>                :<span class="lineNoCov">          0 :                                 this-&gt;totally_failed_node_list.push_back(it-&gt;first);</span>
+<span class="lineNum">     703 </span>                :            :                         }
+<span class="lineNum">     704 </span>                :            :                 }
+<span class="lineNum">     705 </span>                :            :                 /*else if(it-&gt;second-&gt;get_status() == network_messages::NODE_STOPPING) //Considering NODE_STOPPING in cluster recovery
+<span class="lineNum">     706 </span>                :            :                 {
+<span class="lineNum">     707 </span>                :            :                         this-&gt;stopping_nodes.push_back(it-&gt;first);
+<span class="lineNum">     708 </span>                :            :                 }*/
+<span class="lineNum">     709 </span>                :            :         }
+<span class="lineNum">     710 </span>                :<span class="lineNoCov">          0 :         this-&gt;mtx.unlock();</span>
+<span class="lineNum">     711 </span>                :<span class="lineNoCov">          0 :         if(this-&gt;unknown_status_nodes.empty())</span>
+<span class="lineNum">     712 </span>                :            :         {
+<span class="lineNum">     713 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;No nodes can be put into transition state&quot;);</span>
+<span class="lineNum">     714 </span>                :<span class="lineNoCov">          0 :                 this-&gt;totally_failed_node_list.clear();</span>
+<span class="lineNum">     715 </span>                :<span class="lineNoCov">          0 :                 this-&gt;unknown_status_nodes.clear();</span>
+<span class="lineNum">     716 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     717 </span>                :            :         }
+<span class="lineNum">     718 </span>                :<span class="lineNoCov">          0 :         else if(this-&gt;unknown_status_nodes.size() == failed_node_count or this-&gt;cluster_recovery_identification_count &gt; 1)</span>
+<span class="lineNum">     719 </span>                :            :         {
+<span class="lineNum">     720 </span>                :            :                 //move all node in unknown_status_nodes array to TRANSITION_STATE state
+<span class="lineNum">     721 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(DEBUG, &quot;Unknown status nodes count is &quot; &lt;&lt; this-&gt;unknown_status_nodes.size());</span>
+<span class="lineNum">     722 </span>                :<span class="lineNoCov">          0 :                 std::vector&lt;std::string&gt;::iterator it = this-&gt;unknown_status_nodes.begin();</span>
+<span class="lineNum">     723 </span>                :<span class="lineNoCov">          0 :                 this-&gt;mtx.lock();</span>
+<span class="lineNum">     724 </span>                :<span class="lineNoCov">          0 :                 for(; it != this-&gt;unknown_status_nodes.end(); ++it)</span>
+<span class="lineNum">     725 </span>                :            :                 {
+<span class="lineNum">     726 </span>                :<span class="lineNoCov">          0 :                         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator itr = this-&gt;active_node_map.find(*it);</span>
+<span class="lineNum">     727 </span>                :<span class="lineNoCov">          0 :                         if (itr != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     728 </span>                :            :                         {
+<span class="lineNum">     729 </span>                :<span class="lineNoCov">          0 :                                 OSDLOG(INFO, &quot;Changing node state of &quot; &lt;&lt; *it &lt;&lt; &quot; into transition state from &quot;&lt;&lt;itr-&gt;second-&gt;get_status()&lt;&lt;&quot; state&quot;);</span>
+<span class="lineNum">     730 </span>                :<span class="lineNoCov">          0 :                                 itr-&gt;second-&gt;set_status(network_messages::TRANSITION_STATE);</span>
+<span class="lineNum">     731 </span>                :            :                         }
+<span class="lineNum">     732 </span>                :            :                 }
+<span class="lineNum">     733 </span>                :<span class="lineNoCov">          0 :                 this-&gt;mtx.unlock();</span>
+<span class="lineNum">     734 </span>                :            :                 OsmUtils obj;
+<span class="lineNum">     735 </span>                :<span class="lineNoCov">          0 :                 boost::tuple&lt;std::string, uint32_t&gt; info = obj.get_ip_and_port_of_gl();</span>
+<span class="lineNum">     736 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Sending cluster recovery msg to GL with ip and port: &quot;&lt;&lt; boost::get&lt;0&gt;(info) &lt;&lt; &quot; &quot; &lt;&lt; boost::get&lt;1&gt;(info));</span>
+<span class="lineNum">     737 </span>                :<span class="lineNoCov">          0 :                 boost::shared_ptr&lt;Communication::SynchronousCommunication&gt; comm;</span>
+<span class="lineNum">     738 </span>                :<span class="lineNoCov">          0 :                 comm.reset(new Communication::SynchronousCommunication(boost::get&lt;0&gt;(info), boost::get&lt;1&gt;(info)));</span>
+<span class="lineNum">     739 </span>                :<span class="lineNoCov">          0 :                 if(comm-&gt;is_connected())</span>
+<span class="lineNum">     740 </span>                :            :                 {
+<span class="lineNum">     741 </span>                :<span class="lineNoCov">          0 :                         boost::shared_ptr&lt;comm_messages::InitiateClusterRecovery&gt; rec_ptr(new comm_messages::InitiateClusterRecovery());</span>
+<span class="lineNum">     742 </span>                :<span class="lineNoCov">          0 :                         SuccessCallBack callback_obj;</span>
+<span class="lineNum">     743 </span>                :            :                         MessageExternalInterface::sync_send_initiate_cluster_recovery_message(
+<span class="lineNum">     744 </span>                :            :                                 rec_ptr.get(),
+<span class="lineNum">     745 </span>                :            :                                 comm,
+<span class="lineNum">     746 </span>                :            :                                 boost::bind(&amp;SuccessCallBack::success_handler, &amp;callback_obj, _1),
+<span class="lineNum">     747 </span>                :            :                                 boost::bind(&amp;SuccessCallBack::failure_handler, &amp;callback_obj),
+<span class="lineNum">     748 </span>                :            :                                 0
+<span class="lineNum">     749 </span>                :<span class="lineNoCov">          0 :                         );</span>
+<span class="lineNum">     750 </span>                :            :                         //Failure should not occur ideally in this case, because GL is sending msg to itself
+<span class="lineNum">     751 </span>                :            :                 }
+<span class="lineNum">     752 </span>                :            :                 else
+<span class="lineNum">     753 </span>                :            :                 {
+<span class="lineNum">     754 </span>                :<span class="lineNoCov">          0 :                         this-&gt;reset_cluster_recovery_details();</span>
+<span class="lineNum">     755 </span>                :            :                 }
+<span class="lineNum">     756 </span>                :            :                 //send msg to GL to start recovery
+<span class="lineNum">     757 </span>                :<span class="lineNoCov">          0 :                 this-&gt;cluster_recovery_identification_count = 0;</span>
+<span class="lineNum">     758 </span>                :<span class="lineNoCov">          0 :                 this-&gt;cluster_recovery_in_progress = true;</span>
+<span class="lineNum">     759 </span>                :            :         }
+<span class="lineNum">     760 </span>                :            :         else
+<span class="lineNum">     761 </span>                :            :         {
+<span class="lineNum">     762 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Sleeping for 120 seconds&quot;);</span>
+<span class="lineNum">     763 </span>                :<span class="lineNoCov">          0 :                 this-&gt;totally_failed_node_list.clear();</span>
+<span class="lineNum">     764 </span>                :<span class="lineNoCov">          0 :                 this-&gt;unknown_status_nodes.clear();</span>
+<span class="lineNum">     765 </span>                :<span class="lineNoCov">          0 :                 boost::this_thread::sleep(boost::posix_time::seconds(120));</span>
+<span class="lineNum">     766 </span>                :<span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     767 </span>                :            :         }
+<span class="lineNum">     768 </span>                :            : }
+<span class="lineNum">     769 </span>                :            : 
+<span class="lineNum">     770 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::change_status_in_memory(std::string node_id, int status)</span>
+<span class="lineNum">     771 </span>                :            : {
+<span class="lineNum">     772 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     773 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(node_id);</span>
+<span class="lineNum">     774 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     775 </span>                :            :         {
+<span class="lineNum">     776 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(INFO, &quot;Changing status of &quot; &lt;&lt; node_id &lt;&lt; &quot; to &quot; &lt;&lt; status &lt;&lt; &quot; in memory&quot;);</span>
+<span class="lineNum">     777 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second-&gt;set_status(status);</span>
+<span class="lineNum">     778 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     779 </span>                :            :         }
+<span class="lineNum">     780 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     781 </span>                :            : }
+<span class="lineNum">     782 </span>                :            : 
+<span class="lineNum">     783 </span>                :            : //Called by StateChangeInitiator, need to check if lock is needed here
+<span class="lineNum">     784 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::change_status_in_monitoring_component(std::string node_id, int status)</span>
+<span class="lineNum">     785 </span>                :            : {
+<span class="lineNum">     786 </span>                :            : 
+<span class="lineNum">     787 </span>                :<span class="lineNoCov">          0 :         bool success = false;</span>
+<span class="lineNum">     788 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     789 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(node_id);</span>
+<span class="lineNum">     790 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     791 </span>                :            :         {
+<span class="lineNum">     792 </span>                :<span class="lineNoCov">          0 :                 if(it-&gt;second-&gt;get_status() == network_messages::RETIRING_FAILED and status == network_messages::RECOVERED)</span>
+<span class="lineNum">     793 </span>                :            :                 {
+<span class="lineNum">     794 </span>                :            :                         //If previous state is anyhow related to retiring, never set it as recovered
+<span class="lineNum">     795 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Changing state from RET_FAILED to RET_RECOVERED&quot;);</span>
+<span class="lineNum">     796 </span>                :<span class="lineNoCov">          0 :                         status = network_messages::RETIRED_RECOVERED;</span>
+<span class="lineNum">     797 </span>                :            :                 }
+<span class="lineNum">     798 </span>                :<span class="lineNoCov">          0 :                 else if(it-&gt;second-&gt;get_status() == network_messages::RETIRING and status == network_messages::NODE_STOPPED)</span>
+<span class="lineNum">     799 </span>                :            :                 //TODO: Check if NODE_STOPPING also needs to be handled
+<span class="lineNum">     800 </span>                :            :                 {
+<span class="lineNum">     801 </span>                :<span class="lineNoCov">          0 :                         status = network_messages::RETIRED;</span>
+<span class="lineNum">     802 </span>                :            :                 }
+<span class="lineNum">     803 </span>                :            :                 
+<span class="lineNum">     804 </span>                :<span class="lineNoCov">          0 :                 success = this-&gt;node_info_file_writer-&gt;update_record(node_id, status);</span>
+<span class="lineNum">     805 </span>                :<span class="lineNoCov">          0 :                 if(success)</span>
+<span class="lineNum">     806 </span>                :            :                 {
+<span class="lineNum">     807 </span>                :<span class="lineNoCov">          0 :                         it-&gt;second-&gt;set_status(status);</span>
+<span class="lineNum">     808 </span>                :<span class="lineNoCov">          0 :                         if(status == network_messages::REGISTERED)</span>
+<span class="lineNum">     809 </span>                :            :                         {
+<span class="lineNum">     810 </span>                :            :                                 time_t now;
+<span class="lineNum">     811 </span>                :<span class="lineNoCov">          0 :                                 time(&amp;now);</span>
+<span class="lineNum">     812 </span>                :<span class="lineNoCov">          0 :                                 it-&gt;second-&gt;set_last_updated_time(now);</span>
+<span class="lineNum">     813 </span>                :            :                         }
+<span class="lineNum">     814 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(INFO, &quot;Setting status of node &quot; &lt;&lt; it-&gt;first &lt;&lt; &quot; as &quot; &lt;&lt; status);</span>
+<span class="lineNum">     815 </span>                :            :                 }
+<span class="lineNum">     816 </span>                :            :                 else
+<span class="lineNum">     817 </span>                :            :                 {
+<span class="lineNum">     818 </span>                :            :                         //OSDLOG(FATAL, &quot;Node Info File could not be opened for updating status for node &quot; &lt;&lt; node_id);
+<span class="lineNum">     819 </span>                :<span class="lineNoCov">          0 :                         OSDLOG(ERROR, &quot;Node Info File could not be opened for updating status for node &quot; &lt;&lt; node_id);</span>
+<span class="lineNum">     820 </span>                :            :                         //raise exception?
+<span class="lineNum">     821 </span>                :            :                 }
+<span class="lineNum">     822 </span>                :            :         }
+<span class="lineNum">     823 </span>                :            :         else
+<span class="lineNum">     824 </span>                :            :         {
+<span class="lineNum">     825 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(ERROR, &quot;Node not found in Monitoring Map&quot;);</span>
+<span class="lineNum">     826 </span>                :            :         }
+<span class="lineNum">     827 </span>                :<span class="lineNoCov">          0 :         return success;</span>
+<span class="lineNum">     828 </span>                :            : }
+<span class="lineNum">     829 </span>                :            : 
+<span class="lineNum">     830 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::remove_node_from_monitoring(std::string node_id)</span>
+<span class="lineNum">     831 </span>                :            : {
+<span class="lineNum">     832 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     833 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(node_id);</span>
+<span class="lineNum">     834 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end() and it-&gt;second-&gt;get_status() != network_messages::RETIRED)</span>
+<span class="lineNum">     835 </span>                :            :         {
+<span class="lineNum">     836 </span>                :<span class="lineNoCov">          0 :                 this-&gt;active_node_map.erase(it);</span>
+<span class="lineNum">     837 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     838 </span>                :            :         }
+<span class="lineNum">     839 </span>                :            :         else
+<span class="lineNum">     840 </span>                :            :         {
+<span class="lineNum">     841 </span>                :<span class="lineNoCov">          0 :                 OSDLOG(WARNING, &quot;Could not delete node from monitoring list due to invalid node status: &quot; &lt;&lt; it-&gt;second-&gt;get_status());</span>
+<span class="lineNum">     842 </span>                :            :         }
+<span class="lineNum">     843 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     844 </span>                :            : }
+<span class="lineNum">     845 </span>                :            : 
+<span class="lineNum">     846 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::update_time_in_map(std::string node_id, int hfs_stat)</span>
+<span class="lineNum">     847 </span>                :            : {
+<span class="lineNum">     848 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     849 </span>                :<span class="lineNoCov">          0 :         std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator it = this-&gt;active_node_map.find(node_id);</span>
+<span class="lineNum">     850 </span>                :            :         //if(it != this-&gt;active_node_map.end() and it-&gt;second-&gt;get_status() != network_messages::FAILED)
+<span class="lineNum">     851 </span>                :<span class="lineNoCov">          0 :         if(it != this-&gt;active_node_map.end())</span>
+<span class="lineNum">     852 </span>                :            :         {
+<span class="lineNum">     853 </span>                :            :                 time_t now;
+<span class="lineNum">     854 </span>                :<span class="lineNoCov">          0 :                 time(&amp;now);</span>
+<span class="lineNum">     855 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second-&gt;set_last_updated_time(now);</span>
+<span class="lineNum">     856 </span>                :<span class="lineNoCov">          0 :                 it-&gt;second-&gt;set_hfs_stat(hfs_stat);</span>
+<span class="lineNum">     857 </span>                :<span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">     858 </span>                :            :         }
+<span class="lineNum">     859 </span>                :<span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     860 </span>                :            : }
+<span class="lineNum">     861 </span>                :            : 
+<span class="lineNum">     862 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::add_entries_while_recovery(std::string node_id, int msg_type, int status)</span>
+<span class="lineNum">     863 </span>                :            : {
+<span class="lineNum">     864 </span>                :            :         time_t now;
+<span class="lineNum">     865 </span>                :<span class="lineNoCov">          0 :         time(&amp;now);</span>
+<span class="lineNum">     866 </span>                :<span class="lineNoCov">          0 :         OSDLOG(INFO, &quot;Adding entry in monitoring comp while recovery for node: &quot; &lt;&lt; node_id &lt;&lt; &quot; with status &quot; &lt;&lt; status);</span>
+<span class="lineNum">     867 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;HealthMonitoringRecord&gt; health_record(new HealthMonitoringRecord(msg_type, now, status, this-&gt;strm_timeout, this-&gt;strm_failure_count, OSDException::OSDHfsStatus::NOT_READABILITY, 1));</span>
+<span class="lineNum">     868 </span>                :<span class="lineNoCov">          0 :         std::pair&lt;std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator, bool&gt; ret_status;</span>
+<span class="lineNum">     869 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     870 </span>                :<span class="lineNoCov">          0 :         ret_status = this-&gt;active_node_map.insert(std::pair&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;(node_id, health_record));</span>
+<span class="lineNum">     871 </span>                :<span class="lineNoCov">          0 :         return ret_status.second;</span>
+<span class="lineNum">     872 </span>                :            : }
+<span class="lineNum">     873 </span>                :            : 
+<span class="lineNum">     874 </span>                :<span class="lineNoCov">          0 : bool MonitoringImpl::add_entry_in_map(boost::shared_ptr&lt;ServiceObject&gt; msg)</span>
+<span class="lineNum">     875 </span>                :            : {
+<span class="lineNum">     876 </span>                :            :         time_t now;
+<span class="lineNum">     877 </span>                :<span class="lineNoCov">          0 :         time(&amp;now);</span>
+<span class="lineNum">     878 </span>                :<span class="lineNoCov">          0 :         boost::shared_ptr&lt;HealthMonitoringRecord&gt; health_record(new HealthMonitoringRecord(STRM, now, network_messages::REGISTERED, this-&gt;strm_timeout, this-&gt;hrbt_failure_count, OSDException::OSDHfsStatus::NOT_READABILITY, 1));</span>
+<span class="lineNum">     879 </span>                :<span class="lineNoCov">          0 :         std::pair&lt;std::map&lt;std::string, boost::shared_ptr&lt;HealthMonitoringRecord&gt; &gt;::iterator, bool&gt; ret_status;</span>
+<span class="lineNum">     880 </span>                :            : 
+<span class="lineNum">     881 </span>                :<span class="lineNoCov">          0 :         boost::recursive_mutex::scoped_lock lock(this-&gt;mtx);</span>
+<span class="lineNum">     882 </span>                :<span class="lineNoCov">          0 :         if(cluster_recovery_in_progress)</span>
+<span class="lineNum">     883 </span>                :<span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     884 </span>                :<span class="lineNoCov">          0 :         ret_status = this-&gt;active_node_map.insert(std::make_pair(msg-&gt;get_service_id(), health_record));</span>
+<span class="lineNum">     885 </span>                :<span class="lineNoCov">          0 :         return ret_status.second;</span>
+<span class="lineNum">     886 </span>                :            : }
+<span class="lineNum">     887 </span>                :            : 
+<span class="lineNum">     888 </span>                :<span class="lineNoCov">          0 : MonitoringImpl::~MonitoringImpl()</span>
+<span class="lineNum">     889 </span>                :            : {
+<span class="lineNum">     890 </span>                :            :         ;
+<span class="lineNum">     891 </span>                :            : }
+<span class="lineNum">     892 </span>                :            : 
+<span class="lineNum">     893 </span>                :            : } // namespace gl_monitoring
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

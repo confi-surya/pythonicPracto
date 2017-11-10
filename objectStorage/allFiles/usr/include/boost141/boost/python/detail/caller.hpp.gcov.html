@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/detail/caller.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/detail</a> - caller.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryLo">57.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">60</td>
+            <td class="headerCovTableEntryLo">40.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #if !defined(BOOST_PP_IS_ITERATING)
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       4 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       5 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       6 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            : # ifndef CALLER_DWA20021121_HPP
+<span class="lineNum">       9 </span>                :            : #  define CALLER_DWA20021121_HPP
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : #  include &lt;boost/python/type_id.hpp&gt;
+<span class="lineNum">      12 </span>                :            : #  include &lt;boost/python/handle.hpp&gt;
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #  include &lt;boost/detail/indirect_traits.hpp&gt;
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : #  include &lt;boost/python/detail/invoke.hpp&gt;
+<span class="lineNum">      17 </span>                :            : #  include &lt;boost/python/detail/signature.hpp&gt;
+<span class="lineNum">      18 </span>                :            : #  include &lt;boost/python/detail/preprocessor.hpp&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #  include &lt;boost/python/arg_from_python.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #  include &lt;boost/python/converter/context_result_converter.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #  include &lt;boost/python/converter/builtin_converters.hpp&gt;
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : #  include &lt;boost/preprocessor/iterate.hpp&gt;
+<span class="lineNum">      25 </span>                :            : #  include &lt;boost/preprocessor/cat.hpp&gt;
+<span class="lineNum">      26 </span>                :            : #  include &lt;boost/preprocessor/dec.hpp&gt;
+<span class="lineNum">      27 </span>                :            : #  include &lt;boost/preprocessor/if.hpp&gt;
+<span class="lineNum">      28 </span>                :            : #  include &lt;boost/preprocessor/iteration/local.hpp&gt;
+<span class="lineNum">      29 </span>                :            : #  include &lt;boost/preprocessor/repetition/enum_trailing_params.hpp&gt;
+<span class="lineNum">      30 </span>                :            : #  include &lt;boost/preprocessor/repetition/repeat.hpp&gt;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : #  include &lt;boost/compressed_pair.hpp&gt;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : #  include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      35 </span>                :            : #  include &lt;boost/type_traits/is_convertible.hpp&gt;
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : #  include &lt;boost/mpl/apply.hpp&gt;
+<span class="lineNum">      38 </span>                :            : #  include &lt;boost/mpl/eval_if.hpp&gt;
+<span class="lineNum">      39 </span>                :            : #  include &lt;boost/mpl/identity.hpp&gt;
+<span class="lineNum">      40 </span>                :            : #  include &lt;boost/mpl/size.hpp&gt;
+<span class="lineNum">      41 </span>                :            : #  include &lt;boost/mpl/at.hpp&gt;
+<span class="lineNum">      42 </span>                :            : #  include &lt;boost/mpl/int.hpp&gt;
+<span class="lineNum">      43 </span>                :            : #  include &lt;boost/mpl/next.hpp&gt;
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            : namespace boost { namespace python { namespace detail { 
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : template &lt;int N&gt;
+<span class="lineNum">      48 </span>                :<span class="lineCov">       7384 : inline PyObject* get(mpl::int_&lt;N&gt;, PyObject* const&amp; args_)</span>
+<span class="lineNum">      49 </span>                :            : {
+<span class="lineNum">      50 </span>                :<span class="lineCov">       7384 :     return PyTuple_GET_ITEM(args_,N);</span>
+<span class="lineNum">      51 </span>                :            : }
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :            : inline unsigned arity(PyObject* const&amp; args_)
+<span class="lineNum">      54 </span>                :            : {
+<span class="lineNum">      55 </span>                :            :     return PyTuple_GET_SIZE(args_);
+<span class="lineNum">      56 </span>                :            : }
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            : // This &quot;result converter&quot; is really just used as
+<span class="lineNum">      59 </span>                :            : // a dispatch tag to invoke(...), selecting the appropriate
+<span class="lineNum">      60 </span>                :            : // implementation
+<span class="lineNum">      61 </span>                :            : typedef int void_result_to_python;
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            : // Given a model of CallPolicies and a C++ result type, this
+<span class="lineNum">      64 </span>                :            : // metafunction selects the appropriate converter to use for
+<span class="lineNum">      65 </span>                :            : // converting the result to python.
+<span class="lineNum">      66 </span>                :            : template &lt;class Policies, class Result&gt;
+<span class="lineNum">      67 </span>                :            : struct select_result_converter
+<span class="lineNum">      68 </span>                :            :   : mpl::eval_if&lt;
+<span class="lineNum">      69 </span>                :            :         is_same&lt;Result,void&gt;
+<span class="lineNum">      70 </span>                :            :       , mpl::identity&lt;void_result_to_python&gt;
+<span class="lineNum">      71 </span>                :            :       , mpl::apply1&lt;typename Policies::result_converter,Result&gt;
+<span class="lineNum">      72 </span>                :            :     &gt;
+<span class="lineNum">      73 </span>                :            : {
+<span class="lineNum">      74 </span>                :            : };
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            : template &lt;class ArgPackage, class ResultConverter&gt;
+<span class="lineNum">      77 </span>                :            : inline ResultConverter create_result_converter(
+<span class="lineNum">      78 </span>                :            :     ArgPackage const&amp; args_
+<span class="lineNum">      79 </span>                :            :   , ResultConverter*
+<span class="lineNum">      80 </span>                :            :   , converter::context_result_converter*
+<span class="lineNum">      81 </span>                :            : )
+<span class="lineNum">      82 </span>                :            : {
+<span class="lineNum">      83 </span>                :            :     return ResultConverter(args_);
+<span class="lineNum">      84 </span>                :            : }
+<span class="lineNum">      85 </span>                :            :     
+<span class="lineNum">      86 </span>                :            : template &lt;class ArgPackage, class ResultConverter&gt;
+<span class="lineNum">      87 </span>                :            : inline ResultConverter create_result_converter(
+<span class="lineNum">      88 </span>                :            :     ArgPackage const&amp;
+<span class="lineNum">      89 </span>                :            :   , ResultConverter*
+<span class="lineNum">      90 </span>                :            :   , ...
+<span class="lineNum">      91 </span>                :<span class="lineCov">       2174 : )</span>
+<span class="lineNum">      92 </span>                :            : {
+<span class="lineNum">      93 </span>                :<span class="lineCov">       2174 :     return ResultConverter();</span>
+<span class="lineNum">      94 </span>                :            : }
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            : #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+<span class="lineNum">      97 </span>                :            : template &lt;class ResultConverter&gt;
+<span class="lineNum">      98 </span>                :            : struct converter_target_type 
+<span class="lineNum">      99 </span>                :            : {
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :     static PyTypeObject const *get_pytype()</span>
+<span class="lineNum">     101 </span>                :            :     {
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :         return create_result_converter((PyObject*)0, (ResultConverter *)0, (ResultConverter *)0).get_pytype();</span>
+<span class="lineNum">     103 </span>                :            :     }
+<span class="lineNum">     104 </span>                :            : };
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            : template &lt; &gt;
+<span class="lineNum">     107 </span>                :            : struct converter_target_type &lt;void_result_to_python &gt;
+<span class="lineNum">     108 </span>                :            : {
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :     static PyTypeObject const *get_pytype()</span>
+<span class="lineNum">     110 </span>                :            :     {
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     112 </span>                :            :     }
+<span class="lineNum">     113 </span>                :            : };
+<span class="lineNum">     114 </span>                :            : #endif
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :     
+<span class="lineNum">     117 </span>                :            : template &lt;unsigned&gt; struct caller_arity;
+<span class="lineNum">     118 </span>                :            : 
+<span class="lineNum">     119 </span>                :            : template &lt;class F, class CallPolicies, class Sig&gt;
+<span class="lineNum">     120 </span>                :            : struct caller;
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :            : #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
+<span class="lineNum">     123 </span>                :            :     typedef BOOST_PP_IF(n,typename mpl::next&lt; BOOST_PP_CAT(name,BOOST_PP_DEC(n)) &gt;::type, init) name##n;
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :            : #  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
+<span class="lineNum">     126 </span>                :            :      BOOST_PYTHON_NEXT(typename mpl::next&lt;first&gt;::type, arg_iter,n)             \
+<span class="lineNum">     127 </span>                :            :      typedef arg_from_python&lt;BOOST_DEDUCED_TYPENAME arg_iter##n::type&gt; c_t##n;  \
+<span class="lineNum">     128 </span>                :            :      c_t##n c##n(get(mpl::int_&lt;n&gt;(), inner_args));                              \
+<span class="lineNum">     129 </span>                :            :      if (!c##n.convertible())                                                   \
+<span class="lineNum">     130 </span>                :            :           return 0;
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :            : #  define BOOST_PP_ITERATION_PARAMS_1                                            \
+<span class="lineNum">     133 </span>                :            :         (3, (0, BOOST_PYTHON_MAX_ARITY + 1, &lt;boost/python/detail/caller.hpp&gt;))
+<span class="lineNum">     134 </span>                :            : #  include BOOST_PP_ITERATE()
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            : #  undef BOOST_PYTHON_ARG_CONVERTER
+<span class="lineNum">     137 </span>                :            : #  undef BOOST_PYTHON_NEXT
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            : // A metafunction returning the base class used for caller&lt;class F,
+<span class="lineNum">     140 </span>                :            : // class ConverterGenerators, class CallPolicies, class Sig&gt;.
+<span class="lineNum">     141 </span>                :            : template &lt;class F, class CallPolicies, class Sig&gt;
+<span class="lineNum">     142 </span>                :            : struct caller_base_select
+<span class="lineNum">     143 </span>                :            : {
+<span class="lineNum">     144 </span>                :            :     enum { arity = mpl::size&lt;Sig&gt;::value - 1 };
+<span class="lineNum">     145 </span>                :            :     typedef typename caller_arity&lt;arity&gt;::template impl&lt;F,CallPolicies,Sig&gt; type;
+<span class="lineNum">     146 </span>                :            : };
+<span class="lineNum">     147 </span>                :            : 
+<span class="lineNum">     148 </span>                :            : // A function object type which wraps C++ objects as Python callable
+<span class="lineNum">     149 </span>                :            : // objects.
+<span class="lineNum">     150 </span>                :            : //
+<span class="lineNum">     151 </span>                :            : // Template Arguments:
+<span class="lineNum">     152 </span>                :            : //
+<span class="lineNum">     153 </span>                :            : //   F -
+<span class="lineNum">     154 </span>                :            : //      the C++ `function object' that will be called. Might
+<span class="lineNum">     155 </span>                :            : //      actually be any data for which an appropriate invoke_tag() can
+<span class="lineNum">     156 </span>                :            : //      be generated. invoke(...) takes care of the actual invocation syntax.
+<span class="lineNum">     157 </span>                :            : //
+<span class="lineNum">     158 </span>                :            : //   CallPolicies -
+<span class="lineNum">     159 </span>                :            : //      The precall, postcall, and what kind of resultconverter to
+<span class="lineNum">     160 </span>                :            : //      generate for mpl::front&lt;Sig&gt;::type
+<span class="lineNum">     161 </span>                :            : //
+<span class="lineNum">     162 </span>                :            : //   Sig -
+<span class="lineNum">     163 </span>                :            : //      The `intended signature' of the function. An MPL sequence
+<span class="lineNum">     164 </span>                :            : //      beginning with a result type and continuing with a list of
+<span class="lineNum">     165 </span>                :            : //      argument types.
+<span class="lineNum">     166 </span>                :            : template &lt;class F, class CallPolicies, class Sig&gt;
+<span class="lineNum">     167 </span>                :            : struct caller
+<span class="lineNum">     168 </span>                :            :     : caller_base_select&lt;F,CallPolicies,Sig&gt;::type
+<span class="lineNum">     169 </span>                :            : {
+<span class="lineNum">     170 </span>                :            :     typedef typename caller_base_select&lt;
+<span class="lineNum">     171 </span>                :            :         F,CallPolicies,Sig
+<span class="lineNum">     172 </span>                :            :         &gt;::type base;
+<span class="lineNum">     173 </span>                :            : 
+<span class="lineNum">     174 </span>                :            :     typedef PyObject* result_type;
+<span class="lineNum">     175 </span>                :            :     
+<span class="lineNum">     176 </span>                :<span class="lineCov">        512 :     caller(F f, CallPolicies p) : base(f,p) {}</span>
+<span class="lineNum">     177 </span>                :            : 
+<span class="lineNum">     178 </span>                :            : };
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :            : }}} // namespace boost::python::detail
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            : # endif // CALLER_DWA20021121_HPP
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>                :            : #else
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            : # define N BOOST_PP_ITERATION()
+<span class="lineNum">     187 </span>                :            : 
+<span class="lineNum">     188 </span>                :            : template &lt;&gt;
+<span class="lineNum">     189 </span>                :            : struct caller_arity&lt;N&gt;
+<span class="lineNum">     190 </span>                :            : {
+<span class="lineNum">     191 </span>                :            :     template &lt;class F, class Policies, class Sig&gt;
+<span class="lineNum">     192 </span>                :            :     struct impl
+<span class="lineNum">     193 </span>                :            :     {
+<span class="lineNum">     194 </span>                :<span class="lineCov">        512 :         impl(F f, Policies p) : m_data(f,p) {}</span>
+<span class="lineNum">     195 </span>                :            : 
+<span class="lineNum">     196 </span>                :<span class="lineCov">       2174 :         PyObject* operator()(PyObject* args_, PyObject*) // eliminate</span>
+<span class="lineNum">     197 </span>                :            :                                                          // this
+<span class="lineNum">     198 </span>                :            :                                                          // trailing
+<span class="lineNum">     199 </span>                :            :                                                          // keyword dict
+<span class="lineNum">     200 </span>                :            :         {
+<span class="lineNum">     201 </span>                :            :             typedef typename mpl::begin&lt;Sig&gt;::type first;
+<span class="lineNum">     202 </span>                :            :             typedef typename first::type result_t;
+<span class="lineNum">     203 </span>                :            :             typedef typename select_result_converter&lt;Policies, result_t&gt;::type result_converter;
+<span class="lineNum">     204 </span>                :            :             typedef typename Policies::argument_package argument_package;
+<span class="lineNum">     205 </span>                :            :             
+<span class="lineNum">     206 </span>                :<span class="lineCov">       2174 :             argument_package inner_args(args_);</span>
+<span class="lineNum">     207 </span>                :            : 
+<span class="lineNum">     208 </span>                :            : # if N
+<span class="lineNum">     209 </span>                :            : #  define BOOST_PP_LOCAL_MACRO(i) BOOST_PYTHON_ARG_CONVERTER(i)
+<span class="lineNum">     210 </span>                :            : #  define BOOST_PP_LOCAL_LIMITS (0, N-1)
+<span class="lineNum">     211 </span>                :            : #  include BOOST_PP_LOCAL_ITERATE()
+<span class="lineNum">     212 </span>                :            : # endif 
+<span class="lineNum">     213 </span>                :            :             // all converters have been checked. Now we can do the
+<span class="lineNum">     214 </span>                :            :             // precall part of the policy
+<span class="lineNum">     215 </span>[<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 252 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 30 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>:<span class="lineCov">       2174 :             if (!m_data.second().precall(inner_args))</span>
+<span class="lineNum">         </span><span class="branchCov" title="Branch 11 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span><span class="branchCov" title="Branch 15 was taken 54 times"> + </span><span class="branchNoExec" title="Block containing branch 18 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 19 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span><span class="branchCov" title="Branch 23 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span><span class="branchCov" title="Branch 27 was taken 534 times"> + </span><span class="branchNoExec" title="Block containing branch 30 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Block containing branch 31 was never executed"> # </span><span class="branchNoCov" title="Branch 34 was not taken"> - </span><span class="branchCov" title="Branch 35 was taken 104 times"> + </span><span class="branchNoCov" title="Branch 38 was not taken"> - </span><span class="branchCov" title="Branch 39 was taken 72 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 42 was not taken"> - </span><span class="branchCov" title="Branch 43 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 46 was not taken"> - </span><span class="branchCov" title="Branch 47 was taken 28 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 51 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 54 was not taken"> - </span><span class="branchCov" title="Branch 55 was taken 229 times"> + </span><span class="branchNoCov" title="Branch 58 was not taken"> - </span><span class="branchCov" title="Branch 59 was taken 12 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 62 was not taken"> - </span><span class="branchCov" title="Branch 63 was taken 101 times"> + </span><span class="branchNoCov" title="Branch 66 was not taken"> - </span><span class="branchCov" title="Branch 67 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 70 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 71 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 74 was not taken"> - </span><span class="branchCov" title="Branch 75 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 78 was not taken"> - </span><span class="branchCov" title="Branch 79 was taken 236 times"> + </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 82 was not taken"> - </span><span class="branchCov" title="Branch 83 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 86 was not taken"> - </span><span class="branchCov" title="Branch 87 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 90 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 91 was taken 10 times"> + </span><span class="branchNoExec" title="Block containing branch 94 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 95 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 98 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 99 was never executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 102 was not taken"> - </span><span class="branchCov" title="Branch 103 was taken 288 times"> + </span><span class="branchNoExec" title="Block containing branch 106 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 107 was never executed"> # </span><span class="branchNoCov" title="Branch 110 was not taken"> - </span> 
+<span class="lineNum">         </span><span class="branchCov" title="Branch 111 was taken 15 times"> + </span><span class="branchNoExec" title="Block containing branch 114 was never executed"> # </span><span class="branchNoExec" title="Block containing branch 115 was never executed"> # </span><span class="branchNoCov" title="Branch 118 was not taken"> - </span><span class="branchCov" title="Branch 119 was taken 26 times"> + </span>]
+<span class="lineNum">     216 </span>                :<span class="lineNoCov">          0 :                 return 0;</span>
+<span class="lineNum">     217 </span>                :            : 
+<span class="lineNum">     218 </span>                :            :             PyObject* result = detail::invoke(
+<span class="lineNum">     219 </span>                :            :                 detail::invoke_tag&lt;result_t,F&gt;()
+<span class="lineNum">     220 </span>                :            :               , create_result_converter(args_, (result_converter*)0, (result_converter*)0)
+<span class="lineNum">     221 </span>                :            :               , m_data.first()
+<span class="lineNum">     222 </span>                :            :                 BOOST_PP_ENUM_TRAILING_PARAMS(N, c)
+<span class="lineNum">     223 </span>                :<span class="lineCov">       2174 :             );</span>
+<span class="lineNum">     224 </span>                :            :             
+<span class="lineNum">     225 </span>                :<span class="lineCov">       2101 :             return m_data.second().postcall(inner_args, result);</span>
+<span class="lineNum">     226 </span>                :            :         }
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :<span class="lineCov">       4704 :         static unsigned min_arity() { return N; }</span>
+<span class="lineNum">     229 </span>                :            :         
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :         static py_func_sig_info  signature()</span>
+<span class="lineNum">     231 </span>                :            :         {
+<span class="lineNum">     232 </span>                :<span class="lineNoCov">          0 :             const signature_element * sig = detail::signature&lt;Sig&gt;::elements();</span>
+<span class="lineNum">     233 </span>                :            : #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            :             typedef BOOST_DEDUCED_TYPENAME Policies::template extract_return_type&lt;Sig&gt;::type rtype;
+<span class="lineNum">     236 </span>                :            :             typedef typename select_result_converter&lt;Policies, rtype&gt;::type result_converter;
+<span class="lineNum">     237 </span>                :            : 
+<span class="lineNum">     238 </span>                :            :             static const signature_element ret = {
+<span class="lineNum">     239 </span>                :            :                 (boost::is_void&lt;rtype&gt;::value ? &quot;void&quot; : type_id&lt;rtype&gt;().name())
+<span class="lineNum">     240 </span>                :            :                 , &amp;detail::converter_target_type&lt;result_converter&gt;::get_pytype
+<span class="lineNum">     241 </span>                :            :                 , boost::detail::indirect_traits::is_reference_to_non_const&lt;rtype&gt;::value 
+<span class="lineNum">     242 </span>                :            :             };
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :             py_func_sig_info res = {sig, &amp;ret };</span>
+<span class="lineNum">     244 </span>                :            : #else
+<span class="lineNum">     245 </span>                :            :             py_func_sig_info res = {sig, sig };
+<span class="lineNum">     246 </span>                :            : #endif
+<span class="lineNum">     247 </span>                :            : 
+<span class="lineNum">     248 </span>                :<span class="lineNoCov">          0 :             return  res;</span>
+<span class="lineNum">     249 </span>                :            :         }
+<span class="lineNum">     250 </span>                :            :      private:
+<span class="lineNum">     251 </span>                :            :         compressed_pair&lt;F,Policies&gt; m_data;
+<span class="lineNum">     252 </span>                :            :     };
+<span class="lineNum">     253 </span>                :            : };
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :            : 
+<span class="lineNum">     256 </span>                :            : 
+<span class="lineNum">     257 </span>                :            : #endif // BOOST_PP_IS_ITERATING 
+<span class="lineNum">     258 </span>                :            : 
+<span class="lineNum">     259 </span>                :            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - coolkit/src/include/cool/option.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">coolkit/src/include/cool</a> - option.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryLo">22.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef _COOL_OPTION_H
+<span class="lineNum">       2 </span>                :            : #define _COOL_OPTION_H
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &lt;boost/optional.hpp&gt;
+<span class="lineNum">       5 </span>                :            : #include &lt;boost/operators.hpp&gt;
+<span class="lineNum">       6 </span>                :            : #include &quot;cool/demangle.h&quot;
+<span class="lineNum">       7 </span>                :            : #include &quot;cool/debug.h&quot;
+<span class="lineNum">       8 </span>                :            : #include &quot;cool/exceptions.h&quot;
+<span class="lineNum">       9 </span>                :            : #include &quot;cool/formatSamples.h&quot;
+<span class="lineNum">      10 </span>                :            : #include &quot;cool/serializationMacros.h&quot;
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : //============================================================================
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : namespace cool
+<span class="lineNum">      15 </span>                :            : {
+<span class="lineNum">      16 </span>                :            :         /**
+<span class="lineNum">      17 </span>                :            :          * Class for exceptions raised by option operations.
+<span class="lineNum">      18 </span>                :            :          */
+<span class="lineNum">      19 </span>                :            :         class OptionEmptyException : public Exception
+<span class="lineNum">      20 </span>                :            :         {
+<span class="lineNum">      21 </span>                :            :         };
+<span class="lineNum">      22 </span>                :            :         
+<span class="lineNum">      23 </span>                :            :         /**
+<span class="lineNum">      24 </span>                :            :          * Class for optional values.
+<span class="lineNum">      25 </span>                :            :          * No default constructor required of the base type.
+<span class="lineNum">      26 </span>                :            :          * The option can either be NONE, or SOME(v) for some value v.
+<span class="lineNum">      27 </span>                :            :          *
+<span class="lineNum">      28 </span>                :            :          * @author cristian
+<span class="lineNum">      29 </span>                :            :          * @author grzes
+<span class="lineNum">      30 </span>                :            :          */
+<span class="lineNum">      31 </span>                :            :         
+<span class="lineNum">      32 </span>                :            :         
+<span class="lineNum">      33 </span>                :            :         class EmptyOptionTag
+<span class="lineNum">      34 </span>                :            :         {
+<span class="lineNum">      35 </span>                :            :         };
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            :         extern EmptyOptionTag const EMPTY_OPTION;
+<span class="lineNum">      38 </span>                :            :         
+<span class="lineNum">      39 </span>                :            :         class SerializationKludge;
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">      42 </span>                :            :         class Option: private boost::equality_comparable&lt;Option&lt;T&gt; &gt;
+<span class="lineNum">      43 </span>                :            :         {
+<span class="lineNum">      44 </span>                :            :         public:
+<span class="lineNum">      45 </span>                :            :                 /**
+<span class="lineNum">      46 </span>                :            :                  * Constructs the alternate NONE
+<span class="lineNum">      47 </span>                :            :                  */
+<span class="lineNum">      48 </span>                :            :                 Option();
+<span class="lineNum">      49 </span>                :            :         
+<span class="lineNum">      50 </span>                :            :                 /**
+<span class="lineNum">      51 </span>                :            :                  * Another empty option constructor
+<span class="lineNum">      52 </span>                :            :                  *
+<span class="lineNum">      53 </span>                :            :                  * Usage:
+<span class="lineNum">      54 </span>                :            :                  * void fun(cool::Option&lt;VeeeeeeeerrrryyyyyLoooooonnnnggTyyppeeNaaammmee&gt; opt);
+<span class="lineNum">      55 </span>                :            :                  * fun(cool::EMPTY_OPTION);
+<span class="lineNum">      56 </span>                :            :                  *
+<span class="lineNum">      57 </span>                :            :                  * Instead of:
+<span class="lineNum">      58 </span>                :            :                  * fun(cool::Option&lt;VeeeeeeeerrrryyyyyLoooooonnnnggTyyppeeNaaammmee&gt;());
+<span class="lineNum">      59 </span>                :            :                  */
+<span class="lineNum">      60 </span>                :            :                 Option(EmptyOptionTag);
+<span class="lineNum">      61 </span>                :            :         
+<span class="lineNum">      62 </span>                :            :                 explicit Option(SerializationKludge const&amp;) {}
+<span class="lineNum">      63 </span>                :            :         
+<span class="lineNum">      64 </span>                :            :                 /**
+<span class="lineNum">      65 </span>                :            :                  * Constructs the alternate SOME containing the value given
+<span class="lineNum">      66 </span>                :            :                  *
+<span class="lineNum">      67 </span>                :            :                  * @param value
+<span class="lineNum">      68 </span>                :            :                  */
+<span class="lineNum">      69 </span>                :            :                 Option(T const&amp; value);
+<span class="lineNum">      70 </span>                :            :         
+<span class="lineNum">      71 </span>                :            :                 /**
+<span class="lineNum">      72 </span>                :            :                  * Returns true if the option is NONE.
+<span class="lineNum">      73 </span>                :            :                  *
+<span class="lineNum">      74 </span>                :            :                  * @return
+<span class="lineNum">      75 </span>                :            :                  */
+<span class="lineNum">      76 </span>                :            :                 bool isEmpty() const;
+<span class="lineNum">      77 </span>                :            :         
+<span class="lineNum">      78 </span>                :            :                 /**
+<span class="lineNum">      79 </span>                :            :                  * Returns false if the option is NONE.
+<span class="lineNum">      80 </span>                :            :                  *
+<span class="lineNum">      81 </span>                :            :                  * @return
+<span class="lineNum">      82 </span>                :            :                  */
+<span class="lineNum">      83 </span>                :            :                 bool hasSome() const;
+<span class="lineNum">      84 </span>                :            :         
+<span class="lineNum">      85 </span>                :            :                 /**
+<span class="lineNum">      86 </span>                :            :                  * Returns the value, if the alternate was SOME, and throws an
+<span class="lineNum">      87 </span>                :            :                  * exception if the alternate was NONE.
+<span class="lineNum">      88 </span>                :            :                  */
+<span class="lineNum">      89 </span>                :            :                 T getValue() const;
+<span class="lineNum">      90 </span>                :            :         
+<span class="lineNum">      91 </span>                :            :                 /** Return a reference to the value to avoid copying. Ownership
+<span class="lineNum">      92 </span>                :            :                  * remains with the option!
+<span class="lineNum">      93 </span>                :            :                  */
+<span class="lineNum">      94 </span>                :            :                 T const&amp; getRefValue() const;
+<span class="lineNum">      95 </span>                :            :                 T&amp; getRefValue();
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :            :                 /**
+<span class="lineNum">      98 </span>                :            :                  * Same as getValue() or getRefValue() except it returns defaultValue if option is NONE
+<span class="lineNum">      99 </span>                :            :                  */
+<span class="lineNum">     100 </span>                :            :                 T getValueOrReturnArg(T const &amp; defaultValue) const;
+<span class="lineNum">     101 </span>                :            :                 T const &amp; getRefValueOrReturnArg(T const &amp; defaultValue) const;
+<span class="lineNum">     102 </span>                :            :         
+<span class="lineNum">     103 </span>                :            :                 /**
+<span class="lineNum">     104 </span>                :            :                  * Same as getValue().
+<span class="lineNum">     105 </span>                :            :                  */
+<span class="lineNum">     106 </span>                :            :                 T operator()() const;
+<span class="lineNum">     107 </span>                :            :         
+<span class="lineNum">     108 </span>                :            :                 /**
+<span class="lineNum">     109 </span>                :            :                  * Compares two Option objects.
+<span class="lineNum">     110 </span>                :            :                  *
+<span class="lineNum">     111 </span>                :            :                  * @param other The rhs argumement.
+<span class="lineNum">     112 </span>                :            :                  *
+<span class="lineNum">     113 </span>                :            :                  * @return true if both empty, or both contain objects that are equal;
+<span class="lineNum">     114 </span>                :            :                  *         false otherwise
+<span class="lineNum">     115 </span>                :            :                  */
+<span class="lineNum">     116 </span>                :            :                 template&lt;class OptionT&gt;
+<span class="lineNum">     117 </span>                :            :                 friend bool operator==(Option&lt;OptionT&gt; const&amp; self, Option&lt;OptionT&gt; const&amp; other);
+<span class="lineNum">     118 </span>                :            :         
+<span class="lineNum">     119 </span>                :            :                 // operator&lt; is no longer a member
+<span class="lineNum">     120 </span>                :            :                 // friendship not required; its here so that you knew operator&lt; exists 
+<span class="lineNum">     121 </span>                :            :                 template&lt;class OptionT&gt;
+<span class="lineNum">     122 </span>                :            :                 friend bool operator&lt;(Option&lt;OptionT&gt; const&amp; self, Option&lt;OptionT&gt; const&amp; other);
+<span class="lineNum">     123 </span>                :            :         
+<span class="lineNum">     124 </span>                :            :                 Option&lt;T&gt;&amp; operator=(Option&lt;T&gt; const&amp; other);
+<span class="lineNum">     125 </span>                :            :         
+<span class="lineNum">     126 </span>                :            :                 template &lt;typename TOS&gt;
+<span class="lineNum">     127 </span>                :            :                 void xserialize(TOS&amp; stream);
+<span class="lineNum">     128 </span>                :            :         
+<span class="lineNum">     129 </span>                :            :         private:
+<span class="lineNum">     130 </span>                :            :                 boost::optional&lt;T&gt; boostOption;
+<span class="lineNum">     131 </span>                :            :         };
+<span class="lineNum">     132 </span>                :            :         
+<span class="lineNum">     133 </span>                :            :         template&lt;class T&gt;
+<span class="lineNum">     134 </span>                :            :         bool operator&lt;(Option&lt;T&gt; const&amp; self, Option&lt;T&gt; const&amp; other);
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :         template&lt;class OptionT&gt;
+<span class="lineNum">     137 </span>                :            :         bool operator==(Option&lt;OptionT&gt; const&amp; self, Option&lt;OptionT&gt; const&amp; other);
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     140 </span>                :            :         struct EmptyAsBottomComparator
+<span class="lineNum">     141 </span>                :            :         {
+<span class="lineNum">     142 </span>                :            :                 bool operator()(Option&lt;T&gt; const&amp; first, Option&lt;T&gt; const&amp; second) const;
+<span class="lineNum">     143 </span>                :            :         };
+<span class="lineNum">     144 </span>                :            :         
+<span class="lineNum">     145 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     146 </span>                :            :         struct EmptyAsTopComparator
+<span class="lineNum">     147 </span>                :            :         {
+<span class="lineNum">     148 </span>                :            :                 bool operator()(Option&lt;T&gt; const&amp; first, Option&lt;T&gt; const&amp; second) const;
+<span class="lineNum">     149 </span>                :            :         };
+<span class="lineNum">     150 </span>                :            :         //============================================================================
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :            :         /**
+<span class="lineNum">     153 </span>                :            :          * Streaming operator for Option. Requires that the type
+<span class="lineNum">     154 </span>                :            :          * inside option can be used with operator&lt;&lt;.
+<span class="lineNum">     155 </span>                :            :          *
+<span class="lineNum">     156 </span>                :            :          * @author grzes
+<span class="lineNum">     157 </span>                :            :          */
+<span class="lineNum">     158 </span>                :            :         template &lt;typename T&gt;
+<span class="lineNum">     159 </span>                :            :         ostream&amp; operator&lt;&lt;(ostream&amp; stream, Option&lt;T&gt; const&amp; opt);
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>                :            :         template&lt;typename T&gt;
+<span class="lineNum">     162 </span>                :            :         cool::Option&lt;T&gt; makeOption(T const &amp; value)
+<span class="lineNum">     163 </span>                :            :         {
+<span class="lineNum">     164 </span>                :            :                 return cool::Option&lt;T&gt;(value);
+<span class="lineNum">     165 </span>                :            :         }
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :            : 
+<span class="lineNum">     168 </span>                :            :         /**
+<span class="lineNum">     169 </span>                :            :          * OptionInt&lt;TInt&gt; behaves almost like Option&lt;TInt&gt; and has same interface except the following
+<span class="lineNum">     170 </span>                :            :          * totally inlined implementation; pick one :) OR :( but don't complain
+<span class="lineNum">     171 </span>                :            :          * TInt must be kind of integer
+<span class="lineNum">     172 </span>                :            :          * no numeric_limits&lt;TInt&gt;::max() is allowed - it is considered EmptyOption/InvalidValue internally
+<span class="lineNum">     173 </span>                :            :          * no reference getting is allowed to avoid x.getRef() = InvalidValue()
+<span class="lineNum">     174 </span>                :            :          * sizeof(OptionInt&lt;TInt&gt;) == sizeof(TInt)
+<span class="lineNum">     175 </span>                :            :          * no implicit conversions from AnyInt or Option&lt;AnyInt&gt; or OptionInt&lt;AnyInt&gt; - all can contain InvalidValue(ie. for larger type)
+<span class="lineNum">     176 </span>                :            :          */
+<span class="lineNum">     177 </span>                :            :         template &lt;class TInt&gt;
+<span class="lineNum">     178 </span>                :            :         class OptionInt
+<span class="lineNum">     179 </span>                :            :         {
+<span class="lineNum">     180 </span>                :            :         public:
+<span class="lineNum">     181 </span>                :            :                 COOL_SERIAL_BINARY(value);
+<span class="lineNum">     182 </span>                :            :                 explicit OptionInt(SerializationKludge const&amp;) : value(InvalidValue())
+<span class="lineNum">     183 </span>                :            :                 {}
+<span class="lineNum">     184 </span>                :            :                 
+<span class="lineNum">     185 </span>                :            :                 /// empty c-tor
+<span class="lineNum">     186 </span>                :            :                 OptionInt() : value(InvalidValue())
+<span class="lineNum">     187 </span>                :            :                 {}
+<span class="lineNum">     188 </span>                :            :                 
+<span class="lineNum">     189 </span>                :            :                 /// assign value c-tor; asserts on value == InvalidValue(); explicit to avoid unintended InvalidValue()
+<span class="lineNum">     190 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     191 </span>                :            :                 explicit OptionInt(AnyInt const value) : value(value)
+<span class="lineNum">     192 </span>                :            :                 {
+<span class="lineNum">     193 </span>                :            :                         DASSERT(this-&gt;noOverflow(value), &quot;Invalid value=&quot; &lt;&lt; value);
+<span class="lineNum">     194 </span>                :            :                 }
+<span class="lineNum">     195 </span>                :            :                 
+<span class="lineNum">     196 </span>                :            :                 /// assign value c-tor; asserts on value == InvalidValue(); explicit to avoid unintended InvalidValue()
+<span class="lineNum">     197 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     198 </span>                :            :                 explicit OptionInt(Option&lt;AnyInt&gt; const &amp; other) : value(other.isEmpty() ? InvalidValue() : other())
+<span class="lineNum">     199 </span>                :            :                 {
+<span class="lineNum">     200 </span>                :            :                         DASSERT(other.isEmpty() || this-&gt;noOverflow(other()), &quot;Invalid value=&quot; &lt;&lt; other);
+<span class="lineNum">     201 </span>                :            :                 }
+<span class="lineNum">     202 </span>                :            :                 
+<span class="lineNum">     203 </span>                :            :                 /// assign value c-tor; asserts on value == InvalidValue(); explicit to avoid unintended InvalidValue()
+<span class="lineNum">     204 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     205 </span>                :            :                 explicit OptionInt(OptionInt&lt;AnyInt&gt; const other) : value(other.isEmpty() ? InvalidValue() : other())
+<span class="lineNum">     206 </span>                :            :                 {
+<span class="lineNum">     207 </span>                :            :                         DASSERT(other.isEmpty() || this-&gt;noOverflow(other()), &quot;Invalid value=&quot; &lt;&lt; other);
+<span class="lineNum">     208 </span>                :            :                 }
+<span class="lineNum">     209 </span>                :            :                 
+<span class="lineNum">     210 </span>                :            :                 /// assign value; asserts on value == InvalidValue(); not operator= to avoid unintended InvalidValue()
+<span class="lineNum">     211 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     212 </span>                :            :                 OptionInt const &amp; assign(AnyInt const value)
+<span class="lineNum">     213 </span>                :            :                 {
+<span class="lineNum">     214 </span>                :            :                         this-&gt;value = value;
+<span class="lineNum">     215 </span>                :            :                         DASSERT(this-&gt;noOverflow(value), &quot;Invalid value=&quot; &lt;&lt; value);
+<span class="lineNum">     216 </span>                :            :                         return *this;
+<span class="lineNum">     217 </span>                :            :                 }
+<span class="lineNum">     218 </span>                :            :                 
+<span class="lineNum">     219 </span>                :            :                 /// assign value; asserts on value == InvalidValue(); not operator= to avoid unintended InvalidValue()
+<span class="lineNum">     220 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     221 </span>                :            :                 OptionInt const &amp; assign(Option&lt;AnyInt&gt; const &amp; other)
+<span class="lineNum">     222 </span>                :            :                 {
+<span class="lineNum">     223 </span>                :            :                         this-&gt;value = other.isEmpty() ? InvalidValue() : other();
+<span class="lineNum">     224 </span>                :            :                         DASSERT(other.isEmpty() || this-&gt;noOverflow(other()), &quot;Invalid value=&quot; &lt;&lt; other);
+<span class="lineNum">     225 </span>                :            :                         return *this;
+<span class="lineNum">     226 </span>                :            :                 }
+<span class="lineNum">     227 </span>                :            :                 
+<span class="lineNum">     228 </span>                :            :                 /// assign value; asserts on value == InvalidValue(); not operator= to avoid unintended InvalidValue()
+<span class="lineNum">     229 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     230 </span>                :            :                 OptionInt const &amp; assign(OptionInt&lt;AnyInt&gt; const other)
+<span class="lineNum">     231 </span>                :            :                 {
+<span class="lineNum">     232 </span>                :            :                         this-&gt;value = other.isEmpty() ? InvalidValue() : other();
+<span class="lineNum">     233 </span>                :            :                         DASSERT(other.isEmpty() || this-&gt;noOverflow(other()), &quot;Invalid value=&quot; &lt;&lt; other);
+<span class="lineNum">     234 </span>                :            :                         return *this;
+<span class="lineNum">     235 </span>                :            :                 }
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :            :                 //emptyness checkers
+<span class="lineNum">     238 </span>                :            :                 bool isEmpty() const { return this-&gt;value == InvalidValue(); }
+<span class="lineNum">     239 </span>                :            :                 bool hasSome() const { return this-&gt;value != InvalidValue(); }
+<span class="lineNum">     240 </span>                :            :                 
+<span class="lineNum">     241 </span>                :            :                 /// return current value or assert
+<span class="lineNum">     242 </span>                :            :                 TInt getValue() const
+<span class="lineNum">     243 </span>                :            :                 {
+<span class="lineNum">     244 </span>                :            :                         DASSERT(this-&gt;noOverflow(this-&gt;value), &quot;Invalid value=&quot; &lt;&lt; this-&gt;value);
+<span class="lineNum">     245 </span>                :            :                         return this-&gt;value;
+<span class="lineNum">     246 </span>                :            :                 }
+<span class="lineNum">     247 </span>                :            :                 /// return current value or assert
+<span class="lineNum">     248 </span>                :            :                 TInt operator()() const
+<span class="lineNum">     249 </span>                :            :                 {
+<span class="lineNum">     250 </span>                :            :                         DASSERT(this-&gt;noOverflow(this-&gt;value), &quot;Invalid value=&quot; &lt;&lt; this-&gt;value);
+<span class="lineNum">     251 </span>                :            :                         return this-&gt;value;
+<span class="lineNum">     252 </span>                :            :                 }
+<span class="lineNum">     253 </span>                :            :                 
+<span class="lineNum">     254 </span>                :            :                 template &lt;class TTInt&gt;
+<span class="lineNum">     255 </span>                :            :                 friend bool operator==(OptionInt&lt;TTInt&gt; const &amp; self, OptionInt&lt;TTInt&gt; const &amp; other);
+<span class="lineNum">     256 </span>                :            :                 template &lt;class TTInt&gt;
+<span class="lineNum">     257 </span>                :            :                 friend bool operator&lt;(OptionInt&lt;TTInt&gt; const &amp; self, OptionInt&lt;TTInt&gt; const &amp; other);
+<span class="lineNum">     258 </span>                :            :                 // no operator==(self, AnyInt or Option&lt;AnyInt&gt; or OptionInt&lt;AnyInt&gt;) to avoid implicit conversions
+<span class="lineNum">     259 </span>                :            :                 // no operator&lt;(self, AnyInt or Option&lt;AnyInt&gt; or OptionInt&lt;AnyInt&gt;) to avoid implicit conversions
+<span class="lineNum">     260 </span>                :            :                 
+<span class="lineNum">     261 </span>                :            :         private:
+<span class="lineNum">     262 </span>                :            :                 template &lt;class AnyInt&gt;
+<span class="lineNum">     263 </span>                :            :                 static bool noOverflow(AnyInt input)
+<span class="lineNum">     264 </span>                :            :                 {
+<span class="lineNum">     265 </span>                :            :                         return (std::numeric_limits&lt;TInt&gt;::min() &lt;= input) &amp;&amp; (input &lt; InvalidValue());
+<span class="lineNum">     266 </span>                :            :                 }
+<span class="lineNum">     267 </span>                :            :                 static TInt InvalidValue()
+<span class="lineNum">     268 </span>                :            :                 {
+<span class="lineNum">     269 </span>                :            :                         BOOST_STATIC_ASSERT(std::numeric_limits&lt;TInt&gt;::is_specialized); //avoid using numeric_limits on types which are not supported by numeric_limits
+<span class="lineNum">     270 </span>                :            :                         return std::numeric_limits&lt;TInt&gt;::max();
+<span class="lineNum">     271 </span>                :            :                 }
+<span class="lineNum">     272 </span>                :            : 
+<span class="lineNum">     273 </span>                :            :         private:
+<span class="lineNum">     274 </span>                :            :                 TInt value;
+<span class="lineNum">     275 </span>                :            :         };
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :            :         template&lt;class TInt&gt;
+<span class="lineNum">     278 </span>                :            :         bool operator==(OptionInt&lt;TInt&gt; const &amp; self, OptionInt&lt;TInt&gt; const &amp; other)
+<span class="lineNum">     279 </span>                :            :         {
+<span class="lineNum">     280 </span>                :            :                 return self.value == other.value;
+<span class="lineNum">     281 </span>                :            :         }
+<span class="lineNum">     282 </span>                :            :         
+<span class="lineNum">     283 </span>                :            :         template&lt;class TInt&gt;
+<span class="lineNum">     284 </span>                :            :         bool operator&lt;(OptionInt&lt;TInt&gt; const &amp; self, OptionInt&lt;TInt&gt; const &amp; other)
+<span class="lineNum">     285 </span>                :            :         {       //EmptyAsBottomComparator
+<span class="lineNum">     286 </span>                :            :                 return other.isEmpty()
+<span class="lineNum">     287 </span>                :            :                         ? false
+<span class="lineNum">     288 </span>                :            :                         : ( self.isEmpty() ? true : self() &lt; other() );
+<span class="lineNum">     289 </span>                :            :         }
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :         template &lt;class TInt&gt;
+<span class="lineNum">     292 </span>                :            :         ostream &amp; operator&lt;&lt;(ostream &amp; out, OptionInt&lt;TInt&gt; const &amp; opt)
+<span class="lineNum">     293 </span>                :            :         {
+<span class="lineNum">     294 </span>                :            :                 return opt.hasSome() ? out &lt;&lt; opt() : out &lt;&lt; &quot;NONE&quot;;
+<span class="lineNum">     295 </span>                :            :         }
+<span class="lineNum">     296 </span>                :            :         
+<span class="lineNum">     297 </span>                :            :         //============================================================================
+<span class="lineNum">     298 </span>                :            :         // Option
+<span class="lineNum">     299 </span>                :            :         //============================================================================
+<span class="lineNum">     300 </span>                :            : 
+<span class="lineNum">     301 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :         Option&lt;T&gt;::Option()</span>
+<span class="lineNum">     303 </span>                :<span class="lineNoCov">          0 :         : boostOption()</span>
+<span class="lineNum">     304 </span>                :            :         {
+<span class="lineNum">     305 </span>                :            :         }
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     308 </span>                :            :         Option&lt;T&gt;::Option(EmptyOptionTag)
+<span class="lineNum">     309 </span>                :            :         : boostOption()
+<span class="lineNum">     310 </span>                :            :         {
+<span class="lineNum">     311 </span>                :            :         }
+<span class="lineNum">     312 </span>                :            : 
+<span class="lineNum">     313 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     314 </span>                :<span class="lineCov">         26 :         Option&lt;T&gt;::Option(T const&amp; value)</span>
+<span class="lineNum">     315 </span>                :<span class="lineCov">         26 :         : boostOption( value)</span>
+<span class="lineNum">     316 </span>                :            :         {
+<span class="lineNum">     317 </span>                :            :         }
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     320 </span>                :            :         inline bool Option&lt;T&gt;::isEmpty() const
+<span class="lineNum">     321 </span>                :            :         {
+<span class="lineNum">     322 </span>                :            :                 return !this-&gt;boostOption;
+<span class="lineNum">     323 </span>                :            :         }
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     326 </span>                :<span class="lineNoCov">          0 :         inline bool Option&lt;T&gt;::hasSome() const</span>
+<span class="lineNum">     327 </span>                :            :         {
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :                 return this-&gt;boostOption;</span>
+<span class="lineNum">     329 </span>                :            :         }
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     332 </span>                :            :         inline T Option&lt;T&gt;::getValue() const
+<span class="lineNum">     333 </span>                :            :         {
+<span class="lineNum">     334 </span>                :            :                 DASSERT(this-&gt;boostOption, &quot;Dereferencing an empty option. &quot; &lt;&lt; cool::demangle(typeid(*this).name()));
+<span class="lineNum">     335 </span>                :            :                 return *(this-&gt;boostOption);
+<span class="lineNum">     336 </span>                :            :         }
+<span class="lineNum">     337 </span>                :            : 
+<span class="lineNum">     338 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     339 </span>                :<span class="lineNoCov">          0 :         inline T&amp; Option&lt;T&gt;::getRefValue()</span>
+<span class="lineNum">     340 </span>                :            :         {
+<span class="lineNum">     341 </span>                :<span class="lineNoCov">          0 :                 DASSERT(this-&gt;boostOption, &quot;Dereferencing an empty option. &quot; &lt;&lt; typeid(*this).name());</span>
+<span class="lineNum">     342 </span>                :<span class="lineNoCov">          0 :                 return *(this-&gt;boostOption);</span>
+<span class="lineNum">     343 </span>                :            :         }
+<span class="lineNum">     344 </span>                :            : 
+<span class="lineNum">     345 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     346 </span>                :            :         inline T const&amp; Option&lt;T&gt;::getRefValue() const
+<span class="lineNum">     347 </span>                :            :         {
+<span class="lineNum">     348 </span>                :            :                 DASSERT(this-&gt;boostOption, &quot;Dereferencing an empty option&quot;);
+<span class="lineNum">     349 </span>                :            :                 return *(this-&gt;boostOption);
+<span class="lineNum">     350 </span>                :            :         }
+<span class="lineNum">     351 </span>                :            : 
+<span class="lineNum">     352 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     353 </span>                :            :         inline T Option&lt;T&gt;::getValueOrReturnArg(T const &amp; defaultValue) const
+<span class="lineNum">     354 </span>                :            :         {
+<span class="lineNum">     355 </span>                :            :                 if (this-&gt;hasSome())
+<span class="lineNum">     356 </span>                :            :                 {
+<span class="lineNum">     357 </span>                :            :                         return *(this-&gt;boostOption);
+<span class="lineNum">     358 </span>                :            :                 }
+<span class="lineNum">     359 </span>                :            :                 return defaultValue;
+<span class="lineNum">     360 </span>                :            :         }
+<span class="lineNum">     361 </span>                :            : 
+<span class="lineNum">     362 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     363 </span>                :            :         inline T const &amp; Option&lt;T&gt;::getRefValueOrReturnArg(T const &amp; defaultValue) const
+<span class="lineNum">     364 </span>                :            :         {
+<span class="lineNum">     365 </span>                :            :                 if (this-&gt;hasSome())
+<span class="lineNum">     366 </span>                :            :                 {
+<span class="lineNum">     367 </span>                :            :                         return *(this-&gt;boostOption);
+<span class="lineNum">     368 </span>                :            :                 }
+<span class="lineNum">     369 </span>                :            :                 return defaultValue;
+<span class="lineNum">     370 </span>                :            :         }
+<span class="lineNum">     371 </span>                :            : 
+<span class="lineNum">     372 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     373 </span>                :            :         inline T Option&lt;T&gt;::operator()() const
+<span class="lineNum">     374 </span>                :            :         {
+<span class="lineNum">     375 </span>                :            :                 return this-&gt;getValue();
+<span class="lineNum">     376 </span>                :            :         }
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     379 </span>                :            :         inline bool operator==(Option&lt;T&gt; const&amp; self, Option&lt;T&gt; const&amp; other)
+<span class="lineNum">     380 </span>                :            :         {
+<span class="lineNum">     381 </span>                :            :                 return self.boostOption == other.boostOption;
+<span class="lineNum">     382 </span>                :            :         }
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :            :         template &lt;class T, class T2&gt;
+<span class="lineNum">     385 </span>                :            :         inline bool operator==(Option&lt;T&gt; const&amp; self, T2 const&amp; other)
+<span class="lineNum">     386 </span>                :            :         {
+<span class="lineNum">     387 </span>                :            :                 return self == Option&lt;T&gt;(other);
+<span class="lineNum">     388 </span>                :            :         }
+<span class="lineNum">     389 </span>                :            : 
+<span class="lineNum">     390 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     391 </span>                :            :         inline bool operator&lt;(Option&lt;T&gt; const&amp; self, Option&lt;T&gt; const&amp; other)
+<span class="lineNum">     392 </span>                :            :         {
+<span class="lineNum">     393 </span>                :            :                 return EmptyAsBottomComparator&lt;T&gt;()(self, other);
+<span class="lineNum">     394 </span>                :            :         }
+<span class="lineNum">     395 </span>                :            :         
+<span class="lineNum">     396 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     397 </span>                :            :         inline bool operator&lt;(Option&lt;T&gt; const&amp; self, T const&amp; other)
+<span class="lineNum">     398 </span>                :            :         {
+<span class="lineNum">     399 </span>                :            :                 return self &lt; Option&lt;T&gt;(other);
+<span class="lineNum">     400 </span>                :            :         }
+<span class="lineNum">     401 </span>                :            :         
+<span class="lineNum">     402 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     403 </span>                :            :         Option&lt;T&gt;&amp; Option&lt;T&gt;::operator=(Option&lt;T&gt; const&amp; other)
+<span class="lineNum">     404 </span>                :            :         {
+<span class="lineNum">     405 </span>                :            :                 if (this != &amp;other)
+<span class="lineNum">     406 </span>                :            :                 {
+<span class="lineNum">     407 </span>                :            :                         this-&gt;boostOption = other.boostOption;
+<span class="lineNum">     408 </span>                :            :                 }
+<span class="lineNum">     409 </span>                :            : 
+<span class="lineNum">     410 </span>                :            :                 return *this;
+<span class="lineNum">     411 </span>                :            :         }
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :            :         template &lt;typename T&gt;
+<span class="lineNum">     414 </span>                :            :         ostream&amp; operator&lt;&lt;(ostream&amp; stream, Option&lt;T&gt; const&amp; opt)
+<span class="lineNum">     415 </span>                :            :         {
+<span class="lineNum">     416 </span>                :            :                 if (opt.isEmpty())
+<span class="lineNum">     417 </span>                :            :                 {
+<span class="lineNum">     418 </span>                :            :                         stream &lt;&lt; &quot;NONE&quot;;
+<span class="lineNum">     419 </span>                :            :                 }
+<span class="lineNum">     420 </span>                :            :                 else
+<span class="lineNum">     421 </span>                :            :                 {
+<span class="lineNum">     422 </span>                :            :                         stream &lt;&lt; opt.getRefValue();
+<span class="lineNum">     423 </span>                :            :                 }
+<span class="lineNum">     424 </span>                :            : 
+<span class="lineNum">     425 </span>                :            :                 return stream;
+<span class="lineNum">     426 </span>                :            :         }
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :            :         template &lt;typename T&gt; template &lt;class TOS&gt; 
+<span class="lineNum">     429 </span>                :            :         void Option&lt;T&gt;::xserialize(TOS&amp; stream)
+<span class="lineNum">     430 </span>                :            :         {
+<span class="lineNum">     431 </span>                :            :                 if (stream.isInputStream())
+<span class="lineNum">     432 </span>                :            :                 {
+<span class="lineNum">     433 </span>                :            :                         stream.readAndCheckType(TOS::TYPE_OPTION);
+<span class="lineNum">     434 </span>                :            : 
+<span class="lineNum">     435 </span>                :            :                         bool hasValue;
+<span class="lineNum">     436 </span>                :            :                         stream.streamRead(hasValue);
+<span class="lineNum">     437 </span>                :            : 
+<span class="lineNum">     438 </span>                :            :                         if (hasValue)
+<span class="lineNum">     439 </span>                :            :                         {
+<span class="lineNum">     440 </span>                :            :                                 T value(stream.template deserialize&lt;T&gt;());
+<span class="lineNum">     441 </span>                :            :                                 this-&gt;boostOption = value;
+<span class="lineNum">     442 </span>                :            :                         }
+<span class="lineNum">     443 </span>                :            :                         else
+<span class="lineNum">     444 </span>                :            :                         {
+<span class="lineNum">     445 </span>                :            :                                 this-&gt;boostOption = boost::optional&lt;T&gt;();
+<span class="lineNum">     446 </span>                :            :                         }
+<span class="lineNum">     447 </span>                :            :                 }
+<span class="lineNum">     448 </span>                :            :                 else
+<span class="lineNum">     449 </span>                :            :                 {
+<span class="lineNum">     450 </span>                :            :                         stream.writeType(TOS::TYPE_OPTION);
+<span class="lineNum">     451 </span>                :            : 
+<span class="lineNum">     452 </span>                :            :                         stream.streamWrite(!this-&gt;isEmpty());
+<span class="lineNum">     453 </span>                :            : 
+<span class="lineNum">     454 </span>                :            :                         if (!this-&gt;isEmpty())
+<span class="lineNum">     455 </span>                :            :                         {
+<span class="lineNum">     456 </span>                :            :                                 stream.readWrite(this-&gt;getRefValue());
+<span class="lineNum">     457 </span>                :            :                         }
+<span class="lineNum">     458 </span>                :            :                 }
+<span class="lineNum">     459 </span>                :            :         }
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     462 </span>                :            :         inline bool EmptyAsBottomComparator&lt;T&gt;::operator()(Option&lt;T&gt; const&amp; first, Option&lt;T&gt; const&amp; second) const
+<span class="lineNum">     463 </span>                :            :         {
+<span class="lineNum">     464 </span>                :            :                 if (second.isEmpty())
+<span class="lineNum">     465 </span>                :            :                 {
+<span class="lineNum">     466 </span>                :            :                         return false;
+<span class="lineNum">     467 </span>                :            :                 }
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            :                 if (first.isEmpty())
+<span class="lineNum">     470 </span>                :            :                 {
+<span class="lineNum">     471 </span>                :            :                         return true;
+<span class="lineNum">     472 </span>                :            :                 }
+<span class="lineNum">     473 </span>                :            : 
+<span class="lineNum">     474 </span>                :            :                 return first.getValue() &lt; second.getValue();
+<span class="lineNum">     475 </span>                :            :         }
+<span class="lineNum">     476 </span>                :            : 
+<span class="lineNum">     477 </span>                :            :         template &lt;class T&gt;
+<span class="lineNum">     478 </span>                :            :         inline bool EmptyAsTopComparator&lt;T&gt;::operator()(Option&lt;T&gt; const&amp; first, Option&lt;T&gt; const&amp; second) const
+<span class="lineNum">     479 </span>                :            :         {
+<span class="lineNum">     480 </span>                :            :                 if (first.isEmpty())
+<span class="lineNum">     481 </span>                :            :                 {
+<span class="lineNum">     482 </span>                :            :                         return false;
+<span class="lineNum">     483 </span>                :            :                 }
+<span class="lineNum">     484 </span>                :            : 
+<span class="lineNum">     485 </span>                :            :                 if (second.isEmpty())
+<span class="lineNum">     486 </span>                :            :                 {
+<span class="lineNum">     487 </span>                :            :                         return true;
+<span class="lineNum">     488 </span>                :            :                 }
+<span class="lineNum">     489 </span>                :            : 
+<span class="lineNum">     490 </span>                :            :                 return first.getValue() &lt; second.getValue();
+<span class="lineNum">     491 </span>                :            :         }
+<span class="lineNum">     492 </span>                :            : 
+<span class="lineNum">     493 </span>                :            : namespace formatSamples
+<span class="lineNum">     494 </span>                :            : {
+<span class="lineNum">     495 </span>                :            :         template&lt;typename T&gt;
+<span class="lineNum">     496 </span>                :            :         struct FormatSample&lt;Option&lt;T&gt; &gt;
+<span class="lineNum">     497 </span>                :            :         {
+<span class="lineNum">     498 </span>                :            :                 static ExclPtr&lt;cool::Option&lt;T&gt; &gt; create(uint32 index)
+<span class="lineNum">     499 </span>                :            :                 {
+<span class="lineNum">     500 </span>                :            :                         switch (index)
+<span class="lineNum">     501 </span>                :            :                         {
+<span class="lineNum">     502 </span>                :            :                         case 0:
+<span class="lineNum">     503 </span>                :            :                                 return ExclPtr&lt;Option&lt;T&gt; &gt;(new Option&lt;T&gt;(*FormatSample&lt;T&gt;::create(0)));
+<span class="lineNum">     504 </span>                :            :                         case 1:
+<span class="lineNum">     505 </span>                :            :                                 return ExclPtr&lt;Option&lt;T&gt; &gt;(new Option&lt;T&gt;());
+<span class="lineNum">     506 </span>                :            :                         default:
+<span class="lineNum">     507 </span>                :            :                                 return ExclPtr&lt;Option&lt;T&gt; &gt;();
+<span class="lineNum">     508 </span>                :            :                         }
+<span class="lineNum">     509 </span>                :            :                 }
+<span class="lineNum">     510 </span>                :            :         };
+<span class="lineNum">     511 </span>                :            : }
+<span class="lineNum">     512 </span>                :            :         
+<span class="lineNum">     513 </span>                :            : }
+<span class="lineNum">     514 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

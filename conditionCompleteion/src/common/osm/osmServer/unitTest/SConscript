@@ -1,0 +1,69 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "OsmServerUnitTest",
+        srcs = context.split("""
+		main.cpp
+		../service_config_reader.cpp
+		../main_thread_handler.cpp
+		../hfs_checker.cpp
+		../utils.cpp
+		../osm_timer.cpp
+		../file_handler.cpp
+		../msg_parser.cpp 	
+		../osm_info_file.cpp
+		../ring_file.cpp
+		../listener.cpp
+		../../localLeader/monitoring_manager.cpp
+		../../localLeader/monitor_status_map.cpp
+		../../localLeader/election_identifier.cpp
+		../../localLeader/service_startup_manager.cpp
+		../../localLeader/ll_msg_handler.cpp
+		../../localLeader/local_leader.cpp
+		../../localLeader/recovery_handler.cpp
+		../../localLeader/election_manager.cpp
+		../../globalLeader/gl_msg_handler.cpp
+		../../globalLeader/global_leader.cpp 
+		../../globalLeader/component_balancing.cpp
+		../../globalLeader/cluster_recovery_component.cpp
+		../../globalLeader/state_change_initiator.cpp
+		../../globalLeader/journal_writer.cpp
+		../../globalLeader/journal_reader.cpp
+		../../globalLeader/journal_library.cpp
+		../../globalLeader/monitoring.cpp
+		../../globalLeader/component_manager.cpp
+		../../../communication/stubs.cpp
+		../../../libraryUtils/record_structure.cpp
+		../../../libraryUtils/file_handler.cpp
+		../../../libraryUtils/serialize.cpp
+		../../../libraryUtils/osd_logger_initialize.cpp
+		../../../libraryUtils/object_storage_log_setup.cpp
+
+		osm_info_fileTest.cpp
+		service_config_readerTest.cpp
+		#hfs_checkerTest.cpp
+
+	"""),
+        targetType = context.TYPE_EXE,
+        libs = context.split("""
+		libraryUtils
+		communication
+                #any external libs  that you may need.
+        """),
+        wholeLibs = context.split("""
+               gmock
+        """),
+        requiredLibs = context.split("""
+                boost_python
+                boost_filesystem
+		python2.6
+		cool	
+		rt
+		dl
+		util
+		
+        """)
+)
+

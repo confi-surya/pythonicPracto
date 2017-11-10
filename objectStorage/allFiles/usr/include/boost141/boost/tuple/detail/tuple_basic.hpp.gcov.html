@@ -1,0 +1,1041 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/tuple/detail/tuple_basic.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/tuple/detail</a> - tuple_basic.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">37</td>
+            <td class="headerCovTableEntry">46</td>
+            <td class="headerCovTableEntryMed">80.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //  tuple_basic.hpp -----------------------------------------------------
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : // Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
+<span class="lineNum">       4 </span>                :            : //
+<span class="lineNum">       5 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       6 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       7 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : // For more information, see http://www.boost.org
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : // Outside help:
+<span class="lineNum">      12 </span>                :            : // This and that, Gary Powell.
+<span class="lineNum">      13 </span>                :            : // Fixed return types for get_head/get_tail
+<span class="lineNum">      14 </span>                :            : // ( and other bugs ) per suggestion of Jens Maurer
+<span class="lineNum">      15 </span>                :            : // simplified element type accessors + bug fix  (Jeremy Siek)
+<span class="lineNum">      16 </span>                :            : // Several changes/additions according to suggestions by Douglas Gregor,
+<span class="lineNum">      17 </span>                :            : // William Kempf, Vesa Karvonen, John Max Skaller, Ed Brey, Beman Dawes,
+<span class="lineNum">      18 </span>                :            : // David Abrahams.
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : // Revision history:
+<span class="lineNum">      21 </span>                :            : // 2002 05 01 Hugo Duncan: Fix for Borland after Jaakko's previous changes
+<span class="lineNum">      22 </span>                :            : // 2002 04 18 Jaakko: tuple element types can be void or plain function
+<span class="lineNum">      23 </span>                :            : //                    types, as long as no object is created.
+<span class="lineNum">      24 </span>                :            : //                    Tuple objects can no hold even noncopyable types
+<span class="lineNum">      25 </span>                :            : //                    such as arrays.
+<span class="lineNum">      26 </span>                :            : // 2001 10 22 John Maddock
+<span class="lineNum">      27 </span>                :            : //      Fixes for Borland C++
+<span class="lineNum">      28 </span>                :            : // 2001 08 30 David Abrahams
+<span class="lineNum">      29 </span>                :            : //      Added default constructor for cons&lt;&gt;.
+<span class="lineNum">      30 </span>                :            : // -----------------------------------------------------------------
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : #ifndef BOOST_TUPLE_BASIC_HPP
+<span class="lineNum">      33 </span>                :            : #define BOOST_TUPLE_BASIC_HPP
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : #include &lt;utility&gt; // needed for the assignment from pair to tuple
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : #include &quot;boost/type_traits/cv_traits.hpp&quot;
+<span class="lineNum">      39 </span>                :            : #include &quot;boost/type_traits/function_traits.hpp&quot;
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : #include &quot;boost/detail/workaround.hpp&quot; // needed for BOOST_WORKAROUND
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            : namespace boost {
+<span class="lineNum">      44 </span>                :            : namespace tuples {
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>                :            : // -- null_type --------------------------------------------------------
+<span class="lineNum">      47 </span>                :            : struct null_type {};
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : // a helper function to provide a const null_type type temporary
+<span class="lineNum">      50 </span>                :            : namespace detail {
+<span class="lineNum">      51 </span>                :<span class="lineCov">      16420 :   inline const null_type cnull() { return null_type(); }</span>
+<span class="lineNum">      52 </span>                :            : 
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            : // -- if construct ------------------------------------------------
+<span class="lineNum">      55 </span>                :            : // Proposed by Krzysztof Czarnecki and Ulrich Eisenecker
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :            : template &lt;bool If, class Then, class Else&gt; struct IF { typedef Then RET; };
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :            : template &lt;class Then, class Else&gt; struct IF&lt;false, Then, Else&gt; {
+<span class="lineNum">      60 </span>                :            :   typedef Else RET;
+<span class="lineNum">      61 </span>                :            : };
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :            : } // end detail
+<span class="lineNum">      64 </span>                :            : 
+<span class="lineNum">      65 </span>                :            : // - cons forward declaration -----------------------------------------------
+<span class="lineNum">      66 </span>                :            : template &lt;class HT, class TT&gt; struct cons;
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :            : // - tuple forward declaration -----------------------------------------------
+<span class="lineNum">      70 </span>                :            : template &lt;
+<span class="lineNum">      71 </span>                :            :   class T0 = null_type, class T1 = null_type, class T2 = null_type,
+<span class="lineNum">      72 </span>                :            :   class T3 = null_type, class T4 = null_type, class T5 = null_type,
+<span class="lineNum">      73 </span>                :            :   class T6 = null_type, class T7 = null_type, class T8 = null_type,
+<span class="lineNum">      74 </span>                :            :   class T9 = null_type&gt;
+<span class="lineNum">      75 </span>                :            : class tuple;
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :            : // tuple_length forward declaration
+<span class="lineNum">      78 </span>                :            : template&lt;class T&gt; struct length;
+<span class="lineNum">      79 </span>                :            : 
+<span class="lineNum">      80 </span>                :            : 
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :            : namespace detail {
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>                :            : // -- generate error template, referencing to non-existing members of this
+<span class="lineNum">      85 </span>                :            : // template is used to produce compilation errors intentionally
+<span class="lineNum">      86 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">      87 </span>                :            : class generate_error;
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :            : // - cons getters --------------------------------------------------------
+<span class="lineNum">      90 </span>                :            : // called: get_class&lt;N&gt;::get&lt;RETURN_TYPE&gt;(aTuple)
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            : template&lt; int N &gt;
+<span class="lineNum">      93 </span>                :            : struct get_class {
+<span class="lineNum">      94 </span>                :            :   template&lt;class RET, class HT, class TT &gt;
+<span class="lineNum">      95 </span>                :<span class="lineCov">        565 :   inline static RET get(const cons&lt;HT, TT&gt;&amp; t)</span>
+<span class="lineNum">      96 </span>                :            :   {
+<span class="lineNum">      97 </span>                :            : #if BOOST_WORKAROUND(__IBMCPP__,==600)
+<span class="lineNum">      98 </span>                :            :     // vacpp 6.0 is not very consistent regarding the member template keyword
+<span class="lineNum">      99 </span>                :            :     // Here it generates an error when the template keyword is used.
+<span class="lineNum">     100 </span>                :            :     return get_class&lt;N-1&gt;::get&lt;RET&gt;(t.tail);
+<span class="lineNum">     101 </span>                :            : #else
+<span class="lineNum">     102 </span>                :<span class="lineCov">        565 :     return get_class&lt;N-1&gt;::BOOST_NESTED_TEMPLATE get&lt;RET&gt;(t.tail);</span>
+<span class="lineNum">     103 </span>                :            : #endif
+<span class="lineNum">     104 </span>                :            :   }
+<span class="lineNum">     105 </span>                :            :   template&lt;class RET, class HT, class TT &gt;
+<span class="lineNum">     106 </span>                :<span class="lineCov">       1256 :   inline static RET get(cons&lt;HT, TT&gt;&amp; t)</span>
+<span class="lineNum">     107 </span>                :            :   {
+<span class="lineNum">     108 </span>                :            : #if BOOST_WORKAROUND(__IBMCPP__,==600)
+<span class="lineNum">     109 </span>                :            :     return get_class&lt;N-1&gt;::get&lt;RET&gt;(t.tail);
+<span class="lineNum">     110 </span>                :            : #else
+<span class="lineNum">     111 </span>                :<span class="lineCov">       1256 :     return get_class&lt;N-1&gt;::BOOST_NESTED_TEMPLATE get&lt;RET&gt;(t.tail);</span>
+<span class="lineNum">     112 </span>                :            : #endif
+<span class="lineNum">     113 </span>                :            :   }
+<span class="lineNum">     114 </span>                :            : };
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            : template&lt;&gt;
+<span class="lineNum">     117 </span>                :            : struct get_class&lt;0&gt; {
+<span class="lineNum">     118 </span>                :            :   template&lt;class RET, class HT, class TT&gt;
+<span class="lineNum">     119 </span>                :<span class="lineCov">        791 :   inline static RET get(const cons&lt;HT, TT&gt;&amp; t)</span>
+<span class="lineNum">     120 </span>                :            :   {
+<span class="lineNum">     121 </span>                :<span class="lineCov">        791 :     return t.head;</span>
+<span class="lineNum">     122 </span>                :            :   }
+<span class="lineNum">     123 </span>                :            :   template&lt;class RET, class HT, class TT&gt;
+<span class="lineNum">     124 </span>                :<span class="lineCov">       2885 :   inline static RET get(cons&lt;HT, TT&gt;&amp; t)</span>
+<span class="lineNum">     125 </span>                :            :   {
+<span class="lineNum">     126 </span>                :<span class="lineCov">       2885 :     return t.head;</span>
+<span class="lineNum">     127 </span>                :            :   }
+<span class="lineNum">     128 </span>                :            : };
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            : } // end of namespace detail
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            : // -cons type accessors ----------------------------------------
+<span class="lineNum">     134 </span>                :            : // typename tuples::element&lt;N,T&gt;::type gets the type of the
+<span class="lineNum">     135 </span>                :            : // Nth element ot T, first element is at index 0
+<span class="lineNum">     136 </span>                :            : // -------------------------------------------------------
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :            : #ifndef BOOST_NO_CV_SPECIALIZATIONS
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            : template&lt;int N, class T&gt;
+<span class="lineNum">     141 </span>                :            : struct element
+<span class="lineNum">     142 </span>                :            : {
+<span class="lineNum">     143 </span>                :            : private:
+<span class="lineNum">     144 </span>                :            :   typedef typename T::tail_type Next;
+<span class="lineNum">     145 </span>                :            : public:
+<span class="lineNum">     146 </span>                :            :   typedef typename element&lt;N-1, Next&gt;::type type;
+<span class="lineNum">     147 </span>                :            : };
+<span class="lineNum">     148 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     149 </span>                :            : struct element&lt;0,T&gt;
+<span class="lineNum">     150 </span>                :            : {
+<span class="lineNum">     151 </span>                :            :   typedef typename T::head_type type;
+<span class="lineNum">     152 </span>                :            : };
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :            : template&lt;int N, class T&gt;
+<span class="lineNum">     155 </span>                :            : struct element&lt;N, const T&gt;
+<span class="lineNum">     156 </span>                :            : {
+<span class="lineNum">     157 </span>                :            : private:
+<span class="lineNum">     158 </span>                :            :   typedef typename T::tail_type Next;
+<span class="lineNum">     159 </span>                :            :   typedef typename element&lt;N-1, Next&gt;::type unqualified_type;
+<span class="lineNum">     160 </span>                :            : public:
+<span class="lineNum">     161 </span>                :            : #if BOOST_WORKAROUND(__BORLANDC__,&lt;0x600)
+<span class="lineNum">     162 </span>                :            :   typedef const unqualified_type type;
+<span class="lineNum">     163 </span>                :            : #else
+<span class="lineNum">     164 </span>                :            :   typedef typename boost::add_const&lt;unqualified_type&gt;::type type;
+<span class="lineNum">     165 </span>                :            : #endif
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :            : };
+<span class="lineNum">     168 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     169 </span>                :            : struct element&lt;0,const T&gt;
+<span class="lineNum">     170 </span>                :            : {
+<span class="lineNum">     171 </span>                :            : #if BOOST_WORKAROUND(__BORLANDC__,&lt;0x600)
+<span class="lineNum">     172 </span>                :            :   typedef const typename T::head_type type;
+<span class="lineNum">     173 </span>                :            : #else
+<span class="lineNum">     174 </span>                :            :   typedef typename boost::add_const&lt;typename T::head_type&gt;::type type;
+<span class="lineNum">     175 </span>                :            : #endif
+<span class="lineNum">     176 </span>                :            : };
+<span class="lineNum">     177 </span>                :            : 
+<span class="lineNum">     178 </span>                :            : #else // def BOOST_NO_CV_SPECIALIZATIONS
+<span class="lineNum">     179 </span>                :            : 
+<span class="lineNum">     180 </span>                :            : namespace detail {
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            : template&lt;int N, class T, bool IsConst&gt;
+<span class="lineNum">     183 </span>                :            : struct element_impl
+<span class="lineNum">     184 </span>                :            : {
+<span class="lineNum">     185 </span>                :            : private:
+<span class="lineNum">     186 </span>                :            :   typedef typename T::tail_type Next;
+<span class="lineNum">     187 </span>                :            : public:
+<span class="lineNum">     188 </span>                :            :   typedef typename element_impl&lt;N-1, Next, IsConst&gt;::type type;
+<span class="lineNum">     189 </span>                :            : };
+<span class="lineNum">     190 </span>                :            : 
+<span class="lineNum">     191 </span>                :            : template&lt;int N, class T&gt;
+<span class="lineNum">     192 </span>                :            : struct element_impl&lt;N, T, true /* IsConst */&gt;
+<span class="lineNum">     193 </span>                :            : {
+<span class="lineNum">     194 </span>                :            : private:
+<span class="lineNum">     195 </span>                :            :   typedef typename T::tail_type Next;
+<span class="lineNum">     196 </span>                :            : public:
+<span class="lineNum">     197 </span>                :            :   typedef const typename element_impl&lt;N-1, Next, true&gt;::type type;
+<span class="lineNum">     198 </span>                :            : };
+<span class="lineNum">     199 </span>                :            : 
+<span class="lineNum">     200 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     201 </span>                :            : struct element_impl&lt;0, T, false /* IsConst */&gt;
+<span class="lineNum">     202 </span>                :            : {
+<span class="lineNum">     203 </span>                :            :   typedef typename T::head_type type;
+<span class="lineNum">     204 </span>                :            : };
+<span class="lineNum">     205 </span>                :            : 
+<span class="lineNum">     206 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     207 </span>                :            : struct element_impl&lt;0, T, true /* IsConst */&gt;
+<span class="lineNum">     208 </span>                :            : {
+<span class="lineNum">     209 </span>                :            :   typedef const typename T::head_type type;
+<span class="lineNum">     210 </span>                :            : };
+<span class="lineNum">     211 </span>                :            : 
+<span class="lineNum">     212 </span>                :            : } // end of namespace detail
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :            : 
+<span class="lineNum">     215 </span>                :            : template&lt;int N, class T&gt;
+<span class="lineNum">     216 </span>                :            : struct element:
+<span class="lineNum">     217 </span>                :            :   public detail::element_impl&lt;N, T, ::boost::is_const&lt;T&gt;::value&gt;
+<span class="lineNum">     218 </span>                :            : {
+<span class="lineNum">     219 </span>                :            : };
+<span class="lineNum">     220 </span>                :            : 
+<span class="lineNum">     221 </span>                :            : #endif
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            : 
+<span class="lineNum">     224 </span>                :            : // -get function templates -----------------------------------------------
+<span class="lineNum">     225 </span>                :            : // Usage: get&lt;N&gt;(aTuple)
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :            : // -- some traits classes for get functions
+<span class="lineNum">     228 </span>                :            : 
+<span class="lineNum">     229 </span>                :            : // access traits lifted from detail namespace to be part of the interface,
+<span class="lineNum">     230 </span>                :            : // (Joel de Guzman's suggestion). Rationale: get functions are part of the
+<span class="lineNum">     231 </span>                :            : // interface, so should the way to express their return types be.
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            : template &lt;class T&gt; struct access_traits {
+<span class="lineNum">     234 </span>                :            :   typedef const T&amp; const_type;
+<span class="lineNum">     235 </span>                :            :   typedef T&amp; non_const_type;
+<span class="lineNum">     236 </span>                :            : 
+<span class="lineNum">     237 </span>                :            :   typedef const typename boost::remove_cv&lt;T&gt;::type&amp; parameter_type;
+<span class="lineNum">     238 </span>                :            : 
+<span class="lineNum">     239 </span>                :            : // used as the tuple constructors parameter types
+<span class="lineNum">     240 </span>                :            : // Rationale: non-reference tuple element types can be cv-qualified.
+<span class="lineNum">     241 </span>                :            : // It should be possible to initialize such types with temporaries,
+<span class="lineNum">     242 </span>                :            : // and when binding temporaries to references, the reference must
+<span class="lineNum">     243 </span>                :            : // be non-volatile and const. 8.5.3. (5)
+<span class="lineNum">     244 </span>                :            : };
+<span class="lineNum">     245 </span>                :            : 
+<span class="lineNum">     246 </span>                :            : template &lt;class T&gt; struct access_traits&lt;T&amp;&gt; {
+<span class="lineNum">     247 </span>                :            : 
+<span class="lineNum">     248 </span>                :            :   typedef T&amp; const_type;
+<span class="lineNum">     249 </span>                :            :   typedef T&amp; non_const_type;
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :   typedef T&amp; parameter_type;
+<span class="lineNum">     252 </span>                :            : };
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :            : // get function for non-const cons-lists, returns a reference to the element
+<span class="lineNum">     255 </span>                :            : 
+<span class="lineNum">     256 </span>                :            : template&lt;int N, class HT, class TT&gt;
+<span class="lineNum">     257 </span>                :            : inline typename access_traits&lt;
+<span class="lineNum">     258 </span>                :            :                   typename element&lt;N, cons&lt;HT, TT&gt; &gt;::type
+<span class="lineNum">     259 </span>                :            :                 &gt;::non_const_type
+<span class="lineNum">     260 </span>                :<span class="lineCov">       2885 : get(cons&lt;HT, TT&gt;&amp; c BOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(int, N)) {</span>
+<span class="lineNum">     261 </span>                :            : #if BOOST_WORKAROUND(__IBMCPP__,==600 )
+<span class="lineNum">     262 </span>                :            :   return detail::get_class&lt;N&gt;::
+<span class="lineNum">     263 </span>                :            : #else
+<span class="lineNum">     264 </span>                :            :   return detail::get_class&lt;N&gt;::BOOST_NESTED_TEMPLATE
+<span class="lineNum">     265 </span>                :            : #endif
+<span class="lineNum">     266 </span>                :            :          get&lt;
+<span class="lineNum">     267 </span>                :            :            typename access_traits&lt;
+<span class="lineNum">     268 </span>                :            :              typename element&lt;N, cons&lt;HT, TT&gt; &gt;::type
+<span class="lineNum">     269 </span>                :            :            &gt;::non_const_type,
+<span class="lineNum">     270 </span>                :            :            HT,TT
+<span class="lineNum">     271 </span>                :<span class="lineCov">       2885 :          &gt;(c);</span>
+<span class="lineNum">     272 </span>                :            : }
+<span class="lineNum">     273 </span>                :            : 
+<span class="lineNum">     274 </span>                :            : // get function for const cons-lists, returns a const reference to
+<span class="lineNum">     275 </span>                :            : // the element. If the element is a reference, returns the reference
+<span class="lineNum">     276 </span>                :            : // as such (that is, can return a non-const reference)
+<span class="lineNum">     277 </span>                :            : template&lt;int N, class HT, class TT&gt;
+<span class="lineNum">     278 </span>                :            : inline typename access_traits&lt;
+<span class="lineNum">     279 </span>                :            :                   typename element&lt;N, cons&lt;HT, TT&gt; &gt;::type
+<span class="lineNum">     280 </span>                :            :                 &gt;::const_type
+<span class="lineNum">     281 </span>                :<span class="lineCov">        791 : get(const cons&lt;HT, TT&gt;&amp; c BOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(int, N)) {</span>
+<span class="lineNum">     282 </span>                :            : #if BOOST_WORKAROUND(__IBMCPP__,==600)
+<span class="lineNum">     283 </span>                :            :   return detail::get_class&lt;N&gt;::
+<span class="lineNum">     284 </span>                :            : #else
+<span class="lineNum">     285 </span>                :            :   return detail::get_class&lt;N&gt;::BOOST_NESTED_TEMPLATE
+<span class="lineNum">     286 </span>                :            : #endif
+<span class="lineNum">     287 </span>                :            :          get&lt;
+<span class="lineNum">     288 </span>                :            :            typename access_traits&lt;
+<span class="lineNum">     289 </span>                :            :              typename element&lt;N, cons&lt;HT, TT&gt; &gt;::type
+<span class="lineNum">     290 </span>                :            :            &gt;::const_type,
+<span class="lineNum">     291 </span>                :            :            HT,TT
+<span class="lineNum">     292 </span>                :<span class="lineCov">        791 :          &gt;(c);</span>
+<span class="lineNum">     293 </span>                :            : }
+<span class="lineNum">     294 </span>                :            : 
+<span class="lineNum">     295 </span>                :            : // -- the cons template  --------------------------------------------------
+<span class="lineNum">     296 </span>                :            : namespace detail {
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :            : //  These helper templates wrap void types and plain function types.
+<span class="lineNum">     299 </span>                :            : //  The reationale is to allow one to write tuple types with those types
+<span class="lineNum">     300 </span>                :            : //  as elements, even though it is not possible to instantiate such object.
+<span class="lineNum">     301 </span>                :            : //  E.g: typedef tuple&lt;void&gt; some_type; // ok
+<span class="lineNum">     302 </span>                :            : //  but: some_type x; // fails
+<span class="lineNum">     303 </span>                :            : 
+<span class="lineNum">     304 </span>                :            : template &lt;class T&gt; class non_storeable_type {
+<span class="lineNum">     305 </span>                :            :   non_storeable_type();
+<span class="lineNum">     306 </span>                :            : };
+<span class="lineNum">     307 </span>                :            : 
+<span class="lineNum">     308 </span>                :            : template &lt;class T&gt; struct wrap_non_storeable_type {
+<span class="lineNum">     309 </span>                :            :   typedef typename IF&lt;
+<span class="lineNum">     310 </span>                :            :     ::boost::is_function&lt;T&gt;::value, non_storeable_type&lt;T&gt;, T
+<span class="lineNum">     311 </span>                :            :   &gt;::RET type;
+<span class="lineNum">     312 </span>                :            : };
+<span class="lineNum">     313 </span>                :            : template &lt;&gt; struct wrap_non_storeable_type&lt;void&gt; {
+<span class="lineNum">     314 </span>                :            :   typedef non_storeable_type&lt;void&gt; type;
+<span class="lineNum">     315 </span>                :            : };
+<span class="lineNum">     316 </span>                :            : 
+<span class="lineNum">     317 </span>                :            : } // detail
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :            : template &lt;class HT, class TT&gt;
+<span class="lineNum">     320 </span>                :<span class="lineCov">       2883 : struct cons {</span>
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :   typedef HT head_type;
+<span class="lineNum">     323 </span>                :            :   typedef TT tail_type;
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :            :   typedef typename
+<span class="lineNum">     326 </span>                :            :     detail::wrap_non_storeable_type&lt;head_type&gt;::type stored_head_type;
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :            :   stored_head_type head;
+<span class="lineNum">     329 </span>                :            :   tail_type tail;
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>                :            :   typename access_traits&lt;stored_head_type&gt;::non_const_type
+<span class="lineNum">     332 </span>                :            :   get_head() { return head; }
+<span class="lineNum">     333 </span>                :            : 
+<span class="lineNum">     334 </span>                :            :   typename access_traits&lt;tail_type&gt;::non_const_type
+<span class="lineNum">     335 </span>                :            :   get_tail() { return tail; }
+<span class="lineNum">     336 </span>                :            : 
+<span class="lineNum">     337 </span>                :            :   typename access_traits&lt;stored_head_type&gt;::const_type
+<span class="lineNum">     338 </span>                :<span class="lineCov">       1078 :   get_head() const { return head; }</span>
+<span class="lineNum">     339 </span>                :            : 
+<span class="lineNum">     340 </span>                :            :   typename access_traits&lt;tail_type&gt;::const_type
+<span class="lineNum">     341 </span>                :<span class="lineCov">       2898 :   get_tail() const { return tail; }</span>
+<span class="lineNum">     342 </span>                :            : 
+<span class="lineNum">     343 </span>                :<span class="lineNoCov">          0 :   cons() : head(), tail() {}</span>
+<span class="lineNum">     344 </span>                :            :   //  cons() : head(detail::default_arg&lt;HT&gt;::f()), tail() {}
+<span class="lineNum">     345 </span>                :            : 
+<span class="lineNum">     346 </span>                :            :   // the argument for head is not strictly needed, but it prevents
+<span class="lineNum">     347 </span>                :            :   // array type elements. This is good, since array type elements
+<span class="lineNum">     348 </span>                :            :   // cannot be supported properly in any case (no assignment,
+<span class="lineNum">     349 </span>                :            :   // copy works only if the tails are exactly the same type, ...)
+<span class="lineNum">     350 </span>                :            : 
+<span class="lineNum">     351 </span>                :            :   cons(typename access_traits&lt;stored_head_type&gt;::parameter_type h,
+<span class="lineNum">     352 </span>                :            :        const tail_type&amp; t)
+<span class="lineNum">     353 </span>                :            :     : head (h), tail(t) {}
+<span class="lineNum">     354 </span>                :            : 
+<span class="lineNum">     355 </span>                :            :   template &lt;class T1, class T2, class T3, class T4, class T5,
+<span class="lineNum">     356 </span>                :            :             class T6, class T7, class T8, class T9, class T10&gt;
+<span class="lineNum">     357 </span>                :            :   cons( T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5,
+<span class="lineNum">     358 </span>                :<span class="lineCov">       3023 :         T6&amp; t6, T7&amp; t7, T8&amp; t8, T9&amp; t9, T10&amp; t10 )</span>
+<span class="lineNum">     359 </span>                :            :     : head (t1),
+<span class="lineNum">     360 </span>                :<span class="lineCov">       3023 :       tail (t2, t3, t4, t5, t6, t7, t8, t9, t10, detail::cnull())</span>
+<span class="lineNum">     361 </span>                :<span class="lineCov">       3023 :       {}</span>
+<span class="lineNum">     362 </span>                :            : 
+<span class="lineNum">     363 </span>                :            :   template &lt;class T2, class T3, class T4, class T5,
+<span class="lineNum">     364 </span>                :            :             class T6, class T7, class T8, class T9, class T10&gt;
+<span class="lineNum">     365 </span>                :            :   cons( const null_type&amp; /*t1*/, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5,
+<span class="lineNum">     366 </span>                :<span class="lineCov">       1326 :         T6&amp; t6, T7&amp; t7, T8&amp; t8, T9&amp; t9, T10&amp; t10 )</span>
+<span class="lineNum">     367 </span>                :            :     : head (),
+<span class="lineNum">     368 </span>                :<span class="lineCov">       1326 :       tail (t2, t3, t4, t5, t6, t7, t8, t9, t10, detail::cnull())</span>
+<span class="lineNum">     369 </span>                :<span class="lineCov">       1326 :       {}</span>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>                :            : 
+<span class="lineNum">     372 </span>                :            :   template &lt;class HT2, class TT2&gt;
+<span class="lineNum">     373 </span>                :<span class="lineNoCov">          0 :   cons( const cons&lt;HT2, TT2&gt;&amp; u ) : head(u.head), tail(u.tail) {}</span>
+<span class="lineNum">     374 </span>                :            : 
+<span class="lineNum">     375 </span>                :            :   template &lt;class HT2, class TT2&gt;
+<span class="lineNum">     376 </span>                :            :   cons&amp; operator=( const cons&lt;HT2, TT2&gt;&amp; u ) {
+<span class="lineNum">     377 </span>                :            :     head=u.head; tail=u.tail; return *this;
+<span class="lineNum">     378 </span>                :            :   }
+<span class="lineNum">     379 </span>                :            : 
+<span class="lineNum">     380 </span>                :            :   // must define assignment operator explicitly, implicit version is
+<span class="lineNum">     381 </span>                :            :   // illformed if HT is a reference (12.8. (12))
+<span class="lineNum">     382 </span>                :<span class="lineNoCov">          0 :   cons&amp; operator=(const cons&amp; u) {</span>
+<span class="lineNum">     383 </span>                :<span class="lineNoCov">          0 :     head = u.head; tail = u.tail;  return *this;</span>
+<span class="lineNum">     384 </span>                :            :   }
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :            :   template &lt;class T1, class T2&gt;
+<span class="lineNum">     387 </span>                :            :   cons&amp; operator=( const std::pair&lt;T1, T2&gt;&amp; u ) {
+<span class="lineNum">     388 </span>                :            :     BOOST_STATIC_ASSERT(length&lt;cons&gt;::value == 2); // check length = 2
+<span class="lineNum">     389 </span>                :            :     head = u.first; tail.head = u.second; return *this;
+<span class="lineNum">     390 </span>                :            :   }
+<span class="lineNum">     391 </span>                :            : 
+<span class="lineNum">     392 </span>                :            :   // get member functions (non-const and const)
+<span class="lineNum">     393 </span>                :            :   template &lt;int N&gt;
+<span class="lineNum">     394 </span>                :            :   typename access_traits&lt;
+<span class="lineNum">     395 </span>                :            :              typename element&lt;N, cons&lt;HT, TT&gt; &gt;::type
+<span class="lineNum">     396 </span>                :            :            &gt;::non_const_type
+<span class="lineNum">     397 </span>                :<span class="lineCov">       2885 :   get() {</span>
+<span class="lineNum">     398 </span>                :<span class="lineCov">       2885 :     return boost::tuples::get&lt;N&gt;(*this); // delegate to non-member get</span>
+<span class="lineNum">     399 </span>                :            :   }
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :            :   template &lt;int N&gt;
+<span class="lineNum">     402 </span>                :            :   typename access_traits&lt;
+<span class="lineNum">     403 </span>                :            :              typename element&lt;N, cons&lt;HT, TT&gt; &gt;::type
+<span class="lineNum">     404 </span>                :            :            &gt;::const_type
+<span class="lineNum">     405 </span>                :            :   get() const {
+<span class="lineNum">     406 </span>                :            :     return boost::tuples::get&lt;N&gt;(*this); // delegate to non-member get
+<span class="lineNum">     407 </span>                :            :   }
+<span class="lineNum">     408 </span>                :            : };
+<span class="lineNum">     409 </span>                :            : 
+<span class="lineNum">     410 </span>                :            : template &lt;class HT&gt;
+<span class="lineNum">     411 </span>                :            : struct cons&lt;HT, null_type&gt; {
+<span class="lineNum">     412 </span>                :            : 
+<span class="lineNum">     413 </span>                :            :   typedef HT head_type;
+<span class="lineNum">     414 </span>                :            :   typedef null_type tail_type;
+<span class="lineNum">     415 </span>                :            :   typedef cons&lt;HT, null_type&gt; self_type;
+<span class="lineNum">     416 </span>                :            : 
+<span class="lineNum">     417 </span>                :            :   typedef typename
+<span class="lineNum">     418 </span>                :            :     detail::wrap_non_storeable_type&lt;head_type&gt;::type stored_head_type;
+<span class="lineNum">     419 </span>                :            :   stored_head_type head;
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :            :   typename access_traits&lt;stored_head_type&gt;::non_const_type
+<span class="lineNum">     422 </span>                :            :   get_head() { return head; }
+<span class="lineNum">     423 </span>                :            : 
+<span class="lineNum">     424 </span>                :            :   null_type get_tail() { return null_type(); }
+<span class="lineNum">     425 </span>                :            : 
+<span class="lineNum">     426 </span>                :            :   typename access_traits&lt;stored_head_type&gt;::const_type
+<span class="lineNum">     427 </span>                :            :   get_head() const { return head; }
+<span class="lineNum">     428 </span>                :            : 
+<span class="lineNum">     429 </span>                :            :   const null_type get_tail() const { return null_type(); }
+<span class="lineNum">     430 </span>                :            : 
+<span class="lineNum">     431 </span>                :            :   //  cons() : head(detail::default_arg&lt;HT&gt;::f()) {}
+<span class="lineNum">     432 </span>                :<span class="lineNoCov">          0 :   cons() : head() {}</span>
+<span class="lineNum">     433 </span>                :            : 
+<span class="lineNum">     434 </span>                :            :   cons(typename access_traits&lt;stored_head_type&gt;::parameter_type h,
+<span class="lineNum">     435 </span>                :            :        const null_type&amp; = null_type())
+<span class="lineNum">     436 </span>                :            :     : head (h) {}
+<span class="lineNum">     437 </span>                :            : 
+<span class="lineNum">     438 </span>                :            :   template&lt;class T1&gt;
+<span class="lineNum">     439 </span>                :            :   cons(T1&amp; t1, const null_type&amp;, const null_type&amp;, const null_type&amp;,
+<span class="lineNum">     440 </span>                :            :        const null_type&amp;, const null_type&amp;, const null_type&amp;,
+<span class="lineNum">     441 </span>                :<span class="lineCov">       1186 :        const null_type&amp;, const null_type&amp;, const null_type&amp;)</span>
+<span class="lineNum">     442 </span>                :<span class="lineCov">       1186 :   : head (t1) {}</span>
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :            :   cons(const null_type&amp;,
+<span class="lineNum">     445 </span>                :            :        const null_type&amp;, const null_type&amp;, const null_type&amp;,
+<span class="lineNum">     446 </span>                :            :        const null_type&amp;, const null_type&amp;, const null_type&amp;,
+<span class="lineNum">     447 </span>                :<span class="lineCov">        442 :        const null_type&amp;, const null_type&amp;, const null_type&amp;)</span>
+<span class="lineNum">     448 </span>                :<span class="lineCov">        442 :   : head () {}</span>
+<span class="lineNum">     449 </span>                :            : 
+<span class="lineNum">     450 </span>                :            :   template &lt;class HT2&gt;
+<span class="lineNum">     451 </span>                :<span class="lineNoCov">          0 :   cons( const cons&lt;HT2, null_type&gt;&amp; u ) : head(u.head) {}</span>
+<span class="lineNum">     452 </span>                :            : 
+<span class="lineNum">     453 </span>                :            :   template &lt;class HT2&gt;
+<span class="lineNum">     454 </span>                :            :   cons&amp; operator=(const cons&lt;HT2, null_type&gt;&amp; u )
+<span class="lineNum">     455 </span>                :            :   { head = u.head; return *this; }
+<span class="lineNum">     456 </span>                :            : 
+<span class="lineNum">     457 </span>                :            :   // must define assignment operator explicitely, implicit version
+<span class="lineNum">     458 </span>                :            :   // is illformed if HT is a reference
+<span class="lineNum">     459 </span>                :<span class="lineNoCov">          0 :   cons&amp; operator=(const cons&amp; u) { head = u.head; return *this; }</span>
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :            :   template &lt;int N&gt;
+<span class="lineNum">     462 </span>                :            :   typename access_traits&lt;
+<span class="lineNum">     463 </span>                :            :              typename element&lt;N, self_type&gt;::type
+<span class="lineNum">     464 </span>                :            :             &gt;::non_const_type
+<span class="lineNum">     465 </span>                :            :   get(BOOST_EXPLICIT_TEMPLATE_NON_TYPE(int, N)) {
+<span class="lineNum">     466 </span>                :            :     return boost::tuples::get&lt;N&gt;(*this);
+<span class="lineNum">     467 </span>                :            :   }
+<span class="lineNum">     468 </span>                :            : 
+<span class="lineNum">     469 </span>                :            :   template &lt;int N&gt;
+<span class="lineNum">     470 </span>                :            :   typename access_traits&lt;
+<span class="lineNum">     471 </span>                :            :              typename element&lt;N, self_type&gt;::type
+<span class="lineNum">     472 </span>                :            :            &gt;::const_type
+<span class="lineNum">     473 </span>                :            :   get(BOOST_EXPLICIT_TEMPLATE_NON_TYPE(int, N)) const {
+<span class="lineNum">     474 </span>                :            :     return boost::tuples::get&lt;N&gt;(*this);
+<span class="lineNum">     475 </span>                :            :   }
+<span class="lineNum">     476 </span>                :            : 
+<span class="lineNum">     477 </span>                :            : };
+<span class="lineNum">     478 </span>                :            : 
+<span class="lineNum">     479 </span>                :            : // templates for finding out the length of the tuple -------------------
+<span class="lineNum">     480 </span>                :            : 
+<span class="lineNum">     481 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     482 </span>                :            : struct length  {
+<span class="lineNum">     483 </span>                :            :   BOOST_STATIC_CONSTANT(int, value = 1 + length&lt;typename T::tail_type&gt;::value);
+<span class="lineNum">     484 </span>                :            : };
+<span class="lineNum">     485 </span>                :            : 
+<span class="lineNum">     486 </span>                :            : template&lt;&gt;
+<span class="lineNum">     487 </span>                :            : struct length&lt;tuple&lt;&gt; &gt; {
+<span class="lineNum">     488 </span>                :            :   BOOST_STATIC_CONSTANT(int, value = 0);
+<span class="lineNum">     489 </span>                :            : };
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            : template&lt;&gt;
+<span class="lineNum">     492 </span>                :            : struct length&lt;tuple&lt;&gt; const&gt; {
+<span class="lineNum">     493 </span>                :            :   BOOST_STATIC_CONSTANT(int, value = 0);
+<span class="lineNum">     494 </span>                :            : };
+<span class="lineNum">     495 </span>                :            : 
+<span class="lineNum">     496 </span>                :            : template&lt;&gt;
+<span class="lineNum">     497 </span>                :            : struct length&lt;null_type&gt; {
+<span class="lineNum">     498 </span>                :            :   BOOST_STATIC_CONSTANT(int, value = 0);
+<span class="lineNum">     499 </span>                :            : };
+<span class="lineNum">     500 </span>                :            : 
+<span class="lineNum">     501 </span>                :            : template&lt;&gt;
+<span class="lineNum">     502 </span>                :            : struct length&lt;null_type const&gt; {
+<span class="lineNum">     503 </span>                :            :   BOOST_STATIC_CONSTANT(int, value = 0);
+<span class="lineNum">     504 </span>                :            : };
+<span class="lineNum">     505 </span>                :            : 
+<span class="lineNum">     506 </span>                :            : namespace detail {
+<span class="lineNum">     507 </span>                :            : 
+<span class="lineNum">     508 </span>                :            : // Tuple to cons mapper --------------------------------------------------
+<span class="lineNum">     509 </span>                :            : template &lt;class T0, class T1, class T2, class T3, class T4,
+<span class="lineNum">     510 </span>                :            :           class T5, class T6, class T7, class T8, class T9&gt;
+<span class="lineNum">     511 </span>                :            : struct map_tuple_to_cons
+<span class="lineNum">     512 </span>                :            : {
+<span class="lineNum">     513 </span>                :            :   typedef cons&lt;T0,
+<span class="lineNum">     514 </span>                :            :                typename map_tuple_to_cons&lt;T1, T2, T3, T4, T5,
+<span class="lineNum">     515 </span>                :            :                                           T6, T7, T8, T9, null_type&gt;::type
+<span class="lineNum">     516 </span>                :            :               &gt; type;
+<span class="lineNum">     517 </span>                :            : };
+<span class="lineNum">     518 </span>                :            : 
+<span class="lineNum">     519 </span>                :            : // The empty tuple is a null_type
+<span class="lineNum">     520 </span>                :            : template &lt;&gt;
+<span class="lineNum">     521 </span>                :            : struct map_tuple_to_cons&lt;null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type&gt;
+<span class="lineNum">     522 </span>                :            : {
+<span class="lineNum">     523 </span>                :            :   typedef null_type type;
+<span class="lineNum">     524 </span>                :            : };
+<span class="lineNum">     525 </span>                :            : 
+<span class="lineNum">     526 </span>                :            : } // end detail
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>                :            : // -------------------------------------------------------------------
+<span class="lineNum">     529 </span>                :            : // -- tuple ------------------------------------------------------
+<span class="lineNum">     530 </span>                :            : template &lt;class T0, class T1, class T2, class T3, class T4,
+<span class="lineNum">     531 </span>                :            :           class T5, class T6, class T7, class T8, class T9&gt;
+<span class="lineNum">     532 </span>                :            : 
+<span class="lineNum">     533 </span>                :            : class tuple :
+<span class="lineNum">     534 </span>                :            :   public detail::map_tuple_to_cons&lt;T0, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;::type
+<span class="lineNum">     535 </span>                :            : {
+<span class="lineNum">     536 </span>                :            : public:
+<span class="lineNum">     537 </span>                :            :   typedef typename
+<span class="lineNum">     538 </span>                :            :     detail::map_tuple_to_cons&lt;T0, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;::type inherited;
+<span class="lineNum">     539 </span>                :            :   typedef typename inherited::head_type head_type;
+<span class="lineNum">     540 </span>                :            :   typedef typename inherited::tail_type tail_type;
+<span class="lineNum">     541 </span>                :            : 
+<span class="lineNum">     542 </span>                :            : 
+<span class="lineNum">     543 </span>                :            : // access_traits&lt;T&gt;::parameter_type takes non-reference types as const T&amp;
+<span class="lineNum">     544 </span>                :<span class="lineNoCov">          0 :   tuple() {}</span>
+<span class="lineNum">     545 </span>                :            : 
+<span class="lineNum">     546 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0)
+<span class="lineNum">     547 </span>                :            :     : inherited(t0, detail::cnull(), detail::cnull(), detail::cnull(),
+<span class="lineNum">     548 </span>                :            :                 detail::cnull(), detail::cnull(), detail::cnull(),
+<span class="lineNum">     549 </span>                :            :                 detail::cnull(), detail::cnull(), detail::cnull()) {}
+<span class="lineNum">     550 </span>                :            : 
+<span class="lineNum">     551 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     552 </span>                :<span class="lineCov">       1117 :         typename access_traits&lt;T1&gt;::parameter_type t1)</span>
+<span class="lineNum">     553 </span>                :            :     : inherited(t0, t1, detail::cnull(), detail::cnull(),
+<span class="lineNum">     554 </span>                :            :                 detail::cnull(), detail::cnull(), detail::cnull(),
+<span class="lineNum">     555 </span>                :<span class="lineCov">       1117 :                 detail::cnull(), detail::cnull(), detail::cnull()) {}</span>
+<span class="lineNum">     556 </span>                :            : 
+<span class="lineNum">     557 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     558 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     559 </span>                :<span class="lineCov">         69 :         typename access_traits&lt;T2&gt;::parameter_type t2)</span>
+<span class="lineNum">     560 </span>                :            :     : inherited(t0, t1, t2, detail::cnull(), detail::cnull(),
+<span class="lineNum">     561 </span>                :            :                 detail::cnull(), detail::cnull(), detail::cnull(),
+<span class="lineNum">     562 </span>                :<span class="lineCov">         69 :                 detail::cnull(), detail::cnull()) {}</span>
+<span class="lineNum">     563 </span>                :            : 
+<span class="lineNum">     564 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     565 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     566 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     567 </span>                :<span class="lineCov">        442 :         typename access_traits&lt;T3&gt;::parameter_type t3)</span>
+<span class="lineNum">     568 </span>                :            :     : inherited(t0, t1, t2, t3, detail::cnull(), detail::cnull(),
+<span class="lineNum">     569 </span>                :            :                 detail::cnull(), detail::cnull(), detail::cnull(),
+<span class="lineNum">     570 </span>                :<span class="lineCov">        442 :                 detail::cnull()) {}</span>
+<span class="lineNum">     571 </span>                :            : 
+<span class="lineNum">     572 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     573 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     574 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     575 </span>                :            :         typename access_traits&lt;T3&gt;::parameter_type t3,
+<span class="lineNum">     576 </span>                :            :         typename access_traits&lt;T4&gt;::parameter_type t4)
+<span class="lineNum">     577 </span>                :            :     : inherited(t0, t1, t2, t3, t4, detail::cnull(), detail::cnull(),
+<span class="lineNum">     578 </span>                :            :                 detail::cnull(), detail::cnull(), detail::cnull()) {}
+<span class="lineNum">     579 </span>                :            : 
+<span class="lineNum">     580 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     581 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     582 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     583 </span>                :            :         typename access_traits&lt;T3&gt;::parameter_type t3,
+<span class="lineNum">     584 </span>                :            :         typename access_traits&lt;T4&gt;::parameter_type t4,
+<span class="lineNum">     585 </span>                :            :         typename access_traits&lt;T5&gt;::parameter_type t5)
+<span class="lineNum">     586 </span>                :            :     : inherited(t0, t1, t2, t3, t4, t5, detail::cnull(), detail::cnull(),
+<span class="lineNum">     587 </span>                :            :                 detail::cnull(), detail::cnull()) {}
+<span class="lineNum">     588 </span>                :            : 
+<span class="lineNum">     589 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     590 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     591 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     592 </span>                :            :         typename access_traits&lt;T3&gt;::parameter_type t3,
+<span class="lineNum">     593 </span>                :            :         typename access_traits&lt;T4&gt;::parameter_type t4,
+<span class="lineNum">     594 </span>                :            :         typename access_traits&lt;T5&gt;::parameter_type t5,
+<span class="lineNum">     595 </span>                :            :         typename access_traits&lt;T6&gt;::parameter_type t6)
+<span class="lineNum">     596 </span>                :            :     : inherited(t0, t1, t2, t3, t4, t5, t6, detail::cnull(),
+<span class="lineNum">     597 </span>                :            :                 detail::cnull(), detail::cnull()) {}
+<span class="lineNum">     598 </span>                :            : 
+<span class="lineNum">     599 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     600 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     601 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     602 </span>                :            :         typename access_traits&lt;T3&gt;::parameter_type t3,
+<span class="lineNum">     603 </span>                :            :         typename access_traits&lt;T4&gt;::parameter_type t4,
+<span class="lineNum">     604 </span>                :            :         typename access_traits&lt;T5&gt;::parameter_type t5,
+<span class="lineNum">     605 </span>                :            :         typename access_traits&lt;T6&gt;::parameter_type t6,
+<span class="lineNum">     606 </span>                :            :         typename access_traits&lt;T7&gt;::parameter_type t7)
+<span class="lineNum">     607 </span>                :            :     : inherited(t0, t1, t2, t3, t4, t5, t6, t7, detail::cnull(),
+<span class="lineNum">     608 </span>                :            :                 detail::cnull()) {}
+<span class="lineNum">     609 </span>                :            : 
+<span class="lineNum">     610 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     611 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     612 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     613 </span>                :            :         typename access_traits&lt;T3&gt;::parameter_type t3,
+<span class="lineNum">     614 </span>                :            :         typename access_traits&lt;T4&gt;::parameter_type t4,
+<span class="lineNum">     615 </span>                :            :         typename access_traits&lt;T5&gt;::parameter_type t5,
+<span class="lineNum">     616 </span>                :            :         typename access_traits&lt;T6&gt;::parameter_type t6,
+<span class="lineNum">     617 </span>                :            :         typename access_traits&lt;T7&gt;::parameter_type t7,
+<span class="lineNum">     618 </span>                :            :         typename access_traits&lt;T8&gt;::parameter_type t8)
+<span class="lineNum">     619 </span>                :            :     : inherited(t0, t1, t2, t3, t4, t5, t6, t7, t8, detail::cnull()) {}
+<span class="lineNum">     620 </span>                :            : 
+<span class="lineNum">     621 </span>                :            :   tuple(typename access_traits&lt;T0&gt;::parameter_type t0,
+<span class="lineNum">     622 </span>                :            :         typename access_traits&lt;T1&gt;::parameter_type t1,
+<span class="lineNum">     623 </span>                :            :         typename access_traits&lt;T2&gt;::parameter_type t2,
+<span class="lineNum">     624 </span>                :            :         typename access_traits&lt;T3&gt;::parameter_type t3,
+<span class="lineNum">     625 </span>                :            :         typename access_traits&lt;T4&gt;::parameter_type t4,
+<span class="lineNum">     626 </span>                :            :         typename access_traits&lt;T5&gt;::parameter_type t5,
+<span class="lineNum">     627 </span>                :            :         typename access_traits&lt;T6&gt;::parameter_type t6,
+<span class="lineNum">     628 </span>                :            :         typename access_traits&lt;T7&gt;::parameter_type t7,
+<span class="lineNum">     629 </span>                :            :         typename access_traits&lt;T8&gt;::parameter_type t8,
+<span class="lineNum">     630 </span>                :            :         typename access_traits&lt;T9&gt;::parameter_type t9)
+<span class="lineNum">     631 </span>                :            :     : inherited(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {}
+<span class="lineNum">     632 </span>                :            : 
+<span class="lineNum">     633 </span>                :            : 
+<span class="lineNum">     634 </span>                :            :   template&lt;class U1, class U2&gt;
+<span class="lineNum">     635 </span>                :<span class="lineNoCov">          0 :   tuple(const cons&lt;U1, U2&gt;&amp; p) : inherited(p) {}</span>
+<span class="lineNum">     636 </span>                :            : 
+<span class="lineNum">     637 </span>                :            :   template &lt;class U1, class U2&gt;
+<span class="lineNum">     638 </span>                :            :   tuple&amp; operator=(const cons&lt;U1, U2&gt;&amp; k) {
+<span class="lineNum">     639 </span>                :            :     inherited::operator=(k);
+<span class="lineNum">     640 </span>                :            :     return *this;
+<span class="lineNum">     641 </span>                :            :   }
+<span class="lineNum">     642 </span>                :            : 
+<span class="lineNum">     643 </span>                :            :   template &lt;class U1, class U2&gt;
+<span class="lineNum">     644 </span>                :            :   tuple&amp; operator=(const std::pair&lt;U1, U2&gt;&amp; k) {
+<span class="lineNum">     645 </span>                :            :     BOOST_STATIC_ASSERT(length&lt;tuple&gt;::value == 2);// check_length = 2
+<span class="lineNum">     646 </span>                :            :     this-&gt;head = k.first;
+<span class="lineNum">     647 </span>                :            :     this-&gt;tail.head = k.second;
+<span class="lineNum">     648 </span>                :            :     return *this;
+<span class="lineNum">     649 </span>                :            :   }
+<span class="lineNum">     650 </span>                :            : 
+<span class="lineNum">     651 </span>                :            : };
+<span class="lineNum">     652 </span>                :            : 
+<span class="lineNum">     653 </span>                :            : // The empty tuple
+<span class="lineNum">     654 </span>                :            : template &lt;&gt;
+<span class="lineNum">     655 </span>                :            : class tuple&lt;null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type, null_type&gt;  :
+<span class="lineNum">     656 </span>                :            :   public null_type
+<span class="lineNum">     657 </span>                :            : {
+<span class="lineNum">     658 </span>                :            : public:
+<span class="lineNum">     659 </span>                :            :   typedef null_type inherited;
+<span class="lineNum">     660 </span>                :            : };
+<span class="lineNum">     661 </span>                :            : 
+<span class="lineNum">     662 </span>                :            : 
+<span class="lineNum">     663 </span>                :            : // Swallows any assignment   (by Doug Gregor)
+<span class="lineNum">     664 </span>                :            : namespace detail {
+<span class="lineNum">     665 </span>                :            : 
+<span class="lineNum">     666 </span>                :            : struct swallow_assign {
+<span class="lineNum">     667 </span>                :            : 
+<span class="lineNum">     668 </span>                :            :   template&lt;typename T&gt;
+<span class="lineNum">     669 </span>                :            :   swallow_assign const&amp; operator=(const T&amp;) const {
+<span class="lineNum">     670 </span>                :            :     return *this;
+<span class="lineNum">     671 </span>                :            :   }
+<span class="lineNum">     672 </span>                :            : };
+<span class="lineNum">     673 </span>                :            : 
+<span class="lineNum">     674 </span>                :            : } // namespace detail
+<span class="lineNum">     675 </span>                :            : 
+<span class="lineNum">     676 </span>                :            : // &quot;ignore&quot; allows tuple positions to be ignored when using &quot;tie&quot;.
+<span class="lineNum">     677 </span>                :<span class="lineCov">        246 : detail::swallow_assign const ignore = detail::swallow_assign();</span>
+<span class="lineNum">     678 </span>                :            : 
+<span class="lineNum">     679 </span>                :            : // ---------------------------------------------------------------------------
+<span class="lineNum">     680 </span>                :            : // The call_traits for make_tuple
+<span class="lineNum">     681 </span>                :            : // Honours the reference_wrapper class.
+<span class="lineNum">     682 </span>                :            : 
+<span class="lineNum">     683 </span>                :            : // Must be instantiated with plain or const plain types (not with references)
+<span class="lineNum">     684 </span>                :            : 
+<span class="lineNum">     685 </span>                :            : // from template&lt;class T&gt; foo(const T&amp; t) : make_tuple_traits&lt;const T&gt;::type
+<span class="lineNum">     686 </span>                :            : // from template&lt;class T&gt; foo(T&amp; t) : make_tuple_traits&lt;T&gt;::type
+<span class="lineNum">     687 </span>                :            : 
+<span class="lineNum">     688 </span>                :            : // Conversions:
+<span class="lineNum">     689 </span>                :            : // T -&gt; T,
+<span class="lineNum">     690 </span>                :            : // references -&gt; compile_time_error
+<span class="lineNum">     691 </span>                :            : // reference_wrapper&lt;T&gt; -&gt; T&amp;
+<span class="lineNum">     692 </span>                :            : // const reference_wrapper&lt;T&gt; -&gt; T&amp;
+<span class="lineNum">     693 </span>                :            : // array -&gt; const ref array
+<span class="lineNum">     694 </span>                :            : 
+<span class="lineNum">     695 </span>                :            : 
+<span class="lineNum">     696 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     697 </span>                :            : struct make_tuple_traits {
+<span class="lineNum">     698 </span>                :            :   typedef T type;
+<span class="lineNum">     699 </span>                :            : 
+<span class="lineNum">     700 </span>                :            :   // commented away, see below  (JJ)
+<span class="lineNum">     701 </span>                :            :   //  typedef typename IF&lt;
+<span class="lineNum">     702 </span>                :            :   //  boost::is_function&lt;T&gt;::value,
+<span class="lineNum">     703 </span>                :            :   //  T&amp;,
+<span class="lineNum">     704 </span>                :            :   //  T&gt;::RET type;
+<span class="lineNum">     705 </span>                :            : 
+<span class="lineNum">     706 </span>                :            : };
+<span class="lineNum">     707 </span>                :            : 
+<span class="lineNum">     708 </span>                :            : // The is_function test was there originally for plain function types,
+<span class="lineNum">     709 </span>                :            : // which can't be stored as such (we must either store them as references or
+<span class="lineNum">     710 </span>                :            : // pointers). Such a type could be formed if make_tuple was called with a
+<span class="lineNum">     711 </span>                :            : // reference to a function.
+<span class="lineNum">     712 </span>                :            : // But this would mean that a const qualified function type was formed in
+<span class="lineNum">     713 </span>                :            : // the make_tuple function and hence make_tuple can't take a function
+<span class="lineNum">     714 </span>                :            : // reference as a parameter, and thus T can't be a function type.
+<span class="lineNum">     715 </span>                :            : // So is_function test was removed.
+<span class="lineNum">     716 </span>                :            : // (14.8.3. says that type deduction fails if a cv-qualified function type
+<span class="lineNum">     717 </span>                :            : // is created. (It only applies for the case of explicitly specifying template
+<span class="lineNum">     718 </span>                :            : // args, though?)) (JJ)
+<span class="lineNum">     719 </span>                :            : 
+<span class="lineNum">     720 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     721 </span>                :            : struct make_tuple_traits&lt;T&amp;&gt; {
+<span class="lineNum">     722 </span>                :            :   typedef typename
+<span class="lineNum">     723 </span>                :            :      detail::generate_error&lt;T&amp;&gt;::
+<span class="lineNum">     724 </span>                :            :        do_not_use_with_reference_type error;
+<span class="lineNum">     725 </span>                :            : };
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :            : // Arrays can't be stored as plain types; convert them to references.
+<span class="lineNum">     728 </span>                :            : // All arrays are converted to const. This is because make_tuple takes its
+<span class="lineNum">     729 </span>                :            : // parameters as const T&amp; and thus the knowledge of the potential
+<span class="lineNum">     730 </span>                :            : // non-constness of actual argument is lost.
+<span class="lineNum">     731 </span>                :            : template&lt;class T, int n&gt;  struct make_tuple_traits &lt;T[n]&gt; {
+<span class="lineNum">     732 </span>                :            :   typedef const T (&amp;type)[n];
+<span class="lineNum">     733 </span>                :            : };
+<span class="lineNum">     734 </span>                :            : 
+<span class="lineNum">     735 </span>                :            : template&lt;class T, int n&gt;
+<span class="lineNum">     736 </span>                :            : struct make_tuple_traits&lt;const T[n]&gt; {
+<span class="lineNum">     737 </span>                :            :   typedef const T (&amp;type)[n];
+<span class="lineNum">     738 </span>                :            : };
+<span class="lineNum">     739 </span>                :            : 
+<span class="lineNum">     740 </span>                :            : template&lt;class T, int n&gt;  struct make_tuple_traits&lt;volatile T[n]&gt; {
+<span class="lineNum">     741 </span>                :            :   typedef const volatile T (&amp;type)[n];
+<span class="lineNum">     742 </span>                :            : };
+<span class="lineNum">     743 </span>                :            : 
+<span class="lineNum">     744 </span>                :            : template&lt;class T, int n&gt;
+<span class="lineNum">     745 </span>                :            : struct make_tuple_traits&lt;const volatile T[n]&gt; {
+<span class="lineNum">     746 </span>                :            :   typedef const volatile T (&amp;type)[n];
+<span class="lineNum">     747 </span>                :            : };
+<span class="lineNum">     748 </span>                :            : 
+<span class="lineNum">     749 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     750 </span>                :            : struct make_tuple_traits&lt;reference_wrapper&lt;T&gt; &gt;{
+<span class="lineNum">     751 </span>                :            :   typedef T&amp; type;
+<span class="lineNum">     752 </span>                :            : };
+<span class="lineNum">     753 </span>                :            : 
+<span class="lineNum">     754 </span>                :            : template&lt;class T&gt;
+<span class="lineNum">     755 </span>                :            : struct make_tuple_traits&lt;const reference_wrapper&lt;T&gt; &gt;{
+<span class="lineNum">     756 </span>                :            :   typedef T&amp; type;
+<span class="lineNum">     757 </span>                :            : };
+<span class="lineNum">     758 </span>                :            : 
+<span class="lineNum">     759 </span>                :            : 
+<span class="lineNum">     760 </span>                :            : 
+<span class="lineNum">     761 </span>                :            : 
+<span class="lineNum">     762 </span>                :            : namespace detail {
+<span class="lineNum">     763 </span>                :            : 
+<span class="lineNum">     764 </span>                :            : // a helper traits to make the make_tuple functions shorter (Vesa Karvonen's
+<span class="lineNum">     765 </span>                :            : // suggestion)
+<span class="lineNum">     766 </span>                :            : template &lt;
+<span class="lineNum">     767 </span>                :            :   class T0 = null_type, class T1 = null_type, class T2 = null_type,
+<span class="lineNum">     768 </span>                :            :   class T3 = null_type, class T4 = null_type, class T5 = null_type,
+<span class="lineNum">     769 </span>                :            :   class T6 = null_type, class T7 = null_type, class T8 = null_type,
+<span class="lineNum">     770 </span>                :            :   class T9 = null_type
+<span class="lineNum">     771 </span>                :            : &gt;
+<span class="lineNum">     772 </span>                :            : struct make_tuple_mapper {
+<span class="lineNum">     773 </span>                :            :   typedef
+<span class="lineNum">     774 </span>                :            :     tuple&lt;typename make_tuple_traits&lt;T0&gt;::type,
+<span class="lineNum">     775 </span>                :            :           typename make_tuple_traits&lt;T1&gt;::type,
+<span class="lineNum">     776 </span>                :            :           typename make_tuple_traits&lt;T2&gt;::type,
+<span class="lineNum">     777 </span>                :            :           typename make_tuple_traits&lt;T3&gt;::type,
+<span class="lineNum">     778 </span>                :            :           typename make_tuple_traits&lt;T4&gt;::type,
+<span class="lineNum">     779 </span>                :            :           typename make_tuple_traits&lt;T5&gt;::type,
+<span class="lineNum">     780 </span>                :            :           typename make_tuple_traits&lt;T6&gt;::type,
+<span class="lineNum">     781 </span>                :            :           typename make_tuple_traits&lt;T7&gt;::type,
+<span class="lineNum">     782 </span>                :            :           typename make_tuple_traits&lt;T8&gt;::type,
+<span class="lineNum">     783 </span>                :            :           typename make_tuple_traits&lt;T9&gt;::type&gt; type;
+<span class="lineNum">     784 </span>                :            : };
+<span class="lineNum">     785 </span>                :            : 
+<span class="lineNum">     786 </span>                :            : } // end detail
+<span class="lineNum">     787 </span>                :            : 
+<span class="lineNum">     788 </span>                :            : // -make_tuple function templates -----------------------------------
+<span class="lineNum">     789 </span>                :            : inline tuple&lt;&gt; make_tuple() {
+<span class="lineNum">     790 </span>                :            :   return tuple&lt;&gt;();
+<span class="lineNum">     791 </span>                :            : }
+<span class="lineNum">     792 </span>                :            : 
+<span class="lineNum">     793 </span>                :            : template&lt;class T0&gt;
+<span class="lineNum">     794 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0&gt;::type
+<span class="lineNum">     795 </span>                :            : make_tuple(const T0&amp; t0) {
+<span class="lineNum">     796 </span>                :            :   typedef typename detail::make_tuple_mapper&lt;T0&gt;::type t;
+<span class="lineNum">     797 </span>                :            :   return t(t0);
+<span class="lineNum">     798 </span>                :            : }
+<span class="lineNum">     799 </span>                :            : 
+<span class="lineNum">     800 </span>                :            : template&lt;class T0, class T1&gt;
+<span class="lineNum">     801 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1&gt;::type
+<span class="lineNum">     802 </span>                :<span class="lineCov">        979 : make_tuple(const T0&amp; t0, const T1&amp; t1) {</span>
+<span class="lineNum">     803 </span>                :            :   typedef typename detail::make_tuple_mapper&lt;T0, T1&gt;::type t;
+<span class="lineNum">     804 </span>                :<span class="lineCov">        979 :   return t(t0, t1);</span>
+<span class="lineNum">     805 </span>                :            : }
+<span class="lineNum">     806 </span>                :            : 
+<span class="lineNum">     807 </span>                :            : template&lt;class T0, class T1, class T2&gt;
+<span class="lineNum">     808 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1, T2&gt;::type
+<span class="lineNum">     809 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2) {
+<span class="lineNum">     810 </span>                :            :   typedef typename detail::make_tuple_mapper&lt;T0, T1, T2&gt;::type t;
+<span class="lineNum">     811 </span>                :            :   return t(t0, t1, t2);
+<span class="lineNum">     812 </span>                :            : }
+<span class="lineNum">     813 </span>                :            : 
+<span class="lineNum">     814 </span>                :            : template&lt;class T0, class T1, class T2, class T3&gt;
+<span class="lineNum">     815 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1, T2, T3&gt;::type
+<span class="lineNum">     816 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3) {
+<span class="lineNum">     817 </span>                :            :   typedef typename detail::make_tuple_mapper&lt;T0, T1, T2, T3&gt;::type t;
+<span class="lineNum">     818 </span>                :            :   return t(t0, t1, t2, t3);
+<span class="lineNum">     819 </span>                :            : }
+<span class="lineNum">     820 </span>                :            : 
+<span class="lineNum">     821 </span>                :            : template&lt;class T0, class T1, class T2, class T3, class T4&gt;
+<span class="lineNum">     822 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1, T2, T3, T4&gt;::type
+<span class="lineNum">     823 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3,
+<span class="lineNum">     824 </span>                :            :                   const T4&amp; t4) {
+<span class="lineNum">     825 </span>                :            :   typedef typename detail::make_tuple_mapper&lt;T0, T1, T2, T3, T4&gt;::type t;
+<span class="lineNum">     826 </span>                :            :   return t(t0, t1, t2, t3, t4);
+<span class="lineNum">     827 </span>                :            : }
+<span class="lineNum">     828 </span>                :            : 
+<span class="lineNum">     829 </span>                :            : template&lt;class T0, class T1, class T2, class T3, class T4, class T5&gt;
+<span class="lineNum">     830 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1, T2, T3, T4, T5&gt;::type
+<span class="lineNum">     831 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3,
+<span class="lineNum">     832 </span>                :            :                   const T4&amp; t4, const T5&amp; t5) {
+<span class="lineNum">     833 </span>                :            :   typedef typename detail::make_tuple_mapper&lt;T0, T1, T2, T3, T4, T5&gt;::type t;
+<span class="lineNum">     834 </span>                :            :   return t(t0, t1, t2, t3, t4, t5);
+<span class="lineNum">     835 </span>                :            : }
+<span class="lineNum">     836 </span>                :            : 
+<span class="lineNum">     837 </span>                :            : template&lt;class T0, class T1, class T2, class T3, class T4, class T5, class T6&gt;
+<span class="lineNum">     838 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1, T2, T3, T4, T5, T6&gt;::type
+<span class="lineNum">     839 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3,
+<span class="lineNum">     840 </span>                :            :                   const T4&amp; t4, const T5&amp; t5, const T6&amp; t6) {
+<span class="lineNum">     841 </span>                :            :   typedef typename detail::make_tuple_mapper
+<span class="lineNum">     842 </span>                :            :            &lt;T0, T1, T2, T3, T4, T5, T6&gt;::type t;
+<span class="lineNum">     843 </span>                :            :   return t(t0, t1, t2, t3, t4, t5, t6);
+<span class="lineNum">     844 </span>                :            : }
+<span class="lineNum">     845 </span>                :            : 
+<span class="lineNum">     846 </span>                :            : template&lt;class T0, class T1, class T2, class T3, class T4, class T5, class T6,
+<span class="lineNum">     847 </span>                :            :          class T7&gt;
+<span class="lineNum">     848 </span>                :            : inline typename detail::make_tuple_mapper&lt;T0, T1, T2, T3, T4, T5, T6, T7&gt;::type
+<span class="lineNum">     849 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3,
+<span class="lineNum">     850 </span>                :            :                   const T4&amp; t4, const T5&amp; t5, const T6&amp; t6, const T7&amp; t7) {
+<span class="lineNum">     851 </span>                :            :   typedef typename detail::make_tuple_mapper
+<span class="lineNum">     852 </span>                :            :            &lt;T0, T1, T2, T3, T4, T5, T6, T7&gt;::type t;
+<span class="lineNum">     853 </span>                :            :   return t(t0, t1, t2, t3, t4, t5, t6, t7);
+<span class="lineNum">     854 </span>                :            : }
+<span class="lineNum">     855 </span>                :            : 
+<span class="lineNum">     856 </span>                :            : template&lt;class T0, class T1, class T2, class T3, class T4, class T5, class T6,
+<span class="lineNum">     857 </span>                :            :          class T7, class T8&gt;
+<span class="lineNum">     858 </span>                :            : inline typename detail::make_tuple_mapper
+<span class="lineNum">     859 </span>                :            :   &lt;T0, T1, T2, T3, T4, T5, T6, T7, T8&gt;::type
+<span class="lineNum">     860 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3,
+<span class="lineNum">     861 </span>                :            :                   const T4&amp; t4, const T5&amp; t5, const T6&amp; t6, const T7&amp; t7,
+<span class="lineNum">     862 </span>                :            :                   const T8&amp; t8) {
+<span class="lineNum">     863 </span>                :            :   typedef typename detail::make_tuple_mapper
+<span class="lineNum">     864 </span>                :            :            &lt;T0, T1, T2, T3, T4, T5, T6, T7, T8&gt;::type t;
+<span class="lineNum">     865 </span>                :            :   return t(t0, t1, t2, t3, t4, t5, t6, t7, t8);
+<span class="lineNum">     866 </span>                :            : }
+<span class="lineNum">     867 </span>                :            : 
+<span class="lineNum">     868 </span>                :            : template&lt;class T0, class T1, class T2, class T3, class T4, class T5, class T6,
+<span class="lineNum">     869 </span>                :            :          class T7, class T8, class T9&gt;
+<span class="lineNum">     870 </span>                :            : inline typename detail::make_tuple_mapper
+<span class="lineNum">     871 </span>                :            :   &lt;T0, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;::type
+<span class="lineNum">     872 </span>                :            : make_tuple(const T0&amp; t0, const T1&amp; t1, const T2&amp; t2, const T3&amp; t3,
+<span class="lineNum">     873 </span>                :            :                   const T4&amp; t4, const T5&amp; t5, const T6&amp; t6, const T7&amp; t7,
+<span class="lineNum">     874 </span>                :            :                   const T8&amp; t8, const T9&amp; t9) {
+<span class="lineNum">     875 </span>                :            :   typedef typename detail::make_tuple_mapper
+<span class="lineNum">     876 </span>                :            :            &lt;T0, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;::type t;
+<span class="lineNum">     877 </span>                :            :   return t(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
+<span class="lineNum">     878 </span>                :            : }
+<span class="lineNum">     879 </span>                :            : 
+<span class="lineNum">     880 </span>                :            : 
+<span class="lineNum">     881 </span>                :            : 
+<span class="lineNum">     882 </span>                :            : // Tie function templates -------------------------------------------------
+<span class="lineNum">     883 </span>                :            : template&lt;class T1&gt;
+<span class="lineNum">     884 </span>                :            : inline tuple&lt;T1&amp;&gt; tie(T1&amp; t1) {
+<span class="lineNum">     885 </span>                :            :   return tuple&lt;T1&amp;&gt; (t1);
+<span class="lineNum">     886 </span>                :            : }
+<span class="lineNum">     887 </span>                :            : 
+<span class="lineNum">     888 </span>                :            : template&lt;class T1, class T2&gt;
+<span class="lineNum">     889 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;&gt; tie(T1&amp; t1, T2&amp; t2) {
+<span class="lineNum">     890 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;&gt; (t1, t2);
+<span class="lineNum">     891 </span>                :            : }
+<span class="lineNum">     892 </span>                :            : 
+<span class="lineNum">     893 </span>                :            : template&lt;class T1, class T2, class T3&gt;
+<span class="lineNum">     894 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;&gt; tie(T1&amp; t1, T2&amp; t2, T3&amp; t3) {
+<span class="lineNum">     895 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;&gt; (t1, t2, t3);
+<span class="lineNum">     896 </span>                :            : }
+<span class="lineNum">     897 </span>                :            : 
+<span class="lineNum">     898 </span>                :            : template&lt;class T1, class T2, class T3, class T4&gt;
+<span class="lineNum">     899 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;&gt; tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4) {
+<span class="lineNum">     900 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;&gt; (t1, t2, t3, t4);
+<span class="lineNum">     901 </span>                :            : }
+<span class="lineNum">     902 </span>                :            : 
+<span class="lineNum">     903 </span>                :            : template&lt;class T1, class T2, class T3, class T4, class T5&gt;
+<span class="lineNum">     904 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;&gt;
+<span class="lineNum">     905 </span>                :            : tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5) {
+<span class="lineNum">     906 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;&gt; (t1, t2, t3, t4, t5);
+<span class="lineNum">     907 </span>                :            : }
+<span class="lineNum">     908 </span>                :            : 
+<span class="lineNum">     909 </span>                :            : template&lt;class T1, class T2, class T3, class T4, class T5, class T6&gt;
+<span class="lineNum">     910 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;&gt;
+<span class="lineNum">     911 </span>                :            : tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5, T6&amp; t6) {
+<span class="lineNum">     912 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;&gt; (t1, t2, t3, t4, t5, t6);
+<span class="lineNum">     913 </span>                :            : }
+<span class="lineNum">     914 </span>                :            : 
+<span class="lineNum">     915 </span>                :            : template&lt;class T1, class T2, class T3, class T4, class T5, class T6, class T7&gt;
+<span class="lineNum">     916 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;&gt;
+<span class="lineNum">     917 </span>                :            : tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5, T6&amp; t6, T7&amp; t7) {
+<span class="lineNum">     918 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;&gt; (t1, t2, t3, t4, t5, t6, t7);
+<span class="lineNum">     919 </span>                :            : }
+<span class="lineNum">     920 </span>                :            : 
+<span class="lineNum">     921 </span>                :            : template&lt;class T1, class T2, class T3, class T4, class T5, class T6, class T7,
+<span class="lineNum">     922 </span>                :            :          class T8&gt;
+<span class="lineNum">     923 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;, T8&amp;&gt;
+<span class="lineNum">     924 </span>                :            : tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5, T6&amp; t6, T7&amp; t7, T8&amp; t8) {
+<span class="lineNum">     925 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;, T8&amp;&gt;
+<span class="lineNum">     926 </span>                :            :            (t1, t2, t3, t4, t5, t6, t7, t8);
+<span class="lineNum">     927 </span>                :            : }
+<span class="lineNum">     928 </span>                :            : 
+<span class="lineNum">     929 </span>                :            : template&lt;class T1, class T2, class T3, class T4, class T5, class T6, class T7,
+<span class="lineNum">     930 </span>                :            :          class T8, class T9&gt;
+<span class="lineNum">     931 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;, T8&amp;, T9&amp;&gt;
+<span class="lineNum">     932 </span>                :            : tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5, T6&amp; t6, T7&amp; t7, T8&amp; t8,
+<span class="lineNum">     933 </span>                :            :            T9&amp; t9) {
+<span class="lineNum">     934 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;, T8&amp;, T9&amp;&gt;
+<span class="lineNum">     935 </span>                :            :             (t1, t2, t3, t4, t5, t6, t7, t8, t9);
+<span class="lineNum">     936 </span>                :            : }
+<span class="lineNum">     937 </span>                :            : 
+<span class="lineNum">     938 </span>                :            : template&lt;class T1, class T2, class T3, class T4, class T5, class T6, class T7,
+<span class="lineNum">     939 </span>                :            :          class T8, class T9, class T10&gt;
+<span class="lineNum">     940 </span>                :            : inline tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;, T8&amp;, T9&amp;, T10&amp;&gt;
+<span class="lineNum">     941 </span>                :            : tie(T1&amp; t1, T2&amp; t2, T3&amp; t3, T4&amp; t4, T5&amp; t5, T6&amp; t6, T7&amp; t7, T8&amp; t8,
+<span class="lineNum">     942 </span>                :            :            T9&amp; t9, T10&amp; t10) {
+<span class="lineNum">     943 </span>                :            :   return tuple&lt;T1&amp;, T2&amp;, T3&amp;, T4&amp;, T5&amp;, T6&amp;, T7&amp;, T8&amp;, T9&amp;, T10&amp;&gt;
+<span class="lineNum">     944 </span>                :            :            (t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
+<span class="lineNum">     945 </span>                :            : }
+<span class="lineNum">     946 </span>                :            : 
+<span class="lineNum">     947 </span>                :            : } // end of namespace tuples
+<span class="lineNum">     948 </span>                :            : } // end of namespace boost
+<span class="lineNum">     949 </span>                :            : 
+<span class="lineNum">     950 </span>                :            : 
+<span class="lineNum">     951 </span>                :            : #endif // BOOST_TUPLE_BASIC_HPP
+<span class="lineNum">     952 </span>                :            : 
+<span class="lineNum">     953 </span>                :            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

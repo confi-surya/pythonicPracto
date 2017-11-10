@@ -1,0 +1,21 @@
+import os.path
+
+Import('context')
+
+context.module(
+	name = "HealthMonitoringLib",
+	#srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		monitoring_library.cpp
+		../communication/message_interface_handlers.cpp
+		monitoring_py_binding.cpp
+	"""),
+	targetType = context.TYPE_DLL,
+	libs = context.split("""
+		communication
+	"""),
+	requiredLibs = context.split("""
+		cool
+		boost_python
+        """)
+)

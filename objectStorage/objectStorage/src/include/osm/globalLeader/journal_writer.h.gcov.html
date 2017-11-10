@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-new - objectStorage/src/include/osm/globalLeader/journal_writer.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">objectStorage/src/include/osm/globalLeader</a> - journal_writer.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-new</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : #ifndef __GL_JOURNAL_HANDLER_845__
+<span class="lineNum">       2 </span>                :            : #define __GL_JOURNAL_HANDLER_845__
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : #include &quot;libraryUtils/journal.h&quot;
+<span class="lineNum">       5 </span>                :            : #include &quot;osm/globalLeader/component_manager.h&quot;
+<span class="lineNum">       6 </span>                :            : 
+<span class="lineNum">       7 </span>                :            : namespace journal_manager
+<span class="lineNum">       8 </span>                :            : {
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : #ifndef OBJECT_STORAGE_CONFIG
+<span class="lineNum">      11 </span>                :<span class="lineNoCov">          0 :         static const std::string JOURNAL_PATH = &quot;/export/global_leader_journal&quot;;</span>
+<span class="lineNum">      12 </span>                :            : #else
+<span class="lineNum">      13 </span>                :            :         static const std::string JOURNAL_PATH = &quot;/remote/hydra042/gmishra/journal_dir&quot;;
+<span class="lineNum">      14 </span>                :            : #endif
+<span class="lineNum">      15 </span>                :            : 
+<span class="lineNum">      16 </span>                :            : class GLJournalWriteHandler : public JournalWriteHandler
+<span class="lineNum">      17 </span>                :            : {
+<span class="lineNum">      18 </span>                :            :         public:
+<span class="lineNum">      19 </span>                :            :                 GLJournalWriteHandler(
+<span class="lineNum">      20 </span>                :            :                         std::string path,
+<span class="lineNum">      21 </span>                :            :                         cool::SharedPtr&lt;config_file::ConfigFileParser&gt; parser_ptr,
+<span class="lineNum">      22 </span>                :            :                         boost::shared_ptr&lt;component_manager::ComponentMapManager&gt; map_ptr,
+<span class="lineNum">      23 </span>                :            :                         boost::function&lt;std::vector&lt;std::string&gt;(void)&gt; get_state_change_ids
+<span class="lineNum">      24 </span>                :            :                         );
+<span class="lineNum">      25 </span>                :            :                 void process_snapshot();
+<span class="lineNum">      26 </span>                :            :                 void process_checkpoint();
+<span class="lineNum">      27 </span>                :            :                 void process_write(recordStructure::Record * record, int64_t record_size);
+<span class="lineNum">      28 </span>                :            :                 void remove_old_files();
+<span class="lineNum">      29 </span>                :            :                 void remove_all_journal_files();
+<span class="lineNum">      30 </span>                :            :         private:
+<span class="lineNum">      31 </span>                :            :                 uint64_t latest_state_change_id;
+<span class="lineNum">      32 </span>                :            :                 boost::shared_ptr&lt;component_manager::ComponentMapManager&gt; map_ptr;
+<span class="lineNum">      33 </span>                :            :                 boost::function&lt;std::vector&lt;std::string&gt;(void)&gt; get_state_change_ids;
+<span class="lineNum">      34 </span>                :            : };
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>                :            : } // namespace journal_manager
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

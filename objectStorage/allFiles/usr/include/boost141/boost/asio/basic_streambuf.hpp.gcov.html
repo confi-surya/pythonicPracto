@@ -1,0 +1,430 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/asio/basic_streambuf.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/asio</a> - basic_streambuf.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">53</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : //
+<span class="lineNum">       2 </span>                :            : // basic_streambuf.hpp
+<span class="lineNum">       3 </span>                :            : // ~~~~~~~~~~~~~~~~~~~
+<span class="lineNum">       4 </span>                :            : //
+<span class="lineNum">       5 </span>                :            : // Copyright (c) 2003-2008 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+<span class="lineNum">       6 </span>                :            : //
+<span class="lineNum">       7 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       8 </span>                :            : // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>                :            : //
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : #ifndef BOOST_ASIO_BASIC_STREAMBUF_HPP
+<span class="lineNum">      12 </span>                :            : #define BOOST_ASIO_BASIC_STREAMBUF_HPP
+<span class="lineNum">      13 </span>                :            : 
+<span class="lineNum">      14 </span>                :            : #if defined(_MSC_VER) &amp;&amp; (_MSC_VER &gt;= 1200)
+<span class="lineNum">      15 </span>                :            : # pragma once
+<span class="lineNum">      16 </span>                :            : #endif // defined(_MSC_VER) &amp;&amp; (_MSC_VER &gt;= 1200)
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &lt;boost/asio/detail/push_options.hpp&gt;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;boost/asio/detail/push_options.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;cstring&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;limits&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;memory&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;stdexcept&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;streambuf&gt;
+<span class="lineNum">      27 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;boost/throw_exception.hpp&gt;
+<span class="lineNum">      29 </span>                :            : #include &lt;boost/asio/detail/pop_options.hpp&gt;
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : #include &lt;boost/asio/buffer.hpp&gt;
+<span class="lineNum">      32 </span>                :            : #include &lt;boost/asio/detail/noncopyable.hpp&gt;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : namespace boost {
+<span class="lineNum">      35 </span>                :            : namespace asio {
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            : /// Automatically resizable buffer class based on std::streambuf.
+<span class="lineNum">      38 </span>                :            : /**
+<span class="lineNum">      39 </span>                :            :  * The @c basic_streambuf class is derived from @c std::streambuf to associate
+<span class="lineNum">      40 </span>                :            :  * the streambuf's input and output sequences with one or more character
+<span class="lineNum">      41 </span>                :            :  * arrays. These character arrays are internal to the @c basic_streambuf
+<span class="lineNum">      42 </span>                :            :  * object, but direct access to the array elements is provided to permit them
+<span class="lineNum">      43 </span>                :            :  * to be used efficiently with I/O operations. Characters written to the output
+<span class="lineNum">      44 </span>                :            :  * sequence of a @c basic_streambuf object are appended to the input sequence
+<span class="lineNum">      45 </span>                :            :  * of the same object.
+<span class="lineNum">      46 </span>                :            :  *
+<span class="lineNum">      47 </span>                :            :  * The @c basic_streambuf class's public interface is intended to permit the
+<span class="lineNum">      48 </span>                :            :  * following implementation strategies:
+<span class="lineNum">      49 </span>                :            :  *
+<span class="lineNum">      50 </span>                :            :  * @li A single contiguous character array, which is reallocated as necessary
+<span class="lineNum">      51 </span>                :            :  * to accommodate changes in the size of the character sequence. This is the
+<span class="lineNum">      52 </span>                :            :  * implementation approach currently used in Asio.
+<span class="lineNum">      53 </span>                :            :  *
+<span class="lineNum">      54 </span>                :            :  * @li A sequence of one or more character arrays, where each array is of the
+<span class="lineNum">      55 </span>                :            :  * same size. Additional character array objects are appended to the sequence
+<span class="lineNum">      56 </span>                :            :  * to accommodate changes in the size of the character sequence.
+<span class="lineNum">      57 </span>                :            :  *
+<span class="lineNum">      58 </span>                :            :  * @li A sequence of one or more character arrays of varying sizes. Additional
+<span class="lineNum">      59 </span>                :            :  * character array objects are appended to the sequence to accommodate changes
+<span class="lineNum">      60 </span>                :            :  * in the size of the character sequence.
+<span class="lineNum">      61 </span>                :            :  *
+<span class="lineNum">      62 </span>                :            :  * The constructor for basic_streambuf accepts a @c size_t argument specifying
+<span class="lineNum">      63 </span>                :            :  * the maximum of the sum of the sizes of the input sequence and output
+<span class="lineNum">      64 </span>                :            :  * sequence. During the lifetime of the @c basic_streambuf object, the following
+<span class="lineNum">      65 </span>                :            :  * invariant holds:
+<span class="lineNum">      66 </span>                :            :  * @code size() &lt;= max_size()@endcode
+<span class="lineNum">      67 </span>                :            :  * Any member function that would, if successful, cause the invariant to be
+<span class="lineNum">      68 </span>                :            :  * violated shall throw an exception of class @c std::length_error.
+<span class="lineNum">      69 </span>                :            :  *
+<span class="lineNum">      70 </span>                :            :  * The constructor for @c basic_streambuf takes an Allocator argument. A copy
+<span class="lineNum">      71 </span>                :            :  * of this argument is used for any memory allocation performed, by the
+<span class="lineNum">      72 </span>                :            :  * constructor and by all member functions, during the lifetime of each @c
+<span class="lineNum">      73 </span>                :            :  * basic_streambuf object.
+<span class="lineNum">      74 </span>                :            :  *
+<span class="lineNum">      75 </span>                :            :  * @par Examples
+<span class="lineNum">      76 </span>                :            :  * Writing directly from an streambuf to a socket:
+<span class="lineNum">      77 </span>                :            :  * @code
+<span class="lineNum">      78 </span>                :            :  * boost::asio::streambuf b;
+<span class="lineNum">      79 </span>                :            :  * std::ostream os(&amp;b);
+<span class="lineNum">      80 </span>                :            :  * os &lt;&lt; &quot;Hello, World!\n&quot;;
+<span class="lineNum">      81 </span>                :            :  *
+<span class="lineNum">      82 </span>                :            :  * // try sending some data in input sequence
+<span class="lineNum">      83 </span>                :            :  * size_t n = sock.send(b.data());
+<span class="lineNum">      84 </span>                :            :  *
+<span class="lineNum">      85 </span>                :            :  * b.consume(n); // sent data is removed from input sequence
+<span class="lineNum">      86 </span>                :            :  * @endcode
+<span class="lineNum">      87 </span>                :            :  *
+<span class="lineNum">      88 </span>                :            :  * Reading from a socket directly into a streambuf:
+<span class="lineNum">      89 </span>                :            :  * @code
+<span class="lineNum">      90 </span>                :            :  * boost::asio::streambuf b;
+<span class="lineNum">      91 </span>                :            :  *
+<span class="lineNum">      92 </span>                :            :  * // reserve 512 bytes in output sequence
+<span class="lineNum">      93 </span>                :            :  * boost::asio::streambuf::const_buffers_type bufs = b.prepare(512);
+<span class="lineNum">      94 </span>                :            :  *
+<span class="lineNum">      95 </span>                :            :  * size_t n = sock.receive(bufs);
+<span class="lineNum">      96 </span>                :            :  *
+<span class="lineNum">      97 </span>                :            :  * // received data is &quot;committed&quot; from output sequence to input sequence
+<span class="lineNum">      98 </span>                :            :  * b.commit(n);
+<span class="lineNum">      99 </span>                :            :  *
+<span class="lineNum">     100 </span>                :            :  * std::istream is(&amp;b);
+<span class="lineNum">     101 </span>                :            :  * std::string s;
+<span class="lineNum">     102 </span>                :            :  * is &gt;&gt; s;
+<span class="lineNum">     103 </span>                :            :  * @endcode
+<span class="lineNum">     104 </span>                :            :  */
+<span class="lineNum">     105 </span>                :            : template &lt;typename Allocator = std::allocator&lt;char&gt; &gt;
+<span class="lineNum">     106 </span>                :            : class basic_streambuf
+<span class="lineNum">     107 </span>                :            :   : public std::streambuf,
+<span class="lineNum">     108 </span>                :            :     private noncopyable
+<span class="lineNum">     109 </span>                :            : {
+<span class="lineNum">     110 </span>                :            : public:
+<span class="lineNum">     111 </span>                :            : #if defined(GENERATING_DOCUMENTATION)
+<span class="lineNum">     112 </span>                :            :   /// The type used to represent the input sequence as a list of buffers.
+<span class="lineNum">     113 </span>                :            :   typedef implementation_defined const_buffers_type;
+<span class="lineNum">     114 </span>                :            : 
+<span class="lineNum">     115 </span>                :            :   /// The type used to represent the output sequence as a list of buffers.
+<span class="lineNum">     116 </span>                :            :   typedef implementation_defined mutable_buffers_type;
+<span class="lineNum">     117 </span>                :            : #else
+<span class="lineNum">     118 </span>                :            :   typedef boost::asio::const_buffers_1 const_buffers_type;
+<span class="lineNum">     119 </span>                :            :   typedef boost::asio::mutable_buffers_1 mutable_buffers_type;
+<span class="lineNum">     120 </span>                :            : #endif
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :            :   /// Construct a basic_streambuf object.
+<span class="lineNum">     123 </span>                :            :   /**
+<span class="lineNum">     124 </span>                :            :    * Constructs a streambuf with the specified maximum size. The initial size
+<span class="lineNum">     125 </span>                :            :    * of the streambuf's input sequence is 0.
+<span class="lineNum">     126 </span>                :            :    */
+<span class="lineNum">     127 </span>                :            :   explicit basic_streambuf(
+<span class="lineNum">     128 </span>                :            :       std::size_t max_size = (std::numeric_limits&lt;std::size_t&gt;::max)(),
+<span class="lineNum">     129 </span>                :<span class="lineNoCov">          0 :       const Allocator&amp; allocator = Allocator())</span>
+<span class="lineNum">     130 </span>                :            :     : max_size_(max_size),
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :       buffer_(allocator)</span>
+<span class="lineNum">     132 </span>                :            :   {
+<span class="lineNum">     133 </span>                :<span class="lineNoCov">          0 :     std::size_t pend = (std::min&lt;std::size_t&gt;)(max_size_, buffer_delta);</span>
+<span class="lineNum">     134 </span>                :<span class="lineNoCov">          0 :     buffer_.resize((std::max&lt;std::size_t&gt;)(pend, 1));</span>
+<span class="lineNum">     135 </span>                :<span class="lineNoCov">          0 :     setg(&amp;buffer_[0], &amp;buffer_[0], &amp;buffer_[0]);</span>
+<span class="lineNum">     136 </span>                :<span class="lineNoCov">          0 :     setp(&amp;buffer_[0], &amp;buffer_[0] + pend);</span>
+<span class="lineNum">     137 </span>                :            :   }
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :   /// Get the size of the input sequence.
+<span class="lineNum">     140 </span>                :            :   /**
+<span class="lineNum">     141 </span>                :            :    * @returns The size of the input sequence. The value is equal to that
+<span class="lineNum">     142 </span>                :            :    * calculated for @c s in the following code:
+<span class="lineNum">     143 </span>                :            :    * @code
+<span class="lineNum">     144 </span>                :            :    * size_t s = 0;
+<span class="lineNum">     145 </span>                :            :    * const_buffers_type bufs = data();
+<span class="lineNum">     146 </span>                :            :    * const_buffers_type::const_iterator i = bufs.begin();
+<span class="lineNum">     147 </span>                :            :    * while (i != bufs.end())
+<span class="lineNum">     148 </span>                :            :    * {
+<span class="lineNum">     149 </span>                :            :    *   const_buffer buf(*i++);
+<span class="lineNum">     150 </span>                :            :    *   s += buffer_size(buf);
+<span class="lineNum">     151 </span>                :            :    * }
+<span class="lineNum">     152 </span>                :            :    * @endcode
+<span class="lineNum">     153 </span>                :            :    */
+<span class="lineNum">     154 </span>                :<span class="lineNoCov">          0 :   std::size_t size() const</span>
+<span class="lineNum">     155 </span>                :            :   {
+<span class="lineNum">     156 </span>                :<span class="lineNoCov">          0 :     return pptr() - gptr();</span>
+<span class="lineNum">     157 </span>                :            :   }
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            :   /// Get the maximum size of the basic_streambuf.
+<span class="lineNum">     160 </span>                :            :   /**
+<span class="lineNum">     161 </span>                :            :    * @returns The allowed maximum of the sum of the sizes of the input sequence
+<span class="lineNum">     162 </span>                :            :    * and output sequence.
+<span class="lineNum">     163 </span>                :            :    */
+<span class="lineNum">     164 </span>                :<span class="lineNoCov">          0 :   std::size_t max_size() const</span>
+<span class="lineNum">     165 </span>                :            :   {
+<span class="lineNum">     166 </span>                :<span class="lineNoCov">          0 :     return max_size_;</span>
+<span class="lineNum">     167 </span>                :            :   }
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>                :            :   /// Get a list of buffers that represents the input sequence.
+<span class="lineNum">     170 </span>                :            :   /**
+<span class="lineNum">     171 </span>                :            :    * @returns An object of type @c const_buffers_type that satisfies
+<span class="lineNum">     172 </span>                :            :    * ConstBufferSequence requirements, representing all character arrays in the
+<span class="lineNum">     173 </span>                :            :    * input sequence.
+<span class="lineNum">     174 </span>                :            :    *
+<span class="lineNum">     175 </span>                :            :    * @note The returned object is invalidated by any @c basic_streambuf member
+<span class="lineNum">     176 </span>                :            :    * function that modifies the input sequence or output sequence.
+<span class="lineNum">     177 </span>                :            :    */
+<span class="lineNum">     178 </span>                :<span class="lineNoCov">          0 :   const_buffers_type data() const</span>
+<span class="lineNum">     179 </span>                :            :   {
+<span class="lineNum">     180 </span>                :            :     return boost::asio::buffer(boost::asio::const_buffer(gptr(),
+<span class="lineNum">     181 </span>                :<span class="lineNoCov">          0 :           (pptr() - gptr()) * sizeof(char_type)));</span>
+<span class="lineNum">     182 </span>                :            :   }
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>                :            :   /// Get a list of buffers that represents the output sequence, with the given
+<span class="lineNum">     185 </span>                :            :   /// size.
+<span class="lineNum">     186 </span>                :            :   /**
+<span class="lineNum">     187 </span>                :            :    * Ensures that the output sequence can accommodate @c n characters,
+<span class="lineNum">     188 </span>                :            :    * reallocating character array objects as necessary.
+<span class="lineNum">     189 </span>                :            :    *
+<span class="lineNum">     190 </span>                :            :    * @returns An object of type @c mutable_buffers_type that satisfies
+<span class="lineNum">     191 </span>                :            :    * MutableBufferSequence requirements, representing character array objects
+<span class="lineNum">     192 </span>                :            :    * at the start of the output sequence such that the sum of the buffer sizes
+<span class="lineNum">     193 </span>                :            :    * is @c n.
+<span class="lineNum">     194 </span>                :            :    *
+<span class="lineNum">     195 </span>                :            :    * @throws std::length_error If &lt;tt&gt;size() + n &gt; max_size()&lt;/tt&gt;.
+<span class="lineNum">     196 </span>                :            :    *
+<span class="lineNum">     197 </span>                :            :    * @note The returned object is invalidated by any @c basic_streambuf member
+<span class="lineNum">     198 </span>                :            :    * function that modifies the input sequence or output sequence.
+<span class="lineNum">     199 </span>                :            :    */
+<span class="lineNum">     200 </span>                :<span class="lineNoCov">          0 :   mutable_buffers_type prepare(std::size_t n)</span>
+<span class="lineNum">     201 </span>                :            :   {
+<span class="lineNum">     202 </span>                :<span class="lineNoCov">          0 :     reserve(n);</span>
+<span class="lineNum">     203 </span>                :            :     return boost::asio::buffer(boost::asio::mutable_buffer(
+<span class="lineNum">     204 </span>                :<span class="lineNoCov">          0 :           pptr(), n * sizeof(char_type)));</span>
+<span class="lineNum">     205 </span>                :            :   }
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>                :            :   /// Move characters from the output sequence to the input sequence.
+<span class="lineNum">     208 </span>                :            :   /**
+<span class="lineNum">     209 </span>                :            :    * Appends @c n characters from the start of the output sequence to the input
+<span class="lineNum">     210 </span>                :            :    * sequence. The beginning of the output sequence is advanced by @c n
+<span class="lineNum">     211 </span>                :            :    * characters.
+<span class="lineNum">     212 </span>                :            :    *
+<span class="lineNum">     213 </span>                :            :    * Requires a preceding call &lt;tt&gt;prepare(x)&lt;/tt&gt; where &lt;tt&gt;x &gt;= n&lt;/tt&gt;, and
+<span class="lineNum">     214 </span>                :            :    * no intervening operations that modify the input or output sequence.
+<span class="lineNum">     215 </span>                :            :    *
+<span class="lineNum">     216 </span>                :            :    * @throws std::length_error If @c n is greater than the size of the output
+<span class="lineNum">     217 </span>                :            :    * sequence.
+<span class="lineNum">     218 </span>                :            :    */
+<span class="lineNum">     219 </span>                :<span class="lineNoCov">          0 :   void commit(std::size_t n)</span>
+<span class="lineNum">     220 </span>                :            :   {
+<span class="lineNum">     221 </span>                :<span class="lineNoCov">          0 :     if (pptr() + n &gt; epptr())</span>
+<span class="lineNum">     222 </span>                :<span class="lineNoCov">          0 :       n = epptr() - pptr();</span>
+<span class="lineNum">     223 </span>                :<span class="lineNoCov">          0 :     pbump(static_cast&lt;int&gt;(n));</span>
+<span class="lineNum">     224 </span>                :<span class="lineNoCov">          0 :     setg(eback(), gptr(), pptr());</span>
+<span class="lineNum">     225 </span>                :            :   }
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :            :   /// Remove characters from the input sequence.
+<span class="lineNum">     228 </span>                :            :   /**
+<span class="lineNum">     229 </span>                :            :    * Removes @c n characters from the beginning of the input sequence.
+<span class="lineNum">     230 </span>                :            :    *
+<span class="lineNum">     231 </span>                :            :    * @throws std::length_error If &lt;tt&gt;n &gt; size()&lt;/tt&gt;.
+<span class="lineNum">     232 </span>                :            :    */
+<span class="lineNum">     233 </span>                :            :   void consume(std::size_t n)
+<span class="lineNum">     234 </span>                :            :   {
+<span class="lineNum">     235 </span>                :            :     if (gptr() + n &gt; pptr())
+<span class="lineNum">     236 </span>                :            :       n = pptr() - gptr();
+<span class="lineNum">     237 </span>                :            :     gbump(static_cast&lt;int&gt;(n));
+<span class="lineNum">     238 </span>                :            :   }
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :            : protected:
+<span class="lineNum">     241 </span>                :            :   enum { buffer_delta = 128 };
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :            :   /// Override std::streambuf behaviour.
+<span class="lineNum">     244 </span>                :            :   /**
+<span class="lineNum">     245 </span>                :            :    * Behaves according to the specification of @c std::streambuf::underflow().
+<span class="lineNum">     246 </span>                :            :    */
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :   int_type underflow()</span>
+<span class="lineNum">     248 </span>                :            :   {
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :     if (gptr() &lt; pptr())</span>
+<span class="lineNum">     250 </span>                :            :     {
+<span class="lineNum">     251 </span>                :<span class="lineNoCov">          0 :       setg(&amp;buffer_[0], gptr(), pptr());</span>
+<span class="lineNum">     252 </span>                :<span class="lineNoCov">          0 :       return traits_type::to_int_type(*gptr());</span>
+<span class="lineNum">     253 </span>                :            :     }
+<span class="lineNum">     254 </span>                :            :     else
+<span class="lineNum">     255 </span>                :            :     {
+<span class="lineNum">     256 </span>                :<span class="lineNoCov">          0 :       return traits_type::eof();</span>
+<span class="lineNum">     257 </span>                :            :     }
+<span class="lineNum">     258 </span>                :            :   }
+<span class="lineNum">     259 </span>                :            : 
+<span class="lineNum">     260 </span>                :            :   /// Override std::streambuf behaviour.
+<span class="lineNum">     261 </span>                :            :   /**
+<span class="lineNum">     262 </span>                :            :    * Behaves according to the specification of @c std::streambuf::overflow(),
+<span class="lineNum">     263 </span>                :            :    * with the specialisation that @c std::length_error is thrown if appending
+<span class="lineNum">     264 </span>                :            :    * the character to the input sequence would require the condition
+<span class="lineNum">     265 </span>                :            :    * &lt;tt&gt;size() &gt; max_size()&lt;/tt&gt; to be true.
+<span class="lineNum">     266 </span>                :            :    */
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :   int_type overflow(int_type c)</span>
+<span class="lineNum">     268 </span>                :            :   {
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :     if (!traits_type::eq_int_type(c, traits_type::eof()))</span>
+<span class="lineNum">     270 </span>                :            :     {
+<span class="lineNum">     271 </span>                :<span class="lineNoCov">          0 :       if (pptr() == epptr())</span>
+<span class="lineNum">     272 </span>                :            :       {
+<span class="lineNum">     273 </span>                :<span class="lineNoCov">          0 :         std::size_t buffer_size = pptr() - gptr();</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :         if (buffer_size &lt; max_size_ &amp;&amp; max_size_ - buffer_size &lt; buffer_delta)</span>
+<span class="lineNum">     275 </span>                :            :         {
+<span class="lineNum">     276 </span>                :<span class="lineNoCov">          0 :           reserve(max_size_ - buffer_size);</span>
+<span class="lineNum">     277 </span>                :            :         }
+<span class="lineNum">     278 </span>                :            :         else
+<span class="lineNum">     279 </span>                :            :         {
+<span class="lineNum">     280 </span>                :<span class="lineNoCov">          0 :           reserve(buffer_delta);</span>
+<span class="lineNum">     281 </span>                :            :         }
+<span class="lineNum">     282 </span>                :            :       }
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :       *pptr() = traits_type::to_char_type(c);</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :       pbump(1);</span>
+<span class="lineNum">     286 </span>                :<span class="lineNoCov">          0 :       return c;</span>
+<span class="lineNum">     287 </span>                :            :     }
+<span class="lineNum">     288 </span>                :            : 
+<span class="lineNum">     289 </span>                :<span class="lineNoCov">          0 :     return traits_type::not_eof(c);</span>
+<span class="lineNum">     290 </span>                :            :   }
+<span class="lineNum">     291 </span>                :            : 
+<span class="lineNum">     292 </span>                :<span class="lineNoCov">          0 :   void reserve(std::size_t n)</span>
+<span class="lineNum">     293 </span>                :            :   {
+<span class="lineNum">     294 </span>                :            :     // Get current stream positions as offsets.
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :     std::size_t gnext = gptr() - &amp;buffer_[0];</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :     std::size_t pnext = pptr() - &amp;buffer_[0];</span>
+<span class="lineNum">     297 </span>                :<span class="lineNoCov">          0 :     std::size_t pend = epptr() - &amp;buffer_[0];</span>
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            :     // Check if there is already enough space in the put area.
+<span class="lineNum">     300 </span>                :<span class="lineNoCov">          0 :     if (n &lt;= pend - pnext)</span>
+<span class="lineNum">     301 </span>                :            :     {
+<span class="lineNum">     302 </span>                :<span class="lineNoCov">          0 :       return;</span>
+<span class="lineNum">     303 </span>                :            :     }
+<span class="lineNum">     304 </span>                :            : 
+<span class="lineNum">     305 </span>                :            :     // Shift existing contents of get area to start of buffer.
+<span class="lineNum">     306 </span>                :<span class="lineNoCov">          0 :     if (gnext &gt; 0)</span>
+<span class="lineNum">     307 </span>                :            :     {
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :       pnext -= gnext;</span>
+<span class="lineNum">     309 </span>                :<span class="lineNoCov">          0 :       std::memmove(&amp;buffer_[0], &amp;buffer_[0] + gnext, pnext);</span>
+<span class="lineNum">     310 </span>                :            :     }
+<span class="lineNum">     311 </span>                :            : 
+<span class="lineNum">     312 </span>                :            :     // Ensure buffer is large enough to hold at least the specified size.
+<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :     if (n &gt; pend - pnext)</span>
+<span class="lineNum">     314 </span>                :            :     {
+<span class="lineNum">     315 </span>                :<span class="lineNoCov">          0 :       if (n &lt;= max_size_ &amp;&amp; pnext &lt;= max_size_ - n)</span>
+<span class="lineNum">     316 </span>                :            :       {
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :         pend = pnext + n;</span>
+<span class="lineNum">     318 </span>                :<span class="lineNoCov">          0 :         buffer_.resize((std::max&lt;std::size_t&gt;)(pend, 1));</span>
+<span class="lineNum">     319 </span>                :            :       }
+<span class="lineNum">     320 </span>                :            :       else
+<span class="lineNum">     321 </span>                :            :       {
+<span class="lineNum">     322 </span>                :<span class="lineNoCov">          0 :         std::length_error ex(&quot;boost::asio::streambuf too long&quot;);</span>
+<span class="lineNum">     323 </span>                :<span class="lineNoCov">          0 :         boost::throw_exception(ex);</span>
+<span class="lineNum">     324 </span>                :            :       }
+<span class="lineNum">     325 </span>                :            :     }
+<span class="lineNum">     326 </span>                :            : 
+<span class="lineNum">     327 </span>                :            :     // Update stream positions.
+<span class="lineNum">     328 </span>                :<span class="lineNoCov">          0 :     setg(&amp;buffer_[0], &amp;buffer_[0], &amp;buffer_[0] + pnext);</span>
+<span class="lineNum">     329 </span>                :<span class="lineNoCov">          0 :     setp(&amp;buffer_[0] + pnext, &amp;buffer_[0] + pend);</span>
+<span class="lineNum">     330 </span>                :            :   }
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :            : private:
+<span class="lineNum">     333 </span>                :            :   std::size_t max_size_;
+<span class="lineNum">     334 </span>                :            :   std::vector&lt;char_type, Allocator&gt; buffer_;
+<span class="lineNum">     335 </span>                :            : };
+<span class="lineNum">     336 </span>                :            : 
+<span class="lineNum">     337 </span>                :            : } // namespace asio
+<span class="lineNum">     338 </span>                :            : } // namespace boost
+<span class="lineNum">     339 </span>                :            : 
+<span class="lineNum">     340 </span>                :            : #include &lt;boost/asio/detail/pop_options.hpp&gt;
+<span class="lineNum">     341 </span>                :            : 
+<span class="lineNum">     342 </span>                :            : #endif // BOOST_ASIO_BASIC_STREAMBUF_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

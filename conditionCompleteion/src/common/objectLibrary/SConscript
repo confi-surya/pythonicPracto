@@ -1,0 +1,28 @@
+import os.path
+
+Import('context')
+
+context.module(
+	name = "ObjectLib",
+	#srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		object_library.cpp
+		object_py_binding.cpp
+		../libraryUtils/object_storage_log_setup.cpp
+		../libraryUtils/osd_logger_initialize.cpp
+	"""),
+	requiredLibs = context.split("""
+		boost_thread-mt
+		boost_system
+		boost_python
+		pthread
+		crypto
+		cool
+	"""),
+
+	targetType = context.TYPE_DLL,
+	libs = context.split("""
+		#any external libs  that you may need.
+		communication
+	"""),
+)

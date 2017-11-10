@@ -1,0 +1,80 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "accountLibraryUnitTest",
+        #srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		main.cpp
+		../record_structure.cpp
+		#../trailer_block_builder.cpp
+		#../trailer_block_writer.cpp
+		#../stat_block_builder.cpp
+		#../stat_block_writer.cpp
+		../trailer_stat_block_builder.cpp
+		../trailer_stat_block_writer.cpp
+		../account_record_iterator.cpp
+		../reader.cpp
+		../writer.cpp
+		../account_info_file_manager.cpp
+		../account_info_file_builder.cpp
+		../account_info_file.cpp
+		../non_static_data_block.cpp
+		../non_static_data_block_builder.cpp
+		../non_static_data_block_writer.cpp
+		../static_data_block.cpp
+		../static_data_block_builder.cpp
+		../static_data_block_writer.cpp
+		../account_library.cpp
+		../../libraryUtils/info_file_sorter.cpp
+		../../libraryUtils/object_storage_log_setup.cpp
+		../../libraryUtils/file_handler.cpp
+		../../libraryUtils/lock_manager.cpp
+		../../libraryUtils/osd_logger_initialize.cpp
+	
+		#stat_read_write_test.cpp 				##OK
+		#stat_block_builder_writer_test.cpp 			##OK
+		
+		#non_static_data_block_test.cpp 			##OK
+		#non_static_data_block_builder_writer_test.cpp 		##Ok
+		#non_static_data_block_reader_writer_test.cpp 		##OK
+		
+		#static_data_block_test.cpp		 		##OK
+		#static_data_block_reader_writer_test.cpp		##OK
+		
+		add_container_test.cpp   				#OK
+		add_multiple_container_test.cpp                         #OK
+		update_container_test.cpp  				#OK
+		delete_container_test.cpp  				#OK
+		get_set_account_stat_test.cpp				##OK
+		list_container_test.cpp  				#OK
+		create_remove_account_info_file_test.cpp 		#OK
+ 
+		#file_test.cpp
+		#account_library_interface_test.cpp
+
+		#trailer_block_test.cpp 				##OK
+		#trailer_block_builder_writer_test.cpp  		##OK
+
+		#readWriteTest.cpp
+		#fileBottomReaderWriterTest.cpp
+		#fileTopReaderWriterTest.cpp
+		#readerTest.cpp
+		
+	"""),
+        targetType = context.TYPE_EXE,
+        libs = context.split("""
+                #any external libs  that you may need.
+        """),
+        wholeLibs = context.split("""
+               gmock
+        """),
+        requiredLibs = context.split("""
+                boost_python
+		python2.6
+                cool
+                boost_thread
+        """)
+)
+

@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/boost141/boost/python/converter/as_to_python_function.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost141/boost/python/converter</a> - as_to_python_function.hpp</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryMed">80.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Copyright David Abrahams 2002.
+<span class="lineNum">       2 </span>                :            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>                :            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>                :            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>                :            : #ifndef AS_TO_PYTHON_FUNCTION_DWA2002121_HPP
+<span class="lineNum">       6 </span>                :            : # define AS_TO_PYTHON_FUNCTION_DWA2002121_HPP
+<span class="lineNum">       7 </span>                :            : # include &lt;boost/python/converter/to_python_function_type.hpp&gt;
+<span class="lineNum">       8 </span>                :            : 
+<span class="lineNum">       9 </span>                :            : namespace boost { namespace python { namespace converter { 
+<span class="lineNum">      10 </span>                :            : 
+<span class="lineNum">      11 </span>                :            : // Given a typesafe to_python conversion function, produces a
+<span class="lineNum">      12 </span>                :            : // to_python_function_t which can be registered in the usual way.
+<span class="lineNum">      13 </span>                :            : template &lt;class T, class ToPython&gt;
+<span class="lineNum">      14 </span>                :            : struct as_to_python_function
+<span class="lineNum">      15 </span>                :            : {
+<span class="lineNum">      16 </span>                :            :     // Assertion functions used to prevent wrapping of converters
+<span class="lineNum">      17 </span>                :            :     // which take non-const reference parameters. The T* argument in
+<span class="lineNum">      18 </span>                :            :     // the first overload ensures it isn't used in case T is a
+<span class="lineNum">      19 </span>                :            :     // reference.
+<span class="lineNum">      20 </span>                :            :     template &lt;class U&gt;
+<span class="lineNum">      21 </span>                :<span class="lineNoCov">          0 :     static void convert_function_must_take_value_or_const_reference(U(*)(T), int, T* = 0) {}</span>
+<span class="lineNum">      22 </span>                :            :     template &lt;class U&gt;
+<span class="lineNum">      23 </span>                :<span class="lineCov">         95 :     static void convert_function_must_take_value_or_const_reference(U(*)(T const&amp;), long ...) {}</span>
+<span class="lineNum">      24 </span>                :            :         
+<span class="lineNum">      25 </span>                :<span class="lineCov">         95 :     static PyObject* convert(void const* x)</span>
+<span class="lineNum">      26 </span>                :            :     {
+<span class="lineNum">      27 </span>                :<span class="lineCov">         95 :         convert_function_must_take_value_or_const_reference(&amp;ToPython::convert, 1L);</span>
+<span class="lineNum">      28 </span>                :            :         
+<span class="lineNum">      29 </span>                :            :         // Yes, the const_cast below opens a hole in const-correctness,
+<span class="lineNum">      30 </span>                :            :         // but it's needed to convert auto_ptr&lt;U&gt; to python.
+<span class="lineNum">      31 </span>                :            :         //
+<span class="lineNum">      32 </span>                :            :         // How big a hole is it?  It allows ToPython::convert() to be
+<span class="lineNum">      33 </span>                :            :         // a function which modifies its argument. The upshot is that
+<span class="lineNum">      34 </span>                :            :         // client converters applied to const objects may invoke
+<span class="lineNum">      35 </span>                :            :         // undefined behavior. The damage, however, is limited by the
+<span class="lineNum">      36 </span>                :            :         // use of the assertion function. Thus, the only way this can
+<span class="lineNum">      37 </span>                :            :         // modify its argument is if T is an auto_ptr-like type. There
+<span class="lineNum">      38 </span>                :            :         // is still a const-correctness hole w.r.t. auto_ptr&lt;U&gt; const,
+<span class="lineNum">      39 </span>                :            :         // but c'est la vie.
+<span class="lineNum">      40 </span>                :<span class="lineCov">         95 :         return ToPython::convert(*const_cast&lt;T*&gt;(static_cast&lt;T const*&gt;(x)));</span>
+<span class="lineNum">      41 </span>                :            :     }
+<span class="lineNum">      42 </span>                :            : #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+<span class="lineNum">      43 </span>                :            :     static PyTypeObject const * get_pytype() { return ToPython::get_pytype(); }
+<span class="lineNum">      44 </span>                :            : #endif
+<span class="lineNum">      45 </span>                :            : };
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            : }}} // namespace boost::python::converter
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            : #endif // AS_TO_PYTHON_FUNCTION_DWA2002121_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

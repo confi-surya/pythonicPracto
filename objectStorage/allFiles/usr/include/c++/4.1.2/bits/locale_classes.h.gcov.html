@@ -1,0 +1,670 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>LCOV - tmpVxdNKb-all - /usr/include/c++/4.1.2/bits/locale_classes.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/c++/4.1.2/bits</a> - locale_classes.h</td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">tmpVxdNKb-all</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-07-19</td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Legend:</td>
+            <td class="headerValueLeg">            Lines:
+            <span class="coverLegendCov">hit</span>
+            <span class="coverLegendNoCov">not hit</span>
+            | Branches:
+            <span class="coverLegendCov">+</span> taken
+            <span class="coverLegendNoCov">-</span> not taken
+            <span class="coverLegendNoCov">#</span> not executed
+</td>
+            <td></td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<span class="lineNum">       1 </span>                :            : // Locale support -*- C++ -*-
+<span class="lineNum">       2 </span>                :            : 
+<span class="lineNum">       3 </span>                :            : // Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+<span class="lineNum">       4 </span>                :            : // Free Software Foundation, Inc.
+<span class="lineNum">       5 </span>                :            : //
+<span class="lineNum">       6 </span>                :            : // This file is part of the GNU ISO C++ Library.  This library is free
+<span class="lineNum">       7 </span>                :            : // software; you can redistribute it and/or modify it under the
+<span class="lineNum">       8 </span>                :            : // terms of the GNU General Public License as published by the
+<span class="lineNum">       9 </span>                :            : // Free Software Foundation; either version 2, or (at your option)
+<span class="lineNum">      10 </span>                :            : // any later version.
+<span class="lineNum">      11 </span>                :            : 
+<span class="lineNum">      12 </span>                :            : // This library is distributed in the hope that it will be useful,
+<span class="lineNum">      13 </span>                :            : // but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      14 </span>                :            : // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      15 </span>                :            : // GNU General Public License for more details.
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : // You should have received a copy of the GNU General Public License along
+<span class="lineNum">      18 </span>                :            : // with this library; see the file COPYING.  If not, write to the Free
+<span class="lineNum">      19 </span>                :            : // Software Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,
+<span class="lineNum">      20 </span>                :            : // USA.
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : // As a special exception, you may use this file as part of a free software
+<span class="lineNum">      23 </span>                :            : // library without restriction.  Specifically, if other files instantiate
+<span class="lineNum">      24 </span>                :            : // templates or use macros or inline functions from this file, or you compile
+<span class="lineNum">      25 </span>                :            : // this file and link it with other files to produce an executable, this
+<span class="lineNum">      26 </span>                :            : // file does not by itself cause the resulting executable to be covered by
+<span class="lineNum">      27 </span>                :            : // the GNU General Public License.  This exception does not however
+<span class="lineNum">      28 </span>                :            : // invalidate any other reasons why the executable file might be covered by
+<span class="lineNum">      29 </span>                :            : // the GNU General Public License.
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            : //
+<span class="lineNum">      32 </span>                :            : // ISO C++ 14882: 22.1  Locales
+<span class="lineNum">      33 </span>                :            : //
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            : /** @file locale_classes.h
+<span class="lineNum">      36 </span>                :            :  *  This is an internal header file, included by other library headers.
+<span class="lineNum">      37 </span>                :            :  *  You should not attempt to use it directly.
+<span class="lineNum">      38 </span>                :            :  */
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : #ifndef _LOCALE_CLASSES_H
+<span class="lineNum">      41 </span>                :            : #define _LOCALE_CLASSES_H 1
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            : #pragma GCC system_header
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            : #include &lt;bits/localefwd.h&gt;
+<span class="lineNum">      46 </span>                :            : #include &lt;cstring&gt;                // For strcmp.
+<span class="lineNum">      47 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      48 </span>                :            : #include &lt;bits/atomicity.h&gt;
+<span class="lineNum">      49 </span>                :            : #include &lt;bits/gthr.h&gt;
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            : namespace std
+<span class="lineNum">      52 </span>                :            : {
+<span class="lineNum">      53 </span>                :            :   // 22.1.1 Class locale
+<span class="lineNum">      54 </span>                :            :   /**
+<span class="lineNum">      55 </span>                :            :    *  @brief  Container class for localization functionality.
+<span class="lineNum">      56 </span>                :            :    *
+<span class="lineNum">      57 </span>                :            :    *  The locale class is first a class wrapper for C library locales.  It is
+<span class="lineNum">      58 </span>                :            :    *  also an extensible container for user-defined localization.  A locale is
+<span class="lineNum">      59 </span>                :            :    *  a collection of facets that implement various localization features such
+<span class="lineNum">      60 </span>                :            :    *  as money, time, and number printing.
+<span class="lineNum">      61 </span>                :            :    *
+<span class="lineNum">      62 </span>                :            :    *  Constructing C++ locales does not change the C library locale.
+<span class="lineNum">      63 </span>                :            :    *
+<span class="lineNum">      64 </span>                :            :    *  This library supports efficient construction and copying of locales
+<span class="lineNum">      65 </span>                :            :    *  through a reference counting implementation of the locale class.
+<span class="lineNum">      66 </span>                :            :   */
+<span class="lineNum">      67 </span>                :            :   class locale
+<span class="lineNum">      68 </span>                :            :   {
+<span class="lineNum">      69 </span>                :            :   public:
+<span class="lineNum">      70 </span>                :            :     // Types:
+<span class="lineNum">      71 </span>                :            :     /// Definition of locale::category.
+<span class="lineNum">      72 </span>                :            :     typedef int category;
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            :     // Forward decls and friends:
+<span class="lineNum">      75 </span>                :            :     class facet;
+<span class="lineNum">      76 </span>                :            :     class id;
+<span class="lineNum">      77 </span>                :            :     class _Impl;
+<span class="lineNum">      78 </span>                :            : 
+<span class="lineNum">      79 </span>                :            :     friend class facet;
+<span class="lineNum">      80 </span>                :            :     friend class _Impl;
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">      83 </span>                :            :       friend bool
+<span class="lineNum">      84 </span>                :            :       has_facet(const locale&amp;) throw();
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">      87 </span>                :            :       friend const _Facet&amp;
+<span class="lineNum">      88 </span>                :            :       use_facet(const locale&amp;);
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :            :     template&lt;typename _Cache&gt;
+<span class="lineNum">      91 </span>                :            :       friend struct __use_cache;
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :            :     //@{
+<span class="lineNum">      94 </span>                :            :     /**
+<span class="lineNum">      95 </span>                :            :      *  @brief  Category values.
+<span class="lineNum">      96 </span>                :            :      *
+<span class="lineNum">      97 </span>                :            :      *  The standard category values are none, ctype, numeric, collate, time,
+<span class="lineNum">      98 </span>                :            :      *  monetary, and messages.  They form a bitmask that supports union and
+<span class="lineNum">      99 </span>                :            :      *  intersection.  The category all is the union of these values.
+<span class="lineNum">     100 </span>                :            :      *
+<span class="lineNum">     101 </span>                :            :      *  @if maint
+<span class="lineNum">     102 </span>                :            :      *  NB: Order must match _S_facet_categories definition in locale.cc
+<span class="lineNum">     103 </span>                :            :      *  @endif
+<span class="lineNum">     104 </span>                :            :     */
+<span class="lineNum">     105 </span>                :            :     static const category none          = 0;
+<span class="lineNum">     106 </span>                :            :     static const category ctype         = 1L &lt;&lt; 0;
+<span class="lineNum">     107 </span>                :            :     static const category numeric       = 1L &lt;&lt; 1;
+<span class="lineNum">     108 </span>                :            :     static const category collate       = 1L &lt;&lt; 2;
+<span class="lineNum">     109 </span>                :            :     static const category time          = 1L &lt;&lt; 3;
+<span class="lineNum">     110 </span>                :            :     static const category monetary      = 1L &lt;&lt; 4;
+<span class="lineNum">     111 </span>                :            :     static const category messages      = 1L &lt;&lt; 5;
+<span class="lineNum">     112 </span>                :            :     static const category all           = (ctype | numeric | collate |
+<span class="lineNum">     113 </span>                :            :                                            time  | monetary | messages);
+<span class="lineNum">     114 </span>                :            :     //@}
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :            :     // Construct/copy/destroy:
+<span class="lineNum">     117 </span>                :            : 
+<span class="lineNum">     118 </span>                :            :     /**
+<span class="lineNum">     119 </span>                :            :      *  @brief  Default constructor.
+<span class="lineNum">     120 </span>                :            :      *
+<span class="lineNum">     121 </span>                :            :      *  Constructs a copy of the global locale.  If no locale has been
+<span class="lineNum">     122 </span>                :            :      *  explicitly set, this is the &quot;C&quot; locale.
+<span class="lineNum">     123 </span>                :            :     */
+<span class="lineNum">     124 </span>                :            :     locale() throw();
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :            :     /**
+<span class="lineNum">     127 </span>                :            :      *  @brief  Copy constructor.
+<span class="lineNum">     128 </span>                :            :      *
+<span class="lineNum">     129 </span>                :            :      *  Constructs a copy of @a other.
+<span class="lineNum">     130 </span>                :            :      *
+<span class="lineNum">     131 </span>                :            :      *  @param  other  The locale to copy.
+<span class="lineNum">     132 </span>                :            :     */
+<span class="lineNum">     133 </span>                :            :     locale(const locale&amp; __other) throw();
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :            :     /**
+<span class="lineNum">     136 </span>                :            :      *  @brief  Named locale constructor.
+<span class="lineNum">     137 </span>                :            :      *
+<span class="lineNum">     138 </span>                :            :      *  Constructs a copy of the named C library locale.
+<span class="lineNum">     139 </span>                :            :      *
+<span class="lineNum">     140 </span>                :            :      *  @param  s  Name of the locale to construct.
+<span class="lineNum">     141 </span>                :            :      *  @throw  std::runtime_error if s is null or an undefined locale.
+<span class="lineNum">     142 </span>                :            :     */
+<span class="lineNum">     143 </span>                :            :     explicit
+<span class="lineNum">     144 </span>                :            :     locale(const char* __s);
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :            :     /**
+<span class="lineNum">     147 </span>                :            :      *  @brief  Construct locale with facets from another locale.
+<span class="lineNum">     148 </span>                :            :      *
+<span class="lineNum">     149 </span>                :            :      *  Constructs a copy of the locale @a base.  The facets specified by @a
+<span class="lineNum">     150 </span>                :            :      *  cat are replaced with those from the locale named by @a s.  If base is
+<span class="lineNum">     151 </span>                :            :      *  named, this locale instance will also be named.
+<span class="lineNum">     152 </span>                :            :      *
+<span class="lineNum">     153 </span>                :            :      *  @param  base  The locale to copy.
+<span class="lineNum">     154 </span>                :            :      *  @param  s  Name of the locale to use facets from.
+<span class="lineNum">     155 </span>                :            :      *  @param  cat  Set of categories defining the facets to use from s.
+<span class="lineNum">     156 </span>                :            :      *  @throw  std::runtime_error if s is null or an undefined locale.
+<span class="lineNum">     157 </span>                :            :     */
+<span class="lineNum">     158 </span>                :            :     locale(const locale&amp; __base, const char* __s, category __cat);
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :            :     /**
+<span class="lineNum">     161 </span>                :            :      *  @brief  Construct locale with facets from another locale.
+<span class="lineNum">     162 </span>                :            :      *
+<span class="lineNum">     163 </span>                :            :      *  Constructs a copy of the locale @a base.  The facets specified by @a
+<span class="lineNum">     164 </span>                :            :      *  cat are replaced with those from the locale @a add.  If @a base and @a
+<span class="lineNum">     165 </span>                :            :      *  add are named, this locale instance will also be named.
+<span class="lineNum">     166 </span>                :            :      *
+<span class="lineNum">     167 </span>                :            :      *  @param  base  The locale to copy.
+<span class="lineNum">     168 </span>                :            :      *  @param  add  The locale to use facets from.
+<span class="lineNum">     169 </span>                :            :      *  @param  cat  Set of categories defining the facets to use from add.
+<span class="lineNum">     170 </span>                :            :     */
+<span class="lineNum">     171 </span>                :            :     locale(const locale&amp; __base, const locale&amp; __add, category __cat);
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :            :     /**
+<span class="lineNum">     174 </span>                :            :      *  @brief  Construct locale with another facet.
+<span class="lineNum">     175 </span>                :            :      *
+<span class="lineNum">     176 </span>                :            :      *  Constructs a copy of the locale @a other.  The facet @f is added to
+<span class="lineNum">     177 </span>                :            :      *  @other, replacing an existing facet of type Facet if there is one.  If
+<span class="lineNum">     178 </span>                :            :      *  @f is null, this locale is a copy of @a other.
+<span class="lineNum">     179 </span>                :            :      *
+<span class="lineNum">     180 </span>                :            :      *  @param  other  The locale to copy.
+<span class="lineNum">     181 </span>                :            :      *  @param  f  The facet to add in.
+<span class="lineNum">     182 </span>                :            :     */
+<span class="lineNum">     183 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     184 </span>                :            :       locale(const locale&amp; __other, _Facet* __f);
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            :     /// Locale destructor.
+<span class="lineNum">     187 </span>                :            :     ~locale() throw();
+<span class="lineNum">     188 </span>                :            : 
+<span class="lineNum">     189 </span>                :            :     /**
+<span class="lineNum">     190 </span>                :            :      *  @brief  Assignment operator.
+<span class="lineNum">     191 </span>                :            :      *
+<span class="lineNum">     192 </span>                :            :      *  Set this locale to be a copy of @a other.
+<span class="lineNum">     193 </span>                :            :      *
+<span class="lineNum">     194 </span>                :            :      *  @param  other  The locale to copy.
+<span class="lineNum">     195 </span>                :            :      *  @return  A reference to this locale.
+<span class="lineNum">     196 </span>                :            :     */
+<span class="lineNum">     197 </span>                :            :     const locale&amp;
+<span class="lineNum">     198 </span>                :            :     operator=(const locale&amp; __other) throw();
+<span class="lineNum">     199 </span>                :            : 
+<span class="lineNum">     200 </span>                :            :     /**
+<span class="lineNum">     201 </span>                :            :      *  @brief  Construct locale with another facet.
+<span class="lineNum">     202 </span>                :            :      *
+<span class="lineNum">     203 </span>                :            :      *  Constructs and returns a new copy of this locale.  Adds or replaces an
+<span class="lineNum">     204 </span>                :            :      *  existing facet of type Facet from the locale @a other into the new
+<span class="lineNum">     205 </span>                :            :      *  locale.
+<span class="lineNum">     206 </span>                :            :      *
+<span class="lineNum">     207 </span>                :            :      *  @param  Facet  The facet type to copy from other
+<span class="lineNum">     208 </span>                :            :      *  @param  other  The locale to copy from.
+<span class="lineNum">     209 </span>                :            :      *  @return  Newly constructed locale.
+<span class="lineNum">     210 </span>                :            :      *  @throw  std::runtime_error if other has no facet of type Facet.
+<span class="lineNum">     211 </span>                :            :     */
+<span class="lineNum">     212 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     213 </span>                :            :       locale
+<span class="lineNum">     214 </span>                :            :       combine(const locale&amp; __other) const;
+<span class="lineNum">     215 </span>                :            : 
+<span class="lineNum">     216 </span>                :            :     // Locale operations:
+<span class="lineNum">     217 </span>                :            :     /**
+<span class="lineNum">     218 </span>                :            :      *  @brief  Return locale name.
+<span class="lineNum">     219 </span>                :            :      *  @return  Locale name or &quot;*&quot; if unnamed.
+<span class="lineNum">     220 </span>                :            :     */
+<span class="lineNum">     221 </span>                :            :     string
+<span class="lineNum">     222 </span>                :            :     name() const;
+<span class="lineNum">     223 </span>                :            : 
+<span class="lineNum">     224 </span>                :            :     /**
+<span class="lineNum">     225 </span>                :            :      *  @brief  Locale equality.
+<span class="lineNum">     226 </span>                :            :      *
+<span class="lineNum">     227 </span>                :            :      *  @param  other  The locale to compare against.
+<span class="lineNum">     228 </span>                :            :      *  @return  True if other and this refer to the same locale instance, are
+<span class="lineNum">     229 </span>                :            :      *           copies, or have the same name.  False otherwise.
+<span class="lineNum">     230 </span>                :            :     */
+<span class="lineNum">     231 </span>                :            :     bool
+<span class="lineNum">     232 </span>                :            :     operator==(const locale&amp; __other) const throw ();
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            :     /**
+<span class="lineNum">     235 </span>                :            :      *  @brief  Locale inequality.
+<span class="lineNum">     236 </span>                :            :      *
+<span class="lineNum">     237 </span>                :            :      *  @param  other  The locale to compare against.
+<span class="lineNum">     238 </span>                :            :      *  @return  ! (*this == other)
+<span class="lineNum">     239 </span>                :            :     */
+<span class="lineNum">     240 </span>                :            :     inline bool
+<span class="lineNum">     241 </span>                :            :     operator!=(const locale&amp; __other) const throw ()
+<span class="lineNum">     242 </span>                :            :     { return !(this-&gt;operator==(__other));  }
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :            :     /**
+<span class="lineNum">     245 </span>                :            :      *  @brief  Compare two strings according to collate.
+<span class="lineNum">     246 </span>                :            :      *
+<span class="lineNum">     247 </span>                :            :      *  Template operator to compare two strings using the compare function of
+<span class="lineNum">     248 </span>                :            :      *  the collate facet in this locale.  One use is to provide the locale to
+<span class="lineNum">     249 </span>                :            :      *  the sort function.  For example, a vector v of strings could be sorted
+<span class="lineNum">     250 </span>                :            :      *  according to locale loc by doing:
+<span class="lineNum">     251 </span>                :            :      *  @code
+<span class="lineNum">     252 </span>                :            :      *  std::sort(v.begin(), v.end(), loc);
+<span class="lineNum">     253 </span>                :            :      *  @endcode
+<span class="lineNum">     254 </span>                :            :      *
+<span class="lineNum">     255 </span>                :            :      *  @param  s1  First string to compare.
+<span class="lineNum">     256 </span>                :            :      *  @param  s2  Second string to compare.
+<span class="lineNum">     257 </span>                :            :      *  @return  True if collate&lt;Char&gt; facet compares s1 &lt; s2, else false.
+<span class="lineNum">     258 </span>                :            :     */
+<span class="lineNum">     259 </span>                :            :     template&lt;typename _Char, typename _Traits, typename _Alloc&gt;
+<span class="lineNum">     260 </span>                :            :       bool
+<span class="lineNum">     261 </span>                :            :       operator()(const basic_string&lt;_Char, _Traits, _Alloc&gt;&amp; __s1,
+<span class="lineNum">     262 </span>                :            :                  const basic_string&lt;_Char, _Traits, _Alloc&gt;&amp; __s2) const;
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :            :     // Global locale objects:
+<span class="lineNum">     265 </span>                :            :     /**
+<span class="lineNum">     266 </span>                :            :      *  @brief  Set global locale
+<span class="lineNum">     267 </span>                :            :      *
+<span class="lineNum">     268 </span>                :            :      *  This function sets the global locale to the argument and returns a
+<span class="lineNum">     269 </span>                :            :      *  copy of the previous global locale.  If the argument has a name, it
+<span class="lineNum">     270 </span>                :            :      *  will also call std::setlocale(LC_ALL, loc.name()).
+<span class="lineNum">     271 </span>                :            :      *
+<span class="lineNum">     272 </span>                :            :      *  @param  locale  The new locale to make global.
+<span class="lineNum">     273 </span>                :            :      *  @return  Copy of the old global locale.
+<span class="lineNum">     274 </span>                :            :     */
+<span class="lineNum">     275 </span>                :            :     static locale
+<span class="lineNum">     276 </span>                :            :     global(const locale&amp;);
+<span class="lineNum">     277 </span>                :            : 
+<span class="lineNum">     278 </span>                :            :     /**
+<span class="lineNum">     279 </span>                :            :      *  @brief  Return reference to the &quot;C&quot; locale.
+<span class="lineNum">     280 </span>                :            :     */
+<span class="lineNum">     281 </span>                :            :     static const locale&amp;
+<span class="lineNum">     282 </span>                :            :     classic();
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :            :   private:
+<span class="lineNum">     285 </span>                :            :     // The (shared) implementation
+<span class="lineNum">     286 </span>                :            :     _Impl*              _M_impl;
+<span class="lineNum">     287 </span>                :            : 
+<span class="lineNum">     288 </span>                :            :     // The &quot;C&quot; reference locale
+<span class="lineNum">     289 </span>                :            :     static _Impl*       _S_classic;
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :     // Current global locale
+<span class="lineNum">     292 </span>                :            :     static _Impl*       _S_global;
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>                :            :     // Names of underlying locale categories.
+<span class="lineNum">     295 </span>                :            :     // NB: locale::global() has to know how to modify all the
+<span class="lineNum">     296 </span>                :            :     // underlying categories, not just the ones required by the C++
+<span class="lineNum">     297 </span>                :            :     // standard.
+<span class="lineNum">     298 </span>                :            :     static const char* const* const _S_categories;
+<span class="lineNum">     299 </span>                :            : 
+<span class="lineNum">     300 </span>                :            :     // Number of standard categories. For C++, these categories are
+<span class="lineNum">     301 </span>                :            :     // collate, ctype, monetary, numeric, time, and messages. These
+<span class="lineNum">     302 </span>                :            :     // directly correspond to ISO C99 macros LC_COLLATE, LC_CTYPE,
+<span class="lineNum">     303 </span>                :            :     // LC_MONETARY, LC_NUMERIC, and LC_TIME. In addition, POSIX (IEEE
+<span class="lineNum">     304 </span>                :            :     // 1003.1-2001) specifies LC_MESSAGES.
+<span class="lineNum">     305 </span>                :            :     // In addition to the standard categories, the underlying
+<span class="lineNum">     306 </span>                :            :     // operating system is allowed to define extra LC_*
+<span class="lineNum">     307 </span>                :            :     // macros. For GNU systems, the following are also valid:
+<span class="lineNum">     308 </span>                :            :     // LC_PAPER, LC_NAME, LC_ADDRESS, LC_TELEPHONE, LC_MEASUREMENT,
+<span class="lineNum">     309 </span>                :            :     // and LC_IDENTIFICATION.
+<span class="lineNum">     310 </span>                :            :     enum { _S_categories_size = 6 + _GLIBCXX_NUM_CATEGORIES };
+<span class="lineNum">     311 </span>                :            : 
+<span class="lineNum">     312 </span>                :            : #ifdef __GTHREADS
+<span class="lineNum">     313 </span>                :            :     static __gthread_once_t _S_once;
+<span class="lineNum">     314 </span>                :            : #endif
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>                :            :     explicit
+<span class="lineNum">     317 </span>                :            :     locale(_Impl*) throw();
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :            :     static void
+<span class="lineNum">     320 </span>                :            :     _S_initialize();
+<span class="lineNum">     321 </span>                :            : 
+<span class="lineNum">     322 </span>                :            :     static void
+<span class="lineNum">     323 </span>                :            :     _S_initialize_once();
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :            :     static category
+<span class="lineNum">     326 </span>                :            :     _S_normalize_category(category);
+<span class="lineNum">     327 </span>                :            : 
+<span class="lineNum">     328 </span>                :            :     void
+<span class="lineNum">     329 </span>                :            :     _M_coalesce(const locale&amp; __base, const locale&amp; __add, category __cat);
+<span class="lineNum">     330 </span>                :            :   };
+<span class="lineNum">     331 </span>                :            : 
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :            :   // 22.1.1.1.2  Class locale::facet
+<span class="lineNum">     334 </span>                :            :   /**
+<span class="lineNum">     335 </span>                :            :    *  @brief  Localization functionality base class.
+<span class="lineNum">     336 </span>                :            :    *
+<span class="lineNum">     337 </span>                :            :    *  The facet class is the base class for a localization feature, such as
+<span class="lineNum">     338 </span>                :            :    *  money, time, and number printing.  It provides common support for facets
+<span class="lineNum">     339 </span>                :            :    *  and reference management.
+<span class="lineNum">     340 </span>                :            :    *
+<span class="lineNum">     341 </span>                :            :    *  Facets may not be copied or assigned.
+<span class="lineNum">     342 </span>                :            :   */
+<span class="lineNum">     343 </span>                :            :   class locale::facet
+<span class="lineNum">     344 </span>                :            :   {
+<span class="lineNum">     345 </span>                :            :   private:
+<span class="lineNum">     346 </span>                :            :     friend class locale;
+<span class="lineNum">     347 </span>                :            :     friend class locale::_Impl;
+<span class="lineNum">     348 </span>                :            : 
+<span class="lineNum">     349 </span>                :            :     mutable _Atomic_word                _M_refcount;
+<span class="lineNum">     350 </span>                :            : 
+<span class="lineNum">     351 </span>                :            :     // Contains data from the underlying &quot;C&quot; library for the classic locale.
+<span class="lineNum">     352 </span>                :            :     static __c_locale                   _S_c_locale;
+<span class="lineNum">     353 </span>                :            : 
+<span class="lineNum">     354 </span>                :            :     // String literal for the name of the classic locale.
+<span class="lineNum">     355 </span>                :            :     static const char                   _S_c_name[2];
+<span class="lineNum">     356 </span>                :            : 
+<span class="lineNum">     357 </span>                :            : #ifdef __GTHREADS
+<span class="lineNum">     358 </span>                :            :     static __gthread_once_t             _S_once;
+<span class="lineNum">     359 </span>                :            : #endif
+<span class="lineNum">     360 </span>                :            : 
+<span class="lineNum">     361 </span>                :            :     static void
+<span class="lineNum">     362 </span>                :            :     _S_initialize_once();
+<span class="lineNum">     363 </span>                :            : 
+<span class="lineNum">     364 </span>                :            :   protected:
+<span class="lineNum">     365 </span>                :            :     /**
+<span class="lineNum">     366 </span>                :            :      *  @brief  Facet constructor.
+<span class="lineNum">     367 </span>                :            :      *
+<span class="lineNum">     368 </span>                :            :      *  This is the constructor provided by the standard.  If refs is 0, the
+<span class="lineNum">     369 </span>                :            :      *  facet is destroyed when the last referencing locale is destroyed.
+<span class="lineNum">     370 </span>                :            :      *  Otherwise the facet will never be destroyed.
+<span class="lineNum">     371 </span>                :            :      *
+<span class="lineNum">     372 </span>                :            :      *  @param refs  The initial value for reference count.
+<span class="lineNum">     373 </span>                :            :     */
+<span class="lineNum">     374 </span>                :            :     explicit
+<span class="lineNum">     375 </span>                :            :     facet(size_t __refs = 0) throw() : _M_refcount(__refs ? 1 : 0)
+<span class="lineNum">     376 </span>                :            :     { }
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :            :     /// Facet destructor.
+<span class="lineNum">     379 </span>                :            :     virtual
+<span class="lineNum">     380 </span>                :            :     ~facet();
+<span class="lineNum">     381 </span>                :            : 
+<span class="lineNum">     382 </span>                :            :     static void
+<span class="lineNum">     383 </span>                :            :     _S_create_c_locale(__c_locale&amp; __cloc, const char* __s,
+<span class="lineNum">     384 </span>                :            :                        __c_locale __old = 0);
+<span class="lineNum">     385 </span>                :            : 
+<span class="lineNum">     386 </span>                :            :     static __c_locale
+<span class="lineNum">     387 </span>                :            :     _S_clone_c_locale(__c_locale&amp; __cloc);
+<span class="lineNum">     388 </span>                :            : 
+<span class="lineNum">     389 </span>                :            :     static void
+<span class="lineNum">     390 </span>                :            :     _S_destroy_c_locale(__c_locale&amp; __cloc);
+<span class="lineNum">     391 </span>                :            : 
+<span class="lineNum">     392 </span>                :            :     // Returns data from the underlying &quot;C&quot; library data for the
+<span class="lineNum">     393 </span>                :            :     // classic locale.
+<span class="lineNum">     394 </span>                :            :     static __c_locale
+<span class="lineNum">     395 </span>                :            :     _S_get_c_locale();
+<span class="lineNum">     396 </span>                :            : 
+<span class="lineNum">     397 </span>                :            :     static const char*
+<span class="lineNum">     398 </span>                :            :     _S_get_c_name();
+<span class="lineNum">     399 </span>                :            : 
+<span class="lineNum">     400 </span>                :            :   private:
+<span class="lineNum">     401 </span>                :            :     inline void
+<span class="lineNum">     402 </span>                :            :     _M_add_reference() const throw()
+<span class="lineNum">     403 </span>                :            :     { __gnu_cxx::__atomic_add(&amp;_M_refcount, 1); }
+<span class="lineNum">     404 </span>                :            : 
+<span class="lineNum">     405 </span>                :            :     inline void
+<span class="lineNum">     406 </span>                :            :     _M_remove_reference() const throw()
+<span class="lineNum">     407 </span>                :            :     {
+<span class="lineNum">     408 </span>                :            :       if (__gnu_cxx::__exchange_and_add(&amp;_M_refcount, -1) == 1)
+<span class="lineNum">     409 </span>                :            :         {
+<span class="lineNum">     410 </span>                :            :           try
+<span class="lineNum">     411 </span>                :            :             { delete this; }
+<span class="lineNum">     412 </span>                :            :           catch (...)
+<span class="lineNum">     413 </span>                :            :             { }
+<span class="lineNum">     414 </span>                :            :         }
+<span class="lineNum">     415 </span>                :            :     }
+<span class="lineNum">     416 </span>                :            : 
+<span class="lineNum">     417 </span>                :            :     facet(const facet&amp;);  // Not defined.
+<span class="lineNum">     418 </span>                :            : 
+<span class="lineNum">     419 </span>                :            :     facet&amp;
+<span class="lineNum">     420 </span>                :            :     operator=(const facet&amp;);  // Not defined.
+<span class="lineNum">     421 </span>                :            :   };
+<span class="lineNum">     422 </span>                :            : 
+<span class="lineNum">     423 </span>                :            : 
+<span class="lineNum">     424 </span>                :            :   // 22.1.1.1.3 Class locale::id
+<span class="lineNum">     425 </span>                :            :   /**
+<span class="lineNum">     426 </span>                :            :    *  @brief  Facet ID class.
+<span class="lineNum">     427 </span>                :            :    *
+<span class="lineNum">     428 </span>                :            :    *  The ID class provides facets with an index used to identify them.
+<span class="lineNum">     429 </span>                :            :    *  Every facet class must define a public static member locale::id, or be
+<span class="lineNum">     430 </span>                :            :    *  derived from a facet that provides this member, otherwise the facet
+<span class="lineNum">     431 </span>                :            :    *  cannot be used in a locale.  The locale::id ensures that each class
+<span class="lineNum">     432 </span>                :            :    *  type gets a unique identifier.
+<span class="lineNum">     433 </span>                :            :   */
+<span class="lineNum">     434 </span>                :            :   class locale::id
+<span class="lineNum">     435 </span>                :            :   {
+<span class="lineNum">     436 </span>                :            :   private:
+<span class="lineNum">     437 </span>                :            :     friend class locale;
+<span class="lineNum">     438 </span>                :            :     friend class locale::_Impl;
+<span class="lineNum">     439 </span>                :            : 
+<span class="lineNum">     440 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     441 </span>                :            :       friend const _Facet&amp;
+<span class="lineNum">     442 </span>                :            :       use_facet(const locale&amp;);
+<span class="lineNum">     443 </span>                :            : 
+<span class="lineNum">     444 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     445 </span>                :            :       friend bool
+<span class="lineNum">     446 </span>                :            :       has_facet(const locale&amp;) throw ();
+<span class="lineNum">     447 </span>                :            : 
+<span class="lineNum">     448 </span>                :            :     // NB: There is no accessor for _M_index because it may be used
+<span class="lineNum">     449 </span>                :            :     // before the constructor is run; the effect of calling a member
+<span class="lineNum">     450 </span>                :            :     // function (even an inline) would be undefined.
+<span class="lineNum">     451 </span>                :            :     mutable size_t              _M_index;
+<span class="lineNum">     452 </span>                :            : 
+<span class="lineNum">     453 </span>                :            :     // Last id number assigned.
+<span class="lineNum">     454 </span>                :            :     static _Atomic_word         _S_refcount;
+<span class="lineNum">     455 </span>                :            : 
+<span class="lineNum">     456 </span>                :            :     void
+<span class="lineNum">     457 </span>                :            :     operator=(const id&amp;);  // Not defined.
+<span class="lineNum">     458 </span>                :            : 
+<span class="lineNum">     459 </span>                :            :     id(const id&amp;);  // Not defined.
+<span class="lineNum">     460 </span>                :            : 
+<span class="lineNum">     461 </span>                :            :   public:
+<span class="lineNum">     462 </span>                :            :     // NB: This class is always a static data member, and thus can be
+<span class="lineNum">     463 </span>                :            :     // counted on to be zero-initialized.
+<span class="lineNum">     464 </span>                :            :     /// Constructor.
+<span class="lineNum">     465 </span>                :<span class="lineCov">         18 :     id() { }</span>
+<span class="lineNum">     466 </span>                :            : 
+<span class="lineNum">     467 </span>                :            :     size_t
+<span class="lineNum">     468 </span>                :            :     _M_id() const;
+<span class="lineNum">     469 </span>                :            :   };
+<span class="lineNum">     470 </span>                :            : 
+<span class="lineNum">     471 </span>                :            : 
+<span class="lineNum">     472 </span>                :            :   // Implementation object for locale.
+<span class="lineNum">     473 </span>                :            :   class locale::_Impl
+<span class="lineNum">     474 </span>                :            :   {
+<span class="lineNum">     475 </span>                :            :   public:
+<span class="lineNum">     476 </span>                :            :     // Friends.
+<span class="lineNum">     477 </span>                :            :     friend class locale;
+<span class="lineNum">     478 </span>                :            :     friend class locale::facet;
+<span class="lineNum">     479 </span>                :            : 
+<span class="lineNum">     480 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     481 </span>                :            :       friend bool
+<span class="lineNum">     482 </span>                :            :       has_facet(const locale&amp;) throw();
+<span class="lineNum">     483 </span>                :            : 
+<span class="lineNum">     484 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     485 </span>                :            :       friend const _Facet&amp;
+<span class="lineNum">     486 </span>                :            :       use_facet(const locale&amp;);
+<span class="lineNum">     487 </span>                :            : 
+<span class="lineNum">     488 </span>                :            :     template&lt;typename _Cache&gt;
+<span class="lineNum">     489 </span>                :            :       friend struct __use_cache;
+<span class="lineNum">     490 </span>                :            : 
+<span class="lineNum">     491 </span>                :            :   private:
+<span class="lineNum">     492 </span>                :            :     // Data Members.
+<span class="lineNum">     493 </span>                :            :     _Atomic_word                        _M_refcount;
+<span class="lineNum">     494 </span>                :            :     const facet**                       _M_facets;
+<span class="lineNum">     495 </span>                :            :     size_t                              _M_facets_size;
+<span class="lineNum">     496 </span>                :            :     const facet**                       _M_caches;
+<span class="lineNum">     497 </span>                :            :     char**                              _M_names;
+<span class="lineNum">     498 </span>                :            :     static const locale::id* const      _S_id_ctype[];
+<span class="lineNum">     499 </span>                :            :     static const locale::id* const      _S_id_numeric[];
+<span class="lineNum">     500 </span>                :            :     static const locale::id* const      _S_id_collate[];
+<span class="lineNum">     501 </span>                :            :     static const locale::id* const      _S_id_time[];
+<span class="lineNum">     502 </span>                :            :     static const locale::id* const      _S_id_monetary[];
+<span class="lineNum">     503 </span>                :            :     static const locale::id* const      _S_id_messages[];
+<span class="lineNum">     504 </span>                :            :     static const locale::id* const* const _S_facet_categories[];
+<span class="lineNum">     505 </span>                :            : 
+<span class="lineNum">     506 </span>                :            :     inline void
+<span class="lineNum">     507 </span>                :            :     _M_add_reference() throw()
+<span class="lineNum">     508 </span>                :            :     { __gnu_cxx::__atomic_add(&amp;_M_refcount, 1); }
+<span class="lineNum">     509 </span>                :            : 
+<span class="lineNum">     510 </span>                :            :     inline void
+<span class="lineNum">     511 </span>                :            :     _M_remove_reference() throw()
+<span class="lineNum">     512 </span>                :            :     {
+<span class="lineNum">     513 </span>                :            :       if (__gnu_cxx::__exchange_and_add(&amp;_M_refcount, -1) == 1)
+<span class="lineNum">     514 </span>                :            :         {
+<span class="lineNum">     515 </span>                :            :           try
+<span class="lineNum">     516 </span>                :            :             { delete this; }
+<span class="lineNum">     517 </span>                :            :           catch(...)
+<span class="lineNum">     518 </span>                :            :             { }
+<span class="lineNum">     519 </span>                :            :         }
+<span class="lineNum">     520 </span>                :            :     }
+<span class="lineNum">     521 </span>                :            : 
+<span class="lineNum">     522 </span>                :            :     _Impl(const _Impl&amp;, size_t);
+<span class="lineNum">     523 </span>                :            :     _Impl(const char*, size_t);
+<span class="lineNum">     524 </span>                :            :     _Impl(size_t) throw();
+<span class="lineNum">     525 </span>                :            : 
+<span class="lineNum">     526 </span>                :            :    ~_Impl() throw();
+<span class="lineNum">     527 </span>                :            : 
+<span class="lineNum">     528 </span>                :            :     _Impl(const _Impl&amp;);  // Not defined.
+<span class="lineNum">     529 </span>                :            : 
+<span class="lineNum">     530 </span>                :            :     void
+<span class="lineNum">     531 </span>                :            :     operator=(const _Impl&amp;);  // Not defined.
+<span class="lineNum">     532 </span>                :            : 
+<span class="lineNum">     533 </span>                :            :     inline bool
+<span class="lineNum">     534 </span>                :            :     _M_check_same_name()
+<span class="lineNum">     535 </span>                :            :     {
+<span class="lineNum">     536 </span>                :            :       bool __ret = true;
+<span class="lineNum">     537 </span>                :            :       if (_M_names[1])
+<span class="lineNum">     538 </span>                :            :         // We must actually compare all the _M_names: can be all equal!
+<span class="lineNum">     539 </span>                :            :         for (size_t __i = 0; __ret &amp;&amp; __i &lt; _S_categories_size - 1; ++__i)
+<span class="lineNum">     540 </span>                :            :           __ret = std::strcmp(_M_names[__i], _M_names[__i + 1]) == 0;
+<span class="lineNum">     541 </span>                :            :       return __ret;
+<span class="lineNum">     542 </span>                :            :     }
+<span class="lineNum">     543 </span>                :            : 
+<span class="lineNum">     544 </span>                :            :     void
+<span class="lineNum">     545 </span>                :            :     _M_replace_categories(const _Impl*, category);
+<span class="lineNum">     546 </span>                :            : 
+<span class="lineNum">     547 </span>                :            :     void
+<span class="lineNum">     548 </span>                :            :     _M_replace_category(const _Impl*, const locale::id* const*);
+<span class="lineNum">     549 </span>                :            : 
+<span class="lineNum">     550 </span>                :            :     void
+<span class="lineNum">     551 </span>                :            :     _M_replace_facet(const _Impl*, const locale::id*);
+<span class="lineNum">     552 </span>                :            : 
+<span class="lineNum">     553 </span>                :            :     void
+<span class="lineNum">     554 </span>                :            :     _M_install_facet(const locale::id*, const facet*);
+<span class="lineNum">     555 </span>                :            : 
+<span class="lineNum">     556 </span>                :            :     template&lt;typename _Facet&gt;
+<span class="lineNum">     557 </span>                :            :       inline void
+<span class="lineNum">     558 </span>                :            :       _M_init_facet(_Facet* __facet)
+<span class="lineNum">     559 </span>                :            :       { _M_install_facet(&amp;_Facet::id, __facet); }
+<span class="lineNum">     560 </span>                :            : 
+<span class="lineNum">     561 </span>                :            :     void
+<span class="lineNum">     562 </span>                :            :     _M_install_cache(const facet*, size_t);
+<span class="lineNum">     563 </span>                :            :   };
+<span class="lineNum">     564 </span>                :            : 
+<span class="lineNum">     565 </span>                :            :   template&lt;typename _Facet&gt;
+<span class="lineNum">     566 </span>                :            :     locale::locale(const locale&amp; __other, _Facet* __f)
+<span class="lineNum">     567 </span>                :            :     {
+<span class="lineNum">     568 </span>                :            :       _M_impl = new _Impl(*__other._M_impl, 1);
+<span class="lineNum">     569 </span>                :            : 
+<span class="lineNum">     570 </span>                :            :       try
+<span class="lineNum">     571 </span>                :            :         { _M_impl-&gt;_M_install_facet(&amp;_Facet::id, __f); }
+<span class="lineNum">     572 </span>                :            :       catch(...)
+<span class="lineNum">     573 </span>                :            :         {
+<span class="lineNum">     574 </span>                :            :           _M_impl-&gt;_M_remove_reference();
+<span class="lineNum">     575 </span>                :            :           __throw_exception_again;
+<span class="lineNum">     576 </span>                :            :         }
+<span class="lineNum">     577 </span>                :            :       delete [] _M_impl-&gt;_M_names[0];
+<span class="lineNum">     578 </span>                :            :       _M_impl-&gt;_M_names[0] = 0;   // Unnamed.
+<span class="lineNum">     579 </span>                :            :     }
+<span class="lineNum">     580 </span>                :            : } // namespace std
+<span class="lineNum">     581 </span>                :            : 
+<span class="lineNum">     582 </span>                :            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.8</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

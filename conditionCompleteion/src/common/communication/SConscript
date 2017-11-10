@@ -1,0 +1,38 @@
+import os.path
+
+Import('context')
+
+context.module(
+        name = "communication",
+        #srcs = context.SRCS_ALL,
+	srcs = context.split("""
+		callback.cpp
+		communication_helper.cpp
+		communication.cpp
+		message_type_enum.pb.cc
+		message_binding.pb.cc
+		message.cpp
+		msg_external_interface.cpp
+		message_format_handler.cpp
+		message_result_wrapper.cpp
+		message_interface_handlers.cpp
+		stubs.cpp
+		http_handler.cpp
+	"""),
+        targetType = context.TYPE_DLL,
+        libs = context.split("""
+                #any external libs  that you may need.
+		protobuf
+		libraryUtils
+        """),
+        # only in case of unit test dir
+        #wholeLibs = context.split("""
+        #       gmock
+        #""")
+        requiredLibs = context.split("""
+		boost_thread-mt
+		boost_system-mt
+		pthread
+        """)
+)
+
